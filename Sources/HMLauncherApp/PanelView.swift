@@ -119,7 +119,9 @@ struct PanelView: View {
                             .font(.system(size: 12)).foregroundColor(.dimText)
                             .frame(maxWidth: .infinity, minHeight: Self.rowHeight - 4)
                     }
+                    let firstGlobal = rows.firstIndex(where: \.isGlobal)
                     ForEach(Array(rows.enumerated()), id: \.offset) { index, row in
+                        if index == firstGlobal { globalHeader }
                         rowView(row, index: index).id(index)
                     }
                 }
@@ -128,6 +130,19 @@ struct PanelView: View {
                 if let h { proxy.scrollTo(h) }
             }
         }
+    }
+
+    static let globalHeaderHeight: CGFloat = 26
+
+    private var globalHeader: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "magnifyingglass").font(.system(size: 10))
+            Text(Loc.t("Alle Plugins", "All plugins")).font(.system(size: 11, weight: .semibold))
+            Rectangle().fill(Color.dimText.opacity(0.4)).frame(height: 1)
+        }
+        .foregroundColor(.dimText)
+        .padding(.horizontal, 6)
+        .frame(height: Self.globalHeaderHeight)
     }
 
     private var categoryTitle: String {

@@ -148,6 +148,7 @@ final class PanelWindowController {
         let visibleRows = CGFloat(min(max(rows, 1), PanelView.maxVisibleRows))
         let filterHeight: CGFloat = (viewModel.state.filter.isEmpty ? 0 : PanelView.filterHeight)
             + (viewModel.state.openFolderName == nil ? 0 : PanelView.filterHeight)
+            + (viewModel.state.rows.contains(where: \.isGlobal) && rows <= PanelView.maxVisibleRows ? PanelView.globalHeaderHeight : 0)
         let height = PanelView.tabBarHeight + filterHeight + visibleRows * PanelView.rowHeight + PanelView.padding * 2
         let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
         var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: Self.width, height: height)

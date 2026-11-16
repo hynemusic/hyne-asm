@@ -79,3 +79,39 @@ final class MultiEditTests: XCTestCase {
         XCTAssertEqual(c.orderedEntryIDs(in: fx), [ids["B"]!, ids["C"]!, ids["D"]!, ids["E"]!, f, ids["A"]!])
     }
 }
+
+final class MoveToCategoryTests: XCTestCase {
+    func testMoveEntriesToOtherCategory() {
+        var c = LauncherConfig.makeDefault()
+        let fx = c.categories[2].id, inst = c.categories[1].id
+        for n in ["A", "B", "C"] { c.addEntry(item(n, uri: "u:\(n)"), to: fx) }
+        let f = c.addFolder(named: "F", to: fx)
+        c.addEntry(item("D", uri: "u:D"), to: fx, folder: f)
+        c.addEntry(item("B", uri: "u:B"), to: inst) // already there → no duplicate
+        let ids = c.categories[2].entries
+        let d = c.findEntry(f, in: fx)!.children![0].id
+        c.moveEntries([ids[0].id, ids[1].id, d, f], toCategory: inst, from: fx)
+        XCTAssertEqual(c.categories[2].entries.map(\.title), ["C"])
+        XCTAssertEqual(c.categories[1].entries.map(\.title), ["B", "A", "F"])
+        XCTAssertEqual(c.categories[1].entries[2].children?.map(\.title), ["D"]) // moved folder keeps its plugins
+    }
+
+    func testMovePluginOutOfFolderIntoOtherCategory() {
+        var c = LauncherConfig.makeDefault()
+        let fx = c.categories[2].id, inst = c.categories[1].id
+        let f = c.addFolder(named: "F", to: fx)
+        c.addEntry(item("D", uri: "u:D"), to: fx, folder: f)
+        let d = c.findEntry(f, in: fx)!.children![0].id
+        c.moveEntries([d], toCategory: inst, from: fx)
+        XCTAssertEqual(c.findEntry(f, in: fx)?.children?.count, 0)
+        XCTAssertEqual(c.categories[1].entries.map(\.title), ["D"])
+    }
+
+    func testMoveToSameCategoryDoesNothing() {
+        var c = LauncherConfig.makeDefault()
+        let fx = c.categories[2].id
+        c.addEntry(item("A", uri: "u:A"), to: fx)
+        c.moveEntries([c.categories[2].entries[0].id], toCategory: fx, from: fx)
+        XCTAssertEqual(c.categories[2].entries.map(\.title), ["A"])
+    }
+}

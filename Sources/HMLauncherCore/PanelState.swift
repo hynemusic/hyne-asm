@@ -5,12 +5,14 @@ public struct PanelRow: Equatable, Sendable {
     public let name: String
     public let source: ItemSource
     public let path: [String]
-    public let iconID: String
+    public var iconID: String
     public let title: String
     public let isAvailable: Bool
     /// Set for folder rows: activating them opens the folder instead of inserting.
     public var folderID: UUID? = nil
     public var childCount: Int = 0
+    /// A search hit from the whole plugin list, shown after the category's own hits.
+    public var isGlobal: Bool = false
 }
 
 public enum PanelTab: Equatable, Sendable {
@@ -60,12 +62,33 @@ public struct PanelState {
             return filter.isEmpty ? allRows : allRows.filter { $0.title.localizedCaseInsensitiveContains(filter) }
         }
         let entries = categoryEntries
+        let local: [PanelRow]
         if let openFolderID {
-            let children = entries.first { $0.id == openFolderID }?.children ?? []
-            return filtered(children.map(row))
+            local = filtered((entries.first { $0.id == openFolderID }?.children ?? []).map(row))
+        } else {
+            guard !filter.isEmpty else { return entries.map(row) }
+            local = filtered(entries.flatMap { e in e.isFolder ? [row(e)] + (e.children ?? []).map(row) : [row(e)] })
         }
-        guard !filter.isEmpty else { return entries.map(row) }
-        return filtered(entries.flatMap { e in e.isFolder ? [row(e)] + (e.children ?? []).map(row) : [row(e)] })
+        guard !filter.isEmpty else { return local }
+        return local + globalMatches(excluding: Set(local.map(\.uri)))
+    }
+
+    public static let maxGlobalResults = 50
+
+    /// Search hits from every installed plugin: names starting with the search first, then the rest
+    /// (alphabetical within each). Plugins already listed for the category are left out.
+    private func globalMatches(excluding shown: Set<String>) -> [PanelRow] {
+        var prefix: [PanelRow] = [], contains: [PanelRow] = []
+        for r in allRows where !shown.contains(r.uri) && r.title.localizedCaseInsensitiveContains(filter) {
+            if r.title.lowercased().hasPrefix(filter.lowercased()) { prefix.append(r) } else { contains.append(r) }
+            if prefix.count >= Self.maxGlobalResults { break }
+        }
+        return (prefix + contains).prefix(Self.maxGlobalResults).map { r in
+            var g = r
+            g.isGlobal = true
+            g.iconID = IconGuesser.guess(PluginItem(uri: r.uri, name: r.name, source: r.source, path: r.path))
+            return g
+        }
     }
 
     public var openFolderName: String? {
