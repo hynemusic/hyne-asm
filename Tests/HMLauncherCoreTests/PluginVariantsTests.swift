@@ -69,10 +69,9 @@ final class PanelVariantTests: XCTestCase {
             item("Pro-Q 3", uri: "pq-v3", path: ["VST3", "FabFilter"]),
         ]
         var s = PanelState(config: .makeDefault(), items: items)
-        s.selectTab(s.tabs.count - 1)
-        XCTAssertEqual(s.rows.map(\.uri), ["pl-v3", "pq-v3"])
-        s.selectTab(0)
-        for ch in "pro-l" { _ = s.handle(.character(ch)) }
+        for ch in "pro" { _ = s.handle(.character(ch)) }
+        XCTAssertEqual(s.rows.map(\.uri).sorted(), ["pl-v3", "pq-v3"])
+        for ch in "-l" { _ = s.handle(.character(ch)) }
         XCTAssertEqual(s.rows.map(\.uri), ["pl-v3"])
     }
 

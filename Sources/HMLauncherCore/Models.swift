@@ -76,11 +76,28 @@ public struct ShortcutSettings: Codable, Equatable, Sendable {
     public var closeFocused: KeyCombo?
     /// empty = disabled
     public var closeAll: [KeyCombo]
+    /// Opens the quick search window; empty = disabled.
+    public var quickSearch: [KeyCombo]
 
     public static let `default` = ShortcutSettings(
         closeFocused: KeyCombo(keyCode: 13, modifiers: [.cmd]),
-        closeAll: [KeyCombo(keyCode: 13, modifiers: [.cmd, .ctrl]), KeyCombo(keyCode: 53, modifiers: [.cmd])]
+        closeAll: [KeyCombo(keyCode: 13, modifiers: [.cmd, .ctrl]), KeyCombo(keyCode: 53, modifiers: [.cmd])],
+        quickSearch: [KeyCombo(keyCode: 49, modifiers: [.ctrl])]
     )
+
+    public init(closeFocused: KeyCombo?, closeAll: [KeyCombo], quickSearch: [KeyCombo] = ShortcutSettings.default.quickSearch) {
+        self.closeFocused = closeFocused
+        self.closeAll = closeAll
+        self.quickSearch = quickSearch
+    }
+
+    /// Shortcuts added later get their default in older config files.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        closeFocused = try c.decodeIfPresent(KeyCombo.self, forKey: .closeFocused)
+        closeAll = try c.decodeIfPresent([KeyCombo].self, forKey: .closeAll) ?? []
+        quickSearch = try c.decodeIfPresent([KeyCombo].self, forKey: .quickSearch) ?? ShortcutSettings.default.quickSearch
+    }
 }
 
 public struct LauncherConfig: Codable, Sendable {

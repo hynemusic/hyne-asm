@@ -19,9 +19,10 @@ public struct PanelRow: Equatable, Sendable {
     public var colorID: String? = nil
 }
 
+/// One tab per category. (An "All" tab drew every installed plugin at once and froze the panel;
+/// typing searches all plugins instead.)
 public enum PanelTab: Equatable, Sendable {
     case category(UUID, String)
-    case all
 }
 
 public enum PanelKey: Equatable, Sendable {
@@ -66,7 +67,7 @@ public struct PanelState {
                             iconID: IconCatalog.defaultID, title: $0.name, isAvailable: true, usageKey: keys.key($0),
                             colorID: config.colorID(for: $0)) }
         allPrepared = allRows.map { SearchMatcher.Prepared($0.title) }
-        tabs = config.categories.map { .category($0.id, $0.name) } + [.all]
+        tabs = config.categories.map { .category($0.id, $0.name) }
         self.selectedTab = min(max(selectedTab, 0), tabs.count - 1)
     }
 
@@ -74,9 +75,6 @@ public struct PanelState {
     /// user's order. With a filter: the category's hits (reaching into folders), then hits from all plugins —
     /// each ranked by match quality, then by how often the plugin was inserted.
     public var rows: [PanelRow] {
-        guard case .category = tabs[selectedTab] else {
-            return filter.isEmpty ? allRows : globalMatches(excluding: [], limit: nil, markGlobal: false)
-        }
         let entries = categoryEntries
         let candidates: [PanelRow]
         if let openFolderID {

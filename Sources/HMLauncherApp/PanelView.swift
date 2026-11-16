@@ -90,7 +90,6 @@ struct PanelView: View {
     private func title(of index: Int) -> String {
         switch viewModel.state.tabs[index] {
         case .category(_, let name): return name
-        case .all: return Loc.t("Alle", "All")
         }
     }
 

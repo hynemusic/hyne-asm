@@ -47,13 +47,9 @@ final class PanelGlobalSearchTests: XCTestCase {
         XCTAssertTrue(s.rows.first?.isGlobal ?? false)
     }
 
-    func testNoGlobalRowsWithoutFilterOrInAllTab() {
-        var s = makeState()
+    func testNoGlobalRowsWithoutFilter() {
+        let s = makeState()
         XCTAssertFalse(s.rows.contains(where: \.isGlobal))
-        s.selectTab(s.tabs.count - 1)
-        type(&s, "eq")
-        XCTAssertFalse(s.rows.contains(where: \.isGlobal))
-        XCTAssertEqual(s.rows.map(\.title), ["EQ Eight", "EQ Three", "Channel EQ"]) // ranked: names starting with "eq" first
     }
 
     func testInsideFolderFolderMatchesFirst() {

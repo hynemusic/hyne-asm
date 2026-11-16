@@ -118,13 +118,18 @@ final class PanelWindowController {
         }
     }
 
-    /// Opens the folder's plugins next to the panel, its first row level with the hovered folder row.
+    /// Opens the folder's plugins right beside the folder row, on top of whatever is there (the right column,
+    /// or next to the panel), its first row level with the folder row.
     private func showFlyout(_ folder: UUID) {
         guard flyoutFolder != folder || !flyout.isVisible else { return }
         flyoutFolder = folder
+        let index = viewModel.state.rows.firstIndex { $0.folderID == folder } ?? 0
+        let column = (index % (PanelGrid.columns * PanelGrid.rowsPerColumn)) / PanelGrid.rowsPerColumn
+        let rowMinX = panel.frame.minX + PanelView.padding + CGFloat(column) * (PanelView.columnWidth + PanelView.columnSpacing)
+        let rowFrame = NSRect(x: rowMinX, y: panel.frame.minY, width: PanelView.columnWidth, height: panel.frame.height)
         let mouse = NSEvent.mouseLocation
         flyout.show(rows: viewModel.state.folderRows(folder),
-                    besides: panel.frame, top: mouse.y + PanelView.rowHeight / 2 + PanelView.padding,
+                    besides: rowFrame, top: mouse.y + PanelView.rowHeight / 2 + PanelView.padding,
                     onInsert: { [weak self] in self?.insert($0) })
     }
 
@@ -265,8 +270,8 @@ final class FolderFlyout {
         let visible = CGFloat(min(max(rows.count, 1), PanelView.maxVisibleRows))
         let size = NSSize(width: 280, height: visible * PanelView.rowHeight + PanelView.padding * 2)
         let screen = NSScreen.screens.first { $0.frame.intersects(main) }?.visibleFrame ?? NSScreen.main?.visibleFrame ?? main
-        var x = main.maxX + 4
-        if x + size.width > screen.maxX { x = main.minX - 4 - size.width }
+        var x = main.maxX + 2
+        if x + size.width > screen.maxX { x = main.minX - 2 - size.width }
         let y = min(max(top - size.height, screen.minY), screen.maxY - size.height)
         panel.setFrame(NSRect(x: x, y: y, width: size.width, height: size.height), display: true)
         panel.orderFrontRegardless()

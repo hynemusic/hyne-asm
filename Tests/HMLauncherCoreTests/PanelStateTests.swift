@@ -14,20 +14,12 @@ final class PanelStateTests: XCTestCase {
         return PanelState(config: c, items: items ?? [eq, util, prol, diva])
     }
 
-    func testTabsAreCategoriesPlusAll() {
+    func testTabsAreTheCategories() {
         let s = makeState()
-        XCTAssertEqual(s.tabs.count, 4)
+        XCTAssertEqual(s.tabs.count, 3)
         guard case .category(_, let name) = s.tabs[0] else { return XCTFail() }
         XCTAssertEqual(name, "Favorites")
-        XCTAssertEqual(s.tabs.last, .all)
         XCTAssertEqual(s.rows.map(\.title), ["EQ Eight", "Utility", "Pro-L 2"])
-    }
-
-    func testAllTabListsEverythingAlphabetically() {
-        var s = makeState()
-        s.selectTab(3)
-        XCTAssertEqual(s.rows.map(\.title), ["Diva", "EQ Eight", "Pro-L 2", "Utility"])
-        XCTAssertTrue(s.rows.allSatisfy { $0.iconID == IconCatalog.defaultID && $0.isAvailable })
     }
 
     func testDigitInsertsRowWhenFilterEmpty() {
@@ -85,7 +77,7 @@ final class PanelStateTests: XCTestCase {
         _ = s.handle(.character("e"))
         _ = s.handle(.down)
         _ = s.handle(.left)
-        XCTAssertEqual(s.selectedTab, 3)
+        XCTAssertEqual(s.selectedTab, 2)
         XCTAssertEqual(s.filter, "")
         XCTAssertNil(s.highlighted)
         _ = s.handle(.right)

@@ -786,6 +786,12 @@ struct ShortcutsPage: View {
                         maxCount: 1, requireModifier: true)
                     row(Loc.t("Alle Plugin-Fenster schließen", "Close all plugin windows"), combos: $shortcuts.closeAll, maxCount: 4, requireModifier: true)
                 }
+                section(Loc.t("Schnellsuche", "Quick Search"),
+                        note: Loc.t("Öffnet das Suchfenster in der Bildschirmmitte, nur wenn Live vorne ist. Hinweis: macOS nutzt ⌃Leertaste evtl. für den Sprachwechsel.",
+                                    "Opens the search window in the middle of the screen, only while Live is in front. Note: macOS may use ⌃Space for switching input languages."),
+                        reset: { shortcuts.quickSearch = ShortcutSettings.default.quickSearch }) {
+                    row(Loc.t("Schnellsuche öffnen", "Open quick search"), combos: $shortcuts.quickSearch, maxCount: 2, requireModifier: true)
+                }
                 section(Loc.t("Im Panel", "In the Panel"), note: Loc.t("Fest: 1–9 fügen die Zeile ein, Tippen filtert, ⌫ löscht im Filter.", "Fixed: 1–9 insert that row, typing filters, ⌫ deletes in the filter."),
                         reset: { panelKeys = .default }) {
                     ForEach(PanelKeyAction.allCases, id: \.self) { action in

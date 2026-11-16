@@ -22,13 +22,13 @@ final class FavoritesAndPerformanceTests: XCTestCase {
         XCTAssertNotNil(c.favoriteEntry(for: row(vst3), items: [vst3, au]))
     }
 
-    func testAllTabRowsStayFastWithLargeCatalog() {
+    func testSearchStaysFastWithLargeCatalog() {
         let items = (0..<20000).map { item("Plugin \(20000 - $0)", uri: "u:\($0)") }
         var s = PanelState(config: .makeDefault(), items: items)
-        s.selectTab(s.tabs.count - 1)
+        for ch in "plugin 1999" { _ = s.handle(.character(ch)) }
         let start = Date()
-        for _ in 0..<50 { _ = s.rows }
-        XCTAssertLessThan(Date().timeIntervalSince(start), 0.5)
-        XCTAssertEqual(s.rows.first?.name, "Plugin 1")
+        for _ in 0..<5 { _ = s.rows }
+        XCTAssertLessThan(Date().timeIntervalSince(start), 1.0)
+        XCTAssertEqual(s.rows.first?.name, "Plugin 1999")
     }
 }
