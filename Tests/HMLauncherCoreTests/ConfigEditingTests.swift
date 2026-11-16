@@ -13,7 +13,7 @@ final class ConfigEditingTests: XCTestCase {
     func testDefaultShortcuts() {
         let s = LauncherConfig.makeDefault().shortcuts
         XCTAssertEqual(s.closeFocused, KeyCombo(keyCode: 13, modifiers: [.cmd]))
-        XCTAssertEqual(s.closeAll, [KeyCombo(keyCode: 13, modifiers: [.cmd, .alt]), KeyCombo(keyCode: 53, modifiers: [.cmd])])
+        XCTAssertEqual(s.closeAll, [KeyCombo(keyCode: 13, modifiers: [.cmd, .ctrl]), KeyCombo(keyCode: 53, modifiers: [.cmd])])
     }
 
     func testAddEntryIgnoresDuplicateUriInSameCategory() {

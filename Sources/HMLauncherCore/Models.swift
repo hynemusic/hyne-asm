@@ -69,7 +69,7 @@ public struct ShortcutSettings: Codable, Equatable, Sendable {
 
     public static let `default` = ShortcutSettings(
         closeFocused: KeyCombo(keyCode: 13, modifiers: [.cmd]),
-        closeAll: [KeyCombo(keyCode: 13, modifiers: [.cmd, .alt]), KeyCombo(keyCode: 53, modifiers: [.cmd])]
+        closeAll: [KeyCombo(keyCode: 13, modifiers: [.cmd, .ctrl]), KeyCombo(keyCode: 53, modifiers: [.cmd])]
     )
 }
 
@@ -78,9 +78,11 @@ public struct LauncherConfig: Codable, Sendable {
     public var categories: [Category]
     public var shortcuts: ShortcutSettings
 
+    public static let currentVersion = 2
+
     public static func makeDefault() -> LauncherConfig {
         LauncherConfig(
-            version: 1,
+            version: currentVersion,
             categories: [Category(name: "Favorites", isFavorites: true), Category(name: "Instruments"), Category(name: "Effects")],
             shortcuts: .default
         )

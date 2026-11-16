@@ -13,14 +13,25 @@ public final class ConfigStore {
     /// Missing file → default. Unreadable file → backed up as config.corrupt-<timestamp>.json, then default.
     public func load() -> LauncherConfig {
         guard let data = try? Data(contentsOf: url) else { return .makeDefault() }
-        if let config = try? JSONDecoder().decode(LauncherConfig.self, from: data),
+        if var config = try? JSONDecoder().decode(LauncherConfig.self, from: data),
            config.categories.contains(where: \.isFavorites) {
+            Self.migrate(&config)
             return config
         }
         let stamp = Int(Date().timeIntervalSince1970 * 1000)
         let backup = url.deletingLastPathComponent().appendingPathComponent("config.corrupt-\(stamp).json")
         try? FileManager.default.moveItem(at: url, to: backup)
         return .makeDefault()
+    }
+
+    /// v1 → v2: "close all plugin windows" moved from ⌘⌥W to ⌘⌃W.
+    static func migrate(_ config: inout LauncherConfig) {
+        if config.version < 2 {
+            let old = KeyCombo(keyCode: 13, modifiers: [.cmd, .alt])
+            let new = KeyCombo(keyCode: 13, modifiers: [.cmd, .ctrl])
+            config.shortcuts.closeAll = config.shortcuts.closeAll.map { $0 == old ? new : $0 }
+        }
+        config.version = LauncherConfig.currentVersion
     }
 
     public func save(_ config: LauncherConfig) throws {

@@ -28,6 +28,25 @@ final class ConfigStoreTests: XCTestCase {
         XCTAssertEqual(try String(contentsOf: dir.appendingPathComponent(backups[0]), encoding: .utf8), "{not json")
     }
 
+    func testVersion1ConfigMigratesCloseAllToCmdCtrlW() throws {
+        let url = tempDir().appendingPathComponent("config.json")
+        var old = LauncherConfig.makeDefault()
+        old.version = 1
+        old.shortcuts.closeAll = [KeyCombo(keyCode: 13, modifiers: [.cmd, .alt]), KeyCombo(keyCode: 53, modifiers: [.cmd])]
+        try ConfigStore(url: url).save(old)
+        let loaded = ConfigStore(url: url).load()
+        XCTAssertEqual(loaded.version, 2)
+        XCTAssertEqual(loaded.shortcuts.closeAll, [KeyCombo(keyCode: 13, modifiers: [.cmd, .ctrl]), KeyCombo(keyCode: 53, modifiers: [.cmd])])
+    }
+
+    func testVersion2ConfigKeepsUserShortcuts() throws {
+        let url = tempDir().appendingPathComponent("config.json")
+        var c = LauncherConfig.makeDefault()
+        c.shortcuts.closeAll = [KeyCombo(keyCode: 13, modifiers: [.cmd, .alt])]
+        try ConfigStore(url: url).save(c)
+        XCTAssertEqual(ConfigStore(url: url).load().shortcuts.closeAll, [KeyCombo(keyCode: 13, modifiers: [.cmd, .alt])])
+    }
+
     func testSaveCreatesMissingDirectory() throws {
         let url = tempDir().appendingPathComponent("sub/config.json")
         try ConfigStore(url: url).save(.makeDefault())
