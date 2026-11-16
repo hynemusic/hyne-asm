@@ -28,6 +28,8 @@ public struct Entry: Codable, Hashable, Identifiable, Sendable {
     public var displayName: String?
     /// Non-nil makes this entry a folder of plugins (one level deep; folders hold no folders).
     public var children: [Entry]?
+    /// Own color label (`ColorPalette` id); nil = follow the color rules.
+    public var colorID: String?
 
     public var title: String { displayName ?? name }
     public var isFolder: Bool { children != nil }
@@ -88,6 +90,8 @@ public struct LauncherConfig: Codable, Sendable {
     public var panelKeys: PanelKeyBindings
     /// nil = follow the macOS language
     public var language: Language?
+    /// Color rules by `ColorRule.key` (Live devices, a manufacturer) → `ColorPalette` id.
+    public var colorRules: [String: String] = [:]
 
     public init(version: Int, categories: [Category], shortcuts: ShortcutSettings, panelKeys: PanelKeyBindings = .default) {
         self.version = version
@@ -104,6 +108,7 @@ public struct LauncherConfig: Codable, Sendable {
         shortcuts = try c.decodeIfPresent(ShortcutSettings.self, forKey: .shortcuts) ?? .default
         panelKeys = try c.decodeIfPresent(PanelKeyBindings.self, forKey: .panelKeys) ?? .default
         language = try c.decodeIfPresent(Language.self, forKey: .language)
+        colorRules = try c.decodeIfPresent([String: String].self, forKey: .colorRules) ?? [:]
     }
 
     public static let currentVersion = 3

@@ -1,4 +1,5 @@
 import SwiftUI
+import HMLauncherCore
 
 /// Colours of the panel (modelled on the reference screenshot), shared with the settings window.
 extension Color {
@@ -18,6 +19,8 @@ struct LauncherRow<Trailing: View>: View {
     var subtitle: String? = nil
     var active = false
     var available = true
+    /// Color label, drawn as a small bar at the left edge.
+    var color: Color? = nil
     @ViewBuilder var trailing: () -> Trailing
 
     var body: some View {
@@ -40,6 +43,11 @@ struct LauncherRow<Trailing: View>: View {
         .frame(height: 42)
         .background(active ? Color.rowHighlight : Color.rowBackground)
         .overlay(alignment: .leading) {
+            if let color {
+                RoundedRectangle(cornerRadius: 2).fill(color).frame(width: 4, height: 24).padding(.leading, 4)
+            }
+        }
+        .overlay(alignment: .leading) {
             if active { Rectangle().fill(Color.accent).frame(width: 3) }
         }
         .clipShape(RoundedRectangle(cornerRadius: 5))
@@ -48,8 +56,8 @@ struct LauncherRow<Trailing: View>: View {
 }
 
 extension LauncherRow where Trailing == EmptyView {
-    init(number: Int?, symbol: String, title: String, subtitle: String? = nil, active: Bool = false, available: Bool = true) {
-        self.init(number: number, symbol: symbol, title: title, subtitle: subtitle, active: active, available: available) { EmptyView() }
+    init(number: Int?, symbol: String, title: String, subtitle: String? = nil, active: Bool = false, available: Bool = true, color: Color? = nil) {
+        self.init(number: number, symbol: symbol, title: title, subtitle: subtitle, active: active, available: available, color: color) { EmptyView() }
     }
 }
 
@@ -84,5 +92,48 @@ struct InlineNameField: View {
         done = true
         let name = text.trimmingCharacters(in: .whitespaces)
         if name.isEmpty || name == initial { onCancel() } else { onCommit(name) }
+    }
+}
+
+extension Color {
+    /// The label color for a `ColorPalette` id (nil for none/unknown).
+    init?(label id: String?) {
+        guard let def = ColorPalette.color(id) else { return nil }
+        self.init(red: def.red, green: def.green, blue: def.blue)
+    }
+}
+
+/// A colored dot for menus (menus draw template images grey, so this one is not a template).
+func colorDot(_ def: ColorDef) -> Image {
+    let size = NSSize(width: 12, height: 12)
+    let image = NSImage(size: size, flipped: false) { rect in
+        NSColor(red: def.red, green: def.green, blue: def.blue, alpha: 1).setFill()
+        NSBezierPath(ovalIn: rect.insetBy(dx: 1, dy: 1)).fill()
+        return true
+    }
+    image.isTemplate = false
+    return Image(nsImage: image)
+}
+
+/// "Color ▸" submenu: the palette, "None", and optionally "Like the rule" (own color removed).
+struct ColorMenu: View {
+    let title: String
+    var current: String? = nil
+    var allowInherit = true
+    let onPick: (String?) -> Void
+
+    var body: some View {
+        Menu(title) {
+            ForEach(ColorPalette.all, id: \.id) { def in
+                Button { onPick(def.id) } label: {
+                    Label { Text(def.label + (current == def.id ? "  ✓" : "")) } icon: { colorDot(def) }
+                }
+            }
+            Divider()
+            Button(Loc.t("Keine Farbe", "No Color")) { onPick(ColorPalette.noneID) }
+            if allowInherit {
+                Button(Loc.t("Farbe zurücksetzen (Regel)", "Reset Color (use rule)")) { onPick(nil) }
+            }
+        }
     }
 }

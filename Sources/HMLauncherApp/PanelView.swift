@@ -154,7 +154,7 @@ struct PanelView: View {
         let active = viewModel.state.highlighted == index || viewModel.hovered == index
         return Button { onInsert(row) } label: {
             LauncherRow(number: index, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,
-                        active: active, available: row.isAvailable) {
+                        active: active, available: row.isAvailable, color: Color(label: row.colorID)) {
                 if row.folderID != nil {
                     Text("\(row.childCount)").font(.system(size: 11)).foregroundColor(.dimText)
                     Image(systemName: "chevron.right").font(.system(size: 11, weight: .semibold)).foregroundColor(.dimText)

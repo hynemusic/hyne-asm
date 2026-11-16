@@ -136,10 +136,34 @@ struct SettingsView: View {
         }
         .buttonStyle(.plain)
         .disabled(!search.isEmpty)
+        .contextMenu {
+            if let rule = folderRule(group) {
+                ColorMenu(title: folderRuleTitle(rule), current: model.config.colorRule(rule), allowInherit: false) { picked in
+                    model.config.setColorRule(picked == ColorPalette.noneID ? nil : picked, for: rule)
+                }
+            }
+        }
+    }
+
+    /// Manufacturer folders and Live's device groups can carry a color rule.
+    private func folderRule(_ group: PluginGroup) -> ColorRule? {
+        guard let first = group.items.first else { return nil }
+        if first.source == .plugins {
+            return group.title == PluginGrouping.otherVST2 ? nil : .vendor(group.title)
+        }
+        return ColorRule.forItem(first).first
+    }
+
+    private func folderRuleTitle(_ rule: ColorRule) -> String {
+        switch rule {
+        case .liveDevices: return Loc.t("Farbe für alle Live-Devices", "Color for All Live Devices")
+        case .vendor(let v): return Loc.t("Farbe für alle von \(v)", "Color for All by \(v)")
+        }
     }
 
     private func pluginRow(_ item: PluginItem) -> some View {
         HStack(spacing: 8) {
+            RoundedRectangle(cornerRadius: 2).fill(Color(label: model.config.colorID(for: item)) ?? .clear).frame(width: 4, height: 14)
             Text(item.name).font(.system(size: 13)).lineLimit(1)
             Spacer()
             ForEach(variants[item.uri]?.formats ?? [PluginGrouping.formatLabel(item)], id: \.self) { format in
@@ -150,7 +174,7 @@ struct SettingsView: View {
                     .foregroundColor(format == PluginGrouping.formatLabel(item) ? .white : .dimText)
             }
         }
-        .padding(.leading, 26).padding(.trailing, 4).padding(.vertical, 4)
+        .padding(.leading, 18).padding(.trailing, 4).padding(.vertical, 4)
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { add(item, to: categoryID) }
         .onDrag { NSItemProvider(object: item.uri as NSString) }
@@ -426,6 +450,10 @@ struct SettingsView: View {
         selection = []
     }
 
+    private func setColorForSelection(_ color: String?) {
+        for id in selection { model.config.setColor(color, entry: id, in: categoryID) }
+    }
+
     private func setIconForSelection(_ icon: String) {
         for id in selection { model.config.setIcon(icon, entry: id, in: categoryID) }
     }
@@ -456,6 +484,8 @@ struct SettingsView: View {
                 .help(Loc.t("Ausgewählte Plugins in einen neuen Ordner (⌘G)", "Put the selected plugins into a new folder (⌘G)"))
             Button { bulkIcons = true } label: { Label("Icon", systemImage: "paintpalette") }
                 .popover(isPresented: $bulkIcons) { IconPicker(selected: "") { setIconForSelection($0); bulkIcons = false } }
+            ColorMenu(title: Loc.t("Farbe", "Color"), onPick: setColorForSelection)
+                .fixedSize()
             Menu(Loc.t("In Ordner", "To Folder")) {
                 ForEach(folders) { f in Button(f.title) { moveSelection(toFolder: f.id) } }
                 Divider()
@@ -518,6 +548,13 @@ struct SettingsView: View {
             onMoveToCategory: { target in
                 if multi { moveSelection(toCategory: target) } else { model.config.moveEntries([entry.id], toCategory: target, from: category.id) }
             },
+            color: Color(label: model.config.colorID(for: entry)),
+            ownColor: entry.colorID,
+            rules: entry.isFolder ? [] : ColorRule.forItem(catalog.index.resolve(entry)
+                ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)),
+            ruleColor: { model.config.colorRule($0) },
+            onColor: { color in multi ? setColorForSelection(color) : model.config.setColor(color, entry: entry.id, in: category.id) },
+            onRuleColor: { model.config.setColorRule($1, for: $0) },
             onDissolve: { model.config.dissolveFolder(entry.id, in: category.id) },
             drop: dropState)
     }
@@ -560,6 +597,12 @@ private struct EntryRow: View {
     let onMoveTo: (UUID?) -> Void
     let categories: [(UUID, String)]
     let onMoveToCategory: (UUID) -> Void
+    let color: Color?
+    let ownColor: String?
+    let rules: [ColorRule]
+    let ruleColor: (ColorRule) -> String?
+    let onColor: (String?) -> Void
+    let onRuleColor: (ColorRule, String?) -> Void
     let onDissolve: () -> Void
     @ObservedObject var drop: DropState
     private var dropSpot: DropSpot? { drop.marker?.id == entry.id ? drop.marker?.spot : nil }
@@ -570,7 +613,7 @@ private struct EntryRow: View {
 
     var body: some View {
         LauncherRow(number: index, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
-                    subtitle: subtitle, active: isSelected || hovered || dropSpot == .into, available: available) {
+                    subtitle: subtitle, active: isSelected || hovered || dropSpot == .into, available: available, color: color) {
             if entry.isFolder {
                 Text("\(entry.children?.count ?? 0)").font(.caption).foregroundColor(.dimText)
                 Button(action: onToggle) {
@@ -618,6 +661,7 @@ private struct EntryRow: View {
             Text(Loc.t("\(selectionCount) ausgewählt", "\(selectionCount) selected"))
             Button(Loc.t("Gruppieren (⌘G)", "Group (⌘G)"), action: onGroup)
             Button(Loc.t("Icon für alle wählen …", "Choose Icon for All …")) { showIcons = true }
+            ColorMenu(title: Loc.t("Farbe für alle", "Color for All"), onPick: onColor)
             if !folders.isEmpty {
                 Menu(Loc.t("In Ordner verschieben", "Move to Folder")) {
                     ForEach(folders, id: \.0) { id, title in Button(title) { onMoveTo(id) } }
@@ -632,8 +676,25 @@ private struct EntryRow: View {
         }
     }
 
+    @ViewBuilder private var colorMenus: some View {
+        ColorMenu(title: Loc.t("Farbe", "Color"), current: ownColor, allowInherit: !entry.isFolder, onPick: onColor)
+        ForEach(rules, id: \.self) { rule in
+            ColorMenu(title: ruleTitle(rule), current: ruleColor(rule), allowInherit: false) { picked in
+                onRuleColor(rule, picked == ColorPalette.noneID ? nil : picked)
+            }
+        }
+    }
+
+    private func ruleTitle(_ rule: ColorRule) -> String {
+        switch rule {
+        case .liveDevices: return Loc.t("Farbe für alle Live-Devices", "Color for All Live Devices")
+        case .vendor(let v): return Loc.t("Farbe für alle von \(v)", "Color for All by \(v)")
+        }
+    }
+
     @ViewBuilder private var singleMenu: some View {
         Button(Loc.t("Icon wählen …", "Choose Icon …")) { showIcons = true }
+        colorMenus
         if entry.isFolder {
             Button(Loc.t("Umbenennen …", "Rename …")) { name = entry.title; renaming = true }
             Button(isExpanded ? Loc.t("Zuklappen", "Collapse") : Loc.t("Aufklappen", "Expand"), action: onToggle)

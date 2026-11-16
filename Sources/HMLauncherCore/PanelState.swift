@@ -15,6 +15,8 @@ public struct PanelRow: Equatable, Sendable {
     public var isGlobal: Bool = false
     /// Counts inserts per plugin (shared by its formats).
     public var usageKey: String = ""
+    /// Color label (`ColorPalette` id), already resolved against the color rules.
+    public var colorID: String? = nil
 }
 
 public enum PanelTab: Equatable, Sendable {
@@ -61,7 +63,8 @@ public struct PanelState {
         allRows = PluginVariants.collapse(items).map(\.preferred)
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
             .map { PanelRow(uri: $0.uri, name: $0.name, source: $0.source, path: $0.path,
-                            iconID: IconCatalog.defaultID, title: $0.name, isAvailable: true, usageKey: keys.key($0)) }
+                            iconID: IconCatalog.defaultID, title: $0.name, isAvailable: true, usageKey: keys.key($0),
+                            colorID: config.colorID(for: $0)) }
         allPrepared = allRows.map { SearchMatcher.Prepared($0.title) }
         tabs = config.categories.map { .category($0.id, $0.name) } + [.all]
         self.selectedTab = min(max(selectedTab, 0), tabs.count - 1)
@@ -128,12 +131,14 @@ public struct PanelState {
     private func row(_ e: Entry) -> PanelRow {
         if e.isFolder {
             return PanelRow(uri: "", name: e.name, source: e.source, path: [], iconID: e.iconID, title: e.title,
-                            isAvailable: true, folderID: e.id, childCount: e.children?.count ?? 0, usageKey: "folder:\(e.id)")
+                            isAvailable: true, folderID: e.id, childCount: e.children?.count ?? 0, usageKey: "folder:\(e.id)",
+                            colorID: config.colorID(for: e))
         }
         let resolved = index.resolve(e)
         let uri = resolved?.uri ?? e.uri
         return PanelRow(uri: uri, name: e.name, source: e.source, path: resolved?.path ?? e.path,
-                        iconID: e.iconID, title: e.title, isAvailable: resolved != nil, usageKey: variantKey[uri] ?? uri)
+                        iconID: e.iconID, title: e.title, isAvailable: resolved != nil, usageKey: variantKey[uri] ?? uri,
+                        colorID: config.colorID(for: e))
     }
 
     public mutating func selectTab(_ index: Int) {
