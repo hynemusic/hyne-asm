@@ -31,6 +31,16 @@ public final class ConfigStore {
             let new = KeyCombo(keyCode: 13, modifiers: [.cmd, .ctrl])
             config.shortcuts.closeAll = config.shortcuts.closeAll.map { $0 == old ? new : $0 }
         }
+        if config.version < 3 {
+            // v2 → v3: entries still on the plain default icon get a guessed one.
+            for c in config.categories.indices {
+                for e in config.categories[c].entries.indices where config.categories[c].entries[e].iconID == IconCatalog.defaultID {
+                    let entry = config.categories[c].entries[e]
+                    config.categories[c].entries[e].iconID = IconGuesser.guess(
+                        PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path))
+                }
+            }
+        }
         config.version = LauncherConfig.currentVersion
     }
 

@@ -35,7 +35,7 @@ final class ConfigStoreTests: XCTestCase {
         old.shortcuts.closeAll = [KeyCombo(keyCode: 13, modifiers: [.cmd, .alt]), KeyCombo(keyCode: 53, modifiers: [.cmd])]
         try ConfigStore(url: url).save(old)
         let loaded = ConfigStore(url: url).load()
-        XCTAssertEqual(loaded.version, 2)
+        XCTAssertEqual(loaded.version, LauncherConfig.currentVersion)
         XCTAssertEqual(loaded.shortcuts.closeAll, [KeyCombo(keyCode: 13, modifiers: [.cmd, .ctrl]), KeyCombo(keyCode: 53, modifiers: [.cmd])])
     }
 

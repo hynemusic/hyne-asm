@@ -98,7 +98,7 @@ public struct LauncherConfig: Codable, Sendable {
         language = try c.decodeIfPresent(Language.self, forKey: .language)
     }
 
-    public static let currentVersion = 2
+    public static let currentVersion = 3
 
     public static func makeDefault() -> LauncherConfig {
         LauncherConfig(

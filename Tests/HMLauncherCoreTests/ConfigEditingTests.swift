@@ -23,12 +23,12 @@ final class ConfigEditingTests: XCTestCase {
         XCTAssertEqual(c.categories[0].entries.count, 1)
     }
 
-    func testAddEntryUsesDefaultIcon() {
+    func testAddEntryUsesDefaultIconWhenNothingMatches() {
         var c = LauncherConfig.makeDefault()
-        c.addEntry(item("EQ Eight", source: .audioEffects, path: ["x"]), to: c.favoritesID)
+        c.addEntry(item("Zzyzx", source: .audioEffects, path: ["x"]), to: c.favoritesID)
         let e = c.categories[0].entries[0]
         XCTAssertEqual(e.iconID, IconCatalog.defaultID)
-        XCTAssertEqual(e.title, "EQ Eight")
+        XCTAssertEqual(e.title, "Zzyzx")
         XCTAssertEqual(e.path, ["x"])
         XCTAssertEqual(e.source, .audioEffects)
     }

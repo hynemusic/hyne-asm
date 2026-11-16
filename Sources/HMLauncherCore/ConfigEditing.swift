@@ -7,7 +7,8 @@ public extension LauncherConfig {
 
     mutating func addEntry(_ item: PluginItem, to categoryID: UUID) {
         guard let c = index(of: categoryID), !categories[c].entries.contains(where: { $0.uri == item.uri }) else { return }
-        categories[c].entries.append(Entry(item: item))
+        let icon = existingIcon(forName: item.name, source: item.source) ?? IconGuesser.guess(item)
+        categories[c].entries.append(Entry(item: item, iconID: icon))
     }
 
     mutating func removeEntry(_ entryID: UUID, from categoryID: UUID) {
@@ -45,8 +46,22 @@ public extension LauncherConfig {
         categories.insert(c, at: max(1, to))
     }
 
+    /// Icons are per plugin: every entry with the same name and source (e.g. Pro-L 2 VST3 and AU) changes too.
     mutating func setIcon(_ iconID: String, entry: UUID, in categoryID: UUID) {
-        updateEntry(entry, in: categoryID) { $0.iconID = iconID }
+        guard let c = index(of: categoryID), let target = categories[c].entries.first(where: { $0.id == entry }) else { return }
+        for ci in categories.indices {
+            for ei in categories[ci].entries.indices where Self.samePlugin(categories[ci].entries[ei], target) {
+                categories[ci].entries[ei].iconID = iconID
+            }
+        }
+    }
+
+    private func existingIcon(forName name: String, source: ItemSource) -> String? {
+        categories.lazy.flatMap(\.entries).first { $0.name == name && $0.source == source }?.iconID
+    }
+
+    private static func samePlugin(_ a: Entry, _ b: Entry) -> Bool {
+        a.uri == b.uri || (a.name == b.name && a.source == b.source)
     }
 
     mutating func setDisplayName(_ name: String?, entry: UUID, in categoryID: UUID) {
