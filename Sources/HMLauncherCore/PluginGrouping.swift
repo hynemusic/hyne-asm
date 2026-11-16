@@ -59,7 +59,7 @@ public enum PluginGrouping {
     }
 
     /// Manufacturer folders that VST3/AU plugins live in.
-    private static func knownVendors(_ items: [PluginItem]) -> [String] {
+    static func knownVendors(_ items: [PluginItem]) -> [String] {
         let names = Set(items.filter { $0.source == .plugins && formatRank($0) < 2 && $0.path.count > 1 }.map { $0.path[1] })
         return names.sorted { $0.count > $1.count } // longest first
     }

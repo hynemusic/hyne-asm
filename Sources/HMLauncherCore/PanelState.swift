@@ -36,6 +36,8 @@ public struct PanelState {
     private let index: EntryResolver.Index
     /// Rows of the "All" tab, sorted once (rows is read several times per keystroke).
     private let allRows: [PanelRow]
+    /// uri → plugin key (formats of one plugin share a key), to keep search hits to one row per plugin.
+    private let variantKey: [String: String]
     public private(set) var tabs: [PanelTab]
     public private(set) var selectedTab: Int
     public private(set) var filter = ""
@@ -47,7 +49,10 @@ public struct PanelState {
         self.config = config
         self.items = items
         index = EntryResolver.Index(items)
-        allRows = items
+        let keys = PluginVariants.Keys(items)
+        variantKey = Dictionary(items.map { (keys.key($0), $0.uri) }.map { ($1, $0) }, uniquingKeysWith: { a, _ in a })
+        // One row per plugin, in its best format (VST3 → AU → VST2).
+        allRows = PluginVariants.collapse(items).map(\.preferred)
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
             .map { PanelRow(uri: $0.uri, name: $0.name, source: $0.source, path: $0.path,
                             iconID: IconCatalog.defaultID, title: $0.name, isAvailable: true) }
@@ -70,7 +75,7 @@ public struct PanelState {
             local = filtered(entries.flatMap { e in e.isFolder ? [row(e)] + (e.children ?? []).map(row) : [row(e)] })
         }
         guard !filter.isEmpty else { return local }
-        return local + globalMatches(excluding: Set(local.map(\.uri)))
+        return local + globalMatches(excluding: Set(local.compactMap { variantKey[$0.uri] }))
     }
 
     public static let maxGlobalResults = 50
@@ -79,7 +84,7 @@ public struct PanelState {
     /// (alphabetical within each). Plugins already listed for the category are left out.
     private func globalMatches(excluding shown: Set<String>) -> [PanelRow] {
         var prefix: [PanelRow] = [], contains: [PanelRow] = []
-        for r in allRows where !shown.contains(r.uri) && r.title.localizedCaseInsensitiveContains(filter) {
+        for r in allRows where !shown.contains(variantKey[r.uri] ?? r.uri) && r.title.localizedCaseInsensitiveContains(filter) {
             if r.title.lowercased().hasPrefix(filter.lowercased()) { prefix.append(r) } else { contains.append(r) }
             if prefix.count >= Self.maxGlobalResults { break }
         }

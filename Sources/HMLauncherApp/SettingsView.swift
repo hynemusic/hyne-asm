@@ -15,6 +15,7 @@ struct SettingsView: View {
     @State private var renamingCategory: UUID?
     /// Grouping ~3,300 items costs ~30 ms; recompute only when items or search change, not on every redraw.
     @State private var groups: [PluginGroup] = []
+    @State private var variants: [String: PluginVariantGroup] = [:]
     @State private var collapsed: Set<UUID> = []
     @State private var selection: Set<UUID> = []
     @State private var selectionAnchor: UUID?
@@ -111,8 +112,11 @@ struct SettingsView: View {
         .padding(12)
     }
 
+    /// One row per plugin (its best format); the other formats are kept for the badges and "Add as …".
     private func regroup(_ items: [PluginItem]) {
-        groups = PluginGrouping.groups(items, search: search)
+        let collapsed = PluginVariants.collapse(items)
+        variants = Dictionary(collapsed.map { ($0.preferred.uri, $0) }, uniquingKeysWith: { a, _ in a })
+        groups = PluginGrouping.groups(collapsed.map(\.preferred), search: search)
     }
 
     private func folderHeader(_ group: PluginGroup) -> some View {
@@ -138,11 +142,13 @@ struct SettingsView: View {
         HStack(spacing: 8) {
             Text(item.name).font(.system(size: 13)).lineLimit(1)
             Spacer()
-            Text(PluginGrouping.formatLabel(item))
-                .font(.system(size: 9, weight: .semibold))
-                .padding(.horizontal, 5).padding(.vertical, 2)
-                .background(Color.rowBackground).cornerRadius(3)
-                .foregroundColor(.dimText)
+            ForEach(variants[item.uri]?.formats ?? [PluginGrouping.formatLabel(item)], id: \.self) { format in
+                Text(format)
+                    .font(.system(size: 9, weight: .semibold))
+                    .padding(.horizontal, 5).padding(.vertical, 2)
+                    .background(Color.rowBackground).cornerRadius(3)
+                    .foregroundColor(format == PluginGrouping.formatLabel(item) ? .white : .dimText)
+            }
         }
         .padding(.leading, 26).padding(.trailing, 4).padding(.vertical, 4)
         .contentShape(Rectangle())
@@ -150,6 +156,11 @@ struct SettingsView: View {
         .onDrag { NSItemProvider(object: item.uri as NSString) }
         .contextMenu {
             Button(Loc.t("Zu „\(category?.name ?? "")“ hinzufügen", "Add to “\(category?.name ?? "")”")) { add(item, to: categoryID) }
+            if let others = variants[item.uri]?.variants.dropFirst(), !others.isEmpty {
+                ForEach(Array(others), id: \.uri) { v in
+                    Button(Loc.t("Als \(PluginGrouping.formatLabel(v)) hinzufügen", "Add as \(PluginGrouping.formatLabel(v))")) { add(v, to: categoryID) }
+                }
+            }
             if categoryID != model.config.favoritesID {
                 Button(Loc.t("Zu Favoriten hinzufügen", "Add to Favorites")) { add(item, to: model.config.favoritesID) }
             }
