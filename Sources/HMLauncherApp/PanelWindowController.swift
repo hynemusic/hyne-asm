@@ -21,7 +21,7 @@ private final class FirstMouseHostingView<Content: View>: NSHostingView<Content>
 /// Floating, non-activating panel: Live stays the active app; keys arrive via the event tap.
 @MainActor
 final class PanelWindowController {
-    static let width: CGFloat = 340
+    static var width: CGFloat { PanelView.width }
     private let model: AppModel
     private let panel: LauncherPanel
     private let viewModel: PanelViewModel
@@ -183,11 +183,13 @@ final class PanelWindowController {
 
     /// Height follows the row count; the top-left corner stays at the click, clamped to the screen.
     private func layout() {
-        let rows = viewModel.state.rows.count
-        let visibleRows = CGFloat(min(max(rows, 1), PanelView.maxVisibleRows))
+        let all = viewModel.state.rows
+        let globalCount = all.filter(\.isGlobal).count
+        let gridRows = PanelGrid.rows(all.count - globalCount) + PanelGrid.rows(globalCount)
+        let visibleRows = CGFloat(min(max(gridRows, 1), PanelView.maxVisibleRows))
         let filterHeight: CGFloat = (viewModel.state.filter.isEmpty ? 0 : PanelView.filterHeight)
             + (viewModel.state.openFolderName == nil ? 0 : PanelView.filterHeight)
-            + (viewModel.state.rows.contains(where: \.isGlobal) && rows <= PanelView.maxVisibleRows ? PanelView.globalHeaderHeight : 0)
+            + (globalCount > 0 && gridRows <= PanelView.maxVisibleRows ? PanelView.globalHeaderHeight : 0)
         let height = PanelView.tabBarHeight + filterHeight + visibleRows * PanelView.rowHeight + PanelView.padding * 2
         let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
         var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: Self.width, height: height)

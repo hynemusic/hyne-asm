@@ -7,7 +7,7 @@ struct PanelView: View {
     static let filterHeight: CGFloat = 28
     static let padding: CGFloat = 8
     static let maxVisibleRows = 10
-    static let maxVisibleTabs = 3
+    static let maxVisibleTabs = 6
 
     @ObservedObject var viewModel: PanelViewModel
     let onInsert: (PanelRow) -> Void
@@ -117,17 +117,19 @@ struct PanelView: View {
     private var rowList: some View {
         let rows = viewModel.state.rows
         return ScrollViewReader { proxy in
-            ScrollView(.vertical, showsIndicators: rows.count > Self.maxVisibleRows) {
+            ScrollView(.vertical, showsIndicators: rows.count > PanelGrid.columns * Self.maxVisibleRows) {
                 VStack(spacing: 4) {
                     if rows.isEmpty {
                         Text(viewModel.state.filter.isEmpty ? Loc.t("Keine Einträge – in den Einstellungen hinzufügen", "No entries – add some in Settings") : Loc.t("Nichts gefunden", "Nothing found"))
                             .font(.system(size: 12)).foregroundColor(.dimText)
                             .frame(maxWidth: .infinity, minHeight: Self.rowHeight - 4)
                     }
-                    let firstGlobal = rows.firstIndex(where: \.isGlobal)
-                    ForEach(Array(rows.enumerated()), id: \.offset) { index, row in
-                        if index == firstGlobal { globalHeader }
-                        rowView(row, index: index).id(index)
+                    // Two columns of 10 (left first), category hits and "All plugins" hits as separate grids.
+                    let firstGlobal = rows.firstIndex(where: \.isGlobal) ?? rows.count
+                    if firstGlobal > 0 { grid(rows, 0..<firstGlobal) }
+                    if firstGlobal < rows.count {
+                        globalHeader
+                        grid(rows, firstGlobal..<rows.count)
                     }
                 }
             }
@@ -138,6 +140,24 @@ struct PanelView: View {
     }
 
     static let globalHeaderHeight: CGFloat = 26
+    static let columnWidth: CGFloat = 316
+    static let columnSpacing: CGFloat = 6
+    static var width: CGFloat { columnWidth * CGFloat(PanelGrid.columns) + columnSpacing + padding * 2 }
+
+    private func grid(_ rows: [PanelRow], _ range: Range<Int>) -> some View {
+        VStack(spacing: 4) {
+            ForEach(Array(PanelGrid.blocks(range).enumerated()), id: \.offset) { _, block in
+                HStack(alignment: .top, spacing: Self.columnSpacing) {
+                    ForEach(Array(block.enumerated()), id: \.offset) { _, column in
+                        VStack(spacing: 4) {
+                            ForEach(column, id: \.self) { index in rowView(rows[index], index: index).id(index) }
+                        }
+                        .frame(width: Self.columnWidth, alignment: .top)
+                    }
+                }
+            }
+        }
+    }
 
     private var globalHeader: some View {
         HStack(spacing: 6) {
