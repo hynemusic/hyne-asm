@@ -28,6 +28,8 @@ public enum PanelAction: Equatable, Sendable {
 public struct PanelState {
     private let config: LauncherConfig
     private let items: [PluginItem]
+    /// Rows of the "All" tab, sorted once (rows is read several times per keystroke).
+    private let allRows: [PanelRow]
     public private(set) var tabs: [PanelTab]
     public private(set) var selectedTab: Int
     public private(set) var filter = ""
@@ -36,6 +38,10 @@ public struct PanelState {
     public init(config: LauncherConfig, items: [PluginItem], selectedTab: Int = 0) {
         self.config = config
         self.items = items
+        allRows = items
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            .map { PanelRow(uri: $0.uri, name: $0.name, source: $0.source, path: $0.path,
+                            iconID: IconCatalog.defaultID, title: $0.name, isAvailable: true) }
         tabs = config.categories.map { .category($0.id, $0.name) } + [.all]
         self.selectedTab = min(max(selectedTab, 0), tabs.count - 1)
     }
@@ -49,10 +55,7 @@ public struct PanelState {
     private var unfilteredRows: [PanelRow] {
         switch tabs[selectedTab] {
         case .all:
-            return items
-                .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-                .map { PanelRow(uri: $0.uri, name: $0.name, source: $0.source, path: $0.path,
-                                iconID: IconCatalog.defaultID, title: $0.name, isAvailable: true) }
+            return allRows
         case .category(let id, _):
             let entries = config.categories.first { $0.id == id }?.entries ?? []
             return entries.map { e in

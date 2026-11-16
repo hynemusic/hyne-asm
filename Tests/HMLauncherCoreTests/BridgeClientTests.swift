@@ -48,6 +48,16 @@ final class BridgeClientTests: XCTestCase {
         XCTAssertLessThan(Date().timeIntervalSince(start), 0.5)
     }
 
+    func testSlowLoadUsesLoadTimeoutNotRequestTimeout() async throws {
+        let slow = BridgeClient(port: server.port, requestTimeout: 0.5, loadTimeout: 3)
+        await slow.start()
+        _ = await waitUntil { await slow.isConnected }
+        server.replyDelay = 1.2
+        server.respond = { ok($0) }
+        try await slow.load(uri: "query:M4L#Heavy")
+        await slow.stop()
+    }
+
     func testTimeoutWhenServerSilent() async {
         server.respond = { _ in nil }
         do { _ = try await client.hello(); XCTFail("expected error") }

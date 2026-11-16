@@ -114,12 +114,12 @@ final class PanelWindowController {
     }
 
     private func isFavorite(_ row: PanelRow) -> Bool {
-        model.config.categories.first(where: \.isFavorites)?.entries.contains { $0.uri == row.uri || ($0.name == row.name && $0.source == row.source) } ?? false
+        model.config.favoriteEntry(for: row, items: model.catalog.items) != nil
     }
 
     private func toggleFavorite(_ row: PanelRow) {
         let favID = model.config.favoritesID
-        if let entry = model.config.categories.first(where: \.isFavorites)?.entries.first(where: { $0.uri == row.uri || ($0.name == row.name && $0.source == row.source) }) {
+        if let entry = model.config.favoriteEntry(for: row, items: model.catalog.items) {
             model.config.removeEntry(entry.id, from: favID)
         } else {
             model.config.addEntry(PluginItem(uri: row.uri, name: row.name, source: row.source, path: row.path), to: favID)

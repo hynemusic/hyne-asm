@@ -2,16 +2,25 @@ import ApplicationServices
 
 /// Closes Live's plugin windows via the Accessibility API. Live's main window is never closed.
 enum WindowCloser {
+    /// Keeps the event-tap callback from hanging while Live's main thread is busy (e.g. loading a plugin).
+    static let messagingTimeout: Float = 0.25
+
+    private static func liveApp(_ pid: pid_t) -> AXUIElement {
+        let app = AXUIElementCreateApplication(pid)
+        AXUIElementSetMessagingTimeout(app, messagingTimeout)
+        return app
+    }
+
     /// Returns false if the focused window is Live's main window (the key then goes to Live).
     static func closeFocused(pid: pid_t) -> Bool {
-        let app = AXUIElementCreateApplication(pid)
+        let app = liveApp(pid)
         guard let focused: AXUIElement = attribute(app, kAXFocusedWindowAttribute), !isMainWindow(focused, app: app) else { return false }
         return close(focused)
     }
 
     @discardableResult
     static func closeAll(pid: pid_t) -> Int {
-        let app = AXUIElementCreateApplication(pid)
+        let app = liveApp(pid)
         let windows: [AXUIElement] = attribute(app, kAXWindowsAttribute) ?? []
         return windows.filter { !isMainWindow($0, app: app) && close($0) }.count
     }

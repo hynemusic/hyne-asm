@@ -36,7 +36,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
               let action = ShortcutMatcher(settings: model.config.shortcuts).match(keyCode: keyCode, modifiers: mods) else { return false }
         switch action {
         case .closeFocused: return WindowCloser.closeFocused(pid: pid)
-        case .closeAll: WindowCloser.closeAll(pid: pid); return true
+        case .closeAll:
+            // Swallow now, close outside the tap callback.
+            DispatchQueue.main.async { WindowCloser.closeAll(pid: pid) }
+            return true
         }
     }
 

@@ -59,3 +59,12 @@ public extension LauncherConfig {
         change(&categories[c].entries[e])
     }
 }
+
+public extension LauncherConfig {
+    /// The Favorites entry for this panel row, matched by the entry's resolved uri (VST3 and AU stay distinct).
+    func favoriteEntry(for row: PanelRow, items: [PluginItem]) -> Entry? {
+        categories.first(where: \.isFavorites)?.entries.first {
+            $0.uri == row.uri || EntryResolver.resolve($0, in: items)?.uri == row.uri
+        }
+    }
+}

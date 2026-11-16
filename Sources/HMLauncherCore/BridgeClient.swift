@@ -27,6 +27,8 @@ public actor BridgeClient {
     private let host: String
     private let port: UInt16
     private let requestTimeout: TimeInterval
+    /// load replies only after Live finished loading (heavy M4L/instruments take seconds).
+    private let loadTimeout: TimeInterval
     private let reconnectInterval: TimeInterval
     private let queue = DispatchQueue(label: "hm.bridge.client")
 
@@ -38,10 +40,11 @@ public actor BridgeClient {
     private var handler: (@Sendable (Bool) -> Void)?
     public private(set) var isConnected = false
 
-    public init(host: String = "127.0.0.1", port: UInt16 = 47820, requestTimeout: TimeInterval = 3, reconnectInterval: TimeInterval = 2) {
+    public init(host: String = "127.0.0.1", port: UInt16 = 47820, requestTimeout: TimeInterval = 3, loadTimeout: TimeInterval = 30, reconnectInterval: TimeInterval = 2) {
         self.host = host
         self.port = port
         self.requestTimeout = requestTimeout
+        self.loadTimeout = loadTimeout
         self.reconnectInterval = reconnectInterval
     }
 
@@ -67,12 +70,12 @@ public actor BridgeClient {
     }
 
     public func load(uri: String) async throws {
-        _ = try decode(Empty.self, try await request(["cmd": "load", "uri": uri]), resultOptional: true)
+        _ = try decode(Empty.self, try await request(["cmd": "load", "uri": uri], timeout: loadTimeout), resultOptional: true)
     }
 
     // MARK: - Requests
 
-    private func request(_ body: [String: Any]) async throws -> Data {
+    private func request(_ body: [String: Any], timeout: TimeInterval? = nil) async throws -> Data {
         guard isConnected, let connection else { throw BridgeError.notConnected }
         let id = nextID
         nextID += 1
@@ -80,7 +83,7 @@ public actor BridgeClient {
         message["id"] = id
         var data = try JSONSerialization.data(withJSONObject: message)
         data.append(0x0A)
-        let timeout = requestTimeout
+        let timeout = timeout ?? requestTimeout
         return try await withCheckedThrowingContinuation { cont in
             pending[id] = cont
             connection.send(content: data, completion: .contentProcessed { _ in })

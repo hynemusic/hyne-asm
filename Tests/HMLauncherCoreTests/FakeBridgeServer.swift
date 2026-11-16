@@ -11,6 +11,7 @@ final class FakeBridgeServer: @unchecked Sendable {
     var respond: ([String: Any]) -> [String: Any]? = { _ in nil }
     var chunkSize: Int? = nil
     var reverseOrder = false
+    var replyDelay: TimeInterval = 0
     private var held: [(NWConnection, Data)] = []
 
     func start(port fixed: UInt16 = 0) throws {
@@ -53,6 +54,8 @@ final class FakeBridgeServer: @unchecked Sendable {
                     if self.reverseOrder {
                         self.held.append((c, out))
                         if self.held.count == 2 { self.held.reversed().forEach { self.send($0.1, on: $0.0) }; self.held = [] }
+                    } else if self.replyDelay > 0 {
+                        self.queue.asyncAfter(deadline: .now() + self.replyDelay) { self.send(out, on: c) }
                     } else {
                         self.send(out, on: c)
                     }
