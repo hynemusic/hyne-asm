@@ -6,3 +6,4 @@ xcuserdata/
 __pycache__/
 *.pyc
 .superpowers/
+build/
