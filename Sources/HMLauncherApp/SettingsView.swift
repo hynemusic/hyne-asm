@@ -9,6 +9,8 @@ struct SettingsView: View {
     @State private var expanded: Set<String> = []
     @State private var renamingCategory: UUID?
     @State private var categoryName = ""
+    /// Grouping ~3,300 items costs ~30 ms; recompute only when items or search change, not on every redraw.
+    @State private var groups: [PluginGroup] = []
 
     private var categoryID: UUID { selectedCategory ?? model.config.favoritesID }
     private var category: HMLauncherCore.Category? { model.config.categories.first { $0.id == categoryID } }
@@ -60,8 +62,7 @@ struct SettingsView: View {
     // MARK: Installed plugins
 
     private var pluginBrowser: some View {
-        let groups = PluginGrouping.groups(catalog.items, search: search)
-        return VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
             header("Plugins")
             HStack {
                 TextField(Loc.t("Suchen", "Search"), text: $search).textFieldStyle(.roundedBorder)
@@ -82,10 +83,17 @@ struct SettingsView: View {
                     }
                 }
             }
+            .onAppear { regroup(catalog.items) }
+            .onChange(of: search) { _ in regroup(catalog.items) }
+            .onReceive(catalog.$items.dropFirst()) { regroup($0) }
             Text(Loc.t("Doppelklick oder ziehen fügt zu „\(category?.name ?? "")“ hinzu.", "Double-click or drag to add to “\(category?.name ?? "")”."))
                 .font(.caption).foregroundColor(.dimText)
         }
         .padding(12)
+    }
+
+    private func regroup(_ items: [PluginItem]) {
+        groups = PluginGrouping.groups(items, search: search)
     }
 
     private func folderHeader(_ group: PluginGroup) -> some View {
@@ -181,8 +189,8 @@ struct SettingsView: View {
         .overlay(alignment: .leading) { if selected { Rectangle().fill(Color.accent).frame(width: 3) } }
         .clipShape(RoundedRectangle(cornerRadius: 4))
         .contentShape(Rectangle())
-        .onTapGesture { selectedCategory = c.id }
         .onTapGesture(count: 2) { if !c.isFavorites { startRenaming(c.id) } }
+        .simultaneousGesture(TapGesture().onEnded { selectedCategory = c.id })
         .onDrop(of: [.text], isTargeted: nil) { drop($0, into: c.id) }
         .contextMenu {
             Button(Loc.t("Umbenennen", "Rename")) { startRenaming(c.id) }.disabled(c.isFavorites)
