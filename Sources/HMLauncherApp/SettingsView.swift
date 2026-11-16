@@ -13,7 +13,6 @@ struct SettingsView: View {
     @State private var groups: [PluginGroup] = []
     @State private var collapsed: Set<UUID> = []
     @State private var selection: Set<UUID> = []
-    @State private var selectionAnchor: UUID?
     @State private var bulkIcons = false
 
     private var categoryID: UUID { selectedCategory ?? model.config.favoritesID }
@@ -244,11 +243,14 @@ struct SettingsView: View {
                         .font(.callout).foregroundColor(.dimText)
                         .frame(maxWidth: .infinity, minHeight: 80)
                 }
-                if !selection.isEmpty { selectionBar(category) }
-                List {
+                // Always occupies its slot: a bar that appears on the first click would shift the list under
+                // the mouse and cancel the drag that click starts.
+                selectionBar(category)
+                List(selection: $selection) {
                     let rows = flatRows(category)
                     ForEach(rows) { row in
                         entryRow(row, in: category)
+                            .tag(row.id)
                             .listRowBackground(Color.clear)
                             .listRowInsets(EdgeInsets(top: 2, leading: row.folderID == nil ? 0 : 28, bottom: 2, trailing: 0))
                     }
@@ -261,7 +263,7 @@ struct SettingsView: View {
                 .scrollContentBackground(.hidden)
                 .onDrop(of: [.text], isTargeted: nil) { drop($0, into: category.id) }
                 .onDeleteCommand { removeSelection() }
-                .onChange(of: categoryID) { _ in selection = []; selectionAnchor = nil }
+                .onChange(of: categoryID) { _ in selection = [] }
                 Text(Loc.t("⇧-Klick wählt mehrere, ⌘-Klick einzelne dazu · ⌘G gruppiert · Ziehen sortiert (auch in/aus Ordnern) · Rechtsklick für Icon, Name und Ordner",
                            "⇧-click selects a range, ⌘-click adds single ones · ⌘G groups · drag to reorder (also in/out of folders) · right-click for icon, name and folders"))
                     .font(.caption).foregroundColor(.dimText)
@@ -314,26 +316,11 @@ struct SettingsView: View {
         model.config.moveEntries(ids, toFolder: destFolder, before: anchor, in: category.id)
     }
 
-    // MARK: Selection (⇧ range, ⌘ toggle)
-
-    private func select(_ id: UUID, rows: [FlatRow]) {
-        let flags = NSEvent.modifierFlags
-        if flags.contains(.shift), let anchor = selectionAnchor,
-           let a = rows.firstIndex(where: { $0.id == anchor }), let b = rows.firstIndex(where: { $0.id == id }) {
-            selection = Set(rows[min(a, b)...max(a, b)].map(\.id))
-        } else if flags.contains(.command) {
-            if selection.contains(id) { selection.remove(id) } else { selection.insert(id) }
-            selectionAnchor = id
-        } else {
-            selection = [id]
-            selectionAnchor = id
-        }
-    }
+    // MARK: Selection (native List selection: ⇧ range, ⌘ toggle — and it does not block drag-to-reorder)
 
     private func groupSelection() {
         guard let folder = model.config.groupEntries(Array(selection), in: categoryID, named: Loc.t("Neue Gruppe", "New Group")) else { return }
         selection = [folder]
-        selectionAnchor = folder
         collapsed.remove(folder)
         renamingEntry = folder
     }
@@ -352,7 +339,19 @@ struct SettingsView: View {
                                  toFolder: folder, before: nil, in: categoryID)
     }
 
+    @ViewBuilder
     private func selectionBar(_ category: HMLauncherCore.Category) -> some View {
+        if selection.isEmpty {
+            Text(Loc.t("Klick wählt aus · ⇧/⌘-Klick für mehrere · ⌘G gruppiert", "Click selects · ⇧/⌘-click for several · ⌘G groups"))
+                .font(.caption).foregroundColor(.dimText)
+                .frame(maxWidth: .infinity, minHeight: 34, maxHeight: 34, alignment: .leading)
+                .padding(.horizontal, 10)
+        } else {
+            activeSelectionBar(category)
+        }
+    }
+
+    private func activeSelectionBar(_ category: HMLauncherCore.Category) -> some View {
         let folders = category.entries.filter { $0.isFolder && !selection.contains($0.id) }
         return HStack(spacing: 10) {
             Text(Loc.t("\(selection.count) ausgewählt", "\(selection.count) selected")).font(.system(size: 12, weight: .semibold))
@@ -398,7 +397,6 @@ struct SettingsView: View {
             index: row.index, entry: entry,
             isSelected: selection.contains(entry.id),
             selectionCount: multi ? selection.count : 1,
-            onSelect: { select(entry.id, rows: flatRows(category)) },
             onGroup: groupSelection,
             available: entry.isFolder || catalog.items.isEmpty || EntryResolver.resolve(entry, in: catalog.items) != nil,
             isExpanded: !collapsed.contains(entry.id),
@@ -447,7 +445,6 @@ private struct EntryRow: View {
     let entry: Entry
     let isSelected: Bool
     let selectionCount: Int
-    let onSelect: () -> Void
     let onGroup: () -> Void
     let available: Bool
     let isExpanded: Bool
@@ -466,6 +463,7 @@ private struct EntryRow: View {
     @State private var name = ""
     @State private var hovered = false
     @State private var dropTarget = false
+    @FocusState private var nameFocused: Bool
 
     var body: some View {
         LauncherRow(number: index, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
@@ -492,13 +490,15 @@ private struct EntryRow: View {
             if renaming {
                 TextField(entry.name, text: $name, onCommit: commitName)
                     .textFieldStyle(.roundedBorder)
+                    .focused($nameFocused)
                     .padding(.leading, 76).padding(.trailing, 40)
                     .onExitCommand { renaming = false }
+                    // Focus right away so typing (and ⌫) goes into the name, not to the list's delete command.
+                    .onAppear { DispatchQueue.main.async { nameFocused = true } }
+                    .onChange(of: nameFocused) { focused in if !focused && renaming { commitName() } }
             }
         }
         .onHover { hovered = $0 }
-        .onTapGesture(count: 2) { if entry.isFolder { onToggle() } }
-        .simultaneousGesture(TapGesture().onEnded { onSelect() })
         .onDrop(of: [.text], isTargeted: $dropTarget) { providers in
             var uris: [String] = []
             let group = DispatchGroup()
@@ -569,8 +569,9 @@ private struct EntryRow: View {
     }
 
     private func commitName() {
-        onName(!entry.isFolder && name == entry.name ? nil : name)
+        guard renaming else { return }
         renaming = false
+        onName(!entry.isFolder && name == entry.name ? nil : name)
     }
 }
 
