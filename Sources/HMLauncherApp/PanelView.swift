@@ -12,6 +12,8 @@ struct PanelView: View {
     @ObservedObject var viewModel: PanelViewModel
     let onInsert: (PanelRow) -> Void
     let onCloseFolder: () -> Void
+    /// Hovering a row: folders open their side list, other rows close it.
+    var onHoverRow: (PanelRow) -> Void = { _ in }
     let onSelectTab: (Int) -> Void
     let isFavorite: (PanelRow) -> Bool
     let onToggleFavorite: (PanelRow) -> Void
@@ -103,8 +105,11 @@ struct PanelView: View {
                 Rectangle().fill(selected ? Color.accent : .clear).frame(height: 2)
             }
             .fixedSize()
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        // Moving over a category is enough to switch to it.
+        .onHover { inside in if inside && !selected { onSelectTab(index) } }
     }
 
     // MARK: Rows
@@ -164,7 +169,7 @@ struct PanelView: View {
         }
         .buttonStyle(.plain)
         .onHover { inside in
-            if inside { viewModel.hovered = index } else if viewModel.hovered == index { viewModel.hovered = nil }
+            if inside { viewModel.hovered = index; onHoverRow(row) } else if viewModel.hovered == index { viewModel.hovered = nil }
         }
         .contextMenu {
             if row.folderID == nil {

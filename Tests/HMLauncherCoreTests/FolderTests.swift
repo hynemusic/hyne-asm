@@ -179,3 +179,22 @@ final class PanelFolderTests: XCTestCase {
         XCTAssertNil(s.openFolderName)
     }
 }
+
+final class FolderFlyoutTests: XCTestCase {
+    func testFolderRowsListThePluginsWithColorsAndAvailability() {
+        let la2 = item("LA-2", uri: "la2", path: ["VST3", "UA"])
+        let gone = item("Gone", uri: "gone", path: ["VST3", "UA"])
+        var c = LauncherConfig.makeDefault()
+        let f = c.addFolder(named: "UAD", to: c.favoritesID)
+        c.addEntry(la2, to: c.favoritesID, folder: f)
+        c.addEntry(gone, to: c.favoritesID, folder: f)
+        c.setColorRule("blue", for: .vendor("UA"))
+        let s = PanelState(config: c, items: [la2])
+        let rows = s.folderRows(f)
+        XCTAssertEqual(rows.map(\.title), ["LA-2", "Gone"])
+        XCTAssertEqual(rows.map(\.isAvailable), [true, false])
+        XCTAssertEqual(rows[0].colorID, "blue")
+        XCTAssertNil(rows[0].folderID)
+        XCTAssertTrue(s.folderRows(UUID()).isEmpty)
+    }
+}

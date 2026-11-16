@@ -118,6 +118,11 @@ public struct PanelState {
         }
     }
 
+    /// The plugins of a folder in the current category, for the side list that opens on hover.
+    public func folderRows(_ folderID: UUID) -> [PanelRow] {
+        (categoryEntries.first { $0.id == folderID }?.children ?? []).map(row)
+    }
+
     public var openFolderName: String? {
         guard let openFolderID else { return nil }
         return categoryEntries.first { $0.id == openFolderID }?.title
