@@ -23,6 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         eventTap.onDoubleRightClick = { [weak self] point in self?.panel.show(at: point) }
         eventTap.isPanelVisible = { [weak self] in self?.panel.isVisible ?? false }
         eventTap.isPointInPanel = { [weak self] in self?.panel.contains($0) ?? false }
+        eventTap.panelBindings = { [weak self] in self?.model.config.panelKeys ?? .default }
         eventTap.panelKeyHandler = { [weak self] in self?.panel.handle($0) ?? false }
         eventTap.shortcutHandler = { [weak self] keyCode, mods in self?.handleShortcut(keyCode, mods) ?? false }
         monitor.onChange = { [weak self] liveFront in if !liveFront { self?.panel.hide() } }

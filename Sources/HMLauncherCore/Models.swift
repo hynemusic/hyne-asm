@@ -77,6 +77,23 @@ public struct LauncherConfig: Codable, Sendable {
     public var version: Int
     public var categories: [Category]
     public var shortcuts: ShortcutSettings
+    public var panelKeys: PanelKeyBindings
+
+    public init(version: Int, categories: [Category], shortcuts: ShortcutSettings, panelKeys: PanelKeyBindings = .default) {
+        self.version = version
+        self.categories = categories
+        self.shortcuts = shortcuts
+        self.panelKeys = panelKeys
+    }
+
+    /// Fields added later decode with defaults, so older config files keep loading.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        version = try c.decode(Int.self, forKey: .version)
+        categories = try c.decode([Category].self, forKey: .categories)
+        shortcuts = try c.decodeIfPresent(ShortcutSettings.self, forKey: .shortcuts) ?? .default
+        panelKeys = try c.decodeIfPresent(PanelKeyBindings.self, forKey: .panelKeys) ?? .default
+    }
 
     public static let currentVersion = 2
 

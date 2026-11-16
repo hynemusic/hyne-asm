@@ -13,7 +13,29 @@ struct SettingsView: View {
     private var categoryID: UUID { selectedCategory ?? model.config.favoritesID }
     private var category: HMLauncherCore.Category? { model.config.categories.first { $0.id == categoryID } }
 
+    @State private var page = 0
+
     var body: some View {
+        VStack(spacing: 0) {
+            Picker("", selection: $page) {
+                Text("Plugins & Kategorien").tag(0)
+                Text("Tastenkürzel").tag(1)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(width: 320)
+            .padding(10)
+            Divider()
+            if page == 0 { pluginsPage } else {
+                ShortcutsPage(shortcuts: $model.config.shortcuts, panelKeys: $model.config.panelKeys)
+            }
+        }
+        .background(Color.panelSidebar)
+        .preferredColorScheme(.dark)
+        .foregroundColor(.white)
+    }
+
+    private var pluginsPage: some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 pluginBrowser.frame(minWidth: 300, idealWidth: 340).background(Color.panelSidebar)
@@ -22,13 +44,7 @@ struct SettingsView: View {
                 Divider()
                 entryList.frame(minWidth: 380).background(Color.panelBackground)
             }
-            Divider()
-            ShortcutSettingsView(shortcuts: $model.config.shortcuts)
-                .padding(12)
-                .background(Color.panelSidebar)
         }
-        .preferredColorScheme(.dark)
-        .foregroundColor(.white)
     }
 
     // MARK: Installed plugins
@@ -325,56 +341,116 @@ private struct IconPicker: View {
     }
 }
 
-// MARK: - Close-window shortcuts
+// MARK: - Shortcuts
 
-struct ShortcutSettingsView: View {
+struct ShortcutsPage: View {
     @Binding var shortcuts: ShortcutSettings
+    @Binding var panelKeys: PanelKeyBindings
 
     var body: some View {
-        HStack(alignment: .top, spacing: 30) {
-            Text("Plugin-Fenster").font(.headline)
-            VStack(alignment: .leading, spacing: 6) {
-                Toggle("Fokussiertes schließen", isOn: Binding(
-                    get: { shortcuts.closeFocused != nil },
-                    set: { shortcuts.closeFocused = $0 ? ShortcutSettings.default.closeFocused : nil }))
-                if let combo = shortcuts.closeFocused {
-                    KeyRecorder(combo: combo) { shortcuts.closeFocused = $0 }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 22) {
+                section("Plugin-Fenster", note: "Nur aktiv, wenn Live vorne ist. Kürzel brauchen ⌘, ⌃ oder ⌥.",
+                        reset: { shortcuts = .default }) {
+                    row("Fokussiertes Plugin-Fenster schließen",
+                        combos: Binding(get: { shortcuts.closeFocused.map { [$0] } ?? [] },
+                                        set: { shortcuts.closeFocused = $0.last }),
+                        maxCount: 1, requireModifier: true)
+                    row("Alle Plugin-Fenster schließen", combos: $shortcuts.closeAll, maxCount: 4, requireModifier: true)
                 }
-            }
-            VStack(alignment: .leading, spacing: 6) {
-                Toggle("Alle schließen", isOn: Binding(
-                    get: { !shortcuts.closeAll.isEmpty },
-                    set: { shortcuts.closeAll = $0 ? ShortcutSettings.default.closeAll : [] }))
-                HStack {
-                    ForEach(Array(shortcuts.closeAll.enumerated()), id: \.offset) { i, combo in
-                        KeyRecorder(combo: combo) { shortcuts.closeAll[i] = $0 }
+                section("Im Panel", note: "Fest: 1–9 fügen die Zeile ein, Tippen filtert, ⌫ löscht im Filter.",
+                        reset: { panelKeys = .default }) {
+                    ForEach(PanelKeyAction.allCases, id: \.self) { action in
+                        row(action.label, combos: Binding(get: { panelKeys[action] }, set: { panelKeys[action] = $0 }),
+                            maxCount: 4, requireModifier: false)
                     }
                 }
             }
+            .padding(24)
+            .frame(maxWidth: 760, alignment: .leading)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(Color.panelBackground)
+    }
+
+    private func section<Content: View>(_ title: String, note: String, reset: @escaping () -> Void,
+                                        @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(title).font(.system(size: 15, weight: .semibold))
+                Spacer()
+                Button("Standard wiederherstellen", action: reset).buttonStyle(.borderless).foregroundColor(.accent)
+            }
+            Text(note).font(.caption).foregroundColor(.dimText)
+            VStack(spacing: 4) { content() }
+        }
+    }
+
+    private func row(_ label: String, combos: Binding<[KeyCombo]>, maxCount: Int, requireModifier: Bool) -> some View {
+        HStack(spacing: 8) {
+            Text(label).font(.system(size: 13)).frame(width: 260, alignment: .leading)
+            ForEach(Array(combos.wrappedValue.enumerated()), id: \.offset) { i, combo in
+                KeyRecorder(combo: combo, requireModifier: requireModifier,
+                            onChange: { combos.wrappedValue[i] = $0 },
+                            onRemove: { combos.wrappedValue.remove(at: i) })
+            }
+            if combos.wrappedValue.count < maxCount {
+                KeyRecorder(combo: nil, requireModifier: requireModifier,
+                            onChange: { combos.wrappedValue.append($0) }, onRemove: nil)
+            }
+            if combos.wrappedValue.isEmpty {
+                Text("aus").font(.caption).foregroundColor(.dimText)
+            }
             Spacer()
         }
+        .padding(.horizontal, 10)
+        .frame(height: 40)
+        .background(Color.rowBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 5))
     }
 }
 
-/// Shows a key combo; click, then press the new combo (Esc alone cancels).
+/// Click, then press the new combo. Clicking again cancels. `combo == nil` shows a "+" to add one.
 struct KeyRecorder: View {
-    let combo: KeyCombo
+    let combo: KeyCombo?
+    let requireModifier: Bool
     let onChange: (KeyCombo) -> Void
+    let onRemove: (() -> Void)?
     @State private var recording = false
+    @State private var hint: String?
     @State private var monitor: Any?
 
     var body: some View {
-        Button(recording ? "Tasten drücken …" : KeyNames.describe(combo)) { recording ? stop() : start() }
-            .frame(minWidth: 90)
+        HStack(spacing: 2) {
+            Button { recording ? stop() : start() } label: {
+                Text(recording ? (hint ?? "Taste drücken …") : combo.map(KeyNames.describe) ?? "+")
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .padding(.horizontal, 8).padding(.vertical, 4)
+                    .frame(minWidth: combo == nil && !recording ? 26 : 64)
+                    .background(recording ? Color.rowHighlight : Color.panelSidebar)
+                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(recording ? Color.accent : Color.clear))
+                    .cornerRadius(4)
+            }
+            .buttonStyle(.plain)
+            .help(combo == nil ? "Kürzel hinzufügen" : "Klicken und neue Taste drücken")
+            if let onRemove, combo != nil, !recording {
+                Button(action: onRemove) { Image(systemName: "xmark").font(.system(size: 9, weight: .bold)) }
+                    .buttonStyle(.borderless).foregroundColor(.dimText).help("Entfernen")
+            }
+        }
+        .onDisappear { stop() }
     }
 
     private func start() {
         recording = true
+        hint = nil
         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let mods = EventTapController.modifiers(event.cgEvent?.flags ?? [])
-            if !(event.keyCode == 53 && mods.isEmpty), !mods.isEmpty {
-                onChange(KeyCombo(keyCode: event.keyCode, modifiers: mods))
+            if requireModifier && mods.isDisjoint(with: [.cmd, .ctrl, .alt]) {
+                hint = "⌘, ⌃ oder ⌥ dazu"
+                return nil
             }
+            onChange(KeyCombo(keyCode: event.keyCode, modifiers: mods))
             stop()
             return nil
         }
@@ -392,7 +468,10 @@ enum KeyNames {
         0: "A", 1: "S", 2: "D", 3: "F", 4: "H", 5: "G", 6: "Z", 7: "X", 8: "C", 9: "V", 11: "B", 12: "Q", 13: "W",
         14: "E", 15: "R", 16: "Y", 17: "T", 31: "O", 32: "U", 34: "I", 35: "P", 37: "L", 38: "J", 40: "K", 45: "N",
         46: "M", 18: "1", 19: "2", 20: "3", 21: "4", 23: "5", 22: "6", 26: "7", 28: "8", 25: "9", 29: "0",
-        53: "Esc", 36: "↩", 48: "⇥", 49: "Space", 51: "⌫", 123: "←", 124: "→", 125: "↓", 126: "↑",
+        27: "ß", 24: "´", 33: "Ü", 30: "+", 39: "Ä", 41: "Ö", 42: "#", 43: ",", 47: ".", 44: "-", 50: "<",
+        53: "Esc", 36: "↩", 76: "⌅", 48: "⇥", 49: "Leertaste", 51: "⌫", 117: "⌦",
+        123: "←", 124: "→", 125: "↓", 126: "↑", 115: "↖", 119: "↘", 116: "⇞", 121: "⇟",
+        122: "F1", 120: "F2", 99: "F3", 118: "F4", 96: "F5", 97: "F6", 98: "F7", 100: "F8", 101: "F9", 109: "F10",
     ]
 
     static func describe(_ combo: KeyCombo) -> String {
@@ -401,6 +480,6 @@ enum KeyNames {
         if combo.modifiers.contains(.alt) { s += "⌥" }
         if combo.modifiers.contains(.shift) { s += "⇧" }
         if combo.modifiers.contains(.cmd) { s += "⌘" }
-        return s + (names[combo.keyCode] ?? "Key \(combo.keyCode)")
+        return s + (names[combo.keyCode] ?? "Taste \(combo.keyCode)")
     }
 }

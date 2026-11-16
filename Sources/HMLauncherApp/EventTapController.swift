@@ -9,6 +9,7 @@ final class EventTapController {
     var isPanelVisible: (() -> Bool)?
     var isPointInPanel: ((CGPoint) -> Bool)?
     var panelKeyHandler: ((PanelKey) -> Bool)?
+    var panelBindings: (() -> PanelKeyBindings)?
     var shortcutHandler: ((UInt16, ModifierSet) -> Bool)?
 
     private let monitor: LiveAppMonitor
@@ -73,8 +74,13 @@ final class EventTapController {
     private func keyDown(_ event: CGEvent) -> Bool {
         let mods = Self.modifiers(event.flags)
         let keyCode = UInt16(event.getIntegerValueField(.keyboardEventKeycode))
-        if isPanelVisible?() == true, mods.isDisjoint(with: [.cmd, .ctrl]), let key = Self.panelKey(keyCode, event) {
-            return panelKeyHandler?(key) ?? false
+        if isPanelVisible?() == true {
+            if let key = panelBindings?().key(for: KeyCombo(keyCode: keyCode, modifiers: mods)) {
+                return panelKeyHandler?(key) ?? false
+            }
+            if mods.isDisjoint(with: [.cmd, .ctrl]), let key = Self.textKey(keyCode, event) {
+                return panelKeyHandler?(key) ?? false
+            }
         }
         guard monitor.isLiveFrontmost else { return false }
         return shortcutHandler?(keyCode, mods) ?? false
@@ -89,16 +95,12 @@ final class EventTapController {
         return m
     }
 
-    static func panelKey(_ keyCode: UInt16, _ event: CGEvent) -> PanelKey? {
+    /// Fixed panel keys: ⌫ edits the filter, digits pick rows, everything printable filters.
+    /// Navigation keys come from the rebindable PanelKeyBindings.
+    static func textKey(_ keyCode: UInt16, _ event: CGEvent) -> PanelKey? {
         switch keyCode {
-        case 123: return .left
-        case 124: return .right
-        case 125: return .down
-        case 126: return .up
-        case 48: return .tab
-        case 36, 76: return .returnKey
-        case 53: return .escape
         case 51: return .backspace
+        case 36, 76, 48, 53, 123, 124, 125, 126: return nil // unbound navigation keys do nothing
         default:
             guard let ch = NSEvent(cgEvent: event)?.characters?.first,
                   !ch.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) }) else { return nil }
