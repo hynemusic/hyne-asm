@@ -1,16 +1,40 @@
 import AppKit
+import HMLauncherCore
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var model: AppModel!
     private var menuBar: MenuBarController!
     private var monitor: LiveAppMonitor!
+    private var eventTap: EventTapController!
+    private var panel: PanelWindowController!
+    private var tapRetry: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         model = AppModel()
         monitor = LiveAppMonitor()
         menuBar = MenuBarController(model: model)
+        panel = PanelWindowController(model: model)
+        eventTap = EventTapController(monitor: monitor)
+
+        eventTap.onDoubleRightClick = { [weak self] point in self?.panel.show(at: point) }
+        eventTap.isPanelVisible = { [weak self] in self?.panel.isVisible ?? false }
+        eventTap.isPointInPanel = { [weak self] in self?.panel.contains($0) ?? false }
+        eventTap.panelKeyHandler = { [weak self] in self?.panel.handle($0) ?? false }
+        monitor.onChange = { [weak self] liveFront in if !liveFront { self?.panel.hide() } }
+
         model.start()
-        if !Permissions.isTrusted { Permissions.prompt() }
+        startEventTap()
+    }
+
+    /// Without the Accessibility permission the tap cannot be created; retry until it is granted.
+    private func startEventTap() {
+        if eventTap.start() { return }
+        Permissions.prompt()
+        tapRetry = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] timer in
+            MainActor.assumeIsolated {
+                if self?.eventTap.start() == true { timer.invalidate() }
+            }
+        }
     }
 }
