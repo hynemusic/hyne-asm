@@ -10,11 +10,13 @@ public struct LESItem: Equatable, Sendable {
 public struct LESCategory: Equatable, Sendable {
     public let name: String
     public var items: [LESItem]
+    /// Index of the top-level category this `//` subfolder sits in (deeper levels attach to their top-level ancestor).
+    public var parent: Int? = nil
 }
 
 /// Parses the Live Enhancement Suite plugin menu (`~/.les/menuconfig.ini`): `/Category`, `//Sub`, `..` back up,
 /// item pairs (display name line, search query line), `--` dividers, `;` comments, `/nocategory`, trailing `End`.
-/// Nested folders become categories of their own (named after the folder); dividers are dropped.
+/// Subfolders keep a link to their top-level category (they become folders on import); dividers are dropped.
 public enum LESMenuParser {
     public static let defaultURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".les/menuconfig.ini")
 
@@ -27,7 +29,7 @@ public enum LESMenuParser {
         func open(_ name: String, depth: Int) {
             pendingDisplay = nil
             stack = Array(stack.prefix(max(depth - 1, 0)))
-            categories.append(LESCategory(name: name, items: []))
+            categories.append(LESCategory(name: name, items: [], parent: stack.first))
             stack.append(categories.count - 1)
             current = categories.count - 1
         }
@@ -58,14 +60,25 @@ public enum LESMenuParser {
             categories[current!].items.append(LESItem(display: display, query: line))
         }
         // A dangling single line is LES's "End" marker (or garbage) — never an item.
-        return mergeDuplicateNames(categories.filter { !$0.items.isEmpty })
+        return compact(categories)
     }
 
-    /// "/nocategory" can appear several times; same-named folders are merged in first-seen order.
-    private static func mergeDuplicateNames(_ categories: [LESCategory]) -> [LESCategory] {
+    /// Drops empty folders (a parent with only subfolders stays), merges repeated top-level names
+    /// ("/nocategory" can appear several times) and re-points `parent` to the new indices.
+    private static func compact(_ categories: [LESCategory]) -> [LESCategory] {
+        let hasChildren = Set(categories.compactMap { $0.items.isEmpty ? nil : $0.parent })
         var result: [LESCategory] = []
-        for c in categories {
-            if let i = result.firstIndex(where: { $0.name == c.name }) { result[i].items += c.items } else { result.append(c) }
+        var newIndex: [Int: Int] = [:]
+        for (i, c) in categories.enumerated() where !c.items.isEmpty || hasChildren.contains(i) {
+            var c = c
+            c.parent = c.parent.flatMap { newIndex[$0] }
+            if c.parent == nil, let same = result.firstIndex(where: { $0.parent == nil && $0.name == c.name }) {
+                result[same].items += c.items
+                newIndex[i] = same
+            } else {
+                result.append(c)
+                newIndex[i] = result.count - 1
+            }
         }
         return result
     }
@@ -221,6 +234,8 @@ public struct ImportCategory: Identifiable, Equatable, Sendable {
     public let id: UUID
     public var name: String
     public var rows: [ImportRow]
+    /// Set: this becomes a folder inside that (top-level) category instead of a category of its own.
+    public var parentID: UUID? = nil
 }
 
 public enum ImportMode: Sendable { case replace, add }
@@ -239,7 +254,9 @@ public struct ImportDraft: Equatable, Sendable {
 
     public static func make(text: String, items: [PluginItem]) -> ImportDraft {
         let matcher = LESMatcher(items: items)
-        return ImportDraft(categories: LESMenuParser.parse(text).map { les in
+        let parsed = LESMenuParser.parse(text)
+        let ids = parsed.map { _ in UUID() }
+        return ImportDraft(categories: parsed.enumerated().map { index, les in
             var seen = Set<String>()
             let rows: [ImportRow] = les.items.compactMap { it in
                 let match = matcher.match(display: it.display, query: it.query)
@@ -247,7 +264,7 @@ public struct ImportDraft: Equatable, Sendable {
                 guard seen.insert(key).inserted else { return nil }
                 return ImportRow(id: UUID(), display: it.display, query: it.query, match: match)
             }
-            return ImportCategory(id: UUID(), name: les.name, rows: rows)
+            return ImportCategory(id: ids[index], name: les.name, rows: rows, parentID: les.parent.map { ids[$0] })
         })
     }
 
@@ -279,8 +296,20 @@ public struct ImportDraft: Equatable, Sendable {
         categories[c].name = name
     }
 
+    /// Removes the category and the folders inside it.
     public mutating func removeCategory(_ id: UUID) {
-        categories.removeAll { $0.id == id }
+        categories.removeAll { $0.id == id || $0.parentID == id }
+    }
+
+    /// Makes a category a folder inside `parent` (a top-level category), or with `nil` a category of its own.
+    /// Categories that contain folders cannot become folders themselves.
+    public mutating func setParent(_ id: UUID, to parent: UUID?) {
+        guard let c = index(id), id != parent else { return }
+        if let parent {
+            guard let p = index(parent), categories[p].parentID == nil,
+                  !categories.contains(where: { $0.parentID == id }) else { return }
+        }
+        categories[c].parentID = parent
     }
 
     public mutating func moveCategory(from: Int, to: Int) {
@@ -293,7 +322,8 @@ public struct ImportDraft: Equatable, Sendable {
         guard sourceID != targetID, let s = index(sourceID), let t = index(targetID) else { return }
         let existing = Set(categories[t].rows.compactMap { $0.match.item?.uri })
         categories[t].rows += categories[s].rows.filter { $0.match.item.map { !existing.contains($0.uri) } ?? true }
-        categories.remove(at: s)
+        for i in categories.indices where categories[i].parentID == sourceID { categories[i].parentID = targetID }
+        categories.removeAll { $0.id == sourceID }
     }
 
     public mutating func setMatch(_ item: PluginItem, for rowID: UUID, in categoryID: UUID) {
@@ -306,26 +336,41 @@ public extension LauncherConfig {
     /// Pushes an import preview into the menu. `.replace` swaps every category except Favorites;
     /// `.add` merges into same-named categories and appends new ones. Rows without a plugin are skipped.
     /// The LES display name is kept as display name when it differs from the plugin's name.
+    /// Subfolder categories (`parentID`) become folders inside their parent's category.
     mutating func apply(_ draft: ImportDraft, mode: ImportMode) {
         if mode == .replace { categories.removeAll { !$0.isFavorites } }
-        for imported in draft.categories {
-            let targetID: UUID
+        var target: [UUID: UUID] = [:]   // draft category → config category
+        let draftIDs = Set(draft.categories.map(\.id))
+        for imported in draft.categories where imported.parentID.map({ !draftIDs.contains($0) }) ?? true {
             if mode == .add, let existing = categories.first(where: {
                 !$0.isFavorites && $0.name.localizedCaseInsensitiveCompare(imported.name) == .orderedSame
             }) {
-                targetID = existing.id
+                target[imported.id] = existing.id
             } else {
-                targetID = addCategory(named: imported.name)
+                target[imported.id] = addCategory(named: imported.name)
             }
-            for row in imported.rows {
-                guard let item = row.match.item, row.match.status != .notFound else { continue }
-                addEntry(item, to: targetID)
-                guard LESMatcher.normalize(row.display) != LESMatcher.normalize(item.name),
-                      let c = categories.firstIndex(where: { $0.id == targetID }),
-                      let e = categories[c].entries.lastIndex(where: { $0.uri == item.uri }),
-                      categories[c].entries[e].displayName == nil else { continue }
-                categories[c].entries[e].displayName = row.display
+        }
+        for imported in draft.categories {
+            if let categoryID = target[imported.id] {
+                addRows(imported.rows, to: categoryID, folder: nil)
+            } else if let parent = imported.parentID, let categoryID = target[parent] {
+                let folder = categories.first { $0.id == categoryID }?.entries.first {
+                    $0.isFolder && $0.name.localizedCaseInsensitiveCompare(imported.name) == .orderedSame
+                }?.id ?? addFolder(named: imported.name, to: categoryID)
+                addRows(imported.rows, to: categoryID, folder: folder)
             }
+        }
+    }
+
+    private mutating func addRows(_ rows: [ImportRow], to categoryID: UUID, folder: UUID?) {
+        for row in rows {
+            guard let item = row.match.item, row.match.status != .notFound else { continue }
+            addEntry(item, to: categoryID, folder: folder)
+            guard LESMatcher.normalize(row.display) != LESMatcher.normalize(item.name) else { continue }
+            let container = folder.flatMap { findEntry($0, in: categoryID)?.children }
+                ?? categories.first { $0.id == categoryID }?.entries ?? []
+            guard let entry = container.last(where: { $0.uri == item.uri }), entry.displayName == nil else { continue }
+            setDisplayName(row.display, entry: entry.id, in: categoryID)
         }
     }
 

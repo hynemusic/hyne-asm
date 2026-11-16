@@ -42,12 +42,14 @@ final class LESMenuParserTests: XCTestCase {
         XCTAssertEqual(cats[0].items[0].query, "ValhallaRoom vst3")
         XCTAssertEqual(cats[1].items.map(\.query), ["\"RX 10 De-ess\""])
         XCTAssertEqual(cats[3].items.map(\.display), ["Sampler"])
+        XCTAssertEqual(cats.map(\.parent), [nil, 0, nil, nil])
     }
 
     func testParsesRealLESFile() throws {
         let cats = LESMenuParser.parse(try fixtureText())
         XCTAssertEqual(cats.map(\.name), ["Effects", "RX10", "UAD", "Soundtoys & Brainworx", "Instruments", "EQ", "presets n Racks", "Sonstiges"])
         XCTAssertEqual(cats.first { $0.name == "RX10" }?.items.count, 10)
+        XCTAssertEqual(cats.map(\.parent), [nil, 0, 0, 0, nil, 4, nil, nil])
         XCTAssertEqual(cats.first { $0.name == "Instruments" }?.items.first?.display, "AnalogLab")
         XCTAssertEqual(cats.last?.items.map(\.display), ["Sampler", "Drum Rack", "Granulator II"])
         XCTAssertFalse(cats.flatMap(\.items).contains { $0.display == "End" || $0.query == "End" })
@@ -206,13 +208,15 @@ final class ImportDraftTests: XCTestCase {
         c.addEntry(catalog[0], to: c.favoritesID)
         c.addCategory(named: "Old")
         c.apply(ImportDraft.make(text: text, items: catalog), mode: .replace)
-        XCTAssertEqual(c.categories.map(\.name), ["Favorites", "Effects", "Tools", "Instruments"])
+        XCTAssertEqual(c.categories.map(\.name), ["Favorites", "Effects", "Instruments"])
         XCTAssertEqual(c.categories[0].entries.map(\.name), ["Utility"])
         let effects = c.categories[1].entries
-        XCTAssertEqual(effects.map(\.title), ["Fresh Air", "Kickstart"]) // WIDE skipped
+        XCTAssertEqual(effects.map(\.title), ["Fresh Air", "Kickstart", "Tools"]) // WIDE skipped, //Tools is a folder
         XCTAssertEqual(effects[1].name, "Kickstart 2")
         XCTAssertEqual(effects[1].iconID, "drums")
-        XCTAssertEqual(c.categories[3].entries[0].title, "PROPHET V5")
+        XCTAssertTrue(effects[2].isFolder)
+        XCTAssertEqual(effects[2].children?.map(\.name), ["Utility"])
+        XCTAssertEqual(c.categories[2].entries[0].title, "PROPHET V5")
         XCTAssertNil(effects[0].displayName) // same as plugin name → no override
     }
 
@@ -220,8 +224,10 @@ final class ImportDraftTests: XCTestCase {
         var c = LauncherConfig.makeDefault()
         c.addEntry(catalog[0], to: c.categories[2].id) // "Effects" already has Utility
         c.apply(ImportDraft.make(text: text, items: catalog), mode: .add)
-        XCTAssertEqual(c.categories.map(\.name), ["Favorites", "Instruments", "Effects", "Tools"])
-        XCTAssertEqual(c.categories[2].entries.map(\.name), ["Utility", "Fresh Air", "Kickstart 2"])
+        c.apply(ImportDraft.make(text: text, items: catalog), mode: .add) // twice: folder is reused, no duplicates
+        XCTAssertEqual(c.categories.map(\.name), ["Favorites", "Instruments", "Effects"])
+        XCTAssertEqual(c.categories[2].entries.map(\.name), ["Utility", "Fresh Air", "Kickstart 2", "Tools"])
+        XCTAssertEqual(c.categories[2].entries[3].children?.map(\.name), ["Utility"])
         XCTAssertEqual(c.categories[1].entries.map(\.name), ["Prophet-5 V"])
     }
 
@@ -241,6 +247,26 @@ final class ImportDraftTests: XCTestCase {
         XCTAssertEqual(d.categories[0].rows[0].match.item?.uri, "util")
         XCTAssertEqual(d.categories[0].rows[0].match.status, .found)
         d.removeCategory(effects)
+        XCTAssertEqual(d.categories.map(\.name), ["Instruments"])
+    }
+
+    func testSubfolderParentsAndPromotion() {
+        var d = ImportDraft.make(text: text, items: catalog)
+        let effects = d.categories[0].id, tools = d.categories[1].id
+        XCTAssertEqual(d.categories.map(\.parentID), [nil, effects, nil])
+        d.setParent(tools, to: nil)
+        var c = LauncherConfig.makeDefault()
+        c.apply(d, mode: .replace)
+        XCTAssertEqual(c.categories.map(\.name), ["Favorites", "Effects", "Tools", "Instruments"])
+        d.setParent(tools, to: d.categories[2].id)
+        XCTAssertEqual(d.categories[1].parentID, d.categories[2].id)
+        d.setParent(effects, to: tools) // a category that is itself a folder's target cannot become a folder… only leaves can
+        XCTAssertNil(d.categories[0].parentID)
+    }
+
+    func testRemovingParentRemovesItsFolders() {
+        var d = ImportDraft.make(text: text, items: catalog)
+        d.removeCategory(d.categories[0].id)
         XCTAssertEqual(d.categories.map(\.name), ["Instruments"])
     }
 

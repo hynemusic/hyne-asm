@@ -26,8 +26,16 @@ public struct Entry: Codable, Hashable, Identifiable, Sendable {
     public var path: [String]
     public var iconID: String
     public var displayName: String?
+    /// Non-nil makes this entry a folder of plugins (one level deep; folders hold no folders).
+    public var children: [Entry]?
 
     public var title: String { displayName ?? name }
+    public var isFolder: Bool { children != nil }
+
+    public init(folderNamed name: String) {
+        id = UUID(); uri = ""; self.name = name; source = .plugins; path = []
+        iconID = IconCatalog.folderID; displayName = nil; children = []
+    }
 
     public init(item: PluginItem, iconID: String = IconCatalog.defaultID) {
         id = UUID(); uri = item.uri; name = item.name; source = item.source; path = item.path

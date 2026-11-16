@@ -8,6 +8,9 @@ public struct PanelRow: Equatable, Sendable {
     public let iconID: String
     public let title: String
     public let isAvailable: Bool
+    /// Set for folder rows: activating them opens the folder instead of inserting.
+    public var folderID: UUID? = nil
+    public var childCount: Int = 0
 }
 
 public enum PanelTab: Equatable, Sendable {
@@ -34,6 +37,8 @@ public struct PanelState {
     public private(set) var selectedTab: Int
     public private(set) var filter = ""
     public private(set) var highlighted: Int?
+    /// The folder shown instead of the category's top level.
+    public private(set) var openFolderID: UUID?
 
     public init(config: LauncherConfig, items: [PluginItem], selectedTab: Int = 0) {
         self.config = config
@@ -46,28 +51,60 @@ public struct PanelState {
         self.selectedTab = min(max(selectedTab, 0), tabs.count - 1)
     }
 
+    /// Without a filter: the category's top level (plugins and folders) or the open folder's plugins.
+    /// With a filter at top level the search reaches into folders, so a plugin is found wherever it is filed.
     public var rows: [PanelRow] {
-        let all = unfilteredRows
-        guard !filter.isEmpty else { return all }
-        return all.filter { $0.title.localizedCaseInsensitiveContains(filter) }
+        guard case .category = tabs[selectedTab] else {
+            return filter.isEmpty ? allRows : allRows.filter { $0.title.localizedCaseInsensitiveContains(filter) }
+        }
+        let entries = categoryEntries
+        if let openFolderID {
+            let children = entries.first { $0.id == openFolderID }?.children ?? []
+            return filtered(children.map(row))
+        }
+        guard !filter.isEmpty else { return entries.map(row) }
+        return filtered(entries.flatMap { e in e.isFolder ? [row(e)] + (e.children ?? []).map(row) : [row(e)] })
     }
 
-    private var unfilteredRows: [PanelRow] {
-        switch tabs[selectedTab] {
-        case .all:
-            return allRows
-        case .category(let id, _):
-            let entries = config.categories.first { $0.id == id }?.entries ?? []
-            return entries.map { e in
-                let resolved = EntryResolver.resolve(e, in: items)
-                return PanelRow(uri: resolved?.uri ?? e.uri, name: e.name, source: e.source, path: resolved?.path ?? e.path,
-                                iconID: e.iconID, title: e.title, isAvailable: resolved != nil)
-            }
+    public var openFolderName: String? {
+        guard let openFolderID else { return nil }
+        return categoryEntries.first { $0.id == openFolderID }?.title
+    }
+
+    private var categoryEntries: [Entry] {
+        guard case .category(let id, _) = tabs[selectedTab] else { return [] }
+        return config.categories.first { $0.id == id }?.entries ?? []
+    }
+
+    private func filtered(_ rows: [PanelRow]) -> [PanelRow] {
+        filter.isEmpty ? rows : rows.filter { $0.title.localizedCaseInsensitiveContains(filter) }
+    }
+
+    private func row(_ e: Entry) -> PanelRow {
+        if e.isFolder {
+            return PanelRow(uri: "", name: e.name, source: e.source, path: [], iconID: e.iconID, title: e.title,
+                            isAvailable: true, folderID: e.id, childCount: e.children?.count ?? 0)
         }
+        let resolved = EntryResolver.resolve(e, in: items)
+        return PanelRow(uri: resolved?.uri ?? e.uri, name: e.name, source: e.source, path: resolved?.path ?? e.path,
+                        iconID: e.iconID, title: e.title, isAvailable: resolved != nil)
     }
 
     public mutating func selectTab(_ index: Int) {
         selectedTab = (index % tabs.count + tabs.count) % tabs.count
+        filter = ""
+        highlighted = nil
+        openFolderID = nil
+    }
+
+    public mutating func openFolder(_ id: UUID) {
+        openFolderID = id
+        filter = ""
+        highlighted = nil
+    }
+
+    public mutating func closeFolder() {
+        openFolderID = nil
         filter = ""
         highlighted = nil
     }
@@ -81,6 +118,7 @@ public struct PanelState {
         case .character(let c):
             return edit { $0.append(c) }
         case .backspace:
+            if filter.isEmpty, openFolderID != nil { closeFolder(); return .none }
             return edit { if !$0.isEmpty { $0.removeLast() } }
         case .left:
             selectTab(selectedTab - 1)
@@ -96,6 +134,7 @@ public struct PanelState {
             if let h = highlighted { return insert(at: h) }
             return filter.isEmpty ? .none : insert(at: 0)
         case .escape:
+            if openFolderID != nil { closeFolder(); return .none }
             return .close
         }
         return .none
@@ -107,9 +146,14 @@ public struct PanelState {
         return .none
     }
 
-    private func insert(at index: Int) -> PanelAction {
+    /// Folder rows open; plugin rows insert.
+    private mutating func insert(at index: Int) -> PanelAction {
         let rows = self.rows
         guard rows.indices.contains(index), rows[index].isAvailable else { return .none }
+        if let folder = rows[index].folderID {
+            openFolder(folder)
+            return .none
+        }
         return .insert(rows[index])
     }
 }

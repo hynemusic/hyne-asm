@@ -16,9 +16,11 @@ public struct IconDef: Hashable, Sendable {
 /// SF Symbols available on macOS 13. Ids are stored in the config — never rename an existing id.
 public enum IconCatalog {
     public static let defaultID = "generic"
+    public static let folderID = "folder"
 
     public static let all: [IconDef] = [
         IconDef(id: "generic", label: "Plugin", symbolName: "puzzlepiece.extension"),
+        IconDef(id: "folder", label: "Ordner", en: "Folder", symbolName: "folder"),
         // Dynamics & EQ
         IconDef(id: "eq", label: "EQ", symbolName: "slider.vertical.3"),
         IconDef(id: "eq-curve", label: "EQ-Kurve", en: "EQ curve", symbolName: "point.topleft.down.curvedto.point.bottomright.up"),
