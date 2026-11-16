@@ -11,6 +11,7 @@ struct PanelView: View {
 
     @ObservedObject var viewModel: PanelViewModel
     let onInsert: (PanelRow) -> Void
+    let onCloseFolder: () -> Void
     let onSelectTab: (Int) -> Void
     let isFavorite: (PanelRow) -> Bool
     let onToggleFavorite: (PanelRow) -> Void
@@ -18,6 +19,25 @@ struct PanelView: View {
     var body: some View {
         VStack(spacing: 0) {
             tabBar
+            if let folder = viewModel.state.openFolderName {
+                Button(action: onCloseFolder) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "chevron.left").font(.system(size: 11, weight: .semibold))
+                        Text(categoryTitle).foregroundColor(.dimText)
+                        Text("/").foregroundColor(.dimText)
+                        Image(systemName: "folder.fill").foregroundColor(.accent)
+                        Text(folder).fontWeight(.semibold)
+                        Spacer()
+                    }
+                    .font(.system(size: 13))
+                    .foregroundColor(.white)
+                    .frame(height: Self.filterHeight)
+                    .padding(.horizontal, 10)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .help(Loc.t("Zurück (Esc)", "Back (Esc)"))
+            }
             if !viewModel.state.filter.isEmpty {
                 HStack {
                     Image(systemName: "magnifyingglass").foregroundColor(.dimText)
@@ -110,19 +130,31 @@ struct PanelView: View {
         }
     }
 
+    private var categoryTitle: String {
+        if case .category(_, let name) = viewModel.state.tabs[viewModel.state.selectedTab] { return name }
+        return ""
+    }
+
     private func rowView(_ row: PanelRow, index: Int) -> some View {
         let active = viewModel.state.highlighted == index || viewModel.hovered == index
         return Button { onInsert(row) } label: {
             LauncherRow(number: index, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,
-                        active: active, available: row.isAvailable)
-                .opacity(row.isAvailable ? 1 : 0.5)
+                        active: active, available: row.isAvailable) {
+                if row.folderID != nil {
+                    Text("\(row.childCount)").font(.system(size: 11)).foregroundColor(.dimText)
+                    Image(systemName: "chevron.right").font(.system(size: 11, weight: .semibold)).foregroundColor(.dimText)
+                }
+            }
+            .opacity(row.isAvailable ? 1 : 0.5)
         }
         .buttonStyle(.plain)
         .onHover { inside in
             if inside { viewModel.hovered = index } else if viewModel.hovered == index { viewModel.hovered = nil }
         }
         .contextMenu {
+            if row.folderID == nil {
             Button(isFavorite(row) ? Loc.t("Aus Favoriten entfernen", "Remove from Favorites") : Loc.t("Zu Favoriten hinzufügen", "Add to Favorites")) { onToggleFavorite(row) }
+            }
         }
         .help(row.isAvailable ? row.path.joined(separator: " / ") : Loc.t("Nicht mehr in Live gefunden", "No longer found in Live"))
     }

@@ -11,6 +11,7 @@ struct SettingsView: View {
     @State private var categoryName = ""
     /// Grouping ~3,300 items costs ~30 ms; recompute only when items or search change, not on every redraw.
     @State private var groups: [PluginGroup] = []
+    @State private var collapsed: Set<UUID> = []
 
     private var categoryID: UUID { selectedCategory ?? model.config.favoritesID }
     private var category: HMLauncherCore.Category? { model.config.categories.first { $0.id == categoryID } }
@@ -202,6 +203,7 @@ struct SettingsView: View {
         .onDrop(of: [.text], isTargeted: nil) { drop($0, into: c.id) }
         .contextMenu {
             Button(Loc.t("Umbenennen", "Rename")) { startRenaming(c.id) }.disabled(c.isFavorites)
+            Button(Loc.t("Neuer Ordner", "New Folder")) { selectedCategory = c.id; newFolder(in: c.id) }
             Button(Loc.t("Löschen", "Delete"), role: .destructive) {
                 model.config.deleteCategory(c.id)
                 if selectedCategory == c.id { selectedCategory = nil }
@@ -227,6 +229,9 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 header(category?.name ?? "")
+                Button { newFolder() } label: { Label(Loc.t("Ordner", "Folder"), systemImage: "folder.badge.plus") }
+                    .buttonStyle(.borderless).foregroundColor(.accent)
+                    .help(Loc.t("Neuen Ordner in dieser Kategorie anlegen", "Create a new folder in this category"))
                 Spacer()
                 Text(Loc.t("So erscheint es im Panel", "This is how it looks in the panel")).font(.caption).foregroundColor(.dimText)
             }
@@ -237,28 +242,113 @@ struct SettingsView: View {
                         .frame(maxWidth: .infinity, minHeight: 80)
                 }
                 List {
-                    ForEach(Array(category.entries.enumerated()), id: \.element.id) { index, entry in
-                        EntryRow(index: index, entry: entry,
-                                 available: catalog.items.isEmpty || EntryResolver.resolve(entry, in: catalog.items) != nil,
-                                 onIcon: { model.config.setIcon($0, entry: entry.id, in: category.id) },
-                                 onName: { model.config.setDisplayName($0, entry: entry.id, in: category.id) },
-                                 onRemove: { model.config.removeEntry(entry.id, from: category.id) })
+                    let rows = flatRows(category)
+                    ForEach(rows) { row in
+                        entryRow(row, in: category)
                             .listRowBackground(Color.clear)
-                            .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
+                            .listRowInsets(EdgeInsets(top: 2, leading: row.folderID == nil ? 0 : 28, bottom: 2, trailing: 0))
                     }
                     .onMove { from, to in
                         guard let f = from.first else { return }
-                        model.config.moveEntry(in: category.id, from: f, to: to > f ? to - 1 : to)
+                        move(rows, from: f, to: to, in: category)
                     }
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .onDrop(of: [.text], isTargeted: nil) { drop($0, into: category.id) }
-                Text(Loc.t("Ziehen sortiert · Klick aufs Icon oder Rechtsklick für Icon und Name · 1–9 = Zifferntasten im Panel", "Drag to reorder · click the icon or right-click for icon and name · 1–9 = number keys in the panel"))
+                Text(Loc.t("Ziehen sortiert (auch in/aus Ordnern) · Rechtsklick für Icon, Name und Ordner · Plugins auf einen Ordner ziehen legt sie hinein",
+                           "Drag to reorder (also in/out of folders) · right-click for icon, name and folders · drop plugins on a folder to put them inside"))
                     .font(.caption).foregroundColor(.dimText)
             }
         }
         .padding(12)
+    }
+
+    // MARK: Folders
+
+    private struct FlatRow: Identifiable {
+        let entry: Entry
+        let index: Int          // position inside its container (top level or folder)
+        let folderID: UUID?     // set for plugins shown inside an expanded folder
+        var id: UUID { entry.id }
+    }
+
+    private func flatRows(_ category: HMLauncherCore.Category) -> [FlatRow] {
+        category.entries.enumerated().flatMap { i, e -> [FlatRow] in
+            let top = FlatRow(entry: e, index: i, folderID: nil)
+            guard e.isFolder, !collapsed.contains(e.id) else { return [top] }
+            return [top] + (e.children ?? []).enumerated().map { FlatRow(entry: $1, index: $0, folderID: e.id) }
+        }
+    }
+
+    /// Drag & drop in the flattened list: reorder inside the same container, drop a plugin under a folder
+    /// (or among its plugins) to move it in, drag a folder's plugin among top-level rows to take it out.
+    private func move(_ rows: [FlatRow], from: Int, to: Int, in category: HMLauncherCore.Category) {
+        let source = rows[from]
+        // `to` is the insertion index in the list before removal; the row above it decides the container.
+        var aboveIndex = to - 1
+        if aboveIndex == from { aboveIndex -= 1 }
+        let above = aboveIndex >= 0 ? rows[aboveIndex] : nil
+        let destFolder: UUID? = {
+            guard let above, !source.entry.isFolder else { return nil }
+            if let f = above.folderID { return f }
+            if above.entry.isFolder, !collapsed.contains(above.entry.id), above.entry.id != source.entry.id { return above.entry.id }
+            return nil
+        }()
+        let destIndex: Int = {
+            guard let above else { return 0 }
+            if let destFolder {
+                return above.folderID == destFolder ? above.index + 1 : 0
+            }
+            let topAbove = above.folderID.flatMap { f in rows.first { $0.entry.id == f } } ?? above
+            return topAbove.index + 1
+        }()
+        let id = source.entry.id
+        if source.folderID != destFolder {
+            model.config.moveEntry(id, toFolder: destFolder, in: category.id)
+        }
+        let container = destFolder.flatMap { model.config.findEntry($0, in: category.id)?.children }
+            ?? model.config.categories.first { $0.id == category.id }?.entries ?? []
+        guard let current = container.firstIndex(where: { $0.id == id }) else { return }
+        let target = min(current < destIndex ? destIndex - 1 : destIndex, container.count - 1)
+        model.config.moveEntry(in: category.id, folder: destFolder, from: current, to: max(target, 0))
+    }
+
+    private func newFolder(in categoryID: UUID? = nil) {
+        let id = categoryID ?? self.categoryID
+        let folder = model.config.addFolder(named: Loc.t("Neuer Ordner", "New Folder"), to: id)
+        collapsed.remove(folder)
+        renamingEntry = folder
+    }
+
+    @State private var renamingEntry: UUID?
+
+    private func entryRow(_ row: FlatRow, in category: HMLauncherCore.Category) -> some View {
+        let entry = row.entry
+        let folders = category.entries.filter(\.isFolder)
+        return EntryRow(
+            index: row.index, entry: entry,
+            available: entry.isFolder || catalog.items.isEmpty || EntryResolver.resolve(entry, in: catalog.items) != nil,
+            isExpanded: !collapsed.contains(entry.id),
+            folders: folders.map { ($0.id, $0.title) },
+            inFolder: row.folderID != nil,
+            startRenaming: Binding(get: { renamingEntry == entry.id }, set: { if !$0 { renamingEntry = nil } }),
+            onToggle: { if collapsed.contains(entry.id) { collapsed.remove(entry.id) } else { collapsed.insert(entry.id) } },
+            onIcon: { model.config.setIcon($0, entry: entry.id, in: category.id) },
+            onName: { name in
+                if entry.isFolder { if let name { model.config.renameFolder(entry.id, in: category.id, to: name) } }
+                else { model.config.setDisplayName(name, entry: entry.id, in: category.id) }
+            },
+            onRemove: { model.config.removeEntry(entry.id, from: category.id) },
+            onMoveTo: { model.config.moveEntry(entry.id, toFolder: $0, in: category.id) },
+            onDissolve: { model.config.dissolveFolder(entry.id, in: category.id) },
+            onDropURIs: { uris in
+                for uri in uris {
+                    if let item = catalog.items.first(where: { $0.uri == uri }) {
+                        model.config.addEntry(item, to: category.id, folder: entry.isFolder ? entry.id : row.folderID)
+                    }
+                }
+            })
     }
 
     private func header(_ title: String) -> some View {
@@ -284,17 +374,33 @@ private struct EntryRow: View {
     let index: Int
     let entry: Entry
     let available: Bool
+    let isExpanded: Bool
+    let folders: [(UUID, String)]
+    let inFolder: Bool
+    @Binding var startRenaming: Bool
+    let onToggle: () -> Void
     let onIcon: (String) -> Void
     let onName: (String?) -> Void
     let onRemove: () -> Void
+    let onMoveTo: (UUID?) -> Void
+    let onDissolve: () -> Void
+    let onDropURIs: ([String]) -> Void
     @State private var showIcons = false
     @State private var renaming = false
     @State private var name = ""
     @State private var hovered = false
+    @State private var dropTarget = false
 
     var body: some View {
         LauncherRow(number: index, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
-                    subtitle: available ? subtitle : Loc.t("Nicht mehr in Live gefunden", "No longer found in Live"), active: hovered, available: available) {
+                    subtitle: subtitle, active: hovered || dropTarget, available: available) {
+            if entry.isFolder {
+                Text("\(entry.children?.count ?? 0)").font(.caption).foregroundColor(.dimText)
+                Button(action: onToggle) {
+                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right").font(.system(size: 11, weight: .semibold))
+                }
+                .buttonStyle(.borderless).foregroundColor(.dimText)
+            }
             if hovered {
                 Button(action: onRemove) { Image(systemName: "xmark.circle.fill") }
                     .buttonStyle(.borderless).foregroundColor(.dimText).help(Loc.t("Entfernen", "Remove"))
@@ -315,22 +421,60 @@ private struct EntryRow: View {
             }
         }
         .onHover { hovered = $0 }
-        .contextMenu {
-            Button(Loc.t("Icon wählen …", "Choose Icon …")) { showIcons = true }
+        .onTapGesture(count: 2) { if entry.isFolder { onToggle() } }
+        .onDrop(of: [.text], isTargeted: $dropTarget) { providers in
+            var uris: [String] = []
+            let group = DispatchGroup()
+            for p in providers {
+                group.enter()
+                _ = p.loadObject(ofClass: NSString.self) { obj, _ in
+                    if let s = obj as? String { DispatchQueue.main.async { uris.append(s) } }
+                    group.leave()
+                }
+            }
+            group.notify(queue: .main) { onDropURIs(uris) }
+            return true
+        }
+        .onChange(of: startRenaming) { start in
+            if start { name = entry.title; renaming = true; startRenaming = false }
+        }
+        .onAppear { if startRenaming { name = entry.title; renaming = true; startRenaming = false } }
+        .contextMenu { menu }
+    }
+
+    @ViewBuilder private var menu: some View {
+        Button(Loc.t("Icon wählen …", "Choose Icon …")) { showIcons = true }
+        if entry.isFolder {
+            Button(Loc.t("Umbenennen …", "Rename …")) { name = entry.title; renaming = true }
+            Button(isExpanded ? Loc.t("Zuklappen", "Collapse") : Loc.t("Aufklappen", "Expand"), action: onToggle)
+            Divider()
+            Button(Loc.t("Ordner auflösen", "Dissolve Folder"), action: onDissolve)
+            Button(Loc.t("Ordner löschen", "Delete Folder"), role: .destructive, action: onRemove)
+        } else {
             Button(Loc.t("Anzeigename ändern …", "Change Display Name …")) { name = entry.displayName ?? entry.name; renaming = true }
             if entry.displayName != nil { Button(Loc.t("Originalnamen verwenden", "Use Original Name")) { onName(nil) } }
+            Divider()
+            let targets = folders
+            if !targets.isEmpty {
+                Menu(Loc.t("In Ordner verschieben", "Move to Folder")) {
+                    ForEach(targets, id: \.0) { id, title in Button(title) { onMoveTo(id) } }
+                }
+            }
+            if inFolder { Button(Loc.t("Aus Ordner nehmen", "Take Out of Folder")) { onMoveTo(nil) } }
             Divider()
             Button(Loc.t("Entfernen", "Remove"), role: .destructive, action: onRemove)
         }
     }
 
-    private var subtitle: String {
+    private var subtitle: String? {
+        if entry.isFolder { return Loc.t("Ordner", "Folder") }
+        guard available else { return Loc.t("Nicht mehr in Live gefunden", "No longer found in Live") }
         let path = entry.path.joined(separator: " / ")
         return entry.displayName == nil ? path : "\(entry.name) · \(path)"
     }
 
     private func commitName() {
-        onName(name == entry.name ? nil : name)
+        onName(!entry.isFolder && name == entry.name ? nil : name)
         renaming = false
     }
 }

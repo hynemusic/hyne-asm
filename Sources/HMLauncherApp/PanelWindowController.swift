@@ -44,6 +44,7 @@ final class PanelWindowController {
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         let view = PanelView(viewModel: viewModel,
                              onInsert: { [weak self] in self?.insert($0) },
+                             onCloseFolder: { [weak self] in self?.closeFolder() },
                              onSelectTab: { [weak self] in self?.selectTab($0) },
                              isFavorite: { [weak self] in self?.isFavorite($0) ?? false },
                              onToggleFavorite: { [weak self] in self?.toggleFavorite($0) })
@@ -89,8 +90,19 @@ final class PanelWindowController {
         }
     }
 
+    private func closeFolder() {
+        viewModel.state.closeFolder()
+        layout()
+    }
+
     private func insert(_ row: PanelRow) {
         guard row.isAvailable else { return }
+        if let folder = row.folderID {
+            viewModel.state.openFolder(folder)
+            viewModel.hovered = nil
+            layout()
+            return
+        }
         hide()
         let client = model.client
         let hud = self.hud
@@ -134,7 +146,8 @@ final class PanelWindowController {
     private func layout() {
         let rows = viewModel.state.rows.count
         let visibleRows = CGFloat(min(max(rows, 1), PanelView.maxVisibleRows))
-        let filterHeight: CGFloat = viewModel.state.filter.isEmpty ? 0 : PanelView.filterHeight
+        let filterHeight: CGFloat = (viewModel.state.filter.isEmpty ? 0 : PanelView.filterHeight)
+            + (viewModel.state.openFolderName == nil ? 0 : PanelView.filterHeight)
         let height = PanelView.tabBarHeight + filterHeight + visibleRows * PanelView.rowHeight + PanelView.padding * 2
         let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
         var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: Self.width, height: height)

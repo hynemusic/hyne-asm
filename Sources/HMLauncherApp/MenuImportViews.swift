@@ -130,16 +130,20 @@ struct LESImportPage: View {
         .font(.system(size: 12))
     }
 
+    /// Top-level categories, each followed by the folders that will be created inside it.
+    private var orderedCategories: [ImportCategory] {
+        let all = importer.draft.categories
+        let ids = Set(all.map(\.id))
+        let tops = all.filter { $0.parentID.map { !ids.contains($0) } ?? true }
+        return tops.flatMap { top in [top] + all.filter { $0.parentID == top.id } }
+    }
+
     private var categoryColumn: some View {
         List {
-            ForEach(importer.draft.categories) { c in
+            ForEach(orderedCategories) { c in
                 categoryRow(c)
                     .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
-            }
-            .onMove { from, to in
-                guard let f = from.first else { return }
-                importer.draft.moveCategory(from: f, to: to > f ? to - 1 : to)
+                    .listRowInsets(EdgeInsets(top: 2, leading: c.parentID == nil ? 6 : 26, bottom: 2, trailing: 6))
             }
         }
         .listStyle(.plain)
@@ -149,8 +153,9 @@ struct LESImportPage: View {
     private func categoryRow(_ c: ImportCategory) -> some View {
         let selected = c.id == category?.id
         let missing = c.rows.filter { $0.match.status == .notFound }.count
+        let isFolder = c.parentID != nil
         return HStack(spacing: 8) {
-            Image(systemName: "folder").foregroundColor(.dimText)
+            Image(systemName: isFolder ? "folder.fill" : "square.stack").foregroundColor(isFolder ? .accent : .dimText)
             if renaming == c.id {
                 TextField("", text: $newName, onCommit: {
                     if !newName.trimmingCharacters(in: .whitespaces).isEmpty { importer.draft.renameCategory(c.id, to: newName) }
@@ -175,6 +180,15 @@ struct LESImportPage: View {
         .simultaneousGesture(TapGesture().onEnded { importer.selected = c.id })
         .contextMenu {
             Button(Loc.t("Umbenennen", "Rename")) { newName = c.name; renaming = c.id }
+            if isFolder {
+                Button(Loc.t("Als eigene Kategorie", "Make Own Category")) { importer.draft.setParent(c.id, to: nil) }
+            } else if !importer.draft.categories.contains(where: { $0.parentID == c.id }) {
+                Menu(Loc.t("Als Ordner in", "Make Folder In")) {
+                    ForEach(importer.draft.categories.filter { $0.parentID == nil && $0.id != c.id }) { target in
+                        Button(target.name) { importer.draft.setParent(c.id, to: target.id) }
+                    }
+                }
+            }
             Menu(Loc.t("Zusammenführen mit", "Merge into")) {
                 ForEach(importer.draft.categories.filter { $0.id != c.id }) { target in
                     Button(target.name) {
@@ -195,6 +209,10 @@ struct LESImportPage: View {
         VStack(alignment: .leading, spacing: 8) {
             if let category {
                 HStack {
+                    if let parent = importer.draft.categories.first(where: { $0.id == category.parentID }) {
+                        Text(parent.name + " /").font(.system(size: 15)).foregroundColor(.dimText)
+                        Image(systemName: "folder.fill").foregroundColor(.accent)
+                    }
                     Text(category.name).font(.system(size: 15, weight: .semibold))
                     Spacer()
                     Text(Loc.t("So erscheint es im Panel", "This is how it looks in the panel")).font(.caption).foregroundColor(.dimText)
@@ -214,8 +232,8 @@ struct LESImportPage: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                Text(Loc.t("Ziehen sortiert · Klick auf ⚠️/❌ wählt das richtige Plugin · Rechtsklick auf Kategorien zum Umbenennen/Zusammenführen",
-                           "Drag to reorder · click ⚠️/❌ to pick the right plugin · right-click categories to rename/merge"))
+                Text(Loc.t("Ziehen sortiert · Klick auf ⚠️/❌ wählt das richtige Plugin · Rechtsklick links: umbenennen, Ordner ↔ Kategorie, zusammenführen",
+                           "Drag to reorder · click ⚠️/❌ to pick the right plugin · right-click on the left: rename, folder ↔ category, merge"))
                     .font(.caption).foregroundColor(.dimText)
             }
         }
