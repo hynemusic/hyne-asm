@@ -36,3 +36,37 @@ final class EntryResolverTests: XCTestCase {
         XCTAssertNil(EntryResolver.resolve(entry(for: item("Gone")), in: [item("Other")]))
     }
 }
+
+final class EntryResolverIndexTests: XCTestCase {
+    func testIndexMatchesLinearResolve() {
+        let items = [
+            item("Pro-L 2", uri: "u:v3", path: ["VST3", "FabFilter"]),
+            item("Pro-L 2", uri: "u:au", path: ["AUv2", "FabFilter"]),
+            item("Utility", uri: "u:util", source: .audioEffects),
+            item("Utility", uri: "u:plug"),
+        ]
+        var c = LauncherConfig.makeDefault()
+        let probes = [
+            item("Pro-L 2", uri: "u:v3", path: ["VST3", "FabFilter"]),        // by uri
+            item("Pro-L 2", uri: "u:gone", path: ["AUv2", "FabFilter"]),      // name fallback, same path
+            item("Pro-L 2", uri: "u:gone2", path: ["VST", "Local"]),          // name fallback, first candidate
+            item("Utility", uri: "u:x", source: .audioEffects),               // same name, other source
+            item("Nope", uri: "u:nope"),
+        ]
+        for p in probes { c.addEntry(p, to: c.favoritesID) }
+        let index = EntryResolver.Index(items)
+        for e in c.categories[0].entries {
+            XCTAssertEqual(index.resolve(e), EntryResolver.resolve(e, in: items), e.uri)
+        }
+    }
+
+    func testIndexIsFastForLargeCatalogs() {
+        let items = (0..<5000).map { item("P\($0)", uri: "u:\($0)") }
+        var c = LauncherConfig.makeDefault()
+        for i in stride(from: 0, to: 5000, by: 40) { c.addEntry(items[i], to: c.favoritesID) }
+        let index = EntryResolver.Index(items)
+        let start = Date()
+        for _ in 0..<20 { for e in c.categories[0].entries { _ = index.resolve(e) } }
+        XCTAssertLessThan(Date().timeIntervalSince(start), 0.05)
+    }
+}

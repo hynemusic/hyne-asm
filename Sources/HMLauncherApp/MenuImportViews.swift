@@ -25,7 +25,6 @@ struct LESImportPage: View {
     @ObservedObject var importer: LESImportModel
     let onDone: () -> Void
     @State private var renaming: UUID?
-    @State private var newName = ""
     @State private var confirmReplace = false
 
     private var category: ImportCategory? {
@@ -157,12 +156,9 @@ struct LESImportPage: View {
         return HStack(spacing: 8) {
             Image(systemName: isFolder ? "folder.fill" : "square.stack").foregroundColor(isFolder ? .accent : .dimText)
             if renaming == c.id {
-                TextField("", text: $newName, onCommit: {
-                    if !newName.trimmingCharacters(in: .whitespaces).isEmpty { importer.draft.renameCategory(c.id, to: newName) }
-                    renaming = nil
-                })
-                .textFieldStyle(.roundedBorder)
-                .onExitCommand { renaming = nil }
+                InlineNameField(initial: c.name,
+                                onCommit: { importer.draft.renameCategory(c.id, to: $0); renaming = nil },
+                                onCancel: { renaming = nil })
             } else {
                 Text(c.name).font(.system(size: 13, weight: selected ? .semibold : .regular)).lineLimit(1)
             }
@@ -176,10 +172,10 @@ struct LESImportPage: View {
         .overlay(alignment: .leading) { if selected { Rectangle().fill(Color.accent).frame(width: 3) } }
         .clipShape(RoundedRectangle(cornerRadius: 4))
         .contentShape(Rectangle())
-        .onTapGesture(count: 2) { newName = c.name; renaming = c.id }
+        .onTapGesture(count: 2) { renaming = c.id }
         .simultaneousGesture(TapGesture().onEnded { importer.selected = c.id })
         .contextMenu {
-            Button(Loc.t("Umbenennen", "Rename")) { newName = c.name; renaming = c.id }
+            Button(Loc.t("Umbenennen", "Rename")) { renaming = c.id }
             if isFolder {
                 Button(Loc.t("Als eigene Kategorie", "Make Own Category")) { importer.draft.setParent(c.id, to: nil) }
             } else if !importer.draft.categories.contains(where: { $0.parentID == c.id }) {

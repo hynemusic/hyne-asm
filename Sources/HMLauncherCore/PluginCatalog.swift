@@ -2,7 +2,9 @@ import Foundation
 
 @MainActor
 public final class PluginCatalog: ObservableObject {
-    @Published public private(set) var items: [PluginItem] = []
+    @Published public private(set) var items: [PluginItem] = [] { didSet { index = EntryResolver.Index(items) } }
+    /// Built once per plugin list; use it to resolve entries while drawing.
+    public private(set) var index = EntryResolver.Index([])
     private let cacheURL: URL
     private let client: BridgeClient
 

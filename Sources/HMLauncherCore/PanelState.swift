@@ -31,6 +31,7 @@ public enum PanelAction: Equatable, Sendable {
 public struct PanelState {
     private let config: LauncherConfig
     private let items: [PluginItem]
+    private let index: EntryResolver.Index
     /// Rows of the "All" tab, sorted once (rows is read several times per keystroke).
     private let allRows: [PanelRow]
     public private(set) var tabs: [PanelTab]
@@ -43,6 +44,7 @@ public struct PanelState {
     public init(config: LauncherConfig, items: [PluginItem], selectedTab: Int = 0) {
         self.config = config
         self.items = items
+        index = EntryResolver.Index(items)
         allRows = items
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
             .map { PanelRow(uri: $0.uri, name: $0.name, source: $0.source, path: $0.path,
@@ -85,7 +87,7 @@ public struct PanelState {
             return PanelRow(uri: "", name: e.name, source: e.source, path: [], iconID: e.iconID, title: e.title,
                             isAvailable: true, folderID: e.id, childCount: e.children?.count ?? 0)
         }
-        let resolved = EntryResolver.resolve(e, in: items)
+        let resolved = index.resolve(e)
         return PanelRow(uri: resolved?.uri ?? e.uri, name: e.name, source: e.source, path: resolved?.path ?? e.path,
                         iconID: e.iconID, title: e.title, isAvailable: resolved != nil)
     }

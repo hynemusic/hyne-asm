@@ -52,3 +52,37 @@ extension LauncherRow where Trailing == EmptyView {
         self.init(number: number, symbol: symbol, title: title, subtitle: subtitle, active: active, available: available) { EmptyView() }
     }
 }
+
+/// Inline rename field with its own text state: keystrokes only redraw this field, not the whole settings window.
+/// Focuses itself, commits on Return or when focus leaves, cancels on Esc.
+struct InlineNameField: View {
+    let initial: String
+    let onCommit: (String) -> Void
+    let onCancel: () -> Void
+    @State private var text: String
+    @State private var done = false
+    @FocusState private var focused: Bool
+
+    init(initial: String, onCommit: @escaping (String) -> Void, onCancel: @escaping () -> Void) {
+        self.initial = initial
+        self.onCommit = onCommit
+        self.onCancel = onCancel
+        _text = State(initialValue: initial)
+    }
+
+    var body: some View {
+        TextField("", text: $text, onCommit: commit)
+            .textFieldStyle(.roundedBorder)
+            .focused($focused)
+            .onExitCommand { done = true; onCancel() }
+            .onAppear { DispatchQueue.main.async { focused = true } }
+            .onChange(of: focused) { isFocused in if !isFocused { commit() } }
+    }
+
+    private func commit() {
+        guard !done else { return }
+        done = true
+        let name = text.trimmingCharacters(in: .whitespaces)
+        if name.isEmpty || name == initial { onCancel() } else { onCommit(name) }
+    }
+}

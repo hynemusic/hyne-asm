@@ -8,7 +8,6 @@ struct SettingsView: View {
     @State private var selectedCategory: UUID?
     @State private var expanded: Set<String> = []
     @State private var renamingCategory: UUID?
-    @State private var categoryName = ""
     /// Grouping ~3,300 items costs ~30 ms; recompute only when items or search change, not on every redraw.
     @State private var groups: [PluginGroup] = []
     @State private var collapsed: Set<UUID> = []
@@ -185,9 +184,9 @@ struct SettingsView: View {
         HStack(spacing: 8) {
             Image(systemName: c.isFavorites ? "star.fill" : "folder").foregroundColor(c.isFavorites ? .accent : .dimText).frame(width: 16)
             if renamingCategory == c.id {
-                TextField("Name", text: $categoryName, onCommit: { finishRenaming(c.id) })
-                    .textFieldStyle(.roundedBorder)
-                    .onExitCommand { renamingCategory = nil }
+                InlineNameField(initial: c.name,
+                                onCommit: { model.config.renameCategory(c.id, to: $0); renamingCategory = nil },
+                                onCancel: { renamingCategory = nil })
             } else {
                 Text(c.name).font(.system(size: 13, weight: selected ? .semibold : .regular)).lineLimit(1)
             }
@@ -215,14 +214,7 @@ struct SettingsView: View {
     }
 
     private func startRenaming(_ id: UUID) {
-        categoryName = model.config.categories.first { $0.id == id }?.name ?? ""
         renamingCategory = id
-    }
-
-    private func finishRenaming(_ id: UUID) {
-        let name = categoryName.trimmingCharacters(in: .whitespaces)
-        if !name.isEmpty { model.config.renameCategory(id, to: name) }
-        renamingCategory = nil
     }
 
     // MARK: Entries (looks like the panel)
@@ -398,7 +390,7 @@ struct SettingsView: View {
             isSelected: selection.contains(entry.id),
             selectionCount: multi ? selection.count : 1,
             onGroup: groupSelection,
-            available: entry.isFolder || catalog.items.isEmpty || EntryResolver.resolve(entry, in: catalog.items) != nil,
+            available: entry.isFolder || catalog.items.isEmpty || catalog.index.resolve(entry) != nil,
             isExpanded: !collapsed.contains(entry.id),
             folders: folders.map { ($0.id, $0.title) },
             inFolder: row.folderID != nil,
@@ -463,7 +455,6 @@ private struct EntryRow: View {
     @State private var name = ""
     @State private var hovered = false
     @State private var dropTarget = false
-    @FocusState private var nameFocused: Bool
 
     var body: some View {
         LauncherRow(number: index, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
@@ -488,14 +479,11 @@ private struct EntryRow: View {
         }
         .overlay {
             if renaming {
-                TextField(entry.name, text: $name, onCommit: commitName)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($nameFocused)
+                // Focuses itself, so typing (and ⌫) goes into the name, not to the list's delete command.
+                InlineNameField(initial: name,
+                                onCommit: { new in renaming = false; onName(!entry.isFolder && new == entry.name ? nil : new) },
+                                onCancel: { renaming = false })
                     .padding(.leading, 76).padding(.trailing, 40)
-                    .onExitCommand { renaming = false }
-                    // Focus right away so typing (and ⌫) goes into the name, not to the list's delete command.
-                    .onAppear { DispatchQueue.main.async { nameFocused = true } }
-                    .onChange(of: nameFocused) { focused in if !focused && renaming { commitName() } }
             }
         }
         .onHover { hovered = $0 }
@@ -568,11 +556,6 @@ private struct EntryRow: View {
         return entry.displayName == nil ? path : "\(entry.name) · \(path)"
     }
 
-    private func commitName() {
-        guard renaming else { return }
-        renaming = false
-        onName(!entry.isFolder && name == entry.name ? nil : name)
-    }
 }
 
 private struct IconPicker: View {
