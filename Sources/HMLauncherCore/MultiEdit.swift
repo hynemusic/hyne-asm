@@ -20,6 +20,23 @@ public extension LauncherConfig {
         insert(moving, into: folderID, before: anchor, in: categoryID)
     }
 
+    /// Moves entries (plugins, folders with their plugins) to the end of another category, keeping list order,
+    /// icons and display names. A plugin the target already has is only removed from the source.
+    mutating func moveEntries(_ ids: [UUID], toCategory targetID: UUID, from sourceID: UUID) {
+        guard targetID != sourceID, let t = categories.firstIndex(where: { $0.id == targetID }) else { return }
+        let wanted = Set(ids)
+        let source = categories.first { $0.id == sourceID }?.entries ?? []
+        // A selected folder carries its plugins; don't move those a second time.
+        let carried = Set(source.filter { $0.isFolder && wanted.contains($0.id) }.flatMap { $0.children ?? [] }.map(\.id))
+        let moving = orderedEntryIDs(in: sourceID).filter { wanted.contains($0) && !carried.contains($0) }
+            .compactMap { findEntry($0, in: sourceID) }
+        for e in moving {
+            removeEntry(e.id, from: sourceID)
+            let existing = Set(categories[t].entries.flatMap { $0.children ?? [$0] }.filter { !$0.isFolder }.map(\.uri))
+            if e.isFolder || !existing.contains(e.uri) { categories[t].entries.append(e) }
+        }
+    }
+
     /// Puts the selected plugins (from anywhere in the category, folders ignored) into a new folder placed
     /// where the first of them was. Returns the folder, or nil when no plugin was selected.
     @discardableResult

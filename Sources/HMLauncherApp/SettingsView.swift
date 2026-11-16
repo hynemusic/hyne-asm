@@ -1,5 +1,10 @@
 import SwiftUI
+import UniformTypeIdentifiers
 import HMLauncherCore
+
+/// Drag payload for entries dragged out of the right-hand list (onto a category). Its own type, so rows that
+/// accept plugin URIs (text) from the browser don't react while entries are reordered.
+let entriesDragType = UTType(exportedAs: "local.hm.launcher.entries")
 
 struct SettingsView: View {
     @ObservedObject var model: AppModel
@@ -12,7 +17,11 @@ struct SettingsView: View {
     @State private var groups: [PluginGroup] = []
     @State private var collapsed: Set<UUID> = []
     @State private var selection: Set<UUID> = []
+    @State private var selectionAnchor: UUID?
     @State private var bulkIcons = false
+    @State private var dropCategory: UUID?
+    /// Held without observing it: drag updates redraw only the rows (which observe it), not the whole window.
+    @State private var dropState = DropState()
 
     private var categoryID: UUID { selectedCategory ?? model.config.favoritesID }
     private var category: HMLauncherCore.Category? { model.config.categories.first { $0.id == categoryID } }
@@ -201,7 +210,10 @@ struct SettingsView: View {
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { if !c.isFavorites { startRenaming(c.id) } }
         .simultaneousGesture(TapGesture().onEnded { selectedCategory = c.id })
-        .onDrop(of: [.text], isTargeted: nil) { drop($0, into: c.id) }
+        .overlay { if dropCategory == c.id && c.id != categoryID { RoundedRectangle(cornerRadius: 4).stroke(Color.accent, lineWidth: 2) } }
+        .onDrop(of: [entriesDragType, .text], isTargeted: Binding(get: { dropCategory == c.id }, set: { dropCategory = $0 ? c.id : nil })) {
+            dropOnCategory($0, c.id)
+        }
         .contextMenu {
             Button(Loc.t("Umbenennen", "Rename")) { startRenaming(c.id) }.disabled(c.isFavorites)
             Button(Loc.t("Neuer Ordner", "New Folder")) { selectedCategory = c.id; newFolder(in: c.id) }
@@ -243,19 +255,31 @@ struct SettingsView: View {
                     ForEach(rows) { row in
                         entryRow(row, in: category)
                             .tag(row.id)
+                            // Own drag & drop instead of List.onMove: onMove keeps its drag data private, so entries
+                            // could never be dropped onto a category. This payload works for rows and categories alike.
+                            .onDrag { dragPayload(for: row.id) } preview: {
+                                // Just a count next to the cursor instead of a shrunken copy of the row.
+                                DragCountBadge(count: selection.contains(row.id) ? selection.count : 1)
+                            }
+                            .onDrop(of: [entriesDragType, .text], delegate: RowDropDelegate(
+                                row: SettingsViewRow(id: row.id, isFolder: row.entry.isFolder), drop: dropState,
+                                perform: { spot, providers in dropOnRow(row, spot, providers, in: category) }))
                             .listRowBackground(Color.clear)
                             .listRowInsets(EdgeInsets(top: 2, leading: row.folderID == nil ? 0 : 28, bottom: 2, trailing: 0))
-                    }
-                    .onMove { from, to in
-                        guard let f = from.first else { return }
-                        move(rows, from: f, to: to, in: category)
                     }
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                .onDrop(of: [.text], isTargeted: nil) { drop($0, into: category.id) }
+                .onDrop(of: [entriesDragType, .text], isTargeted: nil) { providers in
+                    // Empty area below the rows: entries move to the end, browser plugins are added.
+                    if let p = providers.first(where: { $0.hasItemConformingToTypeIdentifier(entriesDragType.identifier) }) {
+                        loadEntryIDs(p) { model.config.moveEntries($0, toFolder: nil, before: nil, in: category.id) }
+                        return true
+                    }
+                    return drop(providers, into: category.id)
+                }
                 .onDeleteCommand { removeSelection() }
-                .onChange(of: categoryID) { _ in selection = [] }
+                .onChange(of: categoryID) { _ in selection = []; selectionAnchor = nil }
                 Text(Loc.t("⇧-Klick wählt mehrere, ⌘-Klick einzelne dazu · ⌘G gruppiert · Ziehen sortiert (auch in/aus Ordnern) · Rechtsklick für Icon, Name und Ordner",
                            "⇧-click selects a range, ⌘-click adds single ones · ⌘G groups · drag to reorder (also in/out of folders) · right-click for icon, name and folders"))
                     .font(.caption).foregroundColor(.dimText)
@@ -281,34 +305,103 @@ struct SettingsView: View {
         }
     }
 
-    /// Drag & drop in the flattened list. Dragging a selected row moves the whole selection.
-    /// The row above the drop point decides the container: under an open folder or among its plugins → into that
-    /// folder; among top-level rows → top level. Folders always stay at top level.
-    private func move(_ rows: [FlatRow], from: Int, to: Int, in category: HMLauncherCore.Category) {
-        let source = rows[from]
-        let moving: Set<UUID> = selection.contains(source.id) ? selection : [source.id]
-        let ids = model.config.orderedEntryIDs(in: category.id).filter(moving.contains)
-        let movesFolder = rows.contains { moving.contains($0.id) && $0.entry.isFolder }
-        let above = rows[..<min(to, rows.count)].last { !moving.contains($0.id) }
-        let destFolder: UUID? = {
-            guard let above, !movesFolder else { return nil }
-            if let f = above.folderID { return f }
-            if above.entry.isFolder, !collapsed.contains(above.entry.id) { return above.entry.id }
-            return nil
-        }()
-        // First row after the drop point that stays in the destination container.
-        var anchor: UUID?
-        for r in rows[min(to, rows.count)...] where !moving.contains(r.id) {
-            if let destFolder {
-                if r.folderID == destFolder { anchor = r.id }
-                break
-            }
-            if r.folderID == nil { anchor = r.id; break }
+    // MARK: Selection (⇧ range, ⌘ toggle)
+
+    /// Rows carry their own drag (`onDrag`), which keeps clicks from reaching the List's native selection,
+    /// so clicks on a row select here. The List binding still handles clicks on the row margins and ⌫.
+    private func select(_ id: UUID, rows: [FlatRow]) {
+        let flags = NSEvent.modifierFlags
+        if flags.contains(.shift), let anchor = selectionAnchor,
+           let a = rows.firstIndex(where: { $0.id == anchor }), let b = rows.firstIndex(where: { $0.id == id }) {
+            selection = Set(rows[min(a, b)...max(a, b)].map(\.id))
+        } else if flags.contains(.command) {
+            if selection.contains(id) { selection.remove(id) } else { selection.insert(id) }
+            selectionAnchor = id
+        } else {
+            selection = [id]
+            selectionAnchor = id
         }
-        model.config.moveEntries(ids, toFolder: destFolder, before: anchor, in: category.id)
     }
 
-    // MARK: Selection (native List selection: ⇧ range, ⌘ toggle — and it does not block drag-to-reorder)
+    /// Dragging a selected row carries the whole selection.
+    private func dragPayload(for id: UUID) -> NSItemProvider {
+        let ids = selection.contains(id) ? model.config.orderedEntryIDs(in: categoryID).filter(selection.contains) : [id]
+        EntryDrag.ids = ids
+        let provider = NSItemProvider()
+        let data = Data(ids.map(\.uuidString).joined(separator: ",").utf8)
+        provider.registerDataRepresentation(forTypeIdentifier: entriesDragType.identifier, visibility: .ownProcess) { done in
+            done(data, nil)
+            return nil
+        }
+        return provider
+    }
+
+    /// Uses the ids remembered at drag start right away. Loading them from the item provider is asynchronous
+    /// and AppKit only delivers after its drop animation, which made every drop visibly wait.
+    private func loadEntryIDs(_ provider: NSItemProvider, _ then: @escaping ([UUID]) -> Void) {
+        if let ids = EntryDrag.ids {
+            EntryDrag.ids = nil
+            then(ids)
+            return
+        }
+        provider.loadDataRepresentation(forTypeIdentifier: entriesDragType.identifier) { data, _ in
+            guard let data, let text = String(data: data, encoding: .utf8) else { return }
+            let ids = text.split(separator: ",").compactMap { UUID(uuidString: String($0)) }
+            DispatchQueue.main.async { then(ids) }
+        }
+    }
+
+    /// Drop on a row: before/after it in its container, or into a folder. Entries move, browser plugins are added.
+    private func dropOnRow(_ row: FlatRow, _ spot: DropSpot, _ providers: [NSItemProvider], in category: HMLauncherCore.Category) -> Bool {
+        let folder: UUID? = spot == .into ? row.entry.id : row.folderID
+        if let p = providers.first(where: { $0.hasItemConformingToTypeIdentifier(entriesDragType.identifier) }) {
+            loadEntryIDs(p) { ids in
+                guard !ids.contains(row.id) else { return } // dropped onto itself
+                model.config.moveEntries(ids, toFolder: folder, before: anchor(for: row, spot, excluding: Set(ids), in: category.id), in: category.id)
+            }
+            return true
+        }
+        for p in providers {
+            _ = p.loadObject(ofClass: NSString.self) { obj, _ in
+                guard let uri = obj as? String else { return }
+                DispatchQueue.main.async {
+                    if let item = catalog.items.first(where: { $0.uri == uri }) { model.config.addEntry(item, to: category.id, folder: folder) }
+                }
+            }
+        }
+        return true
+    }
+
+    /// The entry the dropped ones go in front of (nil = end of the container).
+    private func anchor(for row: FlatRow, _ spot: DropSpot, excluding moving: Set<UUID>, in categoryID: UUID) -> UUID? {
+        switch spot {
+        case .into: return nil
+        case .before: return row.id
+        case .after:
+            let container = row.folderID.flatMap { model.config.findEntry($0, in: categoryID)?.children }
+                ?? model.config.categories.first { $0.id == categoryID }?.entries ?? []
+            guard let i = container.firstIndex(where: { $0.id == row.id }) else { return nil }
+            return container[(i + 1)...].first { !moving.contains($0.id) }?.id
+        }
+    }
+
+    /// Entries from the right-hand list move into the category; plugin URIs from the browser are added.
+    private func dropOnCategory(_ providers: [NSItemProvider], _ target: UUID) -> Bool {
+        guard let provider = providers.first(where: { $0.hasItemConformingToTypeIdentifier(entriesDragType.identifier) }) else {
+            return drop(providers, into: target)
+        }
+        let source = categoryID
+        loadEntryIDs(provider) { ids in
+            model.config.moveEntries(ids, toCategory: target, from: source)
+            selection = []
+        }
+        return true
+    }
+
+    private func moveSelection(toCategory target: UUID) {
+        model.config.moveEntries(model.config.orderedEntryIDs(in: categoryID).filter(selection.contains), toCategory: target, from: categoryID)
+        selection = []
+    }
 
     private func groupSelection() {
         guard let folder = model.config.groupEntries(Array(selection), in: categoryID, named: Loc.t("Neue Gruppe", "New Group")) else { return }
@@ -358,6 +451,12 @@ struct SettingsView: View {
                 Button(Loc.t("Aus Ordnern nehmen", "Take Out of Folders")) { moveSelection(toFolder: nil) }
             }
             .fixedSize()
+            Menu(Loc.t("In Kategorie", "To Category")) {
+                ForEach(model.config.categories.filter { $0.id != category.id }) { c in
+                    Button(c.name) { moveSelection(toCategory: c.id) }
+                }
+            }
+            .fixedSize()
             Button(role: .destructive) { removeSelection() } label: { Label(Loc.t("Entfernen", "Remove"), systemImage: "trash") }
             Spacer()
             Button(Loc.t("Auswahl aufheben", "Deselect")) { selection = [] }
@@ -389,6 +488,7 @@ struct SettingsView: View {
             index: row.index, entry: entry,
             isSelected: selection.contains(entry.id),
             selectionCount: multi ? selection.count : 1,
+            onSelect: { select(entry.id, rows: flatRows(category)) },
             onGroup: groupSelection,
             available: entry.isFolder || catalog.items.isEmpty || catalog.index.resolve(entry) != nil,
             isExpanded: !collapsed.contains(entry.id),
@@ -403,14 +503,12 @@ struct SettingsView: View {
             },
             onRemove: { multi ? removeSelection() : model.config.removeEntry(entry.id, from: category.id) },
             onMoveTo: { folder in multi ? moveSelection(toFolder: folder) : model.config.moveEntry(entry.id, toFolder: folder, in: category.id) },
+            categories: model.config.categories.filter { $0.id != category.id }.map { ($0.id, $0.name) },
+            onMoveToCategory: { target in
+                if multi { moveSelection(toCategory: target) } else { model.config.moveEntries([entry.id], toCategory: target, from: category.id) }
+            },
             onDissolve: { model.config.dissolveFolder(entry.id, in: category.id) },
-            onDropURIs: { uris in
-                for uri in uris {
-                    if let item = catalog.items.first(where: { $0.uri == uri }) {
-                        model.config.addEntry(item, to: category.id, folder: entry.isFolder ? entry.id : row.folderID)
-                    }
-                }
-            })
+            drop: dropState)
     }
 
     private func header(_ title: String) -> some View {
@@ -437,6 +535,7 @@ private struct EntryRow: View {
     let entry: Entry
     let isSelected: Bool
     let selectionCount: Int
+    let onSelect: () -> Void
     let onGroup: () -> Void
     let available: Bool
     let isExpanded: Bool
@@ -448,17 +547,19 @@ private struct EntryRow: View {
     let onName: (String?) -> Void
     let onRemove: () -> Void
     let onMoveTo: (UUID?) -> Void
+    let categories: [(UUID, String)]
+    let onMoveToCategory: (UUID) -> Void
     let onDissolve: () -> Void
-    let onDropURIs: ([String]) -> Void
+    @ObservedObject var drop: DropState
+    private var dropSpot: DropSpot? { drop.marker?.id == entry.id ? drop.marker?.spot : nil }
     @State private var showIcons = false
     @State private var renaming = false
     @State private var name = ""
     @State private var hovered = false
-    @State private var dropTarget = false
 
     var body: some View {
         LauncherRow(number: index, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
-                    subtitle: subtitle, active: isSelected || hovered || dropTarget, available: available) {
+                    subtitle: subtitle, active: isSelected || hovered || dropSpot == .into, available: available) {
             if entry.isFolder {
                 Text("\(entry.children?.count ?? 0)").font(.caption).foregroundColor(.dimText)
                 Button(action: onToggle) {
@@ -487,19 +588,13 @@ private struct EntryRow: View {
             }
         }
         .onHover { hovered = $0 }
-        .onDrop(of: [.text], isTargeted: $dropTarget) { providers in
-            var uris: [String] = []
-            let group = DispatchGroup()
-            for p in providers {
-                group.enter()
-                _ = p.loadObject(ofClass: NSString.self) { obj, _ in
-                    if let s = obj as? String { DispatchQueue.main.async { uris.append(s) } }
-                    group.leave()
-                }
+        .simultaneousGesture(TapGesture().onEnded { onSelect() })
+        .overlay(alignment: dropSpot == .after ? .bottom : .top) {
+            if dropSpot == .before || dropSpot == .after {
+                Rectangle().fill(Color.accent).frame(height: 3).offset(y: dropSpot == .before ? -3 : 3)
             }
-            group.notify(queue: .main) { onDropURIs(uris) }
-            return true
         }
+        .overlay { if dropSpot == .into { RoundedRectangle(cornerRadius: 5).stroke(Color.accent, lineWidth: 2) } }
         .onChange(of: startRenaming) { start in
             if start { name = entry.title; renaming = true; startRenaming = false }
         }
@@ -518,6 +613,7 @@ private struct EntryRow: View {
                 }
             }
             Button(Loc.t("Aus Ordnern nehmen", "Take Out of Folders")) { onMoveTo(nil) }
+            categoryMenu
             Divider()
             Button(Loc.t("Alle entfernen", "Remove All"), role: .destructive, action: onRemove)
         } else {
@@ -530,6 +626,8 @@ private struct EntryRow: View {
         if entry.isFolder {
             Button(Loc.t("Umbenennen …", "Rename …")) { name = entry.title; renaming = true }
             Button(isExpanded ? Loc.t("Zuklappen", "Collapse") : Loc.t("Aufklappen", "Expand"), action: onToggle)
+            Divider()
+            categoryMenu
             Divider()
             Button(Loc.t("Ordner auflösen", "Dissolve Folder"), action: onDissolve)
             Button(Loc.t("Ordner löschen", "Delete Folder"), role: .destructive, action: onRemove)
@@ -544,8 +642,17 @@ private struct EntryRow: View {
                 }
             }
             if inFolder { Button(Loc.t("Aus Ordner nehmen", "Take Out of Folder")) { onMoveTo(nil) } }
+            categoryMenu
             Divider()
             Button(Loc.t("Entfernen", "Remove"), role: .destructive, action: onRemove)
+        }
+    }
+
+    @ViewBuilder private var categoryMenu: some View {
+        if !categories.isEmpty {
+            Menu(Loc.t("In Kategorie verschieben", "Move to Category")) {
+                ForEach(categories, id: \.0) { id, name in Button(name) { onMoveToCategory(id) } }
+            }
         }
     }
 
@@ -730,5 +837,76 @@ enum KeyNames {
         if combo.modifiers.contains(.shift) { s += "⇧" }
         if combo.modifiers.contains(.cmd) { s += "⌘" }
         return s + (names[combo.keyCode] ?? Loc.t("Taste \(combo.keyCode)", "Key \(combo.keyCode)"))
+    }
+}
+
+// MARK: - Row drop handling
+
+enum DropSpot: Equatable { case before, after, into }
+
+struct DropMarker: Equatable {
+    let id: UUID
+    let spot: DropSpot
+}
+
+@MainActor
+final class DropState: ObservableObject {
+    @Published var marker: DropMarker?
+}
+
+/// Upper/lower half of a plugin row = before/after it; a folder row takes drops *into* it, except its top edge.
+private struct RowDropDelegate: DropDelegate {
+    let row: SettingsViewRow
+    let drop: DropState
+    let perform: (DropSpot, [NSItemProvider]) -> Bool
+
+    private func spot(_ info: DropInfo) -> DropSpot {
+        let y = info.location.y
+        if row.isFolder { return y < 10 ? .before : .into }
+        return y < 21 ? .before : .after
+    }
+
+    func validateDrop(info: DropInfo) -> Bool { info.hasItemsConforming(to: [entriesDragType, .text]) }
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        let m = DropMarker(id: row.id, spot: spot(info))
+        if drop.marker != m { drop.marker = m }
+        return DropProposal(operation: info.hasItemsConforming(to: [entriesDragType]) ? .move : .copy)
+    }
+
+    func dropExited(info: DropInfo) {
+        if drop.marker?.id == row.id { drop.marker = nil }
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        let s = spot(info)
+        drop.marker = nil
+        return perform(s, info.itemProviders(for: [entriesDragType, .text]))
+    }
+}
+
+/// What the drop delegate needs to know about a row.
+struct SettingsViewRow {
+    let id: UUID
+    let isFolder: Bool
+}
+
+/// The entries of the drag in progress (set when it starts, consumed by the drop) — in-process and synchronous.
+@MainActor
+enum EntryDrag {
+    static var ids: [UUID]?
+}
+
+/// Drag preview: a small yellow badge with the number of entries being dragged.
+private struct DragCountBadge: View {
+    let count: Int
+
+    var body: some View {
+        Text("\(count)")
+            .font(.system(size: 12, weight: .bold, design: .rounded))
+            .foregroundColor(.black)
+            .padding(.horizontal, 7)
+            .frame(minWidth: 22, minHeight: 22)
+            .background(Capsule().fill(Color.accent))
     }
 }
