@@ -68,7 +68,7 @@ struct PanelView: View {
     private func title(of index: Int) -> String {
         switch viewModel.state.tabs[index] {
         case .category(_, let name): return name
-        case .all: return "Alle"
+        case .all: return Loc.t("Alle", "All")
         }
     }
 
@@ -95,7 +95,7 @@ struct PanelView: View {
             ScrollView(.vertical, showsIndicators: rows.count > Self.maxVisibleRows) {
                 VStack(spacing: 4) {
                     if rows.isEmpty {
-                        Text(viewModel.state.filter.isEmpty ? "Keine Einträge – in den Einstellungen hinzufügen" : "Nichts gefunden")
+                        Text(viewModel.state.filter.isEmpty ? Loc.t("Keine Einträge – in den Einstellungen hinzufügen", "No entries – add some in Settings") : Loc.t("Nichts gefunden", "Nothing found"))
                             .font(.system(size: 12)).foregroundColor(.dimText)
                             .frame(maxWidth: .infinity, minHeight: Self.rowHeight - 4)
                     }
@@ -122,8 +122,8 @@ struct PanelView: View {
             if inside { viewModel.hovered = index } else if viewModel.hovered == index { viewModel.hovered = nil }
         }
         .contextMenu {
-            Button(isFavorite(row) ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen") { onToggleFavorite(row) }
+            Button(isFavorite(row) ? Loc.t("Aus Favoriten entfernen", "Remove from Favorites") : Loc.t("Zu Favoriten hinzufügen", "Add to Favorites")) { onToggleFavorite(row) }
         }
-        .help(row.isAvailable ? row.path.joined(separator: " / ") : "Nicht mehr in Live gefunden")
+        .help(row.isAvailable ? row.path.joined(separator: " / ") : Loc.t("Nicht mehr in Live gefunden", "No longer found in Live"))
     }
 }

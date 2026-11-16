@@ -4,7 +4,12 @@ import HMLauncherCore
 /// Shared app state. Every config change is saved immediately.
 @MainActor
 final class AppModel: ObservableObject {
-    @Published var config: LauncherConfig { didSet { saveConfig() } }
+    @Published var config: LauncherConfig {
+        didSet {
+            Loc.language = Language.resolve(config.language)
+            saveConfig()
+        }
+    }
     @Published private(set) var isConnected = false
     @Published private(set) var liveVersion: String?
     let catalog: PluginCatalog
@@ -14,7 +19,9 @@ final class AppModel: ObservableObject {
     init(store: ConfigStore = ConfigStore(url: ConfigStore.defaultURL), client: BridgeClient = BridgeClient()) {
         self.store = store
         self.client = client
-        config = store.load()
+        let loaded = store.load()
+        Loc.language = Language.resolve(loaded.language)
+        config = loaded
         catalog = PluginCatalog(cacheURL: PluginCatalog.defaultCacheURL, client: client)
         saveConfig() // persists migrations right away
     }

@@ -18,13 +18,23 @@ struct SettingsView: View {
     var body: some View {
         VStack(spacing: 0) {
             Picker("", selection: $page) {
-                Text("Plugins & Kategorien").tag(0)
-                Text("Tastenkürzel").tag(1)
+                Text(Loc.t("Plugins & Kategorien", "Plugins & Categories")).tag(0)
+                Text(Loc.t("Tastenkürzel", "Shortcuts")).tag(1)
             }
             .pickerStyle(.segmented)
             .labelsHidden()
             .frame(width: 320)
             .padding(10)
+            .frame(maxWidth: .infinity)
+            .overlay(alignment: .trailing) {
+                Picker(Loc.t("Sprache", "Language"), selection: $model.config.language) {
+                    Text(Loc.t("Automatisch", "Automatic")).tag(Language?.none)
+                    Text("Deutsch").tag(Language?.some(.de))
+                    Text("English").tag(Language?.some(.en))
+                }
+                .frame(width: 230)
+                .padding(.trailing, 12)
+            }
             Divider()
             if page == 0 { pluginsPage } else {
                 ShortcutsPage(shortcuts: $model.config.shortcuts, panelKeys: $model.config.panelKeys)
@@ -54,12 +64,12 @@ struct SettingsView: View {
         return VStack(alignment: .leading, spacing: 8) {
             header("Plugins")
             HStack {
-                TextField("Suchen", text: $search).textFieldStyle(.roundedBorder)
+                TextField(Loc.t("Suchen", "Search"), text: $search).textFieldStyle(.roundedBorder)
                 Button { model.refreshCatalog() } label: { Image(systemName: "arrow.clockwise") }
-                    .buttonStyle(.borderless).help("Plugin-Liste aus Live neu laden")
+                    .buttonStyle(.borderless).help(Loc.t("Plugin-Liste aus Live neu laden", "Reload plugin list from Live"))
             }
             if catalog.items.isEmpty {
-                Text(model.isConnected ? "Lade Plugin-Liste …" : "Nicht mit Live verbunden – Live öffnen und HMLauncherBridge als Control Surface wählen.")
+                Text(model.isConnected ? Loc.t("Lade Plugin-Liste …", "Loading plugin list …") : Loc.t("Nicht mit Live verbunden – Live öffnen und HMLauncherBridge als Control Surface wählen.", "Not connected to Live – open Live and choose HMLauncherBridge as a control surface."))
                     .font(.callout).foregroundColor(.dimText)
             }
             ScrollView {
@@ -72,7 +82,7 @@ struct SettingsView: View {
                     }
                 }
             }
-            Text("Doppelklick oder ziehen fügt zu „\(category?.name ?? "")“ hinzu.")
+            Text(Loc.t("Doppelklick oder ziehen fügt zu „\(category?.name ?? "")“ hinzu.", "Double-click or drag to add to “\(category?.name ?? "")”."))
                 .font(.caption).foregroundColor(.dimText)
         }
         .padding(12)
@@ -112,9 +122,9 @@ struct SettingsView: View {
         .onTapGesture(count: 2) { add(item, to: categoryID) }
         .onDrag { NSItemProvider(object: item.uri as NSString) }
         .contextMenu {
-            Button("Zu „\(category?.name ?? "")“ hinzufügen") { add(item, to: categoryID) }
+            Button(Loc.t("Zu „\(category?.name ?? "")“ hinzufügen", "Add to “\(category?.name ?? "")”")) { add(item, to: categoryID) }
             if categoryID != model.config.favoritesID {
-                Button("Zu Favoriten hinzufügen") { add(item, to: model.config.favoritesID) }
+                Button(Loc.t("Zu Favoriten hinzufügen", "Add to Favorites")) { add(item, to: model.config.favoritesID) }
             }
         }
         .help(item.path.joined(separator: " / "))
@@ -126,7 +136,7 @@ struct SettingsView: View {
 
     private var categoryList: some View {
         VStack(alignment: .leading, spacing: 8) {
-            header("Kategorien")
+            header(Loc.t("Kategorien", "Categories"))
             List {
                 ForEach(model.config.categories) { c in
                     categoryRow(c)
@@ -141,10 +151,10 @@ struct SettingsView: View {
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             Button {
-                let id = model.config.addCategory(named: "Neue Kategorie")
+                let id = model.config.addCategory(named: Loc.t("Neue Kategorie", "New Category"))
                 selectedCategory = id
                 startRenaming(id)
-            } label: { Label("Kategorie", systemImage: "plus") }
+            } label: { Label(Loc.t("Kategorie", "Category"), systemImage: "plus") }
             .buttonStyle(.borderless)
         }
         .padding(12)
@@ -175,8 +185,8 @@ struct SettingsView: View {
         .onTapGesture(count: 2) { if !c.isFavorites { startRenaming(c.id) } }
         .onDrop(of: [.text], isTargeted: nil) { drop($0, into: c.id) }
         .contextMenu {
-            Button("Umbenennen") { startRenaming(c.id) }.disabled(c.isFavorites)
-            Button("Löschen", role: .destructive) {
+            Button(Loc.t("Umbenennen", "Rename")) { startRenaming(c.id) }.disabled(c.isFavorites)
+            Button(Loc.t("Löschen", "Delete"), role: .destructive) {
                 model.config.deleteCategory(c.id)
                 if selectedCategory == c.id { selectedCategory = nil }
             }
@@ -202,11 +212,11 @@ struct SettingsView: View {
             HStack {
                 header(category?.name ?? "")
                 Spacer()
-                Text("So erscheint es im Panel").font(.caption).foregroundColor(.dimText)
+                Text(Loc.t("So erscheint es im Panel", "This is how it looks in the panel")).font(.caption).foregroundColor(.dimText)
             }
             if let category {
                 if category.entries.isEmpty {
-                    Text("Noch leer – Plugins links doppelklicken oder hierher ziehen.")
+                    Text(Loc.t("Noch leer – Plugins links doppelklicken oder hierher ziehen.", "Empty – double-click plugins on the left or drag them here."))
                         .font(.callout).foregroundColor(.dimText)
                         .frame(maxWidth: .infinity, minHeight: 80)
                 }
@@ -228,7 +238,7 @@ struct SettingsView: View {
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .onDrop(of: [.text], isTargeted: nil) { drop($0, into: category.id) }
-                Text("Ziehen sortiert · Klick aufs Icon oder Rechtsklick für Icon und Name · 1–9 = Zifferntasten im Panel")
+                Text(Loc.t("Ziehen sortiert · Klick aufs Icon oder Rechtsklick für Icon und Name · 1–9 = Zifferntasten im Panel", "Drag to reorder · click the icon or right-click for icon and name · 1–9 = number keys in the panel"))
                     .font(.caption).foregroundColor(.dimText)
             }
         }
@@ -268,10 +278,10 @@ private struct EntryRow: View {
 
     var body: some View {
         LauncherRow(number: index, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
-                    subtitle: available ? subtitle : "Nicht mehr in Live gefunden", active: hovered, available: available) {
+                    subtitle: available ? subtitle : Loc.t("Nicht mehr in Live gefunden", "No longer found in Live"), active: hovered, available: available) {
             if hovered {
                 Button(action: onRemove) { Image(systemName: "xmark.circle.fill") }
-                    .buttonStyle(.borderless).foregroundColor(.dimText).help("Entfernen")
+                    .buttonStyle(.borderless).foregroundColor(.dimText).help(Loc.t("Entfernen", "Remove"))
             }
         }
         .overlay(alignment: .leading) {
@@ -290,11 +300,11 @@ private struct EntryRow: View {
         }
         .onHover { hovered = $0 }
         .contextMenu {
-            Button("Icon wählen …") { showIcons = true }
-            Button("Anzeigename ändern …") { name = entry.displayName ?? entry.name; renaming = true }
-            if entry.displayName != nil { Button("Originalnamen verwenden") { onName(nil) } }
+            Button(Loc.t("Icon wählen …", "Choose Icon …")) { showIcons = true }
+            Button(Loc.t("Anzeigename ändern …", "Change Display Name …")) { name = entry.displayName ?? entry.name; renaming = true }
+            if entry.displayName != nil { Button(Loc.t("Originalnamen verwenden", "Use Original Name")) { onName(nil) } }
             Divider()
-            Button("Entfernen", role: .destructive, action: onRemove)
+            Button(Loc.t("Entfernen", "Remove"), role: .destructive, action: onRemove)
         }
     }
 
@@ -350,15 +360,15 @@ struct ShortcutsPage: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
-                section("Plugin-Fenster", note: "Nur aktiv, wenn Live vorne ist. Kürzel brauchen ⌘, ⌃ oder ⌥.",
+                section(Loc.t("Plugin-Fenster", "Plugin Windows"), note: Loc.t("Nur aktiv, wenn Live vorne ist. Kürzel brauchen ⌘, ⌃ oder ⌥.", "Only active while Live is in front. Shortcuts need ⌘, ⌃ or ⌥."),
                         reset: { shortcuts = .default }) {
-                    row("Fokussiertes Plugin-Fenster schließen",
+                    row(Loc.t("Fokussiertes Plugin-Fenster schließen", "Close focused plugin window"),
                         combos: Binding(get: { shortcuts.closeFocused.map { [$0] } ?? [] },
                                         set: { shortcuts.closeFocused = $0.last }),
                         maxCount: 1, requireModifier: true)
-                    row("Alle Plugin-Fenster schließen", combos: $shortcuts.closeAll, maxCount: 4, requireModifier: true)
+                    row(Loc.t("Alle Plugin-Fenster schließen", "Close all plugin windows"), combos: $shortcuts.closeAll, maxCount: 4, requireModifier: true)
                 }
-                section("Im Panel", note: "Fest: 1–9 fügen die Zeile ein, Tippen filtert, ⌫ löscht im Filter.",
+                section(Loc.t("Im Panel", "In the Panel"), note: Loc.t("Fest: 1–9 fügen die Zeile ein, Tippen filtert, ⌫ löscht im Filter.", "Fixed: 1–9 insert that row, typing filters, ⌫ deletes in the filter."),
                         reset: { panelKeys = .default }) {
                     ForEach(PanelKeyAction.allCases, id: \.self) { action in
                         row(action.label, combos: Binding(get: { panelKeys[action] }, set: { panelKeys[action] = $0 }),
@@ -379,7 +389,7 @@ struct ShortcutsPage: View {
             HStack {
                 Text(title).font(.system(size: 15, weight: .semibold))
                 Spacer()
-                Button("Standard wiederherstellen", action: reset).buttonStyle(.borderless).foregroundColor(.accent)
+                Button(Loc.t("Standard wiederherstellen", "Restore Defaults"), action: reset).buttonStyle(.borderless).foregroundColor(.accent)
             }
             Text(note).font(.caption).foregroundColor(.dimText)
             VStack(spacing: 4) { content() }
@@ -399,7 +409,7 @@ struct ShortcutsPage: View {
                             onChange: { combos.wrappedValue.append($0) }, onRemove: nil)
             }
             if combos.wrappedValue.isEmpty {
-                Text("aus").font(.caption).foregroundColor(.dimText)
+                Text(Loc.t("aus", "off")).font(.caption).foregroundColor(.dimText)
             }
             Spacer()
         }
@@ -423,7 +433,7 @@ struct KeyRecorder: View {
     var body: some View {
         HStack(spacing: 2) {
             Button { recording ? stop() : start() } label: {
-                Text(recording ? (hint ?? "Taste drücken …") : combo.map(KeyNames.describe) ?? "+")
+                Text(recording ? (hint ?? Loc.t("Taste drücken …", "Press keys …")) : combo.map(KeyNames.describe) ?? "+")
                     .font(.system(size: 12, weight: .medium, design: .rounded))
                     .padding(.horizontal, 8).padding(.vertical, 4)
                     .frame(minWidth: combo == nil && !recording ? 26 : 64)
@@ -432,10 +442,10 @@ struct KeyRecorder: View {
                     .cornerRadius(4)
             }
             .buttonStyle(.plain)
-            .help(combo == nil ? "Kürzel hinzufügen" : "Klicken und neue Taste drücken")
+            .help(combo == nil ? Loc.t("Kürzel hinzufügen", "Add shortcut") : Loc.t("Klicken und neue Taste drücken", "Click, then press the new keys"))
             if let onRemove, combo != nil, !recording {
                 Button(action: onRemove) { Image(systemName: "xmark").font(.system(size: 9, weight: .bold)) }
-                    .buttonStyle(.borderless).foregroundColor(.dimText).help("Entfernen")
+                    .buttonStyle(.borderless).foregroundColor(.dimText).help(Loc.t("Entfernen", "Remove"))
             }
         }
         .onDisappear { stop() }
@@ -447,7 +457,7 @@ struct KeyRecorder: View {
         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let mods = EventTapController.modifiers(event.cgEvent?.flags ?? [])
             if requireModifier && mods.isDisjoint(with: [.cmd, .ctrl, .alt]) {
-                hint = "⌘, ⌃ oder ⌥ dazu"
+                hint = Loc.t("⌘, ⌃ oder ⌥ dazu", "add ⌘, ⌃ or ⌥")
                 return nil
             }
             onChange(KeyCombo(keyCode: event.keyCode, modifiers: mods))
@@ -469,7 +479,7 @@ enum KeyNames {
         14: "E", 15: "R", 16: "Y", 17: "T", 31: "O", 32: "U", 34: "I", 35: "P", 37: "L", 38: "J", 40: "K", 45: "N",
         46: "M", 18: "1", 19: "2", 20: "3", 21: "4", 23: "5", 22: "6", 26: "7", 28: "8", 25: "9", 29: "0",
         27: "ß", 24: "´", 33: "Ü", 30: "+", 39: "Ä", 41: "Ö", 42: "#", 43: ",", 47: ".", 44: "-", 50: "<",
-        53: "Esc", 36: "↩", 76: "⌅", 48: "⇥", 49: "Leertaste", 51: "⌫", 117: "⌦",
+        53: "Esc", 36: "↩", 76: "⌅", 48: "⇥", 49: "Space", 51: "⌫", 117: "⌦",
         123: "←", 124: "→", 125: "↓", 126: "↑", 115: "↖", 119: "↘", 116: "⇞", 121: "⇟",
         122: "F1", 120: "F2", 99: "F3", 118: "F4", 96: "F5", 97: "F6", 98: "F7", 100: "F8", 101: "F9", 109: "F10",
     ]
@@ -480,6 +490,6 @@ enum KeyNames {
         if combo.modifiers.contains(.alt) { s += "⌥" }
         if combo.modifiers.contains(.shift) { s += "⇧" }
         if combo.modifiers.contains(.cmd) { s += "⌘" }
-        return s + (names[combo.keyCode] ?? "Taste \(combo.keyCode)")
+        return s + (names[combo.keyCode] ?? Loc.t("Taste \(combo.keyCode)", "Key \(combo.keyCode)"))
     }
 }

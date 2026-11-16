@@ -4,12 +4,12 @@ public enum PanelKeyAction: String, CaseIterable, Codable, Sendable {
 
     public var label: String {
         switch self {
-        case .prevTab: return "Vorheriger Tab"
-        case .nextTab: return "Nächster Tab"
-        case .up: return "Nach oben"
-        case .down: return "Nach unten"
-        case .insert: return "Markiertes Plugin einfügen"
-        case .close: return "Panel schließen"
+        case .prevTab: return Loc.t("Vorheriger Tab", "Previous tab")
+        case .nextTab: return Loc.t("Nächster Tab", "Next tab")
+        case .up: return Loc.t("Nach oben", "Move up")
+        case .down: return Loc.t("Nach unten", "Move down")
+        case .insert: return Loc.t("Markiertes Plugin einfügen", "Insert highlighted plugin")
+        case .close: return Loc.t("Panel schließen", "Close panel")
         }
     }
 

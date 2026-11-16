@@ -78,6 +78,8 @@ public struct LauncherConfig: Codable, Sendable {
     public var categories: [Category]
     public var shortcuts: ShortcutSettings
     public var panelKeys: PanelKeyBindings
+    /// nil = follow the macOS language
+    public var language: Language?
 
     public init(version: Int, categories: [Category], shortcuts: ShortcutSettings, panelKeys: PanelKeyBindings = .default) {
         self.version = version
@@ -93,6 +95,7 @@ public struct LauncherConfig: Codable, Sendable {
         categories = try c.decode([Category].self, forKey: .categories)
         shortcuts = try c.decodeIfPresent(ShortcutSettings.self, forKey: .shortcuts) ?? .default
         panelKeys = try c.decodeIfPresent(PanelKeyBindings.self, forKey: .panelKeys) ?? .default
+        language = try c.decodeIfPresent(Language.self, forKey: .language)
     }
 
     public static let currentVersion = 2

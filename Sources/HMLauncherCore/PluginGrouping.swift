@@ -9,7 +9,7 @@ public struct PluginGroup: Identifiable, Equatable, Sendable {
 /// Settings browser: Live devices first, then one folder per manufacturer (VST3 → AU → VST2 inside),
 /// then VST2 plugins whose manufacturer cannot be inferred.
 public enum PluginGrouping {
-    public static let otherVST2 = "Weitere VST2"
+    public static var otherVST2: String { Loc.t("Weitere VST2", "Other VST2") }
 
     private static let liveGroups: [(ItemSource, String)] = [
         (.audioEffects, "Live · Audio Effects"), (.instruments, "Live · Instruments"),

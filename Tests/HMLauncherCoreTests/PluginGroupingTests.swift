@@ -2,6 +2,8 @@ import XCTest
 @testable import HMLauncherCore
 
 final class PluginGroupingTests: XCTestCase {
+    override func setUp() { Loc.language = .de }
+
     let items: [PluginItem] = [
         item("FabFilter Pro-L 2", uri: "v2", path: ["VST", "Local"]),
         item("Pro-L 2", uri: "au", path: ["AUv2", "FabFilter"]),

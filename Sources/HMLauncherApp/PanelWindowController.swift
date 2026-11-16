@@ -98,11 +98,11 @@ final class PanelWindowController {
             do {
                 try await client.load(uri: row.uri)
             } catch BridgeError.notConnected {
-                hud.show("Nicht mit Live verbunden")
+                hud.show(Loc.t("Nicht mit Live verbunden", "Not connected to Live"))
             } catch BridgeError.remote(let code) where code == "not_found" {
-                hud.show("Plugin nicht gefunden")
+                hud.show(Loc.t("Plugin nicht gefunden", "Plugin not found"))
             } catch {
-                hud.show("Laden fehlgeschlagen")
+                hud.show(Loc.t("Laden fehlgeschlagen", "Loading failed"))
             }
         }
     }
