@@ -16,30 +16,38 @@ struct SettingsView: View {
     private var category: HMLauncherCore.Category? { model.config.categories.first { $0.id == categoryID } }
 
     @State private var page = 0
+    /// Lives here so the import preview survives switching pages.
+    @StateObject private var importer = LESImportModel()
 
     var body: some View {
         VStack(spacing: 0) {
             Picker("", selection: $page) {
                 Text(Loc.t("Plugins & Kategorien", "Plugins & Categories")).tag(0)
+                Text(Loc.t("LES-Import", "LES Import")).tag(2)
+                Text(Loc.t("Versionen", "Versions")).tag(3)
                 Text(Loc.t("Tastenkürzel", "Shortcuts")).tag(1)
             }
             .pickerStyle(.segmented)
             .labelsHidden()
-            .frame(width: 320)
+            .frame(width: 520)
             .padding(10)
             .frame(maxWidth: .infinity)
             .overlay(alignment: .trailing) {
-                Picker(Loc.t("Sprache", "Language"), selection: $model.config.language) {
+                Picker("", selection: $model.config.language) {
                     Text(Loc.t("Automatisch", "Automatic")).tag(Language?.none)
                     Text("Deutsch").tag(Language?.some(.de))
                     Text("English").tag(Language?.some(.en))
                 }
-                .frame(width: 230)
+                .frame(width: 130)
                 .padding(.trailing, 12)
+                .help(Loc.t("Sprache", "Language"))
             }
             Divider()
-            if page == 0 { pluginsPage } else {
-                ShortcutsPage(shortcuts: $model.config.shortcuts, panelKeys: $model.config.panelKeys)
+            switch page {
+            case 0: pluginsPage
+            case 2: LESImportPage(model: model, catalog: catalog, importer: importer, onDone: { page = 0 })
+            case 3: VersionsPage(model: model)
+            default: ShortcutsPage(shortcuts: $model.config.shortcuts, panelKeys: $model.config.panelKeys)
             }
         }
         .background(Color.panelSidebar)

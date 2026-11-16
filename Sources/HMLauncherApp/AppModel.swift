@@ -13,6 +13,8 @@ final class AppModel: ObservableObject {
     @Published private(set) var isConnected = false
     @Published private(set) var liveVersion: String?
     let catalog: PluginCatalog
+    let versions = MenuVersionStore(directory: MenuVersionStore.defaultDirectory)
+    @Published private(set) var versionList: [MenuVersion] = []
     let client: BridgeClient
     private let store: ConfigStore
 
@@ -38,6 +40,48 @@ final class AppModel: ObservableObject {
 
     func saveConfig() {
         do { try store.save(config) } catch { NSLog("HM Launcher: saving config failed: \(error)") }
+    }
+
+    // MARK: Menu versions, import, export
+
+    func reloadVersions() {
+        versionList = (try? versions.list()) ?? []
+    }
+
+    func saveVersion(name: String, automatic: Bool) throws {
+        try versions.save(name: name, categories: config.categories, isAutomatic: automatic)
+        reloadVersions()
+    }
+
+    /// Every change of the whole menu first saves the current state as an automatic version.
+    private func backup(_ reason: String) throws {
+        try saveVersion(name: reason, automatic: true)
+    }
+
+    func push(_ draft: ImportDraft, mode: ImportMode) throws {
+        try backup(Loc.t("Vor LES-Import", "Before LES import"))
+        config.apply(draft, mode: mode)
+    }
+
+    func restoreVersion(_ version: MenuVersion) throws {
+        let doc = try versions.load(version.id)
+        try backup(Loc.t("Vor Wiederherstellen von „\(version.name)“", "Before restoring “\(version.name)”"))
+        config.restoreMenu(doc.categories)
+    }
+
+    func importMenuFile(_ url: URL) throws {
+        let doc = try MenuDocument.read(from: url)
+        try backup(Loc.t("Vor Import von „\(doc.name)“", "Before importing “\(doc.name)”"))
+        config.restoreMenu(doc.categories)
+    }
+
+    func exportMenu(to url: URL) throws {
+        try MenuDocument(name: url.deletingPathExtension().lastPathComponent, categories: config.categories).write(to: url)
+    }
+
+    func deleteVersion(_ version: MenuVersion) {
+        try? versions.delete(version.id)
+        reloadVersions()
     }
 
     func refreshCatalog() {
