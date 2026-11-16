@@ -13,7 +13,8 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             let w = NSWindow(contentViewController: NSHostingController(rootView: SettingsView(model: model, catalog: model.catalog)))
             w.title = "HM Launcher – Einstellungen"
             w.styleMask = [.titled, .closable, .resizable, .miniaturizable]
-            w.setContentSize(NSSize(width: 980, height: 620))
+            w.setContentSize(NSSize(width: 1040, height: 660))
+            w.appearance = NSAppearance(named: .darkAqua)
             w.isReleasedWhenClosed = false
             w.delegate = self
             w.center()

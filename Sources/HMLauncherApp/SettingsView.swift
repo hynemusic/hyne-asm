@@ -6,149 +6,221 @@ struct SettingsView: View {
     @ObservedObject var catalog: PluginCatalog
     @State private var search = ""
     @State private var selectedCategory: UUID?
-    @State private var selectedEntry: UUID?
-    @State private var renaming: UUID?
+    @State private var expanded: Set<String> = []
+    @State private var renamingCategory: UUID?
+    @State private var categoryName = ""
 
-    private var category: HMLauncherCore.Category? {
-        model.config.categories.first { $0.id == (selectedCategory ?? model.config.favoritesID) }
-    }
+    private var categoryID: UUID { selectedCategory ?? model.config.favoritesID }
+    private var category: HMLauncherCore.Category? { model.config.categories.first { $0.id == categoryID } }
 
     var body: some View {
         VStack(spacing: 0) {
-            HSplitView {
-                pluginBrowser.frame(minWidth: 300)
-                categoryList.frame(minWidth: 200, maxWidth: 260)
-                entryList.frame(minWidth: 360)
+            HStack(spacing: 0) {
+                pluginBrowser.frame(minWidth: 300, idealWidth: 340).background(Color.panelSidebar)
+                Divider()
+                categoryList.frame(width: 220).background(Color.panelSidebar)
+                Divider()
+                entryList.frame(minWidth: 380).background(Color.panelBackground)
             }
             Divider()
-            ShortcutSettingsView(shortcuts: $model.config.shortcuts).padding(12)
+            ShortcutSettingsView(shortcuts: $model.config.shortcuts)
+                .padding(12)
+                .background(Color.panelSidebar)
         }
+        .preferredColorScheme(.dark)
+        .foregroundColor(.white)
     }
 
     // MARK: Installed plugins
 
-    private var groupedItems: [(String, [PluginItem])] {
-        let filtered = catalog.items.filter { search.isEmpty || $0.name.localizedCaseInsensitiveContains(search) }
-        let groups = Dictionary(grouping: filtered) { item -> String in
-            switch item.source {
-            case .plugins: return "Plugins · " + (item.path.first ?? "?")
-            case .instruments: return "Live · Instruments"
-            case .audioEffects: return "Live · Audio Effects"
-            case .midiEffects: return "Live · MIDI Effects"
-            case .maxForLive: return "Live · Max for Live"
-            }
-        }
-        return groups.keys.sorted().map { key in
-            (key, groups[key]!.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending })
-        }
-    }
-
     private var pluginBrowser: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        let groups = PluginGrouping.groups(catalog.items, search: search)
+        return VStack(alignment: .leading, spacing: 8) {
+            header("Plugins")
             HStack {
-                TextField("Plugins suchen", text: $search).textFieldStyle(.roundedBorder)
+                TextField("Suchen", text: $search).textFieldStyle(.roundedBorder)
                 Button { model.refreshCatalog() } label: { Image(systemName: "arrow.clockwise") }
-                    .help("Plugin-Liste aus Live neu laden")
+                    .buttonStyle(.borderless).help("Plugin-Liste aus Live neu laden")
             }
             if catalog.items.isEmpty {
                 Text(model.isConnected ? "Lade Plugin-Liste …" : "Nicht mit Live verbunden – Live öffnen und HMLauncherBridge als Control Surface wählen.")
-                    .foregroundColor(.secondary).font(.callout)
+                    .font(.callout).foregroundColor(.dimText)
             }
-            List {
-                ForEach(groupedItems, id: \.0) { group, items in
-                    Section(group) {
-                        ForEach(items, id: \.uri) { item in
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text(item.name)
-                                Text(item.path.joined(separator: " / ")).font(.caption).foregroundColor(.secondary)
-                            }
-                            .contentShape(Rectangle())
-                            .onTapGesture(count: 2) { add(item) }
-                            .onDrag { NSItemProvider(object: item.uri as NSString) }
-                            .contextMenu { Button("Zu „\(category?.name ?? "")“ hinzufügen") { add(item) } }
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 2) {
+                    ForEach(groups) { group in
+                        folderHeader(group)
+                        if !search.isEmpty || expanded.contains(group.title) {
+                            ForEach(group.items, id: \.uri) { item in pluginRow(item) }
                         }
                     }
                 }
             }
-            Text("Doppelklick oder ziehen, um zur gewählten Kategorie hinzuzufügen.").font(.caption).foregroundColor(.secondary)
+            Text("Doppelklick oder ziehen fügt zu „\(category?.name ?? "")“ hinzu.")
+                .font(.caption).foregroundColor(.dimText)
         }
-        .padding(10)
+        .padding(12)
     }
 
-    private func add(_ item: PluginItem) {
-        model.config.addEntry(item, to: category?.id ?? model.config.favoritesID)
+    private func folderHeader(_ group: PluginGroup) -> some View {
+        let open = !search.isEmpty || expanded.contains(group.title)
+        return Button {
+            if expanded.contains(group.title) { expanded.remove(group.title) } else { expanded.insert(group.title) }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: open ? "chevron.down" : "chevron.right").font(.system(size: 9, weight: .bold)).frame(width: 10)
+                Image(systemName: group.title.hasPrefix("Live") ? "square.stack.3d.up" : "folder").foregroundColor(.accent)
+                Text(group.title).font(.system(size: 13, weight: .semibold))
+                Spacer()
+                Text("\(group.items.count)").font(.caption).foregroundColor(.dimText)
+            }
+            .padding(.vertical, 5)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!search.isEmpty)
     }
+
+    private func pluginRow(_ item: PluginItem) -> some View {
+        HStack(spacing: 8) {
+            Text(item.name).font(.system(size: 13)).lineLimit(1)
+            Spacer()
+            Text(PluginGrouping.formatLabel(item))
+                .font(.system(size: 9, weight: .semibold))
+                .padding(.horizontal, 5).padding(.vertical, 2)
+                .background(Color.rowBackground).cornerRadius(3)
+                .foregroundColor(.dimText)
+        }
+        .padding(.leading, 26).padding(.trailing, 4).padding(.vertical, 4)
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) { add(item, to: categoryID) }
+        .onDrag { NSItemProvider(object: item.uri as NSString) }
+        .contextMenu {
+            Button("Zu „\(category?.name ?? "")“ hinzufügen") { add(item, to: categoryID) }
+            if categoryID != model.config.favoritesID {
+                Button("Zu Favoriten hinzufügen") { add(item, to: model.config.favoritesID) }
+            }
+        }
+        .help(item.path.joined(separator: " / "))
+    }
+
+    private func add(_ item: PluginItem, to id: UUID) { model.config.addEntry(item, to: id) }
 
     // MARK: Categories
 
     private var categoryList: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Kategorien").font(.headline)
-            List(selection: $selectedCategory) {
+        VStack(alignment: .leading, spacing: 8) {
+            header("Kategorien")
+            List {
                 ForEach(model.config.categories) { c in
-                    categoryRow(c).tag(c.id)
+                    categoryRow(c)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
                 }
                 .onMove { from, to in
                     guard let f = from.first else { return }
                     model.config.moveCategory(from: f, to: to > f ? to - 1 : to)
                 }
             }
-            HStack {
-                Button { selectedCategory = model.config.addCategory(named: "Neue Kategorie"); renaming = selectedCategory } label: { Image(systemName: "plus") }
-                Button { if let id = selectedCategory { model.config.deleteCategory(id); selectedCategory = nil } } label: { Image(systemName: "minus") }
-                    .disabled(category?.isFavorites ?? true)
-            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            Button {
+                let id = model.config.addCategory(named: "Neue Kategorie")
+                selectedCategory = id
+                startRenaming(id)
+            } label: { Label("Kategorie", systemImage: "plus") }
+            .buttonStyle(.borderless)
         }
-        .padding(10)
+        .padding(12)
     }
 
     @ViewBuilder
     private func categoryRow(_ c: HMLauncherCore.Category) -> some View {
-        if renaming == c.id {
-            TextField("Name", text: Binding(
-                get: { c.name },
-                set: { model.config.renameCategory(c.id, to: $0) }
-            ), onCommit: { renaming = nil })
-        } else {
-            HStack {
-                if c.isFavorites { Image(systemName: "star.fill").foregroundColor(.yellow) }
-                Text(c.name)
-                Spacer()
-                Text("\(c.entries.count)").foregroundColor(.secondary)
+        let selected = c.id == categoryID
+        HStack(spacing: 8) {
+            Image(systemName: c.isFavorites ? "star.fill" : "folder").foregroundColor(c.isFavorites ? .accent : .dimText).frame(width: 16)
+            if renamingCategory == c.id {
+                TextField("Name", text: $categoryName, onCommit: { finishRenaming(c.id) })
+                    .textFieldStyle(.roundedBorder)
+                    .onExitCommand { renamingCategory = nil }
+            } else {
+                Text(c.name).font(.system(size: 13, weight: selected ? .semibold : .regular)).lineLimit(1)
             }
-            .onTapGesture(count: 2) { if !c.isFavorites { renaming = c.id } }
-            .onDrop(of: [.text], isTargeted: nil) { providers in drop(providers, into: c.id) }
+            Spacer()
+            Text("\(c.entries.count)").font(.caption).foregroundColor(.dimText)
+        }
+        .padding(.horizontal, 8)
+        .frame(height: 30)
+        .background(selected ? Color.rowHighlight : Color.clear)
+        .overlay(alignment: .leading) { if selected { Rectangle().fill(Color.accent).frame(width: 3) } }
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .contentShape(Rectangle())
+        .onTapGesture { selectedCategory = c.id }
+        .onTapGesture(count: 2) { if !c.isFavorites { startRenaming(c.id) } }
+        .onDrop(of: [.text], isTargeted: nil) { drop($0, into: c.id) }
+        .contextMenu {
+            Button("Umbenennen") { startRenaming(c.id) }.disabled(c.isFavorites)
+            Button("Löschen", role: .destructive) {
+                model.config.deleteCategory(c.id)
+                if selectedCategory == c.id { selectedCategory = nil }
+            }
+            .disabled(c.isFavorites)
         }
     }
 
-    // MARK: Entries
+    private func startRenaming(_ id: UUID) {
+        categoryName = model.config.categories.first { $0.id == id }?.name ?? ""
+        renamingCategory = id
+    }
+
+    private func finishRenaming(_ id: UUID) {
+        let name = categoryName.trimmingCharacters(in: .whitespaces)
+        if !name.isEmpty { model.config.renameCategory(id, to: name) }
+        renamingCategory = nil
+    }
+
+    // MARK: Entries (looks like the panel)
 
     private var entryList: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(category?.name ?? "").font(.headline)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                header(category?.name ?? "")
+                Spacer()
+                Text("So erscheint es im Panel").font(.caption).foregroundColor(.dimText)
+            }
             if let category {
-                List(selection: $selectedEntry) {
+                if category.entries.isEmpty {
+                    Text("Noch leer – Plugins links doppelklicken oder hierher ziehen.")
+                        .font(.callout).foregroundColor(.dimText)
+                        .frame(maxWidth: .infinity, minHeight: 80)
+                }
+                List {
                     ForEach(Array(category.entries.enumerated()), id: \.element.id) { index, entry in
                         EntryRow(index: index, entry: entry,
-                                 available: EntryResolver.resolve(entry, in: catalog.items) != nil || catalog.items.isEmpty,
+                                 available: catalog.items.isEmpty || EntryResolver.resolve(entry, in: catalog.items) != nil,
                                  onIcon: { model.config.setIcon($0, entry: entry.id, in: category.id) },
                                  onName: { model.config.setDisplayName($0, entry: entry.id, in: category.id) },
                                  onRemove: { model.config.removeEntry(entry.id, from: category.id) })
-                            .tag(entry.id)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
                     }
                     .onMove { from, to in
                         guard let f = from.first else { return }
                         model.config.moveEntry(in: category.id, from: f, to: to > f ? to - 1 : to)
                     }
                 }
-                .onDeleteCommand {
-                    if let id = selectedEntry { model.config.removeEntry(id, from: category.id) }
-                }
-                .onDrop(of: [.text], isTargeted: nil) { providers in drop(providers, into: category.id) }
-                Text("Ziehen zum Sortieren · Entf entfernt · Plätze 1–9 per Zifferntaste im Panel").font(.caption).foregroundColor(.secondary)
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .onDrop(of: [.text], isTargeted: nil) { drop($0, into: category.id) }
+                Text("Ziehen sortiert · Klick aufs Icon oder Rechtsklick für Icon und Name · 1–9 = Zifferntasten im Panel")
+                    .font(.caption).foregroundColor(.dimText)
             }
         }
-        .padding(10)
+        .padding(12)
+    }
+
+    private func header(_ title: String) -> some View {
+        Text(title).font(.system(size: 15, weight: .semibold))
     }
 
     private func drop(_ providers: [NSItemProvider], into categoryID: UUID) -> Bool {
@@ -174,45 +246,82 @@ private struct EntryRow: View {
     let onName: (String?) -> Void
     let onRemove: () -> Void
     @State private var showIcons = false
+    @State private var renaming = false
     @State private var name = ""
+    @State private var hovered = false
 
     var body: some View {
-        HStack(spacing: 10) {
-            Text(index < 9 ? "\(index + 1)" : "").foregroundColor(.secondary).frame(width: 14)
-            Button { showIcons.toggle() } label: {
-                Image(systemName: IconCatalog.symbolName(for: entry.iconID)).frame(width: 22)
+        LauncherRow(number: index, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
+                    subtitle: available ? subtitle : "Nicht mehr in Live gefunden", active: hovered, available: available) {
+            if hovered {
+                Button(action: onRemove) { Image(systemName: "xmark.circle.fill") }
+                    .buttonStyle(.borderless).foregroundColor(.dimText).help("Entfernen")
             }
-            .buttonStyle(.borderless)
-            .popover(isPresented: $showIcons) { iconGrid }
-            VStack(alignment: .leading, spacing: 1) {
-                TextField(entry.name, text: $name, onCommit: { onName(name) })
-                    .textFieldStyle(.plain)
-                    .onAppear { name = entry.displayName ?? "" }
-                Text(available ? entry.path.joined(separator: " / ") : "Nicht mehr in Live gefunden")
-                    .font(.caption).foregroundColor(available ? .secondary : .orange)
-            }
-            Spacer()
-            Button(action: onRemove) { Image(systemName: "xmark.circle") }.buttonStyle(.borderless)
         }
-        .opacity(available ? 1 : 0.6)
+        .overlay(alignment: .leading) {
+            // Click target over the icon opens the icon list.
+            Color.clear.frame(width: 34, height: 42).padding(.leading, 30).contentShape(Rectangle())
+                .onTapGesture { showIcons = true }
+                .popover(isPresented: $showIcons, arrowEdge: .leading) { IconPicker(selected: entry.iconID) { onIcon($0); showIcons = false } }
+        }
+        .overlay {
+            if renaming {
+                TextField(entry.name, text: $name, onCommit: commitName)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.leading, 76).padding(.trailing, 40)
+                    .onExitCommand { renaming = false }
+            }
+        }
+        .onHover { hovered = $0 }
+        .contextMenu {
+            Button("Icon wählen …") { showIcons = true }
+            Button("Anzeigename ändern …") { name = entry.displayName ?? entry.name; renaming = true }
+            if entry.displayName != nil { Button("Originalnamen verwenden") { onName(nil) } }
+            Divider()
+            Button("Entfernen", role: .destructive, action: onRemove)
+        }
     }
 
-    private var iconGrid: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.fixed(64)), count: 4), spacing: 8) {
-            ForEach(IconCatalog.all, id: \.id) { icon in
-                Button { onIcon(icon.id); showIcons = false } label: {
-                    VStack(spacing: 4) {
-                        Image(systemName: icon.symbolName).font(.system(size: 18))
-                        Text(icon.label).font(.caption2)
+    private var subtitle: String {
+        let path = entry.path.joined(separator: " / ")
+        return entry.displayName == nil ? path : "\(entry.name) · \(path)"
+    }
+
+    private func commitName() {
+        onName(name == entry.name ? nil : name)
+        renaming = false
+    }
+}
+
+private struct IconPicker: View {
+    let selected: String
+    let onPick: (String) -> Void
+
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: Array(repeating: GridItem(.fixed(70), spacing: 6), count: 6), spacing: 6) {
+                ForEach(IconCatalog.all, id: \.id) { icon in
+                    Button { onPick(icon.id) } label: {
+                        VStack(spacing: 5) {
+                            Image(systemName: icon.symbolName).font(.system(size: 18))
+                            Text(icon.label).font(.system(size: 10)).lineLimit(1)
+                        }
+                        .frame(width: 70, height: 54)
+                        .background(icon.id == selected ? Color.rowHighlight : Color.rowBackground)
+                        .overlay(alignment: .bottom) {
+                            if icon.id == selected { Rectangle().fill(Color.accent).frame(height: 2) }
+                        }
+                        .cornerRadius(5)
+                        .foregroundColor(.white)
                     }
-                    .frame(width: 60, height: 48)
-                    .background(icon.id == entry.iconID ? Color.accentColor.opacity(0.25) : .clear)
-                    .cornerRadius(6)
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
+            .padding(10)
         }
-        .padding(10)
+        .frame(width: 470, height: 380)
+        .background(Color.panelBackground)
+        .preferredColorScheme(.dark)
     }
 }
 

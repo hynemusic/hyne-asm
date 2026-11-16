@@ -16,6 +16,7 @@ final class AppModel: ObservableObject {
         self.client = client
         config = store.load()
         catalog = PluginCatalog(cacheURL: PluginCatalog.defaultCacheURL, client: client)
+        saveConfig() // persists migrations right away
     }
 
     func start() {

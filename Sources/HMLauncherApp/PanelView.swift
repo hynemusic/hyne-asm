@@ -1,14 +1,6 @@
 import SwiftUI
 import HMLauncherCore
 
-private extension Color {
-    static let panelBackground = Color(red: 0.17, green: 0.17, blue: 0.17)
-    static let rowBackground = Color(red: 0.24, green: 0.24, blue: 0.24)
-    static let rowHighlight = Color(red: 0.42, green: 0.39, blue: 0.35)
-    static let accent = Color(red: 0.96, green: 0.70, blue: 0.20)
-    static let dimText = Color(white: 0.55)
-}
-
 struct PanelView: View {
     static let rowHeight: CGFloat = 46
     static let tabBarHeight: CGFloat = 38
@@ -121,24 +113,9 @@ struct PanelView: View {
     private func rowView(_ row: PanelRow, index: Int) -> some View {
         let active = viewModel.state.highlighted == index || viewModel.hovered == index
         return Button { onInsert(row) } label: {
-            HStack(spacing: 12) {
-                Text(index < 9 ? "\(index + 1)" : "")
-                    .font(.system(size: 11)).foregroundColor(.dimText).frame(width: 12)
-                Image(systemName: IconCatalog.symbolName(for: row.iconID))
-                    .font(.system(size: 15)).frame(width: 22)
-                Text(row.title).font(.system(size: 15)).lineLimit(1)
-                Spacer()
-            }
-            .foregroundColor(row.isAvailable ? .white : .dimText)
-            .opacity(row.isAvailable ? 1 : 0.5)
-            .padding(.leading, 10)
-            .frame(height: Self.rowHeight - 4)
-            .background(active ? Color.rowHighlight : Color.rowBackground)
-            .overlay(alignment: .leading) {
-                if active { Rectangle().fill(Color.accent).frame(width: 3) }
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 5))
-            .contentShape(Rectangle())
+            LauncherRow(number: index, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,
+                        active: active, available: row.isAvailable)
+                .opacity(row.isAvailable ? 1 : 0.5)
         }
         .buttonStyle(.plain)
         .onHover { inside in
