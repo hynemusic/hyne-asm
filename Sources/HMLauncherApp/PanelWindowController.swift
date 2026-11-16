@@ -56,7 +56,7 @@ final class PanelWindowController {
     func contains(_ point: CGPoint) -> Bool { panel.isVisible && panel.frame.contains(point) }
 
     func show(at point: CGPoint) {
-        viewModel.state = PanelState(config: model.config, items: model.catalog.items, selectedTab: lastTab)
+        viewModel.state = PanelState(config: model.config, items: model.catalog.items, selectedTab: lastTab, usage: model.usage.counts)
         viewModel.hovered = nil
         topLeft = point
         layout()
@@ -105,10 +105,12 @@ final class PanelWindowController {
         }
         hide()
         let client = model.client
+        let usage = model.usage
         let hud = self.hud
         Task { @MainActor in
             do {
                 try await client.load(uri: row.uri)
+                usage.record(row.usageKey)
             } catch BridgeError.notConnected {
                 hud.show(Loc.t("Nicht mit Live verbunden", "Not connected to Live"))
             } catch BridgeError.remote(let code) where code == "not_found" {
@@ -136,7 +138,7 @@ final class PanelWindowController {
         } else {
             model.config.addEntry(PluginItem(uri: row.uri, name: row.name, source: row.source, path: row.path), to: favID)
         }
-        var state = PanelState(config: model.config, items: model.catalog.items, selectedTab: viewModel.state.selectedTab)
+        var state = PanelState(config: model.config, items: model.catalog.items, selectedTab: viewModel.state.selectedTab, usage: model.usage.counts)
         for ch in viewModel.state.filter { _ = state.handle(.character(ch)) }
         viewModel.state = state
         layout()

@@ -14,6 +14,8 @@ final class AppModel: ObservableObject {
     @Published private(set) var liveVersion: String?
     let catalog: PluginCatalog
     let versions = MenuVersionStore(directory: MenuVersionStore.defaultDirectory)
+    /// Insert counts per plugin, used to rank search results.
+    let usage = UsageStore(url: UsageStore.defaultURL)
     @Published private(set) var versionList: [MenuVersion] = []
     let client: BridgeClient
     private let store: ConfigStore

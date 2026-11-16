@@ -18,7 +18,8 @@ public enum PluginGrouping {
 
     public static func groups(_ items: [PluginItem], search: String) -> [PluginGroup] {
         let vendors = knownVendors(items)
-        let matches = items.filter { search.isEmpty || $0.name.localizedCaseInsensitiveContains(search) }
+        let query = SearchMatcher.Prepared(search)
+        let matches = search.isEmpty ? items : items.filter { SearchMatcher.score(SearchMatcher.Prepared($0.name), query) != nil }
         var result: [PluginGroup] = []
 
         for (source, title) in liveGroups {

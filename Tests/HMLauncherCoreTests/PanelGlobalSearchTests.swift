@@ -53,7 +53,7 @@ final class PanelGlobalSearchTests: XCTestCase {
         s.selectTab(s.tabs.count - 1)
         type(&s, "eq")
         XCTAssertFalse(s.rows.contains(where: \.isGlobal))
-        XCTAssertEqual(s.rows.map(\.title), ["Channel EQ", "EQ Eight", "EQ Three"])
+        XCTAssertEqual(s.rows.map(\.title), ["EQ Eight", "EQ Three", "Channel EQ"]) // ranked: names starting with "eq" first
     }
 
     func testInsideFolderFolderMatchesFirst() {
