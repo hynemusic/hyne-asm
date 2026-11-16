@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var monitor: LiveAppMonitor!
     private var eventTap: EventTapController!
     private var panel: PanelWindowController!
+    private var settings: SettingsWindowController!
     private var tapRetry: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -16,6 +17,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menuBar = MenuBarController(model: model)
         panel = PanelWindowController(model: model)
         eventTap = EventTapController(monitor: monitor)
+        settings = SettingsWindowController(model: model)
+        menuBar.onOpenSettings = { [weak self] in self?.settings.show() }
 
         eventTap.onDoubleRightClick = { [weak self] point in self?.panel.show(at: point) }
         eventTap.isPanelVisible = { [weak self] in self?.panel.isVisible ?? false }
