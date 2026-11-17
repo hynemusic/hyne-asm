@@ -5,9 +5,22 @@ public final class ConfigStore {
 
     public init(url: URL) { self.url = url }
 
+    public static let folderName = "HYNE ASM"
+    static let legacyFolderName = "HM Launcher"
+
     public static var defaultURL: URL {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("HM Launcher/config.json")
+        let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        moveLegacyFolder(in: support)
+        return support.appendingPathComponent("\(folderName)/config.json")
+    }
+
+    /// The app used to be called "HM Launcher": carry its folder (config, versions, usage) over once.
+    static func moveLegacyFolder(in support: URL) {
+        let fm = FileManager.default
+        let old = support.appendingPathComponent(legacyFolderName)
+        let new = support.appendingPathComponent(folderName)
+        guard fm.fileExists(atPath: old.path), !fm.fileExists(atPath: new.path) else { return }
+        try? fm.moveItem(at: old, to: new)
     }
 
     /// Missing file → default. Unreadable file → backed up as config.corrupt-<timestamp>.json, then default.

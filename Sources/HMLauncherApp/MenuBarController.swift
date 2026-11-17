@@ -13,7 +13,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     init(model: AppModel) {
         self.model = model
         super.init()
-        statusItem.button?.image = NSImage(systemSymbolName: "slider.horizontal.3", accessibilityDescription: "HM Launcher")
+        statusItem.button?.image = NSImage(systemSymbolName: "slider.horizontal.3", accessibilityDescription: "HYNE ASM")
         let menu = NSMenu()
         menu.delegate = self
         statusLine.isEnabled = false
@@ -23,7 +23,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         menu.addItem(item({ Loc.t("Live-Script installieren …", "Install Live Script …") }, #selector(installScript)))
         menu.addItem(item({ Loc.t("Plugin-Liste neu laden", "Reload Plugin List") }, #selector(reload)))
         menu.addItem(.separator())
-        menu.addItem(item({ Loc.t("HM Launcher beenden", "Quit HM Launcher") }, #selector(quit), "q"))
+        menu.addItem(item({ Loc.t("HYNE ASM beenden", "Quit HYNE ASM") }, #selector(quit), "q"))
         statusItem.menu = menu
     }
 

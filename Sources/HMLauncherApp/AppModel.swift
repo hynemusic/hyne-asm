@@ -41,7 +41,7 @@ final class AppModel: ObservableObject {
     }
 
     func saveConfig() {
-        do { try store.save(config) } catch { NSLog("HM Launcher: saving config failed: \(error)") }
+        do { try store.save(config) } catch { NSLog("HYNE ASM: saving config failed: \(error)") }
     }
 
     // MARK: Menu versions, import, export

@@ -457,7 +457,7 @@ struct VersionsPage: View {
     }
 
     private func exportCurrent() {
-        guard let url = savePanel(Loc.t("HM Launcher Menü", "HM Launcher Menu")) else { return }
+        guard let url = savePanel(Loc.t("HYNE ASM Menü", "HYNE ASM Menu")) else { return }
         run { try model.exportMenu(to: url) }
         info = Loc.t("Exportiert: \(url.lastPathComponent)", "Exported: \(url.lastPathComponent)")
     }
@@ -499,7 +499,7 @@ func showError(_ error: Error) {
     let alert = NSAlert()
     alert.messageText = Loc.t("Das hat nicht geklappt", "That didn't work")
     alert.informativeText = error is MenuDocument.NotAMenuFile
-        ? Loc.t("Das ist keine HM-Launcher-Menüdatei.", "This is not an HM Launcher menu file.")
+        ? Loc.t("Das ist keine HYNE-ASM-Menüdatei.", "This is not a HYNE ASM menu file.")
         : error.localizedDescription
     alert.runModal()
 }

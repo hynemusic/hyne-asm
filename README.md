@@ -1,4 +1,4 @@
-# HM Launcher
+# HYNE Ableton Shortcuts Manager (ASM)
 
 Plugin quick launcher for Ableton Live 12: double-right-click in Live → panel with your own categories → the plugin is loaded onto the selected track. Plus shortcuts to close plugin windows.
 
@@ -27,4 +27,4 @@ The app needs a stable signature, otherwise macOS drops the Accessibility permis
 HM_SIGN_IDENTITY="Apple Development: <Name> (<ID>)" scripts/build-app.sh --install
 ```
 
-Then in the HM Launcher menu bar menu → "Live-Script installieren…", restart Live, and select "HMLauncherBridge" as the control surface (Input/Output: None).
+Then in the HYNE ASM menu bar menu → "Live-Script installieren…", restart Live, and select "HMLauncherBridge" as the control surface (Input/Output: None).

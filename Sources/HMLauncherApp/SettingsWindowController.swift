@@ -29,7 +29,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         window?.makeKeyAndOrderFront(nil)
     }
 
-    private static var title: String { "HM Launcher – " + Loc.t("Einstellungen", "Settings") }
+    private static var title: String { "HYNE ASM – " + Loc.t("Einstellungen", "Settings") }
 
     func windowWillClose(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
