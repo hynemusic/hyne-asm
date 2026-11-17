@@ -13,15 +13,20 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
     func show() {
         if window == nil {
-            let w = NSWindow(contentViewController: NSHostingController(rootView: SettingsView(model: model, catalog: model.catalog)))
+            let host = NSHostingController(rootView: SettingsView(model: model, catalog: model.catalog))
+            // The window keeps its own size; otherwise it grows/shrinks with each page's preferred size.
+            host.sizingOptions = []
+            let w = NSWindow(contentViewController: host)
             w.title = Self.title
             titleUpdates = model.$config.sink { [weak w] _ in DispatchQueue.main.async { w?.title = Self.title } }
             w.styleMask = [.titled, .closable, .resizable, .miniaturizable]
-            w.setContentSize(NSSize(width: 1040, height: 660))
+            w.contentMinSize = NSSize(width: 900, height: 560)
+            w.setContentSize(NSSize(width: 1320, height: 820))
             w.appearance = NSAppearance(named: .darkAqua)
             w.isReleasedWhenClosed = false
             w.delegate = self
             w.center()
+            w.setFrameAutosaveName("HYNE ASM Settings")   // remembers the size you drag it to
             window = w
         }
         NSApp.setActivationPolicy(.regular)

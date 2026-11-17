@@ -55,13 +55,17 @@ struct SettingsView: View {
                 .help(Loc.t("Sprache", "Language"))
             }
             Divider()
-            switch page {
+            Group {
+                switch page {
             case 0: pluginsPage
             case 2: LESImportPage(model: model, catalog: catalog, importer: importer, onDone: { page = 0 })
             case 3: VersionsPage(model: model)
-            default: ShortcutsPage(shortcuts: $model.config.shortcuts, panelKeys: $model.config.panelKeys)
+                default: ShortcutsPage(shortcuts: $model.config.shortcuts, panelKeys: $model.config.panelKeys)
+                }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.panelSidebar)
         .preferredColorScheme(.dark)
         .foregroundColor(.white)
@@ -69,12 +73,11 @@ struct SettingsView: View {
 
     private var pluginsPage: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                pluginBrowser.frame(minWidth: 300, idealWidth: 340).background(Color.panelSidebar)
-                Divider()
-                categoryList.frame(width: 220).background(Color.panelSidebar)
-                Divider()
-                entryList.frame(minWidth: 380).background(Color.panelBackground)
+            // Native split view: drag the dividers to give a column more room.
+            HSplitView {
+                pluginBrowser.frame(minWidth: 240, idealWidth: 380, maxWidth: .infinity, maxHeight: .infinity).background(Color.panelSidebar)
+                categoryList.frame(minWidth: 160, idealWidth: 240, maxWidth: .infinity, maxHeight: .infinity).background(Color.panelSidebar)
+                entryList.frame(minWidth: 320, idealWidth: 560, maxWidth: .infinity, maxHeight: .infinity).background(Color.panelBackground)
             }
         }
     }
