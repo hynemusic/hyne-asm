@@ -97,6 +97,14 @@ public extension LauncherConfig {
         categories.insert(c, at: max(1, to))
     }
 
+    /// Drag & drop: moves a category in front of `anchor` (nil = to the end). Favorites never moves and stays first.
+    mutating func moveCategory(_ id: UUID, before anchor: UUID?) {
+        guard id != anchor, let from = index(of: id), !categories[from].isFavorites else { return }
+        let c = categories.remove(at: from)
+        let to = anchor.flatMap(index(of:)) ?? categories.count
+        categories.insert(c, at: max(1, to))
+    }
+
     // MARK: Icons & names
 
     /// Icons are per plugin: every entry with the same name and source (e.g. Pro-L 2 VST3 and AU) changes too,

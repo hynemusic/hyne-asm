@@ -5,6 +5,7 @@ import HMLauncherCore
 /// Drag payload for entries dragged out of the right-hand list (onto a category). Its own type, so rows that
 /// accept plugin URIs (text) from the browser don't react while entries are reordered.
 let entriesDragType = UTType(exportedAs: "local.hm.launcher.entries")
+let categoryDragType = UTType(exportedAs: "local.hm.launcher.category")
 
 struct SettingsView: View {
     @ObservedObject var model: AppModel
@@ -21,6 +22,8 @@ struct SettingsView: View {
     @State private var selectionAnchor: UUID?
     @State private var bulkIcons = false
     @State private var dropCategory: UUID?
+    /// Where a dragged category would land: in front of this category (nil id = end of the list).
+    @State private var categoryMarker: CategoryMarker?
     /// Held without observing it: drag updates redraw only the rows (which observe it), not the whole window.
     @State private var dropState = DropState()
 
@@ -208,10 +211,6 @@ struct SettingsView: View {
                         .listRowBackground(Color.clear)
                         .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
                 }
-                .onMove { from, to in
-                    guard let f = from.first else { return }
-                    model.config.moveCategory(from: f, to: to > f ? to - 1 : to)
-                }
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
@@ -249,9 +248,16 @@ struct SettingsView: View {
         .onTapGesture(count: 2) { if !c.isFavorites { startRenaming(c.id) } }
         .simultaneousGesture(TapGesture().onEnded { selectedCategory = c.id })
         .overlay { if dropCategory == c.id && c.id != categoryID { RoundedRectangle(cornerRadius: 4).stroke(Color.accent, lineWidth: 2) } }
-        .onDrop(of: [entriesDragType, .text], isTargeted: Binding(get: { dropCategory == c.id }, set: { dropCategory = $0 ? c.id : nil })) {
-            dropOnCategory($0, c.id)
+        .overlay(alignment: categoryMarker?.after == true ? .bottom : .top) {
+            if categoryMarker?.id == c.id { Rectangle().fill(Color.accent).frame(height: 3).offset(y: categoryMarker?.after == true ? 3 : -3) }
         }
+        .modifier(CategoryDragSource(enabled: !c.isFavorites, id: c.id, name: c.name))
+        .onDrop(of: [categoryDragType, entriesDragType, .text], delegate: CategoryDropDelegate(
+            category: c.id, isFavorites: c.isFavorites,
+            marker: $categoryMarker, entryTarget: $dropCategory,
+            moveCategory: { moveDraggedCategory(before: $0) },
+            dropEntries: { dropOnCategory($0, c.id) },
+            nextCategory: categoryAfter(c.id)))
         .contextMenu {
             Button(Loc.t("Umbenennen", "Rename")) { startRenaming(c.id) }.disabled(c.isFavorites)
             Button(Loc.t("Neuer Ordner", "New Folder")) { selectedCategory = c.id; newFolder(in: c.id) }
@@ -261,6 +267,19 @@ struct SettingsView: View {
             }
             .disabled(c.isFavorites)
         }
+    }
+
+    private func categoryAfter(_ id: UUID) -> UUID? {
+        let cats = model.config.categories
+        guard let i = cats.firstIndex(where: { $0.id == id }), i + 1 < cats.count else { return nil }
+        return cats[i + 1].id
+    }
+
+    /// Moves the category being dragged in front of `anchor` (nil = to the end).
+    private func moveDraggedCategory(before anchor: UUID?) {
+        guard let id = CategoryDrag.id else { return }
+        CategoryDrag.id = nil
+        model.config.moveCategory(id, before: anchor)
     }
 
     private func startRenaming(_ id: UUID) {
@@ -990,4 +1009,92 @@ private struct DragCountBadge: View {
             .frame(minWidth: 22, minHeight: 22)
             .background(Capsule().fill(Color.accent))
     }
+}
+
+/// The category being dragged (set when the drag starts) — in-process and synchronous like `EntryDrag`.
+@MainActor
+enum CategoryDrag {
+    static var id: UUID?
+}
+
+struct CategoryMarker: Equatable {
+    let id: UUID
+    let after: Bool
+}
+
+/// Lets every category except Favorites be dragged by its row.
+private struct CategoryDragSource: ViewModifier {
+    let enabled: Bool
+    let id: UUID
+    let name: String
+
+    func body(content: Content) -> some View {
+        if enabled {
+            content.onDrag {
+                CategoryDrag.id = id
+                EntryDrag.ids = nil
+                let provider = NSItemProvider()
+                provider.registerDataRepresentation(forTypeIdentifier: categoryDragType.identifier, visibility: .ownProcess) { done in
+                    done(Data(id.uuidString.utf8), nil)
+                    return nil
+                }
+                return provider
+            } preview: {
+                Text(name)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 10).padding(.vertical, 4)
+                    .background(Capsule().fill(Color.accent))
+            }
+        } else {
+            content
+        }
+    }
+}
+
+/// A category row takes two kinds of drops: another category (reorder: upper half = before, lower half = after)
+/// and plugins/entries (they move into this category).
+private struct CategoryDropDelegate: DropDelegate {
+    let category: UUID
+    let isFavorites: Bool
+    @Binding var marker: CategoryMarker?
+    @Binding var entryTarget: UUID?
+    let moveCategory: (UUID?) -> Void
+    let dropEntries: ([NSItemProvider]) -> Bool
+
+    private func isCategoryDrag(_ info: DropInfo) -> Bool { info.hasItemsConforming(to: [categoryDragType]) }
+
+    /// Favorites is always first, so a category dropped on it lands right after it.
+    private func after(_ info: DropInfo) -> Bool { isFavorites || info.location.y >= 15 }
+
+    func validateDrop(info: DropInfo) -> Bool { info.hasItemsConforming(to: [categoryDragType, entriesDragType, .text]) }
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        if isCategoryDrag(info) {
+            let m = CategoryMarker(id: category, after: after(info))
+            if marker != m { marker = m }
+            if entryTarget != nil { entryTarget = nil }
+            return DropProposal(operation: .move)
+        }
+        if entryTarget != category { entryTarget = category }
+        return DropProposal(operation: info.hasItemsConforming(to: [entriesDragType]) ? .move : .copy)
+    }
+
+    func dropExited(info: DropInfo) {
+        if marker?.id == category { marker = nil }
+        if entryTarget == category { entryTarget = nil }
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        marker = nil
+        entryTarget = nil
+        if isCategoryDrag(info) {
+            moveCategory(after(info) ? nextCategory : category)
+            return true
+        }
+        return dropEntries(info.itemProviders(for: [entriesDragType, .text]))
+    }
+
+    /// Filled in by the list: the category below this one (nil = this is the last one).
+    var nextCategory: UUID?
 }

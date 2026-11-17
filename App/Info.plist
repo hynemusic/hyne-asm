@@ -19,6 +19,11 @@
 			<key>UTTypeDescription</key><string>HYNE ASM entries</string>
 			<key>UTTypeConformsTo</key><array><string>public.data</string></array>
 		</dict>
+		<dict>
+			<key>UTTypeIdentifier</key><string>local.hm.launcher.category</string>
+			<key>UTTypeDescription</key><string>HYNE ASM category</string>
+			<key>UTTypeConformsTo</key><array><string>public.data</string></array>
+		</dict>
 	</array>
 </dict>
 </plist>
