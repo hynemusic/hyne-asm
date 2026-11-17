@@ -18,7 +18,7 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/HYNE ASM"
 cp App/Info.plist "$APP/Contents/Info.plist"
-rsync -a --exclude __pycache__ --exclude '*.pyc' bridge/HMLauncherBridge "$APP/Contents/Resources/"
+rsync -a --exclude __pycache__ --exclude '*.pyc' bridge/ASMbridge "$APP/Contents/Resources/"
 codesign --force --sign "$HM_SIGN_IDENTITY" --identifier local.hm.launcher "$APP"
 codesign --verify --verbose=1 "$APP"
 

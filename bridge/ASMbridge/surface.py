@@ -10,7 +10,7 @@ from .server import LineServer
 PORT = 47820
 
 
-class HMLauncherBridge(ControlSurface):
+class ASMbridge(ControlSurface):
     def __init__(self, c_instance):
         ControlSurface.__init__(self, c_instance)
         app = Live.Application.get_application()
@@ -21,9 +21,9 @@ class HMLauncherBridge(ControlSurface):
         self._server = None
         try:
             self._server = LineServer("127.0.0.1", PORT)
-            self.log_message("HMLauncherBridge listening on %d" % PORT)
+            self.log_message("ASMbridge listening on %d" % PORT)
         except OSError as e:
-            self.log_message("HMLauncherBridge could not listen on %d: %s" % (PORT, e))
+            self.log_message("ASMbridge could not listen on %d: %s" % (PORT, e))
 
     def disconnect(self):
         if self._server is not None:

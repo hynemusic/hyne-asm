@@ -1,7 +1,7 @@
 import XCTest
 @testable import HMLauncherCore
 
-/// Runs only with HM_LIVE_TEST=1 and HMLauncherBridge selected in a running Live.
+/// Runs only with HM_LIVE_TEST=1 and ASMbridge selected in a running Live.
 final class LiveIntegrationTests: XCTestCase {
     func testHelloAndListAgainstRunningLive() async throws {
         try XCTSkipUnless(ProcessInfo.processInfo.environment["HM_LIVE_TEST"] == "1", "set HM_LIVE_TEST=1")

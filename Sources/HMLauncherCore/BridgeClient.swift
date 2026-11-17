@@ -21,7 +21,7 @@ private struct Empty: Decodable {}
 private struct ItemsResult: Decodable { let items: [PluginItem] }
 private struct IDOnly: Decodable { let id: Int? }
 
-/// TCP client for the HMLauncherBridge remote script (newline-delimited JSON on 127.0.0.1:47820).
+/// TCP client for the ASMbridge remote script (newline-delimited JSON on 127.0.0.1:47820).
 /// Reconnects automatically while started.
 public actor BridgeClient {
     private let host: String

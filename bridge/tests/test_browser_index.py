@@ -5,7 +5,7 @@ import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from fake_live import FakeBrowser, FakeItem, folder  # noqa: E402
-from HMLauncherBridge.browser_index import BrowserIndex  # noqa: E402
+from ASMbridge.browser_index import BrowserIndex  # noqa: E402
 
 
 def sample_browser():

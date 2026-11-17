@@ -10,7 +10,7 @@ Plugin quick launcher for Ableton Live 12: double-right-click in Live → panel 
 ```bash
 swift test
 python3 -m unittest discover -s bridge/tests
-HM_LIVE_TEST=1 swift test --filter LiveIntegrationTests   # needs Live running with HMLauncherBridge selected
+HM_LIVE_TEST=1 swift test --filter LiveIntegrationTests   # needs Live running with ASMbridge selected
 ```
 
 ## Signing (one time)
@@ -27,4 +27,4 @@ The app needs a stable signature, otherwise macOS drops the Accessibility permis
 HM_SIGN_IDENTITY="Apple Development: <Name> (<ID>)" scripts/build-app.sh --install
 ```
 
-Then in the HYNE ASM menu bar menu → "Live-Script installieren…", restart Live, and select "HMLauncherBridge" as the control surface (Input/Output: None).
+Then in the HYNE ASM menu bar menu → "Live-Script installieren…", restart Live, and select "ASMbridge" as the control surface (Input/Output: None).

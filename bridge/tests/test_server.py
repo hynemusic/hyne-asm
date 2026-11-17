@@ -8,7 +8,7 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from HMLauncherBridge.server import LineServer  # noqa: E402
+from ASMbridge.server import LineServer  # noqa: E402
 
 
 class ServerTests(unittest.TestCase):

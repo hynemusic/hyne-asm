@@ -55,11 +55,11 @@ final class MenuBarController: NSObject, NSMenuDelegate {
             alert.informativeText = Loc.t("""
             1. Live neu starten.
             2. Live → Einstellungen → Link/Tempo/MIDI.
-            3. In einer freien Zeile unter „Control Surface“ „HMLauncherBridge“ wählen, Input und Output auf „None“.
+            3. In einer freien Zeile unter „Control Surface“ „ASMbridge“ wählen, Input und Output auf „None“.
             """, """
             1. Restart Live.
             2. Live → Settings → Link/Tempo/MIDI.
-            3. In a free row under “Control Surface” choose “HMLauncherBridge”, Input and Output “None”.
+            3. In a free row under “Control Surface” choose “ASMbridge”, Input and Output “None”.
             """)
         } catch {
             alert.messageText = Loc.t("Installation fehlgeschlagen", "Installation failed")

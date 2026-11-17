@@ -90,7 +90,7 @@ struct SettingsView: View {
                     .buttonStyle(.borderless).help(Loc.t("Plugin-Liste aus Live neu laden", "Reload plugin list from Live"))
             }
             if catalog.items.isEmpty {
-                Text(model.isConnected ? Loc.t("Lade Plugin-Liste …", "Loading plugin list …") : Loc.t("Nicht mit Live verbunden – Live öffnen und HMLauncherBridge als Control Surface wählen.", "Not connected to Live – open Live and choose HMLauncherBridge as a control surface."))
+                Text(model.isConnected ? Loc.t("Lade Plugin-Liste …", "Loading plugin list …") : Loc.t("Nicht mit Live verbunden – Live öffnen und ASMbridge als Control Surface wählen.", "Not connected to Live – open Live and choose ASMbridge as a control surface."))
                     .font(.callout).foregroundColor(.dimText)
             }
             ScrollView {

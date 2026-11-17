@@ -5,8 +5,8 @@ import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from fake_live import FakeBrowser, FakeItem  # noqa: E402
-from HMLauncherBridge.browser_index import BrowserIndex  # noqa: E402
-from HMLauncherBridge.protocol import handle_request  # noqa: E402
+from ASMbridge.browser_index import BrowserIndex  # noqa: E402
+from ASMbridge.protocol import handle_request  # noqa: E402
 
 
 class ProtocolTests(unittest.TestCase):
