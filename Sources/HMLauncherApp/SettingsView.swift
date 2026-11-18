@@ -1191,8 +1191,11 @@ struct ShortcutsPage: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(item.name).font(DS.Font.body).foregroundColor(DS.textPrimary).lineLimit(1)
                 if let owner {
-                    Label(Loc.t("Auch belegt – \(owner)", "Also used – \(owner)"), systemImage: "exclamationmark.triangle.fill")
-                        .font(.system(size: 10.5)).foregroundColor(DS.warning)
+                    HStack(spacing: 2) {
+                        Text(Loc.t("Auch belegt", "Also used")).font(.system(size: 10.5)).foregroundColor(DS.warning)
+                        ConflictBadge(title: Loc.t("\(combo.map(KeyNames.describe) ?? "") ist auch belegt", "\(combo.map(KeyNames.describe) ?? "") is also used"),
+                                      lines: owner.components(separatedBy: " · "))
+                    }
                 } else if pending {
                     Text(Loc.t("Klick auf + und drück die Tasten", "Click + and press the keys")).font(.system(size: 10.5)).foregroundColor(.accent)
                 } else if resolved == nil, !catalog.items.isEmpty {
@@ -1251,8 +1254,7 @@ struct ShortcutsPage: View {
         return HStack(spacing: DS.Space.s) {
             Text(label).font(DS.Font.body).foregroundColor(DS.textPrimary)
             if !clashes.isEmpty {
-                Image(systemName: "exclamationmark.triangle.fill").font(.system(size: 11)).foregroundColor(DS.warning)
-                    .help(Loc.t("Auch belegt:\n", "Also used:\n") + clashes.joined(separator: "\n"))
+                ConflictBadge(title: Loc.t("Auch belegt", "Also used"), lines: clashes)
             }
             Spacer(minLength: DS.Space.l)
             if combos.wrappedValue.isEmpty {

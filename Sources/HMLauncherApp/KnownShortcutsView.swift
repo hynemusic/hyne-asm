@@ -324,8 +324,8 @@ struct KnownShortcutsSheet: View {
                 Text(s.app == .hyne ? "HYNE ASM" : "\(appName(s.app)) · \(s.section)").font(.system(size: 10)).foregroundColor(DS.textTertiary)
             }
             if !own.isEmpty {
-                Image(systemName: "exclamationmark.triangle.fill").font(.system(size: 11)).foregroundColor(DS.warning)
-                    .help(Loc.t("Auch in HYNE ASM belegt:\n", "Also used in HYNE ASM:\n") + own.map { "• " + $0 }.joined(separator: "\n"))
+                ConflictBadge(title: Loc.t("\(KeyboardLayout.describe(s)) ist auch in HYNE ASM belegt", "\(KeyboardLayout.describe(s)) is also used in HYNE ASM"),
+                              lines: own)
             }
             Spacer(minLength: DS.Space.s)
             Text(KeyboardLayout.describe(s))

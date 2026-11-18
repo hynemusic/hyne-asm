@@ -233,3 +233,34 @@ struct PageContainer<Trailing: View, Content: View>: View {
         .background(DS.canvas)
     }
 }
+
+/// Orange warning icon; hovering it opens a small bubble saying what clashes. A popover instead of `.help`,
+/// because tooltips never show in views that redraw on hover (the shortcut overview does that constantly).
+struct ConflictBadge: View {
+    let title: String
+    let lines: [String]
+    @State private var hovering = false
+
+    var body: some View {
+        Image(systemName: "exclamationmark.triangle.fill")
+            .font(.system(size: 11))
+            .foregroundColor(DS.warning)
+            .padding(3)
+            .contentShape(Rectangle())
+            .onHover { hovering = $0 }
+            .popover(isPresented: $hovering, arrowEdge: .bottom) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Label(title, systemImage: "exclamationmark.triangle.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(DS.warning)
+                    ForEach(lines, id: \.self) { line in
+                        Text("• " + line).font(.system(size: 12)).foregroundColor(DS.textPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .padding(12)
+                .frame(minWidth: 220, maxWidth: 340, alignment: .leading)
+            }
+            .accessibilityLabel(title + ": " + lines.joined(separator: ", "))
+    }
+}
