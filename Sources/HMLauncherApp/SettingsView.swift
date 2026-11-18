@@ -30,46 +30,29 @@ struct SettingsView: View {
     private var categoryID: UUID { selectedCategory ?? model.config.favoritesID }
     private var category: HMLauncherCore.Category? { model.config.categories.first { $0.id == categoryID } }
 
-    @State private var page = 0
+    @State private var page = Int(ProcessInfo.processInfo.environment["HM_SETTINGS_PAGE"] ?? "") ?? 0
     /// Lives here so the import preview survives switching pages.
     @StateObject private var importer = LESImportModel()
 
     var body: some View {
-        VStack(spacing: 0) {
-            Picker("", selection: $page) {
-                Text(Loc.t("Plugins & Kategorien", "Plugins & Categories")).tag(0)
-                Text(Loc.t("LES-Import", "LES Import")).tag(2)
-                Text(Loc.t("Versionen", "Versions")).tag(3)
-                Text(Loc.t("Tastenkürzel", "Shortcuts")).tag(1)
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .frame(width: 520)
-            .padding(10)
-            .frame(maxWidth: .infinity)
-            .overlay(alignment: .trailing) {
-                Picker("", selection: $model.config.language) {
-                    Text(Loc.t("Automatisch", "Automatic")).tag(Language?.none)
-                    Text("Deutsch").tag(Language?.some(.de))
-                    Text("English").tag(Language?.some(.en))
-                }
-                .frame(width: 130)
-                .padding(.trailing, 12)
-                .help(Loc.t("Sprache", "Language"))
-            }
-            Divider()
+        HStack(spacing: 0) {
+            SettingsSidebar(page: $page, model: model, pluginCount: catalog.items.count)
+                .frame(width: 216)
+                .hairline(.trailing)
             Group {
                 switch page {
-            case 0: pluginsPage
-            case 2: LESImportPage(model: model, catalog: catalog, importer: importer, onDone: { page = 0 })
-            case 3: VersionsPage(model: model)
+                case 0: pluginsPage
+                case 2: LESImportPage(model: model, catalog: catalog, importer: importer, onDone: { page = 0 })
+                case 3: VersionsPage(model: model)
                 default: ShortcutsPage(shortcuts: $model.config.shortcuts, panelKeys: $model.config.panelKeys)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .background(DS.canvas)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.panelSidebar)
+        .background(DS.canvas)
+        .ignoresSafeArea()
         .preferredColorScheme(.dark)
         .foregroundColor(.white)
     }
@@ -78,9 +61,10 @@ struct SettingsView: View {
         VStack(spacing: 0) {
             // Native split view: drag the dividers to give a column more room.
             HSplitView {
-                pluginBrowser.frame(minWidth: 240, idealWidth: 380, maxWidth: .infinity, maxHeight: .infinity).background(Color.panelSidebar)
-                categoryList.frame(minWidth: 160, idealWidth: 240, maxWidth: .infinity, maxHeight: .infinity).background(Color.panelSidebar)
-                entryList.frame(minWidth: 320, idealWidth: 560, maxWidth: .infinity, maxHeight: .infinity).background(Color.panelBackground)
+                pluginBrowser.frame(minWidth: 260, idealWidth: 380, maxWidth: .infinity, maxHeight: .infinity).background(DS.surface)
+                categoryList.frame(minWidth: 180, idealWidth: 240, maxWidth: .infinity, maxHeight: .infinity).background(DS.surface)
+                // Darkest surface: the panel preview stands out like it does over Live.
+                entryList.frame(minWidth: 340, idealWidth: 560, maxWidth: .infinity, maxHeight: .infinity).background(DS.canvas)
             }
         }
     }
@@ -88,20 +72,24 @@ struct SettingsView: View {
     // MARK: Installed plugins
 
     private var pluginBrowser: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            header("Plugins")
-            HStack {
-                TextField(Loc.t("Suchen", "Search"), text: $search).textFieldStyle(.roundedBorder)
-                Button { model.refreshCatalog() } label: { Image(systemName: "arrow.clockwise") }
-                    .buttonStyle(.borderless).help(Loc.t("Plugin-Liste aus Live neu laden", "Reload plugin list from Live"))
+        VStack(alignment: .leading, spacing: DS.Space.m) {
+            ColumnHeader(title: Loc.t("Plugins & Presets", "Plugins & Presets"), count: catalog.items.isEmpty ? nil : groups.reduce(0) { $0 + $1.items.count }) {
+                IconButton(symbol: "arrow.clockwise", help: Loc.t("Liste aus Live neu laden", "Reload list from Live")) { model.refreshCatalog() }
             }
+            SearchField(placeholder: Loc.t("Plugins und Presets suchen", "Search plugins and presets"), text: $search)
             if catalog.items.isEmpty {
                 Text(model.isConnected ? Loc.t("Lade Plugin-Liste …", "Loading plugin list …") : Loc.t("Nicht mit Live verbunden – Live öffnen und ASMbridge als Control Surface wählen.", "Not connected to Live – open Live and choose ASMbridge as a control surface."))
                     .font(.callout).foregroundColor(.dimText)
             }
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 2) {
-                    ForEach(groups) { group in
+                LazyVStack(alignment: .leading, spacing: 1) {
+                    ForEach(Array(groups.enumerated()), id: \.element.id) { i, group in
+                        if i == 0 || BrowserSection(group) != BrowserSection(groups[i - 1]) {
+                            SectionLabel(text: BrowserSection(group).title)
+                                .padding(.top, i == 0 ? 2 : DS.Space.l)
+                                .padding(.bottom, DS.Space.xs)
+                                .padding(.leading, DS.Space.xs)
+                        }
                         folderHeader(group)
                         if !search.isEmpty || expanded.contains(group.title) {
                             ForEach(group.items, id: \.uri) { item in pluginRow(item) }
@@ -112,11 +100,12 @@ struct SettingsView: View {
             .onAppear { regroup(catalog.items) }
             .onChange(of: search) { _ in regroup(catalog.items) }
             .onReceive(catalog.$items.dropFirst()) { regroup($0) }
-            Text(Loc.t("Doppelklick oder ziehen fügt zu „\(category?.name ?? "")“ hinzu. Eigene Presets (.adg, .vstpreset …) kannst du auch aus dem Finder hineinziehen.",
-                       "Double-click or drag to add to “\(category?.name ?? "")”. You can also drag your own presets (.adg, .vstpreset …) in from Finder."))
-                .font(.caption).foregroundColor(.dimText).fixedSize(horizontal: false, vertical: true)
+            HintText(text: Loc.t("Doppelklick oder ziehen fügt zu „\(category?.name ?? "")“ hinzu. Eigene Presets kannst du auch aus dem Finder hineinziehen.",
+                                 "Double-click or drag to add to “\(category?.name ?? "")”. You can also drag your own presets in from Finder."))
         }
-        .padding(12)
+        .padding(.horizontal, DS.Space.l)
+        .padding(.top, DS.Space.l)
+        .padding(.bottom, DS.Space.l)
     }
 
     /// One row per plugin (its best format); the other formats are kept for the badges and "Add as …".
@@ -131,15 +120,27 @@ struct SettingsView: View {
         return Button {
             if expanded.contains(group.title) { expanded.remove(group.title) } else { expanded.insert(group.title) }
         } label: {
-            HStack(spacing: 6) {
-                Image(systemName: open ? "chevron.down" : "chevron.right").font(.system(size: 9, weight: .bold)).frame(width: 10)
-                Image(systemName: group.title.hasPrefix(PresetFormat.groupPrefix) ? "doc.on.doc" : group.title.hasPrefix("Live") ? "square.stack.3d.up" : "folder").foregroundColor(.accent)
-                Text(group.title).font(.system(size: 13, weight: .semibold))
-                Spacer()
-                Text("\(group.items.count)").font(.caption).foregroundColor(.dimText)
+            HStack(spacing: DS.Space.s) {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 8.5, weight: .bold))
+                    .rotationEffect(.degrees(open ? 90 : 0))
+                    .foregroundColor(DS.textTertiary)
+                    .frame(width: 10)
+                Image(systemName: BrowserSection(group).symbol)
+                    .font(.system(size: 12))
+                    .foregroundColor(open ? .accent : DS.textSecondary)
+                    .frame(width: 16)
+                Text(BrowserSection.displayTitle(group))
+                    .font(DS.Font.body)
+                    .foregroundColor(DS.textPrimary)
+                    .lineLimit(1)
+                Spacer(minLength: DS.Space.s)
+                Text("\(group.items.count)").font(DS.Font.caption.monospacedDigit()).foregroundColor(DS.textTertiary)
             }
-            .padding(.vertical, 5)
+            .padding(.horizontal, DS.Space.s)
+            .frame(height: 28)
             .contentShape(Rectangle())
+            .modifier(HoverHighlight())
         }
         .buttonStyle(.plain)
         .disabled(!search.isEmpty)
@@ -169,20 +170,24 @@ struct SettingsView: View {
     }
 
     private func pluginRow(_ item: PluginItem) -> some View {
-        HStack(spacing: 8) {
-            RoundedRectangle(cornerRadius: 2).fill(Color(label: model.config.colorID(for: item)) ?? .clear).frame(width: 4, height: 14)
-            Text(item.name).font(.system(size: 13)).lineLimit(1)
-            Spacer()
+        HStack(spacing: DS.Space.s) {
+            RoundedRectangle(cornerRadius: 1.5).fill(Color(label: model.config.colorID(for: item)) ?? .clear).frame(width: 3, height: 14)
+            Text(item.name).font(DS.Font.body).foregroundColor(DS.textSecondary).lineLimit(1)
+            Spacer(minLength: DS.Space.s)
             ForEach(variants[item.uri]?.formats ?? [PluginGrouping.formatLabel(item)], id: \.self) { format in
+                let preferred = format == PluginGrouping.formatLabel(item)
                 Text(format)
-                    .font(.system(size: 9, weight: .semibold))
+                    .font(DS.Font.badge)
                     .padding(.horizontal, 5).padding(.vertical, 2)
-                    .background(Color.rowBackground).cornerRadius(3)
-                    .foregroundColor(format == PluginGrouping.formatLabel(item) ? .white : .dimText)
+                    .background(RoundedRectangle(cornerRadius: 4).fill(preferred ? DS.hover : .clear))
+                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(DS.hairline))
+                    .foregroundColor(preferred ? DS.textPrimary : DS.textTertiary)
             }
         }
-        .padding(.leading, 18).padding(.trailing, 4).padding(.vertical, 4)
+        .padding(.leading, 26).padding(.trailing, DS.Space.s)
+        .frame(height: 26)
         .contentShape(Rectangle())
+        .modifier(HoverHighlight())
         .onTapGesture(count: 2) { add(item, to: categoryID) }
         .onDrag { NSItemProvider(object: item.uri as NSString) }
         .contextMenu {
@@ -204,47 +209,53 @@ struct SettingsView: View {
     // MARK: Categories
 
     private var categoryList: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            header(Loc.t("Kategorien", "Categories"))
+        VStack(alignment: .leading, spacing: DS.Space.m) {
+            ColumnHeader(title: Loc.t("Kategorien", "Categories"), count: model.config.categories.count) {
+                IconButton(symbol: "plus", help: Loc.t("Neue Kategorie", "New category")) {
+                    let id = model.config.addCategory(named: Loc.t("Neue Kategorie", "New Category"))
+                    selectedCategory = id
+                    startRenaming(id)
+                }
+            }
+            HintText(text: Loc.t("Ziehen sortiert · Doppelklick benennt um", "Drag to reorder · double-click to rename"), icon: nil)
             List {
                 ForEach(model.config.categories) { c in
                     categoryRow(c)
                         .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
                 }
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            Button {
-                let id = model.config.addCategory(named: Loc.t("Neue Kategorie", "New Category"))
-                selectedCategory = id
-                startRenaming(id)
-            } label: { Label(Loc.t("Kategorie", "Category"), systemImage: "plus") }
-            .buttonStyle(.borderless)
         }
-        .padding(12)
+        .padding(.horizontal, DS.Space.m)
+        .padding(.top, DS.Space.l)
+        .padding(.bottom, DS.Space.l)
     }
 
     @ViewBuilder
     private func categoryRow(_ c: HMLauncherCore.Category) -> some View {
         let selected = c.id == categoryID
-        HStack(spacing: 8) {
-            Image(systemName: c.isFavorites ? "star.fill" : "folder").foregroundColor(c.isFavorites ? .accent : .dimText).frame(width: 16)
+        HStack(spacing: DS.Space.s) {
+            Image(systemName: c.isFavorites ? "star.fill" : "folder")
+                .font(.system(size: 12))
+                .foregroundColor(c.isFavorites || selected ? .accent : DS.textTertiary).frame(width: 16)
             if renamingCategory == c.id {
                 InlineNameField(initial: c.name,
                                 onCommit: { model.config.renameCategory(c.id, to: $0); renamingCategory = nil },
                                 onCancel: { renamingCategory = nil })
             } else {
-                Text(c.name).font(.system(size: 13, weight: selected ? .semibold : .regular)).lineLimit(1)
+                Text(c.name).font(selected ? DS.Font.bodyStrong : DS.Font.body)
+                    .foregroundColor(selected ? DS.textPrimary : DS.textSecondary).lineLimit(1)
             }
             Spacer()
-            Text("\(c.entries.count)").font(.caption).foregroundColor(.dimText)
+            Text("\(c.entries.count)").font(DS.Font.caption.monospacedDigit()).foregroundColor(DS.textTertiary)
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, DS.Space.s)
         .frame(height: 30)
-        .background(selected ? Color.rowHighlight : Color.clear)
-        .overlay(alignment: .leading) { if selected { Rectangle().fill(Color.accent).frame(width: 3) } }
-        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(selected ? DS.selection : .clear))
+        .clipShape(RoundedRectangle(cornerRadius: DS.Radius.s))
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { if !c.isFavorites { startRenaming(c.id) } }
         .simultaneousGesture(TapGesture().onEnded { selectedCategory = c.id })
@@ -290,20 +301,22 @@ struct SettingsView: View {
     // MARK: Entries (looks like the panel)
 
     private var entryList: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                header(category?.name ?? "")
-                Button { newFolder() } label: { Label(Loc.t("Ordner", "Folder"), systemImage: "folder.badge.plus") }
-                    .buttonStyle(.borderless).foregroundColor(.accent)
-                    .help(Loc.t("Neuen Ordner in dieser Kategorie anlegen", "Create a new folder in this category"))
-                Spacer()
-                Text(Loc.t("So erscheint es im Panel", "This is how it looks in the panel")).font(.caption).foregroundColor(.dimText)
+        VStack(alignment: .leading, spacing: DS.Space.m) {
+            ColumnHeader(title: category?.name ?? "", count: category?.entries.count) {
+                Label(Loc.t("Panel-Vorschau", "Panel preview"), systemImage: "eye")
+                    .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+                    .help(Loc.t("So erscheint die Kategorie im Panel in Live", "This is how the category looks in the panel in Live"))
+                IconButton(symbol: "folder.badge.plus", help: Loc.t("Neuen Ordner in dieser Kategorie anlegen", "Create a new folder in this category")) { newFolder() }
             }
             if let category {
                 if category.entries.isEmpty {
-                    Text(Loc.t("Noch leer – Plugins links doppelklicken oder hierher ziehen.", "Empty – double-click plugins on the left or drag them here."))
-                        .font(.callout).foregroundColor(.dimText)
-                        .frame(maxWidth: .infinity, minHeight: 80)
+                    VStack(spacing: DS.Space.s) {
+                        Image(systemName: "tray").font(.system(size: 26)).foregroundColor(DS.textTertiary)
+                        Text(Loc.t("Noch leer", "Empty")).font(DS.Font.bodyStrong).foregroundColor(DS.textSecondary)
+                        Text(Loc.t("Plugins links doppelklicken oder hierher ziehen.", "Double-click plugins on the left or drag them here."))
+                            .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 140)
                 }
                 // Always occupies its slot: a bar that appears on the first click would shift the list under
                 // the mouse and cancel the drag that click starts.
@@ -324,6 +337,7 @@ struct SettingsView: View {
                                 perform: { spot, providers in dropOnRow(row, spot, providers, in: category) }))
                             .listRowBackground(Color.clear)
                             .listRowInsets(EdgeInsets(top: 2, leading: row.folderID == nil ? 0 : 28, bottom: 2, trailing: 0))
+                            .listRowSeparator(.hidden)
                     }
                 }
                 .listStyle(.plain)
@@ -338,12 +352,13 @@ struct SettingsView: View {
                 }
                 .onDeleteCommand { removeSelection() }
                 .onChange(of: categoryID) { _ in selection = []; selectionAnchor = nil }
-                Text(Loc.t("⇧-Klick wählt mehrere, ⌘-Klick einzelne dazu · ⌘G gruppiert · Ziehen sortiert (auch in/aus Ordnern) · Rechtsklick für Icon, Name und Ordner",
-                           "⇧-click selects a range, ⌘-click adds single ones · ⌘G groups · drag to reorder (also in/out of folders) · right-click for icon, name and folders"))
-                    .font(.caption).foregroundColor(.dimText)
+                HintText(text: Loc.t("Ziehen sortiert, auch in und aus Ordnern · Rechtsklick für Icon, Name und Farbe",
+                                     "Drag to reorder, also in and out of folders · right-click for icon, name and color"))
             }
         }
-        .padding(12)
+        .padding(.horizontal, DS.Space.l)
+        .padding(.top, DS.Space.l)
+        .padding(.bottom, DS.Space.l)
     }
 
     // MARK: Folders
@@ -490,12 +505,30 @@ struct SettingsView: View {
     @ViewBuilder
     private func selectionBar(_ category: HMLauncherCore.Category) -> some View {
         if selection.isEmpty {
-            Text(Loc.t("Klick wählt aus · ⇧/⌘-Klick für mehrere · ⌘G gruppiert", "Click selects · ⇧/⌘-click for several · ⌘G groups"))
-                .font(.caption).foregroundColor(.dimText)
-                .frame(maxWidth: .infinity, minHeight: 34, maxHeight: 34, alignment: .leading)
-                .padding(.horizontal, 10)
+            HStack(spacing: DS.Space.l) {
+                keyHint("⇧", Loc.t("Bereich", "range"))
+                keyHint("⌘", Loc.t("einzeln", "single"))
+                keyHint("⌘G", Loc.t("gruppieren", "group"))
+                keyHint("⌫", Loc.t("entfernen", "remove"))
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, minHeight: 34, maxHeight: 34, alignment: .leading)
+            .padding(.horizontal, DS.Space.s)
         } else {
             activeSelectionBar(category)
+        }
+    }
+
+    /// "⌘G group" — a key cap and what it does.
+    private func keyHint(_ key: String, _ text: String) -> some View {
+        HStack(spacing: 5) {
+            Text(key)
+                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .foregroundColor(DS.textSecondary)
+                .padding(.horizontal, 5).frame(minWidth: 18, minHeight: 17)
+                .background(RoundedRectangle(cornerRadius: 4).fill(DS.raised))
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(DS.hairline))
+            Text(text).font(DS.Font.caption).foregroundColor(DS.textTertiary)
         }
     }
 
@@ -528,12 +561,11 @@ struct SettingsView: View {
                 .keyboardShortcut(.cancelAction)
         }
         .buttonStyle(.borderless)
-        .foregroundColor(.white)
-        .padding(.horizontal, 10)
+        .foregroundColor(DS.textPrimary)
+        .padding(.horizontal, DS.Space.m)
         .frame(height: 34)
-        .background(Color.rowHighlight)
-        .overlay(alignment: .leading) { Rectangle().fill(Color.accent).frame(width: 3) }
-        .clipShape(RoundedRectangle(cornerRadius: 5))
+        .background(RoundedRectangle(cornerRadius: DS.Radius.m).fill(DS.selection))
+        .overlay(RoundedRectangle(cornerRadius: DS.Radius.m).stroke(Color.brandBlue.opacity(0.5)))
     }
 
     private func newFolder(in categoryID: UUID? = nil) {
@@ -897,53 +929,68 @@ struct ShortcutsPage: View {
     @Binding var panelKeys: PanelKeyBindings
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
-                section(Loc.t("Plugin-Fenster", "Plugin Windows"), note: Loc.t("Nur aktiv, wenn Live vorne ist. Kürzel brauchen ⌘, ⌃ oder ⌥.", "Only active while Live is in front. Shortcuts need ⌘, ⌃ or ⌥."),
+        PageContainer(title: Loc.t("Tastenkürzel", "Shortcuts"),
+                      subtitle: Loc.t("Klick auf ein Kürzel und drück die neue Kombination. Alle Kürzel wirken nur, wenn Live vorne ist.",
+                                      "Click a shortcut and press the new combination. All shortcuts only work while Live is in front."),
+                      maxWidth: 780) { EmptyView() } content: {
+            VStack(alignment: .leading, spacing: DS.Space.xl) {
+                section(Loc.t("Plugin-Fenster", "Plugin Windows"), symbol: "macwindow.on.rectangle",
+                        note: Loc.t("Kürzel brauchen ⌘, ⌃ oder ⌥.", "Shortcuts need ⌘, ⌃ or ⌥."),
                         reset: { shortcuts = .default }) {
                     row(Loc.t("Fokussiertes Plugin-Fenster schließen", "Close focused plugin window"),
                         combos: Binding(get: { shortcuts.closeFocused.map { [$0] } ?? [] },
                                         set: { shortcuts.closeFocused = $0.last }),
                         maxCount: 1, requireModifier: true)
+                    divider
                     row(Loc.t("Alle Plugin-Fenster schließen", "Close all plugin windows"), combos: $shortcuts.closeAll, maxCount: 4, requireModifier: true)
                 }
-                section(Loc.t("Schnellsuche", "Quick Search"),
-                        note: Loc.t("Öffnet das Suchfenster in der Bildschirmmitte, nur wenn Live vorne ist. Hinweis: macOS nutzt ⌃Leertaste evtl. für den Sprachwechsel.",
-                                    "Opens the search window in the middle of the screen, only while Live is in front. Note: macOS may use ⌃Space for switching input languages."),
+                section(Loc.t("Schnellsuche", "Quick Search"), symbol: "magnifyingglass",
+                        note: Loc.t("Öffnet das Suchfenster in der Bildschirmmitte. macOS nutzt ⌃Leertaste evtl. für den Sprachwechsel.",
+                                    "Opens the search window in the middle of the screen. macOS may use ⌃Space for switching input languages."),
                         reset: { shortcuts.quickSearch = ShortcutSettings.default.quickSearch }) {
                     row(Loc.t("Schnellsuche öffnen", "Open quick search"), combos: $shortcuts.quickSearch, maxCount: 2, requireModifier: true)
                 }
-                section(Loc.t("Im Panel", "In the Panel"), note: Loc.t("Fest: 1–9 fügen die Zeile ein, Tippen filtert, ⌫ löscht im Filter.", "Fixed: 1–9 insert that row, typing filters, ⌫ deletes in the filter."),
+                section(Loc.t("Im Panel", "In the Panel"), symbol: "rectangle.grid.1x2",
+                        note: Loc.t("Fest: 1–9 fügen die Zeile ein, Tippen filtert, ⌫ löscht im Filter.", "Fixed: 1–9 insert that row, typing filters, ⌫ deletes in the filter."),
                         reset: { panelKeys = .default }) {
-                    ForEach(PanelKeyAction.allCases, id: \.self) { action in
+                    ForEach(Array(PanelKeyAction.allCases.enumerated()), id: \.element) { i, action in
+                        if i > 0 { divider }
                         row(action.label, combos: Binding(get: { panelKeys[action] }, set: { panelKeys[action] = $0 }),
                             maxCount: 4, requireModifier: false)
                     }
                 }
             }
-            .padding(24)
-            .frame(maxWidth: 760, alignment: .leading)
+            .padding(.bottom, DS.Space.l)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color.panelBackground)
     }
 
-    private func section<Content: View>(_ title: String, note: String, reset: @escaping () -> Void,
+    private var divider: some View { Rectangle().fill(DS.hairline).frame(height: 1).padding(.leading, DS.Space.l) }
+
+    private func section<Content: View>(_ title: String, symbol: String, note: String, reset: @escaping () -> Void,
                                         @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(title).font(.system(size: 15, weight: .semibold))
+        VStack(alignment: .leading, spacing: DS.Space.s) {
+            HStack(alignment: .firstTextBaseline) {
+                Label { Text(title).font(.system(size: 15, weight: .semibold)).foregroundColor(DS.textPrimary) }
+                    icon: { Image(systemName: symbol).foregroundColor(.accent) }
                 Spacer()
-                Button(Loc.t("Standard wiederherstellen", "Restore Defaults"), action: reset).buttonStyle(.borderless).foregroundColor(.accent)
+                Button(Loc.t("Standard wiederherstellen", "Restore Defaults"), action: reset)
+                    .buttonStyle(.borderless).font(DS.Font.caption).foregroundColor(DS.textSecondary)
             }
-            Text(note).font(.caption).foregroundColor(.dimText)
-            VStack(spacing: 4) { content() }
+            Text(note).font(DS.Font.caption).foregroundColor(DS.textTertiary)
+            VStack(spacing: 0) { content() }
+                .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
+                .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+                .padding(.top, DS.Space.xs)
         }
     }
 
     private func row(_ label: String, combos: Binding<[KeyCombo]>, maxCount: Int, requireModifier: Bool) -> some View {
-        HStack(spacing: 8) {
-            Text(label).font(.system(size: 13)).frame(width: 260, alignment: .leading)
+        HStack(spacing: DS.Space.s) {
+            Text(label).font(DS.Font.body).foregroundColor(DS.textPrimary)
+            Spacer(minLength: DS.Space.l)
+            if combos.wrappedValue.isEmpty {
+                Text(Loc.t("aus", "off")).font(DS.Font.caption).foregroundColor(DS.textTertiary)
+            }
             ForEach(Array(combos.wrappedValue.enumerated()), id: \.offset) { i, combo in
                 KeyRecorder(combo: combo, requireModifier: requireModifier,
                             onChange: { combos.wrappedValue[i] = $0 },
@@ -953,15 +1000,9 @@ struct ShortcutsPage: View {
                 KeyRecorder(combo: nil, requireModifier: requireModifier,
                             onChange: { combos.wrappedValue.append($0) }, onRemove: nil)
             }
-            if combos.wrappedValue.isEmpty {
-                Text(Loc.t("aus", "off")).font(.caption).foregroundColor(.dimText)
-            }
-            Spacer()
         }
-        .padding(.horizontal, 10)
-        .frame(height: 40)
-        .background(Color.rowBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 5))
+        .padding(.horizontal, DS.Space.l)
+        .frame(height: 48)
     }
 }
 
@@ -1196,4 +1237,39 @@ private struct CategoryDropDelegate: DropDelegate {
 
     /// Filled in by the list: the category below this one (nil = this is the last one).
     var nextCategory: UUID?
+}
+
+/// Which part of the settings browser a group belongs to; the browser draws a label where the part changes.
+private enum BrowserSection: Equatable {
+    case presets, live, vendors
+
+    init(_ group: PluginGroup) {
+        if group.title.hasPrefix(PresetFormat.groupPrefix) { self = .presets }
+        else if group.title.hasPrefix("Live · ") { self = .live }
+        else { self = .vendors }
+    }
+
+    var title: String {
+        switch self {
+        case .presets: return Loc.t("Eigene Presets", "Your Presets")
+        case .live: return Loc.t("Live-Devices", "Live Devices")
+        case .vendors: return Loc.t("Plugins nach Hersteller", "Plugins by Manufacturer")
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .presets: return "doc.on.doc"
+        case .live: return "square.stack.3d.up"
+        case .vendors: return "folder"
+        }
+    }
+
+    /// The group title without the section prefix the label already says.
+    static func displayTitle(_ group: PluginGroup) -> String {
+        for prefix in [PresetFormat.groupPrefix, "Live · "] where group.title.hasPrefix(prefix) {
+            return String(group.title.dropFirst(prefix.count))
+        }
+        return group.title
+    }
 }

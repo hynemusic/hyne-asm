@@ -19,7 +19,10 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             let w = NSWindow(contentViewController: host)
             w.title = Self.title
             titleUpdates = model.$config.sink { [weak w] _ in DispatchQueue.main.async { w?.title = Self.title } }
-            w.styleMask = [.titled, .closable, .resizable, .miniaturizable]
+            w.styleMask = [.titled, .closable, .resizable, .miniaturizable, .fullSizeContentView]
+            // The sidebar reaches up behind the traffic lights, like System Settings.
+            w.titlebarAppearsTransparent = true
+            w.titleVisibility = .hidden
             w.contentMinSize = NSSize(width: 900, height: 560)
             w.setContentSize(NSSize(width: 1320, height: 820))
             w.appearance = NSAppearance(named: .darkAqua)
@@ -32,6 +35,12 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
         window?.makeKeyAndOrderFront(nil)
+    }
+
+    func snapshot(to url: URL) {
+        guard let view = window?.contentView, let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        try? rep.representation(using: .png, properties: [:])?.write(to: url)
     }
 
     private static var title: String { "HYNE ASM – " + Loc.t("Einstellungen", "Settings") }

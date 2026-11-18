@@ -32,21 +32,30 @@ struct LESImportPage: View {
     }
 
     var body: some View {
-        HStack(spacing: 0) {
-            source.frame(width: 340).background(Color.panelSidebar)
-            Divider()
-            if importer.draft.categories.isEmpty { emptyPreview } else { preview }
+        VStack(spacing: 0) {
+            PageHeader(title: Loc.t("LES-Import", "LES Import"),
+                       subtitle: Loc.t("Übernimm dein Menü aus Live Enhancement Suite. Du siehst vorher genau, was zugeordnet wird.",
+                                       "Bring over your menu from Live Enhancement Suite. You see exactly what gets matched before anything changes."))
+                .padding(.horizontal, DS.Space.xxl)
+                .padding(.top, 40)
+                .padding(.bottom, DS.Space.l)
+                .hairline(.bottom)
+            HStack(spacing: 0) {
+                source.frame(width: 340).background(DS.surface).hairline(.trailing)
+                if importer.draft.categories.isEmpty { emptyPreview } else { preview }
+            }
         }
+        .background(DS.canvas)
     }
 
     // MARK: Source text
 
     private var source: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("menuconfig.ini").font(.system(size: 15, weight: .semibold))
+        VStack(alignment: .leading, spacing: DS.Space.m) {
+            ColumnHeader(title: "menuconfig.ini") { EmptyView() }
             Text(Loc.t("Füge deine LES-Menükonfiguration ein oder lade sie direkt aus LES.",
                        "Paste your LES menu configuration or load it straight from LES."))
-                .font(.caption).foregroundColor(.dimText)
+                .font(DS.Font.caption).foregroundColor(DS.textTertiary)
             HStack {
                 if FileManager.default.fileExists(atPath: LESMenuParser.defaultURL.path) {
                     Button(Loc.t("Von LES laden", "Load from LES")) { load(LESMenuParser.defaultURL) }
@@ -56,8 +65,9 @@ struct LESImportPage: View {
             TextEditor(text: $importer.text)
                 .font(.system(size: 11, design: .monospaced))
                 .scrollContentBackground(.hidden)
-                .background(Color.rowBackground)
-                .cornerRadius(5)
+                .padding(DS.Space.xs)
+                .background(RoundedRectangle(cornerRadius: DS.Radius.m).fill(DS.raised))
+                .overlay(RoundedRectangle(cornerRadius: DS.Radius.m).stroke(DS.hairline))
             Button {
                 importer.build(items: catalog.items)
             } label: {
@@ -69,10 +79,10 @@ struct LESImportPage: View {
             if catalog.items.isEmpty {
                 Text(Loc.t("Erst mit Live verbinden – die Plugin-Liste wird zum Zuordnen gebraucht.",
                            "Connect to Live first – the plugin list is needed for matching."))
-                    .font(.caption).foregroundColor(.orange)
+                    .font(DS.Font.caption).foregroundColor(DS.warning)
             }
         }
-        .padding(12)
+        .padding(DS.Space.l)
     }
 
     private func load(_ url: URL) {
@@ -93,14 +103,15 @@ struct LESImportPage: View {
     // MARK: Preview
 
     private var emptyPreview: some View {
-        VStack(spacing: 10) {
-            Image(systemName: "square.and.arrow.down.on.square").font(.system(size: 34)).foregroundColor(.dimText)
+        VStack(spacing: DS.Space.m) {
+            Image(systemName: "square.and.arrow.down.on.square").font(.system(size: 30)).foregroundColor(DS.textTertiary)
+            Text(Loc.t("Noch keine Vorschau", "No preview yet")).font(DS.Font.bodyStrong).foregroundColor(DS.textSecondary)
             Text(Loc.t("Hier erscheint dein LES-Menü so, wie es im Panel aussehen wird.",
                        "Your LES menu will appear here the way it will look in the panel."))
-                .foregroundColor(.dimText)
+                .font(DS.Font.caption).foregroundColor(DS.textTertiary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.panelBackground)
+        .background(DS.canvas)
     }
 
     private var preview: some View {
@@ -108,9 +119,8 @@ struct LESImportPage: View {
             summary.padding(12)
             Divider()
             HStack(spacing: 0) {
-                categoryColumn.frame(width: 220).background(Color.panelSidebar)
-                Divider()
-                rowColumn.background(Color.panelBackground)
+                categoryColumn.frame(width: 220).background(DS.surface).hairline(.trailing)
+                rowColumn.background(DS.canvas)
             }
             Divider()
             pushBar.padding(12)
@@ -387,33 +397,42 @@ struct VersionsPage: View {
     @State private var info: String?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 8) {
-                TextField(Loc.t("Name der Version, z. B. „Live-Set Sommer“", "Version name, e.g. “Summer live set”"), text: $name)
-                    .textFieldStyle(.roundedBorder).frame(maxWidth: 320)
-                Button(Loc.t("Aktuelles Menü sichern", "Save Current Menu")) { saveCurrent() }
-                    .buttonStyle(.borderedProminent).tint(.brandBlue)
-                Spacer()
-                Button(Loc.t("Menü exportieren …", "Export Menu …")) { exportCurrent() }
-                Button(Loc.t("Menü-Datei importieren …", "Import Menu File …")) { importFile() }
+        PageContainer(title: Loc.t("Versionen", "Versions"),
+                      subtitle: Loc.t("Sichere dein Menü, spring zu einem älteren Stand zurück oder teile es als .hmlmenu-Datei.",
+                                      "Save your menu, go back to an earlier state or share it as an .hmlmenu file.")) {
+            HStack(spacing: DS.Space.s) {
+                Button { importFile() } label: { Label(Loc.t("Importieren …", "Import …"), systemImage: "square.and.arrow.down") }
+                Button { exportCurrent() } label: { Label(Loc.t("Exportieren …", "Export …"), systemImage: "square.and.arrow.up") }
             }
-            if let info { Label(info, systemImage: "checkmark.circle.fill").foregroundColor(.green).font(.system(size: 12)) }
-            Text(Loc.t("Vor jedem Import, LES-Übernahme und Wiederherstellen wird automatisch eine Version gesichert (die letzten 30 bleiben). Exportierte .hmlmenu-Dateien enthalten Kategorien, Reihenfolge, Icons und Anzeigenamen – zum Teilen mit anderen.",
-                       "Before every import, LES push and restore a version is saved automatically (the last 30 are kept). Exported .hmlmenu files contain categories, order, icons and display names – for sharing with others."))
-                .font(.caption).foregroundColor(.dimText).fixedSize(horizontal: false, vertical: true)
-            if model.versionList.isEmpty {
-                Text(Loc.t("Noch keine Versionen gesichert.", "No versions saved yet."))
-                    .foregroundColor(.dimText).frame(maxWidth: .infinity, minHeight: 120)
-            }
-            ScrollView {
-                LazyVStack(spacing: 4) {
-                    ForEach(model.versionList) { version in versionRow(version) }
+        } content: {
+            VStack(alignment: .leading, spacing: DS.Space.xl) {
+                saveCard
+                VStack(alignment: .leading, spacing: DS.Space.s) {
+                    HStack {
+                        SectionLabel(text: Loc.t("Gesicherte Versionen", "Saved versions"))
+                        Spacer()
+                        Text(Loc.t("Automatische Sicherungen: die letzten 30", "Automatic backups: last 30 kept"))
+                            .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+                    }
+                    if model.versionList.isEmpty {
+                        Text(Loc.t("Noch keine Versionen gesichert.", "No versions saved yet."))
+                            .font(DS.Font.body).foregroundColor(DS.textTertiary)
+                            .frame(maxWidth: .infinity, minHeight: 120)
+                            .dsCard()
+                    } else {
+                        LazyVStack(spacing: 0) {
+                            ForEach(Array(model.versionList.enumerated()), id: \.element.id) { i, version in
+                                if i > 0 { Rectangle().fill(DS.hairline).frame(height: 1).padding(.leading, 52) }
+                                versionRow(version)
+                            }
+                        }
+                        .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
+                        .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+                    }
                 }
             }
+            .padding(.bottom, DS.Space.l)
         }
-        .padding(20)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color.panelBackground)
         .onAppear { model.reloadVersions() }
         .confirmationDialog(Loc.t("Version wiederherstellen?", "Restore version?"), isPresented: Binding(
             get: { restoring != nil }, set: { if !$0 { restoring = nil } })) {
@@ -425,27 +444,47 @@ struct VersionsPage: View {
         }
     }
 
+    private var saveCard: some View {
+        VStack(alignment: .leading, spacing: DS.Space.m) {
+            HStack(spacing: DS.Space.s) {
+                TextField(Loc.t("Name der Version, z. B. „Live-Set Sommer“", "Version name, e.g. “Summer live set”"), text: $name)
+                    .textFieldStyle(.roundedBorder)
+                    .onSubmit(saveCurrent)
+                Button(Loc.t("Aktuelles Menü sichern", "Save Current Menu")) { saveCurrent() }
+                    .buttonStyle(.borderedProminent).tint(.brandBlue)
+            }
+            if let info {
+                Label(info, systemImage: "checkmark.circle.fill").font(DS.Font.caption).foregroundColor(DS.success)
+            } else {
+                Text(Loc.t("Vor jedem Import, jeder LES-Übernahme und jedem Wiederherstellen wird automatisch gesichert.",
+                           "A backup is saved automatically before every import, LES push and restore."))
+                    .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+            }
+        }
+        .dsCard()
+    }
+
     private func versionRow(_ v: MenuVersion) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: DS.Space.m) {
             Image(systemName: v.isAutomatic ? "clock.arrow.circlepath" : "bookmark.fill")
-                .foregroundColor(v.isAutomatic ? .dimText : .accent).frame(width: 20)
+                .font(.system(size: 13))
+                .foregroundColor(v.isAutomatic ? DS.textTertiary : .accent)
+                .frame(width: 28, height: 28)
+                .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(DS.raised))
             VStack(alignment: .leading, spacing: 2) {
-                Text(v.name).font(.system(size: 14))
+                Text(v.name).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
                 Text("\(v.date.formatted(date: .abbreviated, time: .shortened)) · \(v.categoryCount) " + Loc.t("Kategorien", "categories")
                      + " · \(v.entryCount) Plugins" + (v.isAutomatic ? " · " + Loc.t("automatisch", "automatic") : ""))
-                    .font(.caption).foregroundColor(.dimText)
+                    .font(DS.Font.caption).foregroundColor(DS.textTertiary)
             }
             Spacer()
             Button(Loc.t("Wiederherstellen …", "Restore …")) { restoring = v }
-            Button { exportVersion(v) } label: { Image(systemName: "square.and.arrow.up") }
-                .buttonStyle(.borderless).help(Loc.t("Exportieren", "Export"))
-            Button { model.deleteVersion(v) } label: { Image(systemName: "trash") }
-                .buttonStyle(.borderless).foregroundColor(.dimText).help(Loc.t("Löschen", "Delete"))
+                .controlSize(.small)
+            IconButton(symbol: "square.and.arrow.up", help: Loc.t("Exportieren", "Export")) { exportVersion(v) }
+            IconButton(symbol: "trash", help: Loc.t("Löschen", "Delete")) { model.deleteVersion(v) }
         }
-        .padding(.horizontal, 12)
-        .frame(height: 50)
-        .background(Color.rowBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 5))
+        .padding(.horizontal, DS.Space.m)
+        .frame(height: 56)
     }
 
     private func saveCurrent() {

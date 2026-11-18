@@ -21,6 +21,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         settings = SettingsWindowController(model: model)
         quickSearch = QuickSearchWindowController(model: model)
         menuBar.onOpenSettings = { [weak self] in self?.settings.show() }
+        // Developer aid: HM_SNAPSHOT=<file.png> opens settings and saves a picture of the window, then quits.
+        if let path = ProcessInfo.processInfo.environment["HM_SNAPSHOT"] {
+            settings.show()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+                self?.settings.snapshot(to: URL(fileURLWithPath: path))
+                NSApp.terminate(nil)
+            }
+        }
 
         eventTap.onDoubleRightClick = { [weak self] point in self?.quickSearch.hide(); self?.panel.show(at: point) }
         // While the panel or the quick search is open, keys go to whichever is open.
