@@ -1,8 +1,8 @@
-/// The panel shows its rows in two columns of 10: items fill the left column first, then the right one;
-/// beyond 20 the same pattern continues below (blocks of 2 × 10).
+/// The panel shows its rows in two columns of 9: items fill the left column first, then the right one;
+/// beyond 20 the same pattern continues below (blocks of 2 × 9).
 public enum PanelGrid {
     public static let columns = 2
-    public static let rowsPerColumn = 10
+    public static let rowsPerColumn = 9
 
     /// Blocks → columns → row indices, for the given index range.
     public static func blocks(_ indices: Range<Int>) -> [[[Int]]] {
@@ -17,7 +17,7 @@ public enum PanelGrid {
         }
     }
 
-    /// Columns the panel needs: one while every section fits in a column of 10, else two.
+    /// Columns the panel needs: one while every section fits in a column of 9, else two.
     public static func columnsNeeded(local: Int, global: Int) -> Int {
         max(local, global) > rowsPerColumn ? columns : 1
     }

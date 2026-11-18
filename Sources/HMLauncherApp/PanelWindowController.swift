@@ -214,7 +214,14 @@ final class PanelWindowController {
             frame.origin.x = min(max(frame.minX, visible.minX), visible.maxX - frame.width)
             frame.origin.y = min(max(frame.minY, visible.minY), visible.maxY - frame.height)
         }
-        panel.setFrame(frame, display: true)
+        guard panel.isVisible, frame != panel.frame else { panel.setFrame(frame, display: true); return }
+        // Grows with a short ease-out instead of snapping, so the eye can follow where the new rows appear.
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? 0 : 0.16
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            context.allowsImplicitAnimation = true
+            panel.animator().setFrame(frame, display: true)
+        }
     }
 }
 

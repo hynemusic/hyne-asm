@@ -160,7 +160,7 @@ struct PanelView: View {
     static let columnWidth: CGFloat = 316
     static let columnSpacing: CGFloat = 6
     static var width: CGFloat { width(columns: PanelGrid.columns) }
-    /// One column up to 10 entries, two beyond (`PanelGrid.columnsNeeded`).
+    /// One column up to 9 entries, two beyond (`PanelGrid.columnsNeeded`).
     static func width(columns: Int) -> CGFloat {
         columnWidth * CGFloat(columns) + columnSpacing * CGFloat(columns - 1) + padding * 2
     }
