@@ -82,20 +82,20 @@ struct Palette {
                            panelSurface: .white, panelRow: hex(0xF2F2F5), panelStroke: Color.black.opacity(0.10),
                            ink: .black, keyboardBase: hex(0xDADADF), keyFill: .white)
         case .retro:
-            // PS2: black console, PS2 logo blue (#003791) in deep blue-black surfaces like the boot screen, and the
-            // four PlayStation logo colours — red #DF0024, yellow #F3C300, teal #00AC9F, blue #2E6DB4.
-            // Blocky corners and monospaced type for the retro feel.
+            // PS1: light grey console plastic (lighter lid, darker side modules and seams), turquoise like the
+            // "POWER" label, blue like "OPEN", the green power LED, and the four PlayStation logo colours
+            // (red #DF0024, yellow #F3C300, teal #00AC9F, blue #2E6DB4) on the stripe and the 1–9 keys.
             let red = hex(0xDF0024), yellow = hex(0xF3C300), teal = hex(0x00AC9F), blue = hex(0x2E6DB4)
-            return Palette(isDark: true,
-                           canvas: hex(0x0C0D14), sidebar: hex(0x111530), surface: hex(0x171C38),
-                           raised: hex(0x232A4E), hover: hex(0x2E3662), hairline: hex(0x5866A8, 0.30),
-                           textPrimary: hex(0xECEEF6), textSecondary: hex(0xB3B9D4), textTertiary: hex(0x848CB0),
-                           accent: red, accentStrong: blue,
-                           success: teal, warning: yellow,
-                           panelSurface: hex(0x0F1122), panelRow: hex(0x1C2140), panelStroke: hex(0x2E6DB4, 0.55),
-                           ink: .white, keyboardBase: hex(0x07080F), keyFill: hex(0x232A4E),
+            return Palette(isDark: false,
+                           canvas: hex(0xBFBFC1), sidebar: hex(0xA9A9AC), surface: hex(0xCBCBCD),
+                           raised: hex(0xD6D6D8), hover: hex(0xDFDFE1), hairline: Color.black.opacity(0.16),
+                           textPrimary: hex(0x1C1C20), textSecondary: hex(0x45454C), textTertiary: hex(0x5E5E66),
+                           accent: hex(0x0E8C87), accentStrong: hex(0x2D6FB7),
+                           success: hex(0x3DA516), warning: hex(0xB07A00),
+                           panelSurface: hex(0xC2C2C4), panelRow: hex(0xD3D3D5), panelStroke: Color.black.opacity(0.22),
+                           ink: .black, keyboardBase: hex(0x9C9C9F), keyFill: hex(0xD3D3D5),
                            logoColors: [red, yellow, teal, blue],
-                           radiusScale: 0.35, fontDesign: .monospaced)
+                           radiusScale: 0.5, fontDesign: .monospaced)
         }
     }
 
