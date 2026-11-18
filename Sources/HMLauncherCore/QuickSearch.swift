@@ -61,17 +61,28 @@ public struct QuickSearch {
     public func results(_ query: String) -> [QuickResult] {
         guard !query.trimmingCharacters(in: .whitespaces).isEmpty else { return suggestions }
         let q = SearchMatcher.Prepared(query)
-        let localHits = local.compactMap { l in SearchMatcher.score(l.prepared, q).map { (l, $0) } }
+        let tags = SearchVocabulary.icons(for: query)
+        // Ranking: match quality (name > typo > kind), then the user's insert count, then how well known it is.
+        let localHits = local.compactMap { l in SearchMatcher.score(l.prepared, q, iconID: l.row.iconID, tagIcons: tags).map { (l, $0) } }
             .sorted { a, b in
-                a.1 != b.1 ? a.1 > b.1 : (uses(a.0.row) != uses(b.0.row) ? uses(a.0.row) > uses(b.0.row) : a.0.order < b.0.order)
+                if a.1 != b.1 { return a.1 > b.1 }
+                if uses(a.0.row) != uses(b.0.row) { return uses(a.0.row) > uses(b.0.row) }
+                let (pa, pb) = (Popularity.score(a.0.row.title), Popularity.score(b.0.row.title))
+                return pa != pb ? pa > pb : a.0.order < b.0.order
             }
             .map { QuickResult(row: $0.0.row, place: $0.0.place) }
         let shown = Set(localHits.map(\.row.usageKey))
-        var global: [(row: PanelRow, score: Int)] = []
+        var global: [(row: PanelRow, score: Int, popularity: Int)] = []
         for (i, r) in index.globalRows.enumerated() where !shown.contains(r.usageKey) {
-            if let score = SearchMatcher.score(index.globalPrepared[i], q) { global.append((r, score)) }
+            if let score = SearchMatcher.score(index.globalPrepared[i], q, iconID: r.iconID, tagIcons: tags) {
+                global.append((r, score, index.globalPopularity[i]))
+            }
         }
-        global.sort { a, b in a.score != b.score ? a.score > b.score : uses(a.row) > uses(b.row) }
+        global.sort { a, b in
+            if a.score != b.score { return a.score > b.score }
+            if uses(a.row) != uses(b.row) { return uses(a.row) > uses(b.row) }
+            return a.popularity > b.popularity  // stable: alphabetical after that
+        }
         let globalHits = global.map { QuickResult(row: $0.row, place: nil) }
         // The user's search rules: hidden results go, pinned ones lead (even if their name doesn't match).
         let shaped = SearchTuning.apply(localHits + globalHits, key: \.row.usageKey, rule: SearchTuning.rule(for: query, in: rules)) { key in

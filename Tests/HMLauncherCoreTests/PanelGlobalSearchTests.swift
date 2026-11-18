@@ -20,8 +20,9 @@ final class PanelGlobalSearchTests: XCTestCase {
     func testCategoryMatchesFirstThenOtherPlugins() {
         var s = makeState()
         type(&s, "eq")
-        XCTAssertEqual(s.rows.map(\.title), ["EQ Eight", "EQ Three", "Channel EQ"])
-        XCTAssertEqual(s.rows.map(\.isGlobal), [false, true, true])
+        // Name matches first; "eq" is also a tag, so other EQs (Pro-Q 3) follow after them.
+        XCTAssertEqual(s.rows.map(\.title), ["EQ Eight", "EQ Three", "Channel EQ", "FabFilter Pro-Q 3"])
+        XCTAssertEqual(s.rows.map(\.isGlobal), [false, true, true, true])
         XCTAssertEqual(s.handle(.returnKey), .insert(s.rows[0]))
     }
 

@@ -32,7 +32,8 @@ final class SearchTuningTests: XCTestCase {
         let shaped = QuickSearch(config: c, items: items, usage: [:]).results("seR").map(\.row.title)
         XCTAssertEqual(shaped, ["Sermon Delay", "Serum 2"])
         // Longer searches keep the rule while the result still matches …
-        XCTAssertEqual(QuickSearch(config: c, items: items, usage: [:]).results("serm").map(\.row.title), ["Sermon Delay"])
+        // ("Serum 2" follows as a one-typo match.)
+        XCTAssertEqual(QuickSearch(config: c, items: items, usage: [:]).results("serm").map(\.row.title), ["Sermon Delay", "Serum 2"])
 
         // … and a pinned plugin shows up even when its name doesn't match.
         c.pinSearchResult(keys.key(valhalla), for: "verb")

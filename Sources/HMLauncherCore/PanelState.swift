@@ -79,11 +79,15 @@ public struct PanelState {
         }
         guard !filter.isEmpty else { return candidates }
         let query = SearchMatcher.Prepared(filter)
+        let tags = SearchVocabulary.icons(for: filter)
         let rule = SearchTuning.rule(for: filter, in: config.searchRules)
         let ranked = candidates.enumerated()
-            .compactMap { i, r in SearchMatcher.score(SearchMatcher.Prepared(r.title), query).map { (r, $0, i) } }
+            .compactMap { i, r in SearchMatcher.score(SearchMatcher.Prepared(r.title), query, iconID: r.iconID, tagIcons: tags).map { (r, $0, i) } }
             .sorted { a, b in
-                a.1 != b.1 ? a.1 > b.1 : (uses(a.0) != uses(b.0) ? uses(a.0) > uses(b.0) : a.2 < b.2)
+                if a.1 != b.1 { return a.1 > b.1 }
+                if uses(a.0) != uses(b.0) { return uses(a.0) > uses(b.0) }
+                let (pa, pb) = (Popularity.score(a.0.title), Popularity.score(b.0.title))
+                return pa != pb ? pa > pb : a.2 < b.2
             }
             .map(\.0)
         // The user's search rules: hidden results go, pinned ones lead (in the category part and in "all plugins").
@@ -103,11 +107,18 @@ public struct PanelState {
     /// Hits from every installed plugin (one row per plugin), plugins already shown left out.
     private func globalMatches(excluding shown: Set<String>, limit: Int?, markGlobal: Bool) -> [PanelRow] {
         let query = SearchMatcher.Prepared(filter)
-        var hits: [(row: PanelRow, score: Int)] = []
+        let tags = SearchVocabulary.icons(for: filter)
+        var hits: [(row: PanelRow, score: Int, popularity: Int)] = []
         for (i, r) in search.globalRows.enumerated() where !shown.contains(r.usageKey) {
-            if let score = SearchMatcher.score(search.globalPrepared[i], query) { hits.append((r, score)) }
+            if let score = SearchMatcher.score(search.globalPrepared[i], query, iconID: r.iconID, tagIcons: tags) {
+                hits.append((r, score, search.globalPopularity[i]))
+            }
         }
-        hits.sort { a, b in a.score != b.score ? a.score > b.score : uses(a.row) > uses(b.row) } // stable: alphabetical
+        hits.sort { a, b in  // stable: alphabetical last
+            if a.score != b.score { return a.score > b.score }
+            if uses(a.row) != uses(b.row) { return uses(a.row) > uses(b.row) }
+            return a.popularity > b.popularity
+        }
         return hits.prefix(limit ?? hits.count).map(\.row)
     }
 

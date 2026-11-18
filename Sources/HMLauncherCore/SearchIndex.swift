@@ -10,6 +10,8 @@ public final class SearchIndex: @unchecked Sendable {
     /// One row per plugin in its best format, alphabetical, icon guessed, colour resolved, marked as a global hit.
     public let globalRows: [PanelRow]
     public let globalPrepared: [SearchMatcher.Prepared]
+    /// `Popularity.score` per global row (tie-break after the user's own counts).
+    public let globalPopularity: [Int]
     private let rowIndexByKey: [String: Int]
 
     public init(items: [PluginItem], config: LauncherConfig) {
@@ -27,6 +29,7 @@ public final class SearchIndex: @unchecked Sendable {
             }
         globalRows = rows
         globalPrepared = rows.map { SearchMatcher.Prepared($0.title) }
+        globalPopularity = rows.map { Popularity.score($0.title) }
         var byKey: [String: Int] = [:]
         for (i, r) in rows.enumerated() where byKey[r.usageKey] == nil { byKey[r.usageKey] = i }
         rowIndexByKey = byKey
