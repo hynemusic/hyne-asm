@@ -10,7 +10,7 @@ let package = Package(
     targets: [
         .target(name: "HMLauncherCore"),
         .executableTarget(name: "HMLauncherApp", dependencies: ["HMLauncherCore"]),
-        .testTarget(name: "HMLauncherCoreTests", dependencies: ["HMLauncherCore"]),
+        .testTarget(name: "HMLauncherCoreTests", dependencies: ["HMLauncherCore"], exclude: ["Fixtures"]), // read by path
     ],
     swiftLanguageModes: [.v5]
 )

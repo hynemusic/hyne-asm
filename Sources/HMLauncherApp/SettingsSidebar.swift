@@ -37,7 +37,10 @@ struct SettingsSidebar: View {
             brand
                 .padding(.top, 44) // room for the window's traffic lights
                 .padding(.horizontal, DS.Space.l)
-                .padding(.bottom, DS.Space.xl)
+                .padding(.bottom, Palette.current.logoColors.isEmpty ? DS.Space.xl : DS.Space.m)
+            if !Palette.current.logoColors.isEmpty {
+                LogoStripe(height: 3).padding(.horizontal, DS.Space.l).padding(.bottom, DS.Space.l)
+            }
             VStack(spacing: 2) {
                 ForEach(items) { item in navRow(item) }
             }
@@ -177,6 +180,10 @@ struct ThemeSwatch: View {
             let r = 6 * palette.radiusScale
             ZStack(alignment: .topLeading) {
                 RoundedRectangle(cornerRadius: r).fill(palette.panelSurface)
+                if !palette.logoColors.isEmpty {
+                    HStack(spacing: 0) { ForEach(Array(palette.logoColors.enumerated()), id: \.offset) { Rectangle().fill($0.element) } }
+                        .frame(height: 2.5)
+                }
                 RoundedRectangle(cornerRadius: r).strokeBorder(palette.panelStroke)
                 VStack(alignment: .leading, spacing: geo.size.height * 0.08) {
                     HStack(spacing: 3) {

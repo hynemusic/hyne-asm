@@ -33,6 +33,8 @@ struct Palette {
     var ink: Color
     var keyboardBase: Color
     var keyFill: Color
+    /// Retro: the four PlayStation logo colours (stripe on top of the windows, 1–9 key caps).
+    var logoColors: [Color] = []
     var radiusScale: CGFloat = 1
     var fontDesign: Font.Design = .default
 
@@ -80,15 +82,19 @@ struct Palette {
                            panelSurface: .white, panelRow: hex(0xF2F2F5), panelStroke: Color.black.opacity(0.10),
                            ink: .black, keyboardBase: hex(0xDADADF), keyFill: .white)
         case .retro:
-            // PS2 era: charcoal console, grey plastic, red signal, PlayStation blue; blocky corners, monospaced type.
+            // PS2: black console, PS2 logo blue (#003791) in deep blue-black surfaces like the boot screen, and the
+            // four PlayStation logo colours — red #DF0024, yellow #F3C300, teal #00AC9F, blue #2E6DB4.
+            // Blocky corners and monospaced type for the retro feel.
+            let red = hex(0xDF0024), yellow = hex(0xF3C300), teal = hex(0x00AC9F), blue = hex(0x2E6DB4)
             return Palette(isDark: true,
-                           canvas: hex(0x1B1B1D), sidebar: hex(0x2A2B2E), surface: hex(0x34363A),
-                           raised: hex(0x46484E), hover: hex(0x55585F), hairline: hex(0x888C8F, 0.25),
-                           textPrimary: hex(0xEDEDED), textSecondary: hex(0xB8BBBF), textTertiary: hex(0x8F9399),
-                           accent: hex(0xFF4141), accentStrong: hex(0x2E5BD8),
-                           warning: hex(0xFFD23F),
-                           panelSurface: hex(0x3A3C41), panelRow: hex(0x4E5157), panelStroke: hex(0x9A9EA3, 0.45),
-                           ink: .white, keyboardBase: hex(0x141416), keyFill: hex(0x888C8F, 0.45),
+                           canvas: hex(0x0C0D14), sidebar: hex(0x111530), surface: hex(0x171C38),
+                           raised: hex(0x232A4E), hover: hex(0x2E3662), hairline: hex(0x5866A8, 0.30),
+                           textPrimary: hex(0xECEEF6), textSecondary: hex(0xB3B9D4), textTertiary: hex(0x848CB0),
+                           accent: red, accentStrong: blue,
+                           success: teal, warning: yellow,
+                           panelSurface: hex(0x0F1122), panelRow: hex(0x1C2140), panelStroke: hex(0x2E6DB4, 0.55),
+                           ink: .white, keyboardBase: hex(0x07080F), keyFill: hex(0x232A4E),
+                           logoColors: [red, yellow, teal, blue],
                            radiusScale: 0.35, fontDesign: .monospaced)
         }
     }
@@ -116,4 +122,17 @@ extension Font {
 extension CGFloat {
     /// A corner radius scaled for the theme (blockier in Retro).
     var themedRadius: CGFloat { self * Palette.current.radiusScale }
+}
+
+/// The PlayStation-logo stripe of the Retro theme (nothing in the other themes).
+struct LogoStripe: View {
+    var height: CGFloat = 3
+    var body: some View {
+        if !Palette.current.logoColors.isEmpty {
+            HStack(spacing: 0) {
+                ForEach(Array(Palette.current.logoColors.enumerated()), id: \.offset) { _, c in Rectangle().fill(c) }
+            }
+            .frame(height: height)
+        }
+    }
 }

@@ -36,6 +36,7 @@ struct PanelChrome: ViewModifier {
     func body(content: Content) -> some View {
         content
             .background(RoundedRectangle(cornerRadius: radius).fill(Color.panelSurface))
+            .overlay(alignment: .top) { LogoStripe() }
             .clipShape(RoundedRectangle(cornerRadius: radius))
             .overlay(RoundedRectangle(cornerRadius: radius).strokeBorder(Color.panelStroke))
     }
@@ -78,12 +79,18 @@ struct LauncherRow<Trailing: View>: View {
     }
 
     /// 1–9 as a small key cap; rows from 10 on keep the slot empty so the icons stay aligned.
+    /// Retro: the key caps cycle through the PlayStation logo colours (dark text on the yellow one).
     private func keyCap(_ index: Int) -> some View {
-        Text(index < 9 ? "\(index + 1)" : "")
-            .font(.system(size: 10.5, weight: .semibold, design: .rounded).monospacedDigit())
-            .foregroundColor(active ? .onAccent : DS.textSecondary)
+        let logo = Palette.current.logoColors
+        let fill: Color = index >= 9 ? .clear
+            : !logo.isEmpty ? logo[index % logo.count].opacity(active ? 1 : 0.85)
+            : active ? .accent : .ink.opacity(0.07)
+        let text: Color = !logo.isEmpty ? (index % logo.count == 1 ? .black : .white) : (active ? .onAccent : DS.textSecondary)
+        return Text(index < 9 ? "\(index + 1)" : "")
+            .font(.system(size: 10.5, weight: .semibold, design: Palette.current.fontDesign == .default ? .rounded : Palette.current.fontDesign).monospacedDigit())
+            .foregroundColor(text)
             .frame(width: 18, height: 18)
-            .background(RoundedRectangle(cornerRadius: CGFloat(5).themedRadius).fill(index < 9 ? (active ? Color.accent : Color.ink.opacity(0.07)) : .clear))
+            .background(RoundedRectangle(cornerRadius: CGFloat(5).themedRadius).fill(fill))
     }
 
     private var iconTile: some View {

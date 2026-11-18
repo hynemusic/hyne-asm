@@ -86,7 +86,8 @@ struct LESImportPage: View {
     }
 
     private func load(_ url: URL) {
-        if let text = try? String(contentsOf: url, encoding: .utf8) ?? String(contentsOf: url, encoding: .isoLatin1) {
+        // LES may have written the file in Latin-1; UTF-8 first, then that.
+        if let text = (try? String(contentsOf: url, encoding: .utf8)) ?? (try? String(contentsOf: url, encoding: .isoLatin1)) {
             importer.text = text
             importer.build(items: catalog.items)
         }

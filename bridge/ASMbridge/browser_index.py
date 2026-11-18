@@ -1,3 +1,5 @@
+import time
+
 try:
     from urllib.parse import unquote
 except ImportError:  # pragma: no cover - Live's older Python
@@ -12,6 +14,8 @@ PRESET_EXTENSIONS = (".adg", ".adv", ".vstpreset", ".aupreset", ".fxp", ".fxb", 
 SKIPPED_USER_LIBRARY_FOLDERS = ("Samples", "Clips", "Grooves", "Templates", "Remote Scripts", "Defaults")
 # Upper bound on browser nodes visited per preset root, so a giant sample folder can't freeze Live.
 MAX_PRESET_NODES = 40000
+# Walking the browser takes ~1 s and blocks Live's UI, so an unknown URI triggers a rebuild at most this often.
+MIN_REBUILD_INTERVAL = 30.0
 
 
 def preset_format(name, uri):
@@ -36,9 +40,12 @@ class BrowserIndex(object):
     """Flattens Live's browser roots into loadable entries: devices and plugins (factory presets excluded)
     plus the user's own presets from the User Library and Places folders."""
 
-    def __init__(self, browser):
+    def __init__(self, browser, clock=time.time):
         self._browser = browser
         self._by_uri = {}
+        self._items = None
+        self._built_at = None
+        self._clock = clock
 
     def build(self):
         items = []
@@ -48,10 +55,19 @@ class BrowserIndex(object):
             if node is not None:
                 self._walk(node, root, [], items)
         self._walk_presets(items)
+        self._items = items
+        self._built_at = self._clock()
         return items
 
+    def items(self, refresh=False):
+        """The last walk's result; walks the browser only the first time or when asked to (blocks Live ~1 s)."""
+        if refresh or self._items is None:
+            return self.build()
+        return self._items
+
     def find(self, uri):
-        if uri not in self._by_uri:
+        recent = self._built_at is not None and self._clock() - self._built_at < MIN_REBUILD_INTERVAL
+        if uri not in self._by_uri and not recent:
             self.build()
         return self._by_uri.get(uri)
 

@@ -1,4 +1,4 @@
-SCRIPT_VERSION = "2"
+SCRIPT_VERSION = "3"
 
 
 def _reply(req_id, ok, result=None, error=None):
@@ -12,7 +12,7 @@ def handle_request(req, index, browser, live_version):
     if cmd == "hello":
         return _reply(req_id, True, {"script_version": SCRIPT_VERSION, "live_version": live_version})
     if cmd == "list":
-        return _reply(req_id, True, {"items": index.build()})
+        return _reply(req_id, True, {"items": index.items(refresh=bool(req.get("refresh")))})
     if cmd == "load":
         item = index.find(req.get("uri"))
         if item is None:

@@ -37,15 +37,9 @@ public enum PanelAction: Equatable, Sendable {
 
 public struct PanelState {
     private let config: LauncherConfig
-    private let items: [PluginItem]
-    private let index: EntryResolver.Index
-    /// Rows of the "All" tab, sorted once (rows is read several times per keystroke).
-    private let allRows: [PanelRow]
-    /// uri → plugin key (formats of one plugin share a key), to keep search hits to one row per plugin.
-    private let variantKey: [String: String]
+    /// Shared, prebuilt view of the plugin list (see `SearchIndex`).
+    private let search: SearchIndex
     private let usage: [String: Int]
-    /// Search-ready names of `allRows`, built once.
-    private let allPrepared: [SearchMatcher.Prepared]
     public private(set) var tabs: [PanelTab]
     public private(set) var selectedTab: Int
     public private(set) var filter = ""
@@ -53,22 +47,17 @@ public struct PanelState {
     /// The folder shown instead of the category's top level.
     public private(set) var openFolderID: UUID?
 
-    public init(config: LauncherConfig, items: [PluginItem], selectedTab: Int = 0, usage: [String: Int] = [:]) {
+    public init(config: LauncherConfig, index: SearchIndex, selectedTab: Int = 0, usage: [String: Int] = [:]) {
         self.usage = usage
         self.config = config
-        self.items = items
-        index = EntryResolver.Index(items)
-        let keys = PluginVariants.Keys(items)
-        variantKey = Dictionary(items.map { (keys.key($0), $0.uri) }.map { ($1, $0) }, uniquingKeysWith: { a, _ in a })
-        // One row per plugin, in its best format (VST3 → AU → VST2).
-        allRows = PluginVariants.collapse(items).map(\.preferred)
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-            .map { PanelRow(uri: $0.uri, name: $0.name, source: $0.source, path: $0.path,
-                            iconID: IconCatalog.defaultID, title: $0.name, isAvailable: true, usageKey: keys.key($0),
-                            colorID: config.colorID(for: $0)) }
-        allPrepared = allRows.map { SearchMatcher.Prepared($0.title) }
+        search = index
         tabs = config.categories.map { .category($0.id, $0.name) }
         self.selectedTab = min(max(selectedTab, 0), tabs.count - 1)
+    }
+
+    /// Builds the index on the spot (tests, one-off use).
+    public init(config: LauncherConfig, items: [PluginItem], selectedTab: Int = 0, usage: [String: Int] = [:]) {
+        self.init(config: config, index: SearchIndex(items: items, config: config), selectedTab: selectedTab, usage: usage)
     }
 
     /// Without a filter: the category's top level (plugins and folders) or the open folder's plugins, in the
@@ -97,7 +86,7 @@ public struct PanelState {
         let excluded = Set(local.map(\.usageKey)).union(rule?.hidden ?? [])
         let global = SearchTuning.apply(globalMatches(excluding: excluded, limit: Self.maxGlobalResults, markGlobal: true),
                                         key: \.usageKey, rule: rule) { key in
-            excluded.contains(key) ? nil : allRows.first { $0.usageKey == key }.map(Self.markedGlobal)
+            excluded.contains(key) ? nil : search.globalRow(forKey: key)
         }
         return local + global
     }
@@ -110,18 +99,11 @@ public struct PanelState {
     private func globalMatches(excluding shown: Set<String>, limit: Int?, markGlobal: Bool) -> [PanelRow] {
         let query = SearchMatcher.Prepared(filter)
         var hits: [(row: PanelRow, score: Int)] = []
-        for (i, r) in allRows.enumerated() where !shown.contains(r.usageKey) {
-            if let score = SearchMatcher.score(allPrepared[i], query) { hits.append((r, score)) }
+        for (i, r) in search.globalRows.enumerated() where !shown.contains(r.usageKey) {
+            if let score = SearchMatcher.score(search.globalPrepared[i], query) { hits.append((r, score)) }
         }
         hits.sort { a, b in a.score != b.score ? a.score > b.score : uses(a.row) > uses(b.row) } // stable: alphabetical
-        return hits.prefix(limit ?? hits.count).map { markGlobal ? Self.markedGlobal($0.row) : $0.row }
-    }
-
-    private static func markedGlobal(_ row: PanelRow) -> PanelRow {
-        var g = row
-        g.isGlobal = true
-        g.iconID = IconGuesser.guess(PluginItem(uri: g.uri, name: g.name, source: g.source, path: g.path))
-        return g
+        return hits.prefix(limit ?? hits.count).map(\.row)
     }
 
     /// The plugins of a folder in the current category, for the side list that opens on hover.
@@ -145,10 +127,10 @@ public struct PanelState {
                             isAvailable: true, folderID: e.id, childCount: e.children?.count ?? 0, usageKey: "folder:\(e.id)",
                             colorID: config.colorID(for: e))
         }
-        let resolved = index.resolve(e)
+        let resolved = search.resolver.resolve(e)
         let uri = resolved?.uri ?? e.uri
         return PanelRow(uri: uri, name: e.name, source: e.source, path: resolved?.path ?? e.path,
-                        iconID: e.iconID, title: e.title, isAvailable: resolved != nil, usageKey: variantKey[uri] ?? uri,
+                        iconID: e.iconID, title: e.title, isAvailable: resolved != nil, usageKey: search.usageKey[uri] ?? uri,
                         colorID: config.colorID(for: e))
     }
 

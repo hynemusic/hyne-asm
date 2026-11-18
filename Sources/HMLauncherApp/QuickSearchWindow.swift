@@ -14,7 +14,6 @@ final class QuickSearchWindowController {
     private let panel: NSPanel
     private let viewModel = QuickSearchViewModel()
     private var outsideClickMonitor: Any?
-    private let hud = HUD()
 
     init(model: AppModel) {
         self.model = model
@@ -46,7 +45,7 @@ final class QuickSearchWindowController {
     func toggle() { isVisible ? hide() : show() }
 
     func show() {
-        viewModel.state = QuickSearchState(search: QuickSearch(config: model.config, items: model.catalog.items,
+        viewModel.state = QuickSearchState(search: QuickSearch(config: model.config, index: model.searchIndex,
                                                                usage: model.usage.counts))
         layout()
         panel.orderFrontRegardless()
@@ -76,19 +75,7 @@ final class QuickSearchWindowController {
     private func insert(_ row: PanelRow) {
         guard row.isAvailable else { return }
         hide()
-        let client = model.client, usage = model.usage, hud = self.hud
-        Task { @MainActor in
-            do {
-                try await client.load(uri: row.uri)
-                usage.record(row.usageKey)
-            } catch BridgeError.notConnected {
-                hud.show(Loc.t("Nicht mit Live verbunden", "Not connected to Live"))
-            } catch BridgeError.remote(let code) where code == "not_found" {
-                hud.show(Loc.t("Plugin nicht gefunden", "Plugin not found"))
-            } catch {
-                hud.show(Loc.t("Laden fehlgeschlagen", "Loading failed"))
-            }
-        }
+        model.insert(uri: row.uri, usageKey: row.usageKey)
     }
 
     /// Centered horizontally on the screen with the mouse, a quarter from the top; grows downwards with results.

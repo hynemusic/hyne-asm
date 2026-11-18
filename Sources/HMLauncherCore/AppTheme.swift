@@ -20,7 +20,7 @@ public enum AppTheme: String, Codable, CaseIterable, Sendable {
         case .ableton: return Loc.t("Lives Grau mit Orange", "Live's grey with orange")
         case .hyne: return Loc.t("Aus deinem Live-Theme", "From your Live theme")
         case .light: return Loc.t("Weiß und klar", "White and clean")
-        case .retro: return Loc.t("Konsolengrau, Rot, Pixel-Schrift", "Console grey, red, pixel type")
+        case .retro: return Loc.t("PS2-Schwarz & -Blau, PlayStation-Logofarben", "PS2 black & blue, PlayStation logo colours")
         }
     }
 }

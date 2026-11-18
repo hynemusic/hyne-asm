@@ -49,14 +49,24 @@ class BrowserIndexTests(unittest.TestCase):
         items = BrowserIndex(FakeBrowser(plugins=many)).build()
         self.assertEqual(len(items), 3000)
 
-    def test_find_rebuilds_once_on_miss(self):
+    def test_find_rebuilds_on_miss_but_not_too_often(self):
+        now = [1000.0]
         browser = FakeBrowser(audio_effects=[FakeItem("EQ Eight", "u:eq")])
-        index = BrowserIndex(browser)
+        index = BrowserIndex(browser, clock=lambda: now[0])
         index.build()
         browser.audio_effects.children.append(FakeItem("Utility", "u:util"))
+        self.assertIsNone(index.find("u:util"))          # just built: no second walk right away
+        now[0] += 31
         self.assertEqual(index.find("u:util").name, "Utility")
-        self.assertIsNone(index.find("u:nope"))
+        self.assertIsNone(index.find("u:nope"))           # rebuilt a moment ago: no walk
 
+    def test_items_are_cached_until_refresh(self):
+        browser = FakeBrowser(audio_effects=[FakeItem("EQ Eight", "u:eq")])
+        index = BrowserIndex(browser)
+        self.assertEqual(len(index.items()), 1)
+        browser.audio_effects.children.append(FakeItem("Utility", "u:util"))
+        self.assertEqual(len(index.items()), 1)
+        self.assertEqual(len(index.items(refresh=True)), 2)
 
 if __name__ == "__main__":
     unittest.main()

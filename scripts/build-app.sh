@@ -17,6 +17,7 @@ APP="build/HYNE Ableton Shortcuts Manager.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/HYNE ASM"
+strip -x "$APP/Contents/MacOS/HYNE ASM"   # local symbols only needed for debugging: 6 MB → 2.4 MB
 cp App/Info.plist "$APP/Contents/Info.plist"
 cp App/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 rsync -a --exclude __pycache__ --exclude '*.pyc' bridge/ASMbridge "$APP/Contents/Resources/"

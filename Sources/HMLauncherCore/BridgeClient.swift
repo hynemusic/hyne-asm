@@ -79,8 +79,9 @@ public actor BridgeClient {
         try decode(HelloResult.self, try await request(["cmd": "hello"]))
     }
 
-    public func listItems() async throws -> [PluginItem] {
-        try decode(ItemsResult.self, try await request(["cmd": "list"])).items
+    /// `refresh`: make Live walk its browser again (blocks Live ~1 s). Otherwise the bridge answers from its last walk.
+    public func listItems(refresh: Bool = false) async throws -> [PluginItem] {
+        try decode(ItemsResult.self, try await request(["cmd": "list", "refresh": refresh])).items
     }
 
     public func load(uri: String) async throws {

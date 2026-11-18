@@ -23,9 +23,10 @@ public final class PluginCatalog: ObservableObject {
         items = cached
     }
 
-    /// On failure the current items are kept.
-    public func refresh() async throws {
-        let fresh = try await client.listItems()
+    /// On failure the current items are kept. `rescan`: Live walks its browser again (new plugins, new presets).
+    public func refresh(rescan: Bool = false) async throws {
+        let fresh = try await client.listItems(refresh: rescan)
+        guard fresh != items else { return } // nothing changed: no redraws, no index rebuild
         items = fresh
         try? FileManager.default.createDirectory(at: cacheURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? JSONEncoder().encode(fresh).write(to: cacheURL, options: .atomic)

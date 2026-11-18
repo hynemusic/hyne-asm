@@ -63,7 +63,7 @@ struct ItemPicker: View {
 struct SearchTuningPage: View {
     @ObservedObject var model: AppModel
     @ObservedObject var catalog: PluginCatalog
-    @State private var query = ProcessInfo.processInfo.environment["HM_SEARCH_QUERY"] ?? "" // developer aid for screenshots
+    @State private var query = Dev.env("HM_SEARCH_QUERY") ?? "" // developer aid for screenshots
     @State private var addingPin = false
 
     private var normalized: String { SearchTuning.normalize(query) }
@@ -71,15 +71,7 @@ struct SearchTuningPage: View {
 
     private var results: [QuickResult] {
         guard !normalized.isEmpty else { return [] }
-        return QuickSearch(config: model.config, items: catalog.items, usage: model.usage.counts).results(query)
-    }
-
-    /// usage key → plugin, for naming hidden results.
-    private var itemsByKey: [String: PluginItem] {
-        let keys = PluginVariants.Keys(catalog.items)
-        var map: [String: PluginItem] = [:]
-        for g in PluginVariants.collapse(catalog.items) { map[keys.key(g.preferred)] = map[keys.key(g.preferred)] ?? g.preferred }
-        return map
+        return QuickSearch(config: model.config, index: model.searchIndex, usage: model.usage.counts).results(query)
     }
 
     var body: some View {
@@ -204,13 +196,13 @@ struct SearchTuningPage: View {
     @ViewBuilder
     private func hiddenSection(_ rule: SearchRule?) -> some View {
         if let hidden = rule?.hidden, !hidden.isEmpty {
-            let names = itemsByKey
+            let index = model.searchIndex
             VStack(alignment: .leading, spacing: DS.Space.s) {
                 SectionLabel(text: Loc.t("Ausgeblendet", "Hidden"))
                 ForEach(hidden, id: \.self) { key in
                     HStack(spacing: DS.Space.s) {
                         Image(systemName: "eye.slash").font(.system(size: 11)).foregroundColor(DS.textTertiary).frame(width: 18)
-                        Text(names[key]?.name ?? UsageStats.readableName(key)).font(DS.Font.body).foregroundColor(DS.textSecondary).strikethrough()
+                        Text(index.globalRow(forKey: key)?.name ?? UsageStats.readableName(key)).font(DS.Font.body).foregroundColor(DS.textSecondary).strikethrough()
                         Spacer()
                         Button(Loc.t("Wieder zeigen", "Show again")) { model.config.unhideSearchResult(key, for: query) }
                             .buttonStyle(.borderless).font(DS.Font.caption)

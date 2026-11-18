@@ -47,7 +47,23 @@ public enum IconGuesser {
 
     static var ruleIconIDs: [String] { rules.map(\.icon) }
 
+    /// Guesses are remembered per name/source/path: the plugin list is searched often and rarely changes.
+    private static let cacheLock = NSLock()
+    nonisolated(unsafe) private static var cache: [String: String] = [:]
+
     public static func guess(_ item: PluginItem) -> String {
+        let cacheKey = item.source.rawValue + "|" + item.name + "|" + item.path.joined(separator: "/") + "|" + (item.format ?? "")
+        cacheLock.lock()
+        if let hit = cache[cacheKey] { cacheLock.unlock(); return hit }
+        cacheLock.unlock()
+        let icon = computeGuess(item)
+        cacheLock.lock()
+        cache[cacheKey] = icon
+        cacheLock.unlock()
+        return icon
+    }
+
+    private static func computeGuess(_ item: PluginItem) -> String {
         let name = item.name.lowercased()
         let words = Set(name.split { !$0.isLetter && !$0.isNumber }.map(String.init))
         for rule in rules where rule.keywords.contains(where: { matches($0, name: name, words: words) }) {

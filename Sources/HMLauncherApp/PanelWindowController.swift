@@ -34,13 +34,12 @@ final class PanelWindowController {
     /// Tallest height since the panel opened. Switching to a shorter category (or filtering) never shrinks the
     /// panel while it is open, so the content doesn't jump away from the mouse.
     private var heightFloor: CGFloat = 0
-    private let hud = HUD()
     private let flyout = FolderFlyout()
     private var flyoutFolder: UUID?
 
     init(model: AppModel) {
         self.model = model
-        viewModel = PanelViewModel(state: PanelState(config: model.config, items: model.catalog.items))
+        viewModel = PanelViewModel(state: PanelState(config: model.config, index: SearchIndex(items: [], config: model.config)))
         panel = LauncherPanel(contentRect: NSRect(x: 0, y: 0, width: Self.width, height: 200),
                               styleMask: [.nonactivatingPanel, .borderless], backing: .buffered, defer: true)
         panel.level = .popUpMenu
@@ -74,7 +73,7 @@ final class PanelWindowController {
     }
 
     func show(at point: CGPoint) {
-        viewModel.state = PanelState(config: model.config, items: model.catalog.items, selectedTab: lastTab, usage: model.usage.counts)
+        viewModel.state = PanelState(config: model.config, index: model.searchIndex, selectedTab: lastTab, usage: model.usage.counts)
         viewModel.favoritesID = model.config.favoritesID
         viewModel.hovered = nil
         topLeft = point
@@ -160,21 +159,7 @@ final class PanelWindowController {
             return
         }
         hide()
-        let client = model.client
-        let usage = model.usage
-        let hud = self.hud
-        Task { @MainActor in
-            do {
-                try await client.load(uri: row.uri)
-                usage.record(row.usageKey)
-            } catch BridgeError.notConnected {
-                hud.show(Loc.t("Nicht mit Live verbunden", "Not connected to Live"))
-            } catch BridgeError.remote(let code) where code == "not_found" {
-                hud.show(Loc.t("Plugin nicht gefunden", "Plugin not found"))
-            } catch {
-                hud.show(Loc.t("Laden fehlgeschlagen", "Loading failed"))
-            }
-        }
+        model.insert(uri: row.uri, usageKey: row.usageKey)
     }
 
     private func selectTab(_ index: Int) {
@@ -195,7 +180,7 @@ final class PanelWindowController {
         } else {
             model.config.addEntry(PluginItem(uri: row.uri, name: row.name, source: row.source, path: row.path), to: favID)
         }
-        var state = PanelState(config: model.config, items: model.catalog.items, selectedTab: viewModel.state.selectedTab, usage: model.usage.counts)
+        var state = PanelState(config: model.config, index: model.searchIndex, selectedTab: viewModel.state.selectedTab, usage: model.usage.counts)
         for ch in viewModel.state.filter { _ = state.handle(.character(ch)) }
         viewModel.state = state
         layout()

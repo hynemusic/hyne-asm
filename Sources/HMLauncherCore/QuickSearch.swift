@@ -13,24 +13,27 @@ public struct QuickSearch {
     public static let maxSuggestions = 8
 
     private let local: [(row: PanelRow, place: String, prepared: SearchMatcher.Prepared, order: Int)]
-    private let global: [(row: PanelRow, prepared: SearchMatcher.Prepared)]
+    private let index: SearchIndex
     private let favorites: [QuickResult]
     private let usage: [String: Int]
     private let rules: [SearchRule]
 
+    /// Builds the index on the spot (tests, one-off use).
     public init(config: LauncherConfig, items: [PluginItem], usage: [String: Int]) {
+        self.init(config: config, index: SearchIndex(items: items, config: config), usage: usage)
+    }
+
+    public init(config: LauncherConfig, index: SearchIndex, usage: [String: Int]) {
         self.usage = usage
+        self.index = index
         rules = config.searchRules
-        let index = EntryResolver.Index(items)
-        let keys = PluginVariants.Keys(items)
-        let byURI = Dictionary(items.map { ($0.uri, $0) }, uniquingKeysWith: { a, _ in a })
 
         func row(_ e: Entry) -> PanelRow {
-            let resolved = index.resolve(e)
+            let resolved = index.resolver.resolve(e)
             let uri = resolved?.uri ?? e.uri
             return PanelRow(uri: uri, name: e.name, source: e.source, path: resolved?.path ?? e.path, iconID: e.iconID,
                             title: e.title, isAvailable: resolved != nil,
-                            usageKey: byURI[uri].map(keys.key) ?? uri, colorID: config.colorID(for: e))
+                            usageKey: index.usageKey[uri] ?? uri, colorID: config.colorID(for: e))
         }
 
         var seen = Set<String>()
@@ -48,17 +51,9 @@ public struct QuickSearch {
             }
         }
         self.local = local
-        favorites = (config.categories.first(where: \.isFavorites)?.entries ?? []).filter { !$0.isFolder }
-            .prefix(Self.maxSuggestions).map { QuickResult(row: row($0), place: config.categories.first(where: \.isFavorites)?.name) }
-
-        global = PluginVariants.collapse(items).map(\.preferred)
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-            .map { item in
-                let r = PanelRow(uri: item.uri, name: item.name, source: item.source, path: item.path,
-                                 iconID: IconGuesser.guess(item), title: item.name, isAvailable: true,
-                                 isGlobal: true, usageKey: keys.key(item), colorID: config.colorID(for: item))
-                return (r, SearchMatcher.Prepared(item.name))
-            }
+        let favoritesCategory = config.categories.first(where: \.isFavorites)
+        favorites = (favoritesCategory?.entries ?? []).filter { !$0.isFolder }
+            .prefix(Self.maxSuggestions).map { QuickResult(row: row($0), place: favoritesCategory?.name) }
     }
 
     private func uses(_ r: PanelRow) -> Int { usage[r.usageKey] ?? 0 }
@@ -72,21 +67,23 @@ public struct QuickSearch {
             }
             .map { QuickResult(row: $0.0.row, place: $0.0.place) }
         let shown = Set(localHits.map(\.row.usageKey))
-        let globalHits = global.filter { !shown.contains($0.row.usageKey) }
-            .compactMap { g in SearchMatcher.score(g.prepared, q).map { (g.row, $0) } }
-            .sorted { a, b in a.1 != b.1 ? a.1 > b.1 : uses(a.0) > uses(b.0) }
-            .map { QuickResult(row: $0.0, place: nil) }
+        var global: [(row: PanelRow, score: Int)] = []
+        for (i, r) in index.globalRows.enumerated() where !shown.contains(r.usageKey) {
+            if let score = SearchMatcher.score(index.globalPrepared[i], q) { global.append((r, score)) }
+        }
+        global.sort { a, b in a.score != b.score ? a.score > b.score : uses(a.row) > uses(b.row) }
+        let globalHits = global.map { QuickResult(row: $0.row, place: nil) }
         // The user's search rules: hidden results go, pinned ones lead (even if their name doesn't match).
         let shaped = SearchTuning.apply(localHits + globalHits, key: \.row.usageKey, rule: SearchTuning.rule(for: query, in: rules)) { key in
             if let l = local.first(where: { $0.row.usageKey == key }) { return QuickResult(row: l.row, place: l.place) }
-            return global.first { $0.row.usageKey == key }.map { QuickResult(row: $0.row, place: nil) }
+            return index.globalRow(forKey: key).map { QuickResult(row: $0, place: nil) }
         }
         return Array(shaped.prefix(Self.maxResults))
     }
 
     /// Most used plugins first; without any history, the Favorites.
     private var suggestions: [QuickResult] {
-        let byUse = (local.map { ($0.row, Optional($0.place)) } + global.map { ($0.row, nil as String?) })
+        let byUse = (local.map { ($0.row, Optional($0.place)) } + index.globalRows.map { ($0, nil as String?) })
             .filter { uses($0.0) > 0 }
         var seen = Set<String>()
         let ranked = byUse.sorted { uses($0.0) > uses($1.0) }
