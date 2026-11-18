@@ -256,6 +256,7 @@ struct StatsPage: View {
         case .live: return .brandCoral
         case .maxForLive: return Color(red: 0.25, green: 0.78, blue: 0.70)
         case .presets: return Color(red: 1.0, green: 0.76, blue: 0.32)
+        case .custom: return Color(red: 0.70, green: 0.50, blue: 0.95)
         }
     }
 

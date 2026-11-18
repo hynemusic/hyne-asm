@@ -75,7 +75,7 @@ final class QuickSearchWindowController {
     private func insert(_ row: PanelRow) {
         guard row.isAvailable else { return }
         hide()
-        model.insert(uri: row.uri, usageKey: row.usageKey)
+        model.insert(row)
     }
 
     /// Centered horizontally on the screen with the mouse, a quarter from the top; grows downwards with results.

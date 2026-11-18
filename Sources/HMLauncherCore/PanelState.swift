@@ -17,6 +17,29 @@ public struct PanelRow: Equatable, Sendable {
     public var usageKey: String = ""
     /// Color label (`ColorPalette` id), already resolved against the color rules.
     public var colorID: String? = nil
+    /// A chain: the URIs to insert, in order.
+    public var chain: [String]? = nil
+    /// A Live action to run instead of inserting.
+    public var action: LiveAction? = nil
+    /// Not yet filed or inserted, first seen recently.
+    public var isNew: Bool = false
+}
+
+extension PanelRow {
+    /// Row for a chain or Live action entry; nil for plugins and folders.
+    static func special(_ e: Entry, index: SearchIndex, colorID: String?) -> PanelRow? {
+        if let action = e.action {
+            return PanelRow(uri: "", name: e.name, source: e.source, path: [], iconID: e.iconID, title: e.title,
+                            isAvailable: true, usageKey: "action|" + e.title.lowercased(), colorID: colorID, action: action)
+        }
+        if let steps = e.chain {
+            let uris = steps.map { index.resolver.resolve(Entry(item: $0))?.uri }
+            return PanelRow(uri: "", name: e.name, source: e.source, path: [], iconID: e.iconID, title: e.title,
+                            isAvailable: !uris.isEmpty && !uris.contains(nil), usageKey: "chain|" + e.title.lowercased(),
+                            colorID: colorID, chain: uris.compactMap { $0 })
+        }
+        return nil
+    }
 }
 
 /// One tab per category. (An "All" tab drew every installed plugin at once and froze the panel;
@@ -143,6 +166,7 @@ public struct PanelState {
                             isAvailable: true, folderID: e.id, childCount: e.children?.count ?? 0, usageKey: "folder:\(e.id)",
                             colorID: config.colorID(for: e))
         }
+        if let special = PanelRow.special(e, index: search, colorID: config.colorID(for: e)) { return special }
         let resolved = search.resolver.resolve(e)
         let uri = resolved?.uri ?? e.uri
         return PanelRow(uri: uri, name: e.name, source: e.source, path: resolved?.path ?? e.path,

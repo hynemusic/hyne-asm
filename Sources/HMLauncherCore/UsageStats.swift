@@ -17,6 +17,8 @@ public struct UsageStat: Identifiable, Equatable, Sendable {
 
 public enum UsageKind: String, CaseIterable, Sendable {
     case plugins, live, maxForLive, presets
+    /// Chains and Live actions.
+    case custom
 
     public init(_ source: ItemSource) {
         switch source {
@@ -31,6 +33,7 @@ public enum UsageKind: String, CaseIterable, Sendable {
     init(key: String) {
         let source = key.split(separator: "|", maxSplits: 1).first.map(String.init) ?? ""
         if source == "preset" { self = .presets; return }
+        if source == "chain" || source == "action" { self = .custom; return }
         self = ItemSource(rawValue: source).map(UsageKind.init) ?? .plugins
     }
 
@@ -40,6 +43,7 @@ public enum UsageKind: String, CaseIterable, Sendable {
         case .live: return Loc.t("Live-Devices", "Live Devices")
         case .maxForLive: return "Max for Live"
         case .presets: return Loc.t("Eigene Presets", "Your Presets")
+        case .custom: return Loc.t("Ketten & Aktionen", "Chains & Actions")
         }
     }
 }

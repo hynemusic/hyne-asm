@@ -132,15 +132,43 @@ final class AppModel: ObservableObject {
 
     /// The one way anything gets inserted (panel, quick search, plugin shortcuts): load into the selected track,
     /// count the insert, show a short message near the mouse if it fails.
-    func insert(uri: String, usageKey: String) {
+    func insert(_ row: PanelRow) {
+        if let action = row.action {
+            run(action, usageKey: row.usageKey)
+        } else {
+            insert(uris: row.chain ?? [row.uri], usageKey: row.usageKey)
+        }
+    }
+
+    func insert(uri: String, usageKey: String) { insert(uris: [uri], usageKey: usageKey) }
+
+    func run(_ action: LiveAction, usageKey: String) {
         let client = client, usage = usage, hud = hud
         Task { @MainActor in
             do {
-                try await client.load(uri: uri)
+                try await client.run(action)
                 usage.record(usageKey)
             } catch BridgeError.notConnected {
                 hud.show(Loc.t("Nicht mit Live verbunden", "Not connected to Live"))
-            } catch BridgeError.remote(let code) where code == "not_found" {
+            } catch BridgeError.remote(let code) where code == "unknown_cmd" {
+                hud.show(Loc.t("Live-Script aktualisieren (Menü → Live-Script installieren)", "Update the Live script (menu → Install Live Script)"))
+            } catch {
+                hud.show(Loc.t("Aktion fehlgeschlagen", "Action failed"))
+            }
+        }
+    }
+
+    /// One plugin or a chain, where the Behavior settings say (end of chain / after the selected device,
+    /// selected track / all selected tracks).
+    func insert(uris: [String], usageKey: String) {
+        let client = client, usage = usage, hud = hud, options = config.insert
+        Task { @MainActor in
+            do {
+                try await client.load(uris: uris, options: options)
+                usage.record(usageKey)
+            } catch BridgeError.notConnected {
+                hud.show(Loc.t("Nicht mit Live verbunden", "Not connected to Live"))
+            } catch BridgeError.remote(let code) where code.hasPrefix("not_found") {
                 hud.show(Loc.t("Plugin nicht gefunden", "Plugin not found"))
             } catch {
                 hud.show(Loc.t("Laden fehlgeschlagen", "Loading failed"))

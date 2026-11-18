@@ -29,6 +29,7 @@ public struct QuickSearch {
         rules = config.searchRules
 
         func row(_ e: Entry) -> PanelRow {
+            if let special = PanelRow.special(e, index: index, colorID: config.colorID(for: e)) { return special }
             let resolved = index.resolver.resolve(e)
             let uri = resolved?.uri ?? e.uri
             return PanelRow(uri: uri, name: e.name, source: e.source, path: resolved?.path ?? e.path, iconID: e.iconID,

@@ -159,7 +159,7 @@ final class PanelWindowController {
             return
         }
         hide()
-        model.insert(uri: row.uri, usageKey: row.usageKey)
+        model.insert(row)
     }
 
     private func selectTab(_ index: Int) {

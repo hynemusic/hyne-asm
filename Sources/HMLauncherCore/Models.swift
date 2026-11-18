@@ -37,6 +37,10 @@ public struct Entry: Codable, Hashable, Identifiable, Sendable {
     public var children: [Entry]?
     /// Own color label (`ColorPalette` id); nil = follow the color rules.
     public var colorID: String?
+    /// A chain: these items are inserted one after the other.
+    public var chain: [PluginItem]?
+    /// A Live action ("New MIDI Track", "Tempo 128") instead of a plugin.
+    public var action: LiveAction?
 
     public var title: String { displayName ?? name }
     public var isFolder: Bool { children != nil }
@@ -44,6 +48,16 @@ public struct Entry: Codable, Hashable, Identifiable, Sendable {
     public init(folderNamed name: String) {
         id = UUID(); uri = ""; self.name = name; source = .plugins; path = []
         iconID = IconCatalog.folderID; displayName = nil; children = []
+    }
+
+    public init(chainNamed name: String, steps: [PluginItem], iconID: String = "rack") {
+        id = UUID(); uri = ""; self.name = name; source = .plugins; path = []
+        self.iconID = iconID; displayName = nil; chain = steps
+    }
+
+    public init(action: LiveAction) {
+        id = UUID(); uri = ""; name = action.title; source = .plugins; path = []
+        iconID = action.kind.iconID; displayName = nil; self.action = action
     }
 
     public init(item: PluginItem, iconID: String = IconCatalog.defaultID) {
@@ -122,6 +136,8 @@ public struct LauncherConfig: Codable, Sendable {
     public var itemShortcuts: [ItemShortcut] = []
     /// Look of the app's windows.
     public var theme: AppTheme = .original
+    /// Where inserted items land and on which tracks.
+    public var insert: InsertOptions = .default
 
     public init(version: Int, categories: [Category], shortcuts: ShortcutSettings, panelKeys: PanelKeyBindings = .default) {
         self.version = version
@@ -142,6 +158,7 @@ public struct LauncherConfig: Codable, Sendable {
         searchRules = try c.decodeIfPresent([SearchRule].self, forKey: .searchRules) ?? []
         itemShortcuts = try c.decodeIfPresent([ItemShortcut].self, forKey: .itemShortcuts) ?? []
         theme = (try? c.decodeIfPresent(AppTheme.self, forKey: .theme)) ?? .original
+        insert = (try? c.decodeIfPresent(InsertOptions.self, forKey: .insert)) ?? .default
     }
 
     public static let currentVersion = 3
