@@ -1106,13 +1106,18 @@ struct ShortcutsPage: View {
     @ObservedObject var catalog: PluginCatalog
     @Binding var request: PluginItem?
     @State private var picking = false
+    @State private var showKnown = false
 
     var body: some View {
         PageContainer(title: Loc.t("Tastenkürzel", "Shortcuts"),
                       subtitle: Loc.t("Klick auf ein Kürzel und drück die neue Kombination. Alle Kürzel wirken nur, wenn Live vorne ist.",
                                       "Click a shortcut and press the new combination. All shortcuts only work while Live is in front."),
-                      maxWidth: 780) { EmptyView() } content: {
+                      maxWidth: 780) {
+            Button { showKnown = true } label: { Label(Loc.t("Ableton- & macOS-Kürzel", "Ableton & macOS Shortcuts"), systemImage: "keyboard") }
+                .help(Loc.t("Standardkürzel von Live und macOS anzeigen", "Show Live's and macOS's default shortcuts"))
+        } content: {
             VStack(alignment: .leading, spacing: DS.Space.xl) {
+                pluginShortcutsSection
                 section(Loc.t("Plugin-Fenster", "Plugin Windows"), symbol: "macwindow.on.rectangle",
                         note: Loc.t("Kürzel brauchen ⌘, ⌃ oder ⌥.", "Shortcuts need ⌘, ⌃ or ⌥."),
                         reset: { model.config.shortcuts = .default }) {
@@ -1138,7 +1143,6 @@ struct ShortcutsPage: View {
                             maxCount: 4, requireModifier: false)
                     }
                 }
-                pluginShortcutsSection
             }
             .padding(.bottom, DS.Space.l)
         }
@@ -1167,6 +1171,7 @@ struct ShortcutsPage: View {
                     .padding(DS.Space.l)
             }
         }
+        .sheet(isPresented: $showKnown) { knownSheet }
         .popover(isPresented: $picking, arrowEdge: .top) {
             ItemPicker(items: catalog.items, title: Loc.t("Kürzel für …", "Shortcut for …")) { item in
                 request = item
@@ -1176,7 +1181,7 @@ struct ShortcutsPage: View {
     }
 
     private func itemRow(_ item: PluginItem, combo: KeyCombo?, id: UUID?, pending: Bool) -> some View {
-        let owner = combo.flatMap { model.config.shortcutOwner(of: $0, ignoring: id) }
+        let owner = combo.map { KeyboardLayout.conflicts($0, config: model.config, ignoring: id) }.flatMap { $0.isEmpty ? nil : $0.joined(separator: " · ") }
         let resolved = catalog.items.first { $0.uri == item.uri } ?? catalog.items.first { $0.name == item.name && $0.source == item.source }
         return HStack(spacing: DS.Space.s) {
             Image(systemName: IconCatalog.symbolName(for: IconGuesser.guess(resolved ?? item)))
@@ -1186,7 +1191,7 @@ struct ShortcutsPage: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(item.name).font(DS.Font.body).foregroundColor(DS.textPrimary).lineLimit(1)
                 if let owner {
-                    Label(Loc.t("Auch belegt: \(owner)", "Also used by: \(owner)"), systemImage: "exclamationmark.triangle.fill")
+                    Label(Loc.t("Auch belegt – \(owner)", "Also used – \(owner)"), systemImage: "exclamationmark.triangle.fill")
                         .font(.system(size: 10.5)).foregroundColor(DS.warning)
                 } else if pending {
                     Text(Loc.t("Klick auf + und drück die Tasten", "Click + and press the keys")).font(.system(size: 10.5)).foregroundColor(.accent)
@@ -1199,6 +1204,7 @@ struct ShortcutsPage: View {
             Spacer(minLength: DS.Space.l)
             KeyRecorder(combo: combo, requireModifier: true,
                         onChange: { newCombo in
+                            guard KeyboardLayout.confirm(newCombo, config: model.config, ignoring: id) else { return }
                             model.config.setItemShortcut(newCombo, for: item)
                             if pending { request = nil }
                         },
@@ -1210,6 +1216,10 @@ struct ShortcutsPage: View {
         .padding(.horizontal, DS.Space.l)
         .frame(height: 48)
         .background(pending ? Color.accent.opacity(0.07) : .clear)
+    }
+
+    private var knownSheet: some View {
+        KnownShortcutsSheet(config: model.config) { showKnown = false }
     }
 
     private var divider: some View { Rectangle().fill(DS.hairline).frame(height: 1).padding(.leading, DS.Space.l) }
@@ -1235,20 +1245,33 @@ struct ShortcutsPage: View {
     }
 
     private func row(_ label: String, combos: Binding<[KeyCombo]>, maxCount: Int, requireModifier: Bool) -> some View {
-        HStack(spacing: DS.Space.s) {
+        let clashes = requireModifier ? combos.wrappedValue.flatMap { c in
+            KnownShortcuts.conflicts(with: c, keyCode: KeyboardLayout.keyCode(for:)).map { "\(KeyNames.describe(c)) – \($0.app == .live ? "Ableton Live" : "macOS"): \($0.title)" }
+        } : []
+        return HStack(spacing: DS.Space.s) {
             Text(label).font(DS.Font.body).foregroundColor(DS.textPrimary)
+            if !clashes.isEmpty {
+                Image(systemName: "exclamationmark.triangle.fill").font(.system(size: 11)).foregroundColor(DS.warning)
+                    .help(Loc.t("Auch belegt:\n", "Also used:\n") + clashes.joined(separator: "\n"))
+            }
             Spacer(minLength: DS.Space.l)
             if combos.wrappedValue.isEmpty {
                 Text(Loc.t("aus", "off")).font(DS.Font.caption).foregroundColor(DS.textTertiary)
             }
             ForEach(Array(combos.wrappedValue.enumerated()), id: \.offset) { i, combo in
                 KeyRecorder(combo: combo, requireModifier: requireModifier,
-                            onChange: { combos.wrappedValue[i] = $0 },
+                            onChange: { new in
+                                guard new == combo || !requireModifier || KeyboardLayout.confirm(new, config: model.config) else { return }
+                                combos.wrappedValue[i] = new
+                            },
                             onRemove: { combos.wrappedValue.remove(at: i) })
             }
             if combos.wrappedValue.count < maxCount {
                 KeyRecorder(combo: nil, requireModifier: requireModifier,
-                            onChange: { combos.wrappedValue.append($0) }, onRemove: nil)
+                            onChange: { new in
+                                guard !requireModifier || KeyboardLayout.confirm(new, config: model.config) else { return }
+                                combos.wrappedValue.append(new)
+                            }, onRemove: nil)
             }
         }
         .padding(.horizontal, DS.Space.l)
