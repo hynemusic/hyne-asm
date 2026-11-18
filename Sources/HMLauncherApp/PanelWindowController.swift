@@ -302,7 +302,7 @@ private struct FlyoutView: View {
         ScrollView(.vertical, showsIndicators: model.rows.count > PanelView.maxVisibleRows) {
             VStack(spacing: 4) {
                 if model.rows.isEmpty {
-                    Text(Loc.t("Leerer Ordner", "Empty folder")).font(.system(size: 12)).foregroundColor(DS.textTertiary)
+                    Text(Loc.t("Leerer Ordner", "Empty folder")).font(DS.Font.secondary).foregroundColor(DS.textTertiary)
                         .frame(maxWidth: .infinity, minHeight: PanelView.rowHeight - 4)
                 }
                 ForEach(Array(model.rows.enumerated()), id: \.offset) { index, row in

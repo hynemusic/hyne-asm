@@ -219,7 +219,7 @@ struct KnownShortcutsSheet: View {
     private var header: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(Loc.t("Tastenkürzel-Übersicht", "Shortcut Overview")).font(.system(size: 17, weight: .bold)).foregroundColor(DS.textPrimary)
+                Text(Loc.t("Tastenkürzel-Übersicht", "Shortcut Overview")).font(DS.Font.title).foregroundColor(DS.textPrimary)
                 Text(Loc.t("Fahr über eine Taste oder ein Kürzel. Klick auf ⌘ ⌥ ⇧ ⌃, um nach Modifiern zu filtern. Live 12 und macOS: die gängigen Standardkürzel.",
                            "Hover a key or a shortcut. Click ⌘ ⌥ ⇧ ⌃ to filter by modifiers. Live 12 and macOS: the common default shortcuts."))
                     .font(DS.Font.caption).foregroundColor(DS.textTertiary)
@@ -370,7 +370,7 @@ private struct KeyCap: View, Equatable {
                 .fill(lit ? Color.brandBlue : (filterOn ? Color.brandBlue.opacity(0.4) : Palette.current.keyFill))
                 .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(lit ? Color.ink.opacity(0.35) : Color.ink.opacity(0.06)))
             Text(label)
-                .font(.system(size: label.count > 2 ? 10 : 13, weight: .medium, design: .rounded))
+                .font(.system(size: label.count > 2 ? 11 : 13, weight: .medium, design: .rounded))
                 .foregroundColor(lit ? .onBrandBlue : (apps.isEmpty && !isModifier ? DS.textTertiary : DS.textPrimary))
                 .frame(width: w, height: h)
             if !isModifier && !apps.isEmpty && !lit {
@@ -407,14 +407,14 @@ private struct ShortcutRow: View, Equatable {
             VStack(alignment: .leading, spacing: 1) {
                 Text(shortcut.title).font(DS.Font.body).foregroundColor(DS.textPrimary).lineLimit(1)
                 Text(shortcut.app == .hyne ? "HYNE ASM" : "\(appName(shortcut.app)) · \(shortcut.section)")
-                    .font(.system(size: 10)).foregroundColor(DS.textTertiary)
+                    .font(DS.Font.caption).foregroundColor(DS.textTertiary)
             }
             if !own.isEmpty {
                 ConflictBadge(title: Loc.t("\(keys) ist auch in HYNE ASM belegt", "\(keys) is also used in HYNE ASM"), lines: own)
             }
             Spacer(minLength: DS.Space.s)
             Text(keys)
-                .font(.system(size: 11.5, weight: .semibold, design: .rounded))
+                .font(DS.Font.keyCombo)
                 .foregroundColor(DS.textSecondary)
                 .padding(.horizontal, 7).frame(minWidth: 30, minHeight: 22)
                 .background(RoundedRectangle(cornerRadius: 5).fill(DS.raised))

@@ -60,9 +60,9 @@ struct LauncherRow<Trailing: View>: View {
             if let number { keyCap(number) }
             iconTile
             VStack(alignment: .leading, spacing: 1) {
-                Text(title).font(.themed(14, .medium)).lineLimit(1)
+                Text(title).font(DS.Font.rowTitle).lineLimit(1)
                 if let subtitle {
-                    Text(subtitle).font(.themed(10.5))
+                    Text(subtitle).font(DS.Font.caption)
                         .foregroundColor(available ? DS.textTertiary : DS.warning).lineLimit(1)
                 }
             }
@@ -87,7 +87,7 @@ struct LauncherRow<Trailing: View>: View {
             : active ? .accent : .ink.opacity(0.07)
         let text: Color = !logo.isEmpty ? (index % logo.count == 1 ? .black : .white) : (active ? .onAccent : DS.textSecondary)
         return Text(index < 9 ? "\(index + 1)" : "")
-            .font(.system(size: 10.5, weight: .semibold, design: Palette.current.fontDesign == .default ? .rounded : Palette.current.fontDesign).monospacedDigit())
+            .font(DS.Font.keycap)
             .foregroundColor(text)
             .frame(width: 18, height: 18)
             .background(RoundedRectangle(cornerRadius: CGFloat(5).themedRadius).fill(fill))

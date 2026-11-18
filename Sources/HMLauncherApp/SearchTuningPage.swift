@@ -149,7 +149,7 @@ struct SearchTuningPage: View {
         let uses = model.usage.counts[key] ?? 0
         return HStack(spacing: DS.Space.m) {
             Text(index < 9 ? "\(index + 1)" : "")
-                .font(.system(size: 10.5, weight: .semibold, design: .rounded).monospacedDigit())
+                .font(DS.Font.keycap)
                 .foregroundColor(isPinned ? .onAccent : DS.textSecondary)
                 .frame(width: 18, height: 18)
                 .background(RoundedRectangle(cornerRadius: 5).fill(isPinned ? Color.accent : (index < 9 ? DS.raised : .clear)))
@@ -166,7 +166,7 @@ struct SearchTuningPage: View {
                 }
                 Text([result.place ?? Loc.t("Alle Plugins", "All plugins"), uses > 0 ? Loc.t("\(uses)× eingefügt", "inserted \(uses)×") : nil]
                         .compactMap { $0 }.joined(separator: " · "))
-                    .font(.system(size: 10.5)).foregroundColor(DS.textTertiary).lineLimit(1)
+                    .font(DS.Font.caption).foregroundColor(DS.textTertiary).lineLimit(1)
             }
             Spacer(minLength: DS.Space.m)
             if isPinned {
@@ -246,7 +246,7 @@ struct SearchTuningPage: View {
             Button { query = rule.query } label: {
                 HStack(spacing: DS.Space.s) {
                     Text(rule.query)
-                        .font(.system(size: 12, weight: .semibold, design: .monospaced))
+                        .font(DS.Font.code)
                         .foregroundColor(active ? .onBrandBlue : DS.textPrimary)
                         .padding(.horizontal, 7).padding(.vertical, 3)
                         .background(RoundedRectangle(cornerRadius: 5).fill(active ? Color.brandBlue : DS.raised))

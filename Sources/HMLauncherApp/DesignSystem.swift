@@ -36,16 +36,36 @@ enum DS {
     static var success: Color { Palette.current.success }
     static var warning: Color { Palette.current.warning }
 
+    /// The type scale. Every text in the app uses one of these roles — no other sizes.
+    /// Display roles (titles, labels, names, key caps) take the theme's display design (SF Rounded in Retro);
+    /// reading roles (body, secondary, caption) always use the standard face. Nothing readable is below 11 pt;
+    /// only single-word badges go to 10.
     enum Font {
-        private static var design: SwiftUI.Font.Design { Palette.current.fontDesign }
-        static var pageTitle: SwiftUI.Font { .system(size: 22, weight: .bold, design: design) }
-        static var pageSubtitle: SwiftUI.Font { .system(size: 13, design: design) }
-        static var columnTitle: SwiftUI.Font { .system(size: 13, weight: .semibold, design: design) }
-        static var body: SwiftUI.Font { .system(size: 13, design: design) }
-        static var bodyStrong: SwiftUI.Font { .system(size: 13, weight: .medium, design: design) }
-        static var caption: SwiftUI.Font { .system(size: 11, design: design) }
-        static var sectionLabel: SwiftUI.Font { .system(size: 10.5, weight: .semibold, design: design) }
-        static var badge: SwiftUI.Font { .system(size: 9.5, weight: .semibold, design: design) }
+        private static var display: SwiftUI.Font.Design { Palette.current.displayDesign }
+        private static func d(_ size: CGFloat, _ weight: SwiftUI.Font.Weight) -> SwiftUI.Font { .system(size: size, weight: weight, design: display) }
+
+        // Display
+        static var pageTitle: SwiftUI.Font { d(24, .bold) }
+        static var title: SwiftUI.Font { d(17, .bold) }               // sheet titles, brand
+        static var sectionTitle: SwiftUI.Font { d(15, .semibold) }
+        static var columnTitle: SwiftUI.Font { d(13, .semibold) }
+        static var rowTitle: SwiftUI.Font { d(14, .medium) }          // plugin names in panel-like rows
+        static var sectionLabel: SwiftUI.Font { d(11, .semibold) }    // uppercase group labels
+        static var badge: SwiftUI.Font { d(10, .semibold) }           // single-word badges, count chips
+        static var field: SwiftUI.Font { d(22, .regular) }            // the quick search input
+        static func metric(compact: Bool = false) -> SwiftUI.Font { .system(size: compact ? 17 : 26, weight: .bold, design: .rounded).monospacedDigit() }
+        // Reading
+        static var pageSubtitle: SwiftUI.Font { .system(size: 13) }
+        static var body: SwiftUI.Font { .system(size: 13) }
+        static var bodyStrong: SwiftUI.Font { .system(size: 13, weight: .medium) }
+        static var secondary: SwiftUI.Font { .system(size: 12) }
+        static var secondaryStrong: SwiftUI.Font { .system(size: 12, weight: .semibold) }
+        static var caption: SwiftUI.Font { .system(size: 11) }
+        static var numeric: SwiftUI.Font { .system(size: 11, weight: .semibold).monospacedDigit() }
+        // Keys and code
+        static var keycap: SwiftUI.Font { .system(size: 11, weight: .semibold, design: .rounded).monospacedDigit() }
+        static var keyCombo: SwiftUI.Font { .system(size: 12, weight: .semibold, design: .rounded) }
+        static var code: SwiftUI.Font { .system(size: 12, weight: .medium, design: .monospaced) }
     }
 }
 
@@ -259,10 +279,10 @@ struct ConflictBadge: View {
             .popover(isPresented: $hovering, arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 6) {
                     Label(title, systemImage: "exclamationmark.triangle.fill")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(DS.Font.secondaryStrong)
                         .foregroundColor(DS.warning)
                     ForEach(lines, id: \.self) { line in
-                        Text("• " + line).font(.system(size: 12)).foregroundColor(DS.textPrimary)
+                        Text("• " + line).font(DS.Font.secondary).foregroundColor(DS.textPrimary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
@@ -270,5 +290,25 @@ struct ConflictBadge: View {
                 .frame(minWidth: 220, maxWidth: 340, alignment: .leading)
             }
             .accessibilityLabel(title + ": " + lines.joined(separator: ", "))
+    }
+}
+
+/// Text cursor for the panel filter and the quick search (keys arrive through the event tap, so there is no real
+/// text field). A drawn bar in the accent colour that blinks like macOS's caret; it stays solid with Reduce Motion.
+struct TextCaret: View {
+    let height: CGFloat
+    @State private var visible = true
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 1)
+            .fill(Color.accent)
+            .frame(width: 2, height: height)
+            .opacity(visible ? 1 : 0)
+            .onAppear {
+                guard !reduceMotion else { return }
+                withAnimation(.easeInOut(duration: 0.5).delay(0.35).repeatForever(autoreverses: true)) { visible = false }
+            }
+            .accessibilityHidden(true)
     }
 }

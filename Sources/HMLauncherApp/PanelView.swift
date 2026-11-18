@@ -32,7 +32,7 @@ struct PanelView: View {
                         Spacer()
                         escHint
                     }
-                    .font(.themed(12.5))
+                    .font(DS.Font.body)
                     .frame(height: Self.filterHeight)
                     .padding(.horizontal, 8)
                     .contentShape(Rectangle())
@@ -95,7 +95,7 @@ struct PanelView: View {
                     Image(systemName: "star.fill").font(.themed(9.5)).foregroundColor(selected ? .accent : DS.textTertiary)
                 }
                 Text(title(of: index))
-                    .font(.themed(12.5, selected ? .semibold : .medium))
+                    .font(selected ? DS.Font.columnTitle : DS.Font.bodyStrong)
                     .foregroundColor(selected ? DS.textPrimary : DS.textTertiary)
                     .lineLimit(1)
             }
@@ -125,7 +125,7 @@ struct PanelView: View {
                             Image(systemName: viewModel.state.filter.isEmpty ? "tray" : "magnifyingglass")
                             Text(viewModel.state.filter.isEmpty ? Loc.t("Keine Einträge – in den Einstellungen hinzufügen", "No entries – add some in Settings") : Loc.t("Nichts gefunden", "Nothing found"))
                         }
-                        .font(.themed(12)).foregroundColor(DS.textTertiary)
+                        .font(DS.Font.secondary).foregroundColor(DS.textTertiary)
                         .frame(maxWidth: .infinity, minHeight: Self.rowHeight - 4)
                     }
                     // Two columns of 10 (left first), category hits and "All plugins" hits as separate grids.
@@ -176,8 +176,10 @@ struct PanelView: View {
     private var filterField: some View {
         HStack(spacing: 7) {
             Image(systemName: "magnifyingglass").font(.themed(11, .semibold)).foregroundColor(.accent)
-            (Text(viewModel.state.filter).foregroundColor(DS.textPrimary) + Text("▏").foregroundColor(.accent))
-                .font(.themed(13, .medium))
+            HStack(spacing: 1) {
+                Text(viewModel.state.filter).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                TextCaret(height: 15)
+            }
             Spacer()
             escHint
         }
@@ -190,7 +192,7 @@ struct PanelView: View {
 
     private var escHint: some View {
         Text("esc")
-            .font(.system(size: 9.5, weight: .semibold, design: .rounded))
+            .font(DS.Font.badge)
             .foregroundColor(DS.textTertiary)
             .padding(.horizontal, 5).frame(height: 15)
             .background(RoundedRectangle(cornerRadius: CGFloat(4).themedRadius).strokeBorder(Color.panelStroke))
@@ -208,7 +210,7 @@ struct PanelView: View {
                         active: active, available: row.isAvailable, color: Color(label: row.colorID)) {
                 if row.folderID != nil {
                     Text("\(row.childCount)")
-                        .font(.themed(10, .semibold).monospacedDigit()).foregroundColor(DS.textSecondary)
+                        .font(DS.Font.badge.monospacedDigit()).foregroundColor(DS.textSecondary)
                         .padding(.horizontal, 6).padding(.vertical, 2)
                         .background(Capsule().fill(Color.ink.opacity(0.07)))
                     Image(systemName: "chevron.right").font(.themed(10, .bold)).foregroundColor(DS.textTertiary)

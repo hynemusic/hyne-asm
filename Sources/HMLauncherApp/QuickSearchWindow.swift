@@ -117,12 +117,16 @@ private struct QuickSearchView: View {
                 Image(systemName: "magnifyingglass")
                     .font(.themed(18, .semibold))
                     .foregroundColor(typing ? .accent : DS.textTertiary)
-                if let q = state?.query, !q.isEmpty {
-                    (Text(q).foregroundColor(DS.textPrimary) + Text("▏").foregroundColor(.accent))
-                        .font(.themed(21, .medium))
-                } else {
-                    Text(Loc.t("Plugins und Presets suchen …", "Search plugins and presets …"))
-                        .font(.themed(21)).foregroundColor(DS.textTertiary)
+                HStack(spacing: 1) {
+                    if let q = state?.query, !q.isEmpty {
+                        Text(q).font(DS.Font.field).foregroundColor(DS.textPrimary)
+                        TextCaret(height: 26)
+                    } else {
+                        // Caret before the placeholder, like a real empty field.
+                        TextCaret(height: 26)
+                        Text(Loc.t("Plugins und Presets suchen …", "Search plugins and presets …"))
+                            .font(DS.Font.field).foregroundColor(DS.textTertiary)
+                    }
                 }
                 Spacer()
                 keyHint("↩", Loc.t("einfügen", "insert"))
@@ -152,11 +156,11 @@ private struct QuickSearchView: View {
     private func keyHint(_ key: String, _ text: String) -> some View {
         HStack(spacing: 5) {
             Text(key)
-                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .font(DS.Font.keycap)
                 .foregroundColor(DS.textSecondary)
                 .padding(.horizontal, 5).frame(minWidth: 20, minHeight: 18)
                 .background(RoundedRectangle(cornerRadius: CGFloat(5).themedRadius).fill(Color.ink.opacity(0.07)))
-            Text(text).font(.themed(11)).foregroundColor(DS.textTertiary)
+            Text(text).font(DS.Font.caption).foregroundColor(DS.textTertiary)
         }
     }
 
@@ -169,7 +173,7 @@ private struct QuickSearchView: View {
                         active: highlighted, available: r.isAvailable, color: Color(label: r.colorID)) {
                 if highlighted {
                     Text("↩")
-                        .font(.system(size: 11, weight: .bold, design: .rounded)).foregroundColor(.onAccent)
+                        .font(DS.Font.keycap).foregroundColor(.onAccent)
                         .frame(width: 22, height: 20)
                         .background(RoundedRectangle(cornerRadius: CGFloat(5).themedRadius).fill(Color.accent))
                 }

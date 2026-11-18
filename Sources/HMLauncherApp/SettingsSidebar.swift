@@ -18,11 +18,11 @@ struct SettingsSidebar: View {
     private var items: [Item] {
         [
             Item(id: 0, symbol: "square.grid.2x2", title: Loc.t("Bibliothek", "Library"),
-                 subtitle: Loc.t("Plugins, Presets & Kategorien", "Plugins, presets & categories")),
+                 subtitle: Loc.t("Plugins & Kategorien", "Plugins & categories")),
             Item(id: 3, symbol: "clock.arrow.circlepath", title: Loc.t("Versionen", "Versions"),
                  subtitle: Loc.t("Sichern & teilen", "Save & share")),
             Item(id: 2, symbol: "square.and.arrow.down", title: Loc.t("LES-Import", "LES Import"),
-                 subtitle: Loc.t("menuconfig.ini übernehmen", "Bring over menuconfig.ini")),
+                 subtitle: Loc.t("Aus menuconfig.ini", "From menuconfig.ini")),
             Item(id: 1, symbol: "command", title: Loc.t("Tastenkürzel", "Shortcuts"),
                  subtitle: Loc.t("Fenster, Suche, Panel", "Windows, search, panel")),
             Item(id: 5, symbol: "text.magnifyingglass", title: Loc.t("Suche formen", "Shape Search"),
@@ -58,8 +58,8 @@ struct SettingsSidebar: View {
                 .resizable().interpolation(.high)
                 .frame(width: 34, height: 34)
             VStack(alignment: .leading, spacing: 1) {
-                Text("HYNE ASM").font(.themed(14, .bold)).foregroundColor(DS.textPrimary)
-                Text("Ableton Shortcuts Manager").font(.themed(10.5)).foregroundColor(DS.textTertiary).lineLimit(1)
+                Text("HYNE ASM").font(DS.Font.sectionTitle).fontWeight(.bold).foregroundColor(DS.textPrimary)
+                Text("Ableton Shortcuts Manager").font(DS.Font.caption).foregroundColor(DS.textTertiary).lineLimit(1)
             }
         }
         .accessibilityElement(children: .combine)
@@ -76,7 +76,7 @@ struct SettingsSidebar: View {
                     .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(selected ? Color.brandBlue : DS.raised))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(item.title).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
-                    Text(item.subtitle).font(.themed(10.5)).foregroundColor(DS.textTertiary).lineLimit(1)
+                    Text(item.subtitle).font(DS.Font.caption).foregroundColor(DS.textTertiary).lineLimit(1)
                 }
                 Spacer(minLength: 0)
             }
@@ -100,8 +100,8 @@ struct SettingsSidebar: View {
                         .font(DS.Font.caption.weight(.medium)).foregroundColor(DS.textSecondary)
                     Text(model.isConnected
                          ? "Live \(model.liveVersion ?? "") · \(pluginCount) " + Loc.t("Einträge", "items")
-                         : Loc.t("ASMbridge als Control Surface wählen", "Choose ASMbridge as control surface"))
-                        .font(.themed(10)).foregroundColor(DS.textTertiary).lineLimit(1)
+                         : Loc.t("In Live ASMbridge wählen", "Select ASMbridge in Live"))
+                        .font(DS.Font.caption).foregroundColor(DS.textTertiary).lineLimit(1)
                 }
             }
             .accessibilityElement(children: .combine)
@@ -129,7 +129,7 @@ struct ThemeButton: View {
             HStack(spacing: 8) {
                 ThemeSwatch(palette: Palette.make(theme)).frame(width: 30, height: 20)
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(Loc.t("Design", "Theme")).font(.themed(10)).foregroundColor(DS.textTertiary)
+                    Text(Loc.t("Design", "Theme")).font(DS.Font.caption).foregroundColor(DS.textTertiary)
                     Text(theme.title).font(DS.Font.caption.weight(.semibold)).foregroundColor(DS.textPrimary)
                 }
                 Spacer()
@@ -158,8 +158,8 @@ struct ThemeButton: View {
         return HStack(spacing: DS.Space.m) {
             ThemeSwatch(palette: p).frame(width: 74, height: 46)
             VStack(alignment: .leading, spacing: 2) {
-                Text(t.title).font(.system(size: 13, weight: .semibold, design: p.fontDesign)).foregroundColor(DS.textPrimary)
-                Text(t.subtitle).font(.themed(11)).foregroundColor(DS.textTertiary)
+                Text(t.title).font(.system(size: 13, weight: .semibold, design: p.displayDesign)).foregroundColor(DS.textPrimary)
+                Text(t.subtitle).font(DS.Font.caption).foregroundColor(DS.textTertiary)
             }
             Spacer()
             if chosen { Image(systemName: "checkmark.circle.fill").foregroundColor(.brandBlue) }

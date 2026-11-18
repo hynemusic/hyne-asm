@@ -96,16 +96,16 @@ struct ShortcutsPage: View {
                 Text(item.name).font(DS.Font.body).foregroundColor(DS.textPrimary).lineLimit(1)
                 if let owner {
                     HStack(spacing: 2) {
-                        Text(Loc.t("Auch belegt", "Also used")).font(.system(size: 10.5)).foregroundColor(DS.warning)
+                        Text(Loc.t("Auch belegt", "Also used")).font(DS.Font.caption).foregroundColor(DS.warning)
                         ConflictBadge(title: Loc.t("\(combo.map(KeyNames.describe) ?? "") ist auch belegt", "\(combo.map(KeyNames.describe) ?? "") is also used"),
                                       lines: owner.components(separatedBy: " · "))
                     }
                 } else if pending {
-                    Text(Loc.t("Klick auf + und drück die Tasten", "Click + and press the keys")).font(.system(size: 10.5)).foregroundColor(.accent)
+                    Text(Loc.t("Klick auf + und drück die Tasten", "Click + and press the keys")).font(DS.Font.caption).foregroundColor(.accent)
                 } else if resolved == nil, !catalog.items.isEmpty {
-                    Text(Loc.t("Nicht mehr in Live gefunden", "No longer found in Live")).font(.system(size: 10.5)).foregroundColor(DS.warning)
+                    Text(Loc.t("Nicht mehr in Live gefunden", "No longer found in Live")).font(DS.Font.caption).foregroundColor(DS.warning)
                 } else {
-                    Text(UsageKind(item.source).title).font(.system(size: 10.5)).foregroundColor(DS.textTertiary)
+                    Text(UsageKind(item.source).title).font(DS.Font.caption).foregroundColor(DS.textTertiary)
                 }
             }
             Spacer(minLength: DS.Space.l)
@@ -137,7 +137,7 @@ struct ShortcutsPage: View {
                                         @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: DS.Space.s) {
             HStack(alignment: .firstTextBaseline) {
-                Label { Text(title).font(.system(size: 15, weight: .semibold)).foregroundColor(DS.textPrimary) }
+                Label { Text(title).font(DS.Font.sectionTitle).foregroundColor(DS.textPrimary) }
                     icon: { Image(systemName: symbol).foregroundColor(.accent) }
                 Spacer()
                 Button(resetTitle, action: reset)
@@ -199,7 +199,7 @@ struct KeyRecorder: View {
         HStack(spacing: 2) {
             Button { recording ? stop() : start() } label: {
                 Text(recording ? (hint ?? Loc.t("Taste drücken …", "Press keys …")) : combo.map(KeyNames.describe) ?? "+")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .font(DS.Font.keyCombo)
                     .padding(.horizontal, 8).padding(.vertical, 4)
                     .frame(minWidth: combo == nil && !recording ? 26 : 64)
                     .background(recording ? Color.rowHighlight : Color.panelSidebar)

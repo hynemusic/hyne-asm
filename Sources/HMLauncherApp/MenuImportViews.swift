@@ -131,7 +131,7 @@ struct LESImportPage: View {
     private var summary: some View {
         let c = importer.draft.counts
         return HStack(spacing: 16) {
-            Text(Loc.t("Vorschau", "Preview")).font(.system(size: 15, weight: .semibold))
+            Text(Loc.t("Vorschau", "Preview")).font(DS.Font.sectionTitle)
             Label("\(c.found) " + Loc.t("gefunden", "found"), systemImage: "checkmark.circle.fill").foregroundColor(.green)
             Label("\(c.uncertain) " + Loc.t("unsicher", "uncertain"), systemImage: "exclamationmark.triangle.fill").foregroundColor(.yellow)
             Label("\(c.notFound) " + Loc.t("nicht gefunden", "not found"), systemImage: "xmark.circle.fill").foregroundColor(.red)
@@ -171,11 +171,11 @@ struct LESImportPage: View {
                                 onCommit: { importer.draft.renameCategory(c.id, to: $0); renaming = nil },
                                 onCancel: { renaming = nil })
             } else {
-                Text(c.name).font(.system(size: 13, weight: selected ? .semibold : .regular)).lineLimit(1)
+                Text(c.name).font(selected ? DS.Font.columnTitle : DS.Font.body).lineLimit(1)
             }
             Spacer()
             if missing > 0 { Image(systemName: "xmark.circle.fill").font(.caption).foregroundColor(.red) }
-            Text("\(c.rows.count)").font(.caption).foregroundColor(.dimText)
+            Text("\(c.rows.count)").font(DS.Font.caption).foregroundColor(.dimText)
         }
         .padding(.horizontal, 8)
         .frame(height: 30)
@@ -217,12 +217,12 @@ struct LESImportPage: View {
             if let category {
                 HStack {
                     if let parent = importer.draft.categories.first(where: { $0.id == category.parentID }) {
-                        Text(parent.name + " /").font(.system(size: 15)).foregroundColor(.dimText)
+                        Text(parent.name + " /").font(DS.Font.sectionTitle).fontWeight(.regular).foregroundColor(.dimText)
                         Image(systemName: "folder.fill").foregroundColor(.accent)
                     }
-                    Text(category.name).font(.system(size: 15, weight: .semibold))
+                    Text(category.name).font(DS.Font.sectionTitle)
                     Spacer()
-                    Text(Loc.t("So erscheint es im Panel", "This is how it looks in the panel")).font(.caption).foregroundColor(.dimText)
+                    Text(Loc.t("So erscheint es im Panel", "This is how it looks in the panel")).font(DS.Font.caption).foregroundColor(.dimText)
                 }
                 List {
                     ForEach(Array(category.rows.enumerated()), id: \.element.id) { index, row in
@@ -241,7 +241,7 @@ struct LESImportPage: View {
                 .scrollContentBackground(.hidden)
                 Text(Loc.t("Ziehen sortiert · Klick auf ⚠️/❌ wählt das richtige Plugin · Rechtsklick links: umbenennen, Ordner ↔ Kategorie, zusammenführen",
                            "Drag to reorder · click ⚠️/❌ to pick the right plugin · right-click on the left: rename, folder ↔ category, merge"))
-                    .font(.caption).foregroundColor(.dimText)
+                    .font(DS.Font.caption).foregroundColor(DS.textTertiary)
             }
         }
         .padding(12)
@@ -252,11 +252,11 @@ struct LESImportPage: View {
         return HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
                 if let message = importer.message {
-                    Label(message, systemImage: "checkmark.circle.fill").foregroundColor(.green).font(.system(size: 12))
+                    Label(message, systemImage: "checkmark.circle.fill").foregroundColor(DS.success).font(DS.Font.secondary)
                 }
                 Text((skipped > 0 ? Loc.t("\(skipped) nicht gefundene werden übersprungen. ", "\(skipped) not found will be skipped. ") : "")
                      + Loc.t("Vorher wird automatisch eine Version gesichert.", "The current menu is saved as a version first."))
-                    .font(.caption).foregroundColor(.dimText)
+                    .font(DS.Font.caption).foregroundColor(DS.textTertiary)
             }
             Spacer()
             Button(Loc.t("Hinzufügen", "Add")) { push(.add) }
@@ -381,7 +381,7 @@ private struct PluginPicker: View {
             HStack {
                 Text(item.name)
                 Spacer()
-                Text(PluginGrouping.formatLabel(item)).font(.caption).foregroundColor(.dimText)
+                Text(PluginGrouping.formatLabel(item)).font(DS.Font.caption).foregroundColor(.dimText)
             }
             .contentShape(Rectangle())
         }

@@ -102,7 +102,7 @@ struct StatsPage: View {
                 Text(title.uppercased()).font(DS.Font.sectionLabel).tracking(0.6).foregroundColor(DS.textTertiary)
             }
             Text(value)
-                .font(.system(size: small ? 17 : 26, weight: .bold, design: .rounded).monospacedDigit())
+                .font(DS.Font.metric(compact: small))
                 .foregroundColor(DS.textPrimary)
                 .lineLimit(1).minimumScaleFactor(0.6)
                 .frame(height: 32, alignment: .leading)
@@ -145,7 +145,7 @@ struct StatsPage: View {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(color(stat.kind).gradient)
                         .frame(width: Swift.max(6, (geo.size.width - 34) * CGFloat(stat.count) / CGFloat(Swift.max(max, 1))))
-                    Text("\(stat.count)").font(.system(size: 11, weight: .semibold).monospacedDigit()).foregroundColor(DS.textSecondary)
+                    Text("\(stat.count)").font(DS.Font.numeric).foregroundColor(DS.textSecondary)
                 }
                 .frame(maxHeight: .infinity)
             }
@@ -224,7 +224,7 @@ struct StatsPage: View {
                 .background(RoundedRectangle(cornerRadius: 7).fill((tint ?? .ink).opacity(tint == nil ? 0.06 : 0.18)))
             VStack(alignment: .leading, spacing: 1) {
                 Text(stat.name).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary).lineLimit(1)
-                Text(stat.kind.title).font(.system(size: 10.5)).foregroundColor(DS.textTertiary)
+                Text(stat.kind.title).font(DS.Font.caption).foregroundColor(DS.textTertiary)
             }
             .frame(minWidth: 160, alignment: .leading)
             Spacer(minLength: DS.Space.l)

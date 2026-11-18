@@ -45,7 +45,7 @@ struct EntryRow: View {
         LauncherRow(number: index, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
                     subtitle: subtitle, active: isSelected || hovered || dropSpot == .into, available: available, color: color) {
             if entry.isFolder {
-                Text("\(entry.children?.count ?? 0)").font(.caption).foregroundColor(.dimText)
+                Text("\(entry.children?.count ?? 0)").font(DS.Font.caption).foregroundColor(.dimText)
                 Button(action: onToggle) {
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right").font(.system(size: 11, weight: .semibold))
                 }
@@ -181,7 +181,7 @@ struct IconPicker: View {
                     Button { onPick(icon.id) } label: {
                         VStack(spacing: 5) {
                             Image(systemName: icon.symbolName).font(.system(size: 18))
-                            Text(icon.label).font(.system(size: 10)).lineLimit(1)
+                            Text(icon.label).font(DS.Font.caption).lineLimit(1)
                         }
                         .frame(width: 70, height: 54)
                         .background(icon.id == selected ? Color.rowHighlight : Color.rowBackground)

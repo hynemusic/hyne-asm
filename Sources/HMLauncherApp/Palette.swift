@@ -36,7 +36,8 @@ struct Palette {
     /// Retro: the four PlayStation logo colours (stripe on top of the windows, 1–9 key caps).
     var logoColors: [Color] = []
     var radiusScale: CGFloat = 1
-    var fontDesign: Font.Design = .default
+    /// Face for display roles (titles, labels, names, key caps); reading text always uses the standard face.
+    var displayDesign: Font.Design = .default
 
     private static func hex(_ v: UInt32, _ alpha: Double = 1) -> Color {
         Color(red: Double((v >> 16) & 0xFF) / 255, green: Double((v >> 8) & 0xFF) / 255, blue: Double(v & 0xFF) / 255, opacity: alpha)
@@ -95,7 +96,7 @@ struct Palette {
                            panelSurface: hex(0xC2C2C4), panelRow: hex(0xD3D3D5), panelStroke: Color.black.opacity(0.22),
                            ink: .black, keyboardBase: hex(0x9C9C9F), keyFill: hex(0xD3D3D5),
                            logoColors: [red, yellow, teal, blue],
-                           radiusScale: 0.5, fontDesign: .monospaced)
+                           radiusScale: 0.5, displayDesign: .rounded)
         }
     }
 
@@ -113,9 +114,9 @@ struct Palette {
 }
 
 extension Font {
-    /// System font in the theme's design (monospaced in Retro).
+    /// System font in the theme's display design (for icons sized alongside display text).
     static func themed(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
-        .system(size: size, weight: weight, design: Palette.current.fontDesign)
+        .system(size: size, weight: weight, design: Palette.current.displayDesign)
     }
 }
 

@@ -47,7 +47,7 @@ struct SettingsView: View {
     var body: some View {
         HStack(spacing: 0) {
             SettingsSidebar(page: $page, model: model, pluginCount: catalog.items.count)
-                .frame(width: 216)
+                .frame(width: 232)
                 .hairline(.trailing)
                 .id(Palette.theme) // a new theme redraws everything (colours are read while drawing)
             Group {
@@ -93,7 +93,7 @@ struct SettingsView: View {
             SearchField(placeholder: Loc.t("Plugins und Presets suchen", "Search plugins and presets"), text: $search)
             if catalog.items.isEmpty {
                 Text(model.isConnected ? Loc.t("Lade Plugin-Liste …", "Loading plugin list …") : Loc.t("Nicht mit Live verbunden – Live öffnen und ASMbridge als Control Surface wählen.", "Not connected to Live – open Live and choose ASMbridge as a control surface."))
-                    .font(.callout).foregroundColor(.dimText)
+                    .font(DS.Font.body).foregroundColor(DS.textTertiary)
             }
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 1) {
@@ -115,8 +115,8 @@ struct SettingsView: View {
             .onChange(of: search) { _ in regroup(catalog.items) }
             .onReceive(catalog.$items.dropFirst()) { regroup($0) }
             if browserSel.isEmpty {
-                HintText(text: Loc.t("Doppelklick oder ziehen fügt zu „\(category?.name ?? "")“ hinzu · ⇧/⌘-Klick wählt mehrere, auch ganze Ordner · Presets auch aus dem Finder.",
-                                     "Double-click or drag to add to “\(category?.name ?? "")” · ⇧/⌘-click selects several, also whole folders · presets also from Finder."))
+                HintText(text: Loc.t("Doppelklick oder ziehen fügt hinzu · ⇧/⌘ wählt mehrere · Presets auch aus dem Finder",
+                                     "Double-click or drag to add · ⇧/⌘ selects several · presets also from Finder"))
             } else {
                 browserSelectionBar
             }
@@ -336,7 +336,7 @@ struct SettingsView: View {
         return HStack(spacing: DS.Space.s) {
             VStack(alignment: .leading, spacing: 1) {
                 Text(parts.compactMap { $0 }.joined(separator: " · ")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
-                Text(Loc.t("\(sel.pluginCount) Einträge insgesamt", "\(sel.pluginCount) entries in total")).font(.system(size: 10.5)).foregroundColor(DS.textTertiary)
+                Text(Loc.t("\(sel.pluginCount) Einträge insgesamt", "\(sel.pluginCount) entries in total")).font(DS.Font.caption).foregroundColor(DS.textTertiary)
             }
             Spacer(minLength: DS.Space.s)
             Button(Loc.t("Zu „\(category?.name ?? "")“", "Add to “\(category?.name ?? "")”")) { addSelection(sel, to: categoryID) }
@@ -371,7 +371,7 @@ struct SettingsView: View {
                     startRenaming(id)
                 }
             }
-            HintText(text: Loc.t("Ziehen sortiert · Doppelklick benennt um", "Drag to reorder · double-click to rename"), icon: nil)
+            .help(Loc.t("Ziehen sortiert · Doppelklick benennt um", "Drag to reorder · double-click to rename"))
             List {
                 ForEach(model.config.categories) { c in
                     categoryRow(c)
@@ -511,8 +511,7 @@ struct SettingsView: View {
                 }
                 .onDeleteCommand { removeSelection() }
                 .onChange(of: categoryID) { _ in selection = []; selectionAnchor = nil }
-                HintText(text: Loc.t("Ziehen sortiert, auch in und aus Ordnern · Rechtsklick für Icon, Name und Farbe",
-                                     "Drag to reorder, also in and out of folders · right-click for icon, name and color"))
+                HintText(text: Loc.t("Ziehen sortiert · Rechtsklick für Icon, Name, Farbe", "Drag to reorder · right-click for icon, name, color"))
             }
         }
         .padding(.horizontal, DS.Space.l)
@@ -683,7 +682,7 @@ struct SettingsView: View {
     private func keyHint(_ key: String, _ text: String) -> some View {
         HStack(spacing: 5) {
             Text(key)
-                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .font(DS.Font.keycap)
                 .foregroundColor(DS.textSecondary)
                 .fixedSize()
                 .padding(.horizontal, 5).frame(minWidth: 18, minHeight: 17)
@@ -696,7 +695,7 @@ struct SettingsView: View {
     private func activeSelectionBar(_ category: HMLauncherCore.Category) -> some View {
         let folders = category.entries.filter { $0.isFolder && !selection.contains($0.id) }
         return HStack(spacing: 10) {
-            Text(Loc.t("\(selection.count) ausgewählt", "\(selection.count) selected")).font(.system(size: 12, weight: .semibold))
+            Text(Loc.t("\(selection.count) ausgewählt", "\(selection.count) selected")).font(DS.Font.secondaryStrong)
             Button { groupSelection() } label: { Label(Loc.t("Gruppieren", "Group"), systemImage: "folder.badge.plus") }
                 .keyboardShortcut("g", modifiers: .command)
                 .help(Loc.t("Ausgewählte Plugins in einen neuen Ordner (⌘G)", "Put the selected plugins into a new folder (⌘G)"))
@@ -777,10 +776,6 @@ struct SettingsView: View {
             onShortcut: entry.isFolder ? nil : { requestShortcut(catalog.index.resolve(entry) ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)) },
             shortcutLabel: entry.isFolder ? nil : model.config.itemShortcut(for: catalog.index.resolve(entry)
                 ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)).map { KeyNames.describe($0.combo) })
-    }
-
-    private func header(_ title: String) -> some View {
-        Text(title).font(.system(size: 15, weight: .semibold))
     }
 
     // MARK: Presets from Finder

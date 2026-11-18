@@ -66,7 +66,7 @@ struct DragCountBadge: View {
 
     var body: some View {
         Text("\(count)")
-            .font(.system(size: 12, weight: .bold, design: .rounded))
+            .font(DS.Font.keyCombo)
             .foregroundColor(.onAccent)
             .padding(.horizontal, 7)
             .frame(minWidth: 22, minHeight: 22)
@@ -110,7 +110,7 @@ struct CategoryDragSource: ViewModifier {
                 return provider
             } preview: {
                 Text(name)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(DS.Font.secondaryStrong)
                     .foregroundColor(.onAccent)
                     .padding(.horizontal, 10).padding(.vertical, 4)
                     .background(Capsule().fill(Color.accent))
