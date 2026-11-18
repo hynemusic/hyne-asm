@@ -147,6 +147,8 @@ public struct LauncherConfig: Codable, Sendable {
     public var keptEntries: [UUID] = []
     /// Local HTTP endpoint for Stream Deck & co. (127.0.0.1 only); off unless switched on.
     public var streamDeckEnabled = false
+    /// Secret part of every Stream Deck link, so a web page can't trigger commands on the local endpoint.
+    public var streamDeckToken = LauncherConfig.newToken()
     /// All profiles (named menus); the active one's menu is `categories`.
     public var profiles: [Profile] = []
     public var activeProfileID = UUID()
@@ -175,6 +177,7 @@ public struct LauncherConfig: Codable, Sendable {
         showRarelyUsed = try c.decodeIfPresent(Bool.self, forKey: .showRarelyUsed) ?? true
         keptEntries = try c.decodeIfPresent([UUID].self, forKey: .keptEntries) ?? []
         streamDeckEnabled = try c.decodeIfPresent(Bool.self, forKey: .streamDeckEnabled) ?? false
+        streamDeckToken = try c.decodeIfPresent(String.self, forKey: .streamDeckToken) ?? LauncherConfig.newToken()
         profiles = try c.decodeIfPresent([Profile].self, forKey: .profiles) ?? []
         activeProfileID = try c.decodeIfPresent(UUID.self, forKey: .activeProfileID) ?? UUID()
         ensureProfile()

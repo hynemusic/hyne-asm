@@ -23,11 +23,11 @@ class Loader(object):
             targets = [original]
         try:
             for track in targets:
-                if song.view.selected_track is not track:
+                if song.view.selected_track != track:
                     song.view.selected_track = track
                 self._load_into(track, items, position)
         finally:
-            if song.view.selected_track is not original:
+            if song.view.selected_track != original:
                 song.view.selected_track = original
 
     def _selected_tracks(self):
@@ -42,9 +42,13 @@ class Loader(object):
             self._browser.load_item(item)
             if not can_move:
                 continue
+            # Live hands out a new wrapper object per access: compare with ==, never `is`.
             loaded = track.view.selected_device
             devices = list(track.devices)
-            if loaded is None or loaded is anchor or anchor not in devices or loaded not in devices:
-                continue
-            self._song.move_device(loaded, track, devices.index(anchor) + 1)
+            if loaded is None or loaded == anchor or anchor not in devices or loaded not in devices:
+                continue  # selection didn't move to the new device: leave everything where Live put it
+            try:
+                self._song.move_device(loaded, track, devices.index(anchor) + 1)
+            except Exception:
+                continue  # best effort: the device is inserted, just at the end
             anchor = loaded  # the next item of a chain goes behind this one

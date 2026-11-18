@@ -289,7 +289,7 @@ struct SettingsView: View {
                 Button(Loc.t("Zu Favoriten hinzufügen", "Add to Favorites")) { add(item, to: model.config.favoritesID) }
             }
             Divider()
-            Button(Loc.t("Stream-Deck-Link kopieren", "Copy Stream Deck Link")) { StreamDeckLink.copy(.insert(name: item.name)) }
+            Button(Loc.t("Stream-Deck-Link kopieren", "Copy Stream Deck Link")) { StreamDeckLink.copy(.insert(name: item.name), token: model.config.streamDeckToken) }
             Button(model.config.itemShortcut(for: item).map { Loc.t("Tastenkürzel ändern (\(KeyNames.describe($0.combo))) …", "Change Shortcut (\(KeyNames.describe($0.combo))) …") }
                    ?? Loc.t("Tastenkürzel zuweisen …", "Assign Shortcut …")) { requestShortcut(item) }
         }
@@ -826,6 +826,7 @@ struct SettingsView: View {
             onDissolve: { model.config.dissolveFolder(entry.id, in: category.id) },
             drop: dropState,
             onEditChain: entry.chain == nil ? nil : { chainEditor = ChainEditTarget(entryID: entry.id) },
+            streamDeckToken: model.config.streamDeckToken,
             onShortcut: entry.isFolder || entry.chain != nil || entry.action != nil ? nil : { requestShortcut(catalog.index.resolve(entry) ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)) },
             shortcutLabel: entry.isFolder ? nil : model.config.itemShortcut(for: catalog.index.resolve(entry)
                 ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)).map { KeyNames.describe($0.combo) })

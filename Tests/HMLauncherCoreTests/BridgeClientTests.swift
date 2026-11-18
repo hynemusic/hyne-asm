@@ -43,6 +43,14 @@ final class BridgeClientTests: XCTestCase {
         XCTAssertEqual(seen["all_selected"] as? Bool, true)
     }
 
+    /// Version-3 scripts only read "uri": every load must still carry it.
+    func testLoadAlwaysCarriesFirstURIForOlderScripts() async throws {
+        var seen: [String: Any] = [:]
+        server.respond = { seen = $0; return ok($0) }
+        try await client.load(uris: ["u:a", "u:b"], options: .default)
+        XCTAssertEqual(seen["uri"] as? String, "u:a")
+    }
+
     func testRunsLiveAction() async throws {
         var seen: [String: Any] = [:]
         server.respond = { seen = $0; return ok($0) }

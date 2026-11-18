@@ -47,22 +47,35 @@ final class StreamDeckServer: ObservableObject {
         if !keepState { state = .off }
     }
 
-    /// Reads one request line ("GET /insert?name=Serum%202 HTTP/1.1"), runs it, answers and closes.
+    /// The install's link token (from the config); requests without it are refused.
+    var token = ""
+
+    /// Reads the request (line + headers, max 8 KB, 2 s), checks it, runs it, answers and closes.
     private func serve(_ connection: NWConnection) {
         connection.start(queue: .main)
-        connection.receive(minimumIncompleteLength: 1, maximumLength: 8192) { [weak self] data, _, _, _ in
+        let deadline = DispatchWorkItem { connection.cancel() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: deadline)
+        read(connection, buffer: Data(), deadline: deadline)
+    }
+
+    private func read(_ connection: NWConnection, buffer: Data, deadline: DispatchWorkItem) {
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 8192) { [weak self] data, _, done, error in
             Task { @MainActor in
-                let line = data.flatMap { String(data: $0, encoding: .utf8) }?.split(separator: "\r\n").first ?? ""
-                let parts = line.split(separator: " ")
-                var status = "400 Bad Request", body = "bad request"
-                if parts.count >= 2, parts[0] == "GET",
-                   let url = URL(string: "http://127.0.0.1:\(RemoteCommand.httpPort)" + parts[1]) {
-                    if let command = RemoteCommand(url: url) {
-                        self?.onCommand(command)
-                        status = "200 OK"; body = "ok"
-                    } else {
-                        status = "404 Not Found"; body = "unknown command"
-                    }
+                guard let self else { return }
+                var buffer = buffer
+                if let data { buffer.append(data) }
+                let text = String(decoding: buffer, as: UTF8.self)
+                if !RemoteRequest.isComplete(text), !done, error == nil, buffer.count < 8192 {
+                    self.read(connection, buffer: buffer, deadline: deadline)
+                    return
+                }
+                deadline.cancel()
+                let status: String, body: String
+                switch RemoteRequest.handle(text, token: self.token) {
+                case .run(let command): self.onCommand(command); status = "200 OK"; body = "ok"
+                case .refused: status = "403 Forbidden"; body = "forbidden"
+                case .unknown: status = "404 Not Found"; body = "unknown command"
+                case .badRequest: status = "400 Bad Request"; body = "bad request"
                 }
                 let response = "HTTP/1.1 \(status)\r\nContent-Type: text/plain\r\nContent-Length: \(body.utf8.count)\r\nConnection: close\r\n\r\n\(body)"
                 connection.send(content: Data(response.utf8), completion: .contentProcessed { _ in connection.cancel() })

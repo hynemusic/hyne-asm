@@ -89,6 +89,9 @@ struct BehaviorPage: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(Loc.t("Stream-Deck-Verbindung", "Stream Deck connection")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
                     Text(statusText).font(DS.Font.caption).foregroundColor(statusColor)
+                    Text(Loc.t("Jeder Link enthält einen geheimen Schlüssel – Webseiten im Browser können die Verbindung nicht benutzen.",
+                               "Every link carries a secret key – web pages in your browser can't use the connection."))
+                        .font(DS.Font.caption).foregroundColor(DS.textTertiary)
                 }
             }
             .toggleStyle(.switch)
@@ -133,13 +136,13 @@ struct BehaviorPage: View {
     }
 
     private func linkRow(_ title: String, _ command: RemoteCommand) -> some View {
-        let link = command.link(http: true).absoluteString
+        let link = command.link(http: true, token: model.config.streamDeckToken).absoluteString
         return HStack(spacing: DS.Space.s) {
             Text(title).font(DS.Font.body).foregroundColor(DS.textPrimary).frame(width: 220, alignment: .leading)
             Text(link).font(DS.Font.code).foregroundColor(DS.textTertiary).lineLimit(1).truncationMode(.middle)
             Spacer()
             Button(copied == link ? Loc.t("Kopiert", "Copied") : Loc.t("Kopieren", "Copy")) {
-                StreamDeckLink.copy(command)
+                StreamDeckLink.copy(command, token: model.config.streamDeckToken)
                 copied = link
             }
             .controlSize(.small)
@@ -176,8 +179,8 @@ struct BehaviorPage: View {
 
 /// Copies a command's Stream Deck link (HTTP form) to the clipboard.
 enum StreamDeckLink {
-    static func copy(_ command: RemoteCommand) {
+    static func copy(_ command: RemoteCommand, token: String) {
         NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(command.link(http: true).absoluteString, forType: .string)
+        NSPasteboard.general.setString(command.link(http: true, token: token).absoluteString, forType: .string)
     }
 }

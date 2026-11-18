@@ -182,9 +182,15 @@ final class AppModel: ObservableObject {
     /// selected track / all selected tracks).
     func insert(uris: [String], usageKey: String) {
         let client = client, usage = usage, hud = hud, options = config.insert
+        let oldScript = (scriptVersion.flatMap { Int($0) } ?? 4) < 4
         Task { @MainActor in
             do {
-                try await client.load(uris: uris, options: options)
+                if oldScript, uris.count > 1 {
+                    // Scripts before version 4 load one item per request: send a chain step by step.
+                    for uri in uris { try await client.load(uris: [uri], options: options) }
+                } else {
+                    try await client.load(uris: uris, options: options)
+                }
                 usage.record(usageKey)
             } catch BridgeError.notConnected {
                 hud.show(Loc.t("Nicht mit Live verbunden", "Not connected to Live"))

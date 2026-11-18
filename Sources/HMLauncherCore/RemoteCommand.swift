@@ -52,8 +52,8 @@ public enum RemoteCommand: Equatable, Sendable {
         }
     }
 
-    /// The link that triggers this command (for "Copy Stream Deck Link").
-    public func link(http: Bool) -> URL {
+    /// The link that triggers this command (for "Copy Stream Deck Link"). HTTP links carry the install's token.
+    public func link(http: Bool, token: String? = nil) -> URL {
         var c = URLComponents()
         let path: String
         var query: [URLQueryItem] = []
@@ -78,6 +78,7 @@ public enum RemoteCommand: Equatable, Sendable {
             c.host = String(segments[0])
             c.path = segments.dropFirst().map { "/" + $0 }.joined()
         }
+        if http, let token { query.append(URLQueryItem(name: "token", value: token)) }
         c.queryItems = query.isEmpty ? nil : query
         return c.url!
     }
@@ -99,5 +100,40 @@ public enum RemoteTarget {
             }
         }
         return index.globalRows.first { $0.title.lowercased() == wanted }
+    }
+}
+
+/// One request to the local Stream Deck endpoint, checked before anything runs:
+/// GET only, the install's token must match, and nothing a browser sends for a web page (Origin, Referer,
+/// Sec-Fetch-Site) — so a site open in the user's browser can't fire commands at 127.0.0.1.
+public enum RemoteRequest {
+    public enum Outcome: Equatable, Sendable {
+        case run(RemoteCommand)
+        case refused, badRequest, unknown
+    }
+
+    /// The request line and headers have arrived.
+    public static func isComplete(_ raw: String) -> Bool { raw.contains("\r\n\r\n") }
+
+    public static func handle(_ raw: String, token: String) -> Outcome {
+        let lines = raw.components(separatedBy: "\r\n")
+        let parts = (lines.first ?? "").split(separator: " ")
+        guard parts.count >= 2, parts[0] == "GET",
+              let url = URL(string: "http://127.0.0.1:\(RemoteCommand.httpPort)" + parts[1]) else { return .badRequest }
+        let headers = lines.dropFirst().compactMap { line -> String? in
+            guard let colon = line.firstIndex(of: ":") else { return nil }
+            return line[..<colon].lowercased()
+        }
+        if headers.contains(where: { ["origin", "referer", "sec-fetch-site", "sec-fetch-mode"].contains($0) }) { return .refused }
+        let sent = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "token" }?.value
+        guard let sent, !token.isEmpty, sent == token else { return .refused }
+        guard let command = RemoteCommand(url: url) else { return .unknown }
+        return .run(command)
+    }
+}
+
+public extension LauncherConfig {
+    static func newToken() -> String {
+        UUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased().prefix(20).description
     }
 }

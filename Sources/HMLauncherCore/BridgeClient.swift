@@ -98,8 +98,10 @@ public actor BridgeClient {
 
     /// One item or a chain, loaded in order where the options say.
     public func load(uris: [String], options: InsertOptions) async throws {
-        let body: [String: Any] = ["cmd": "load", "uris": uris, "position": options.position.rawValue,
+        var body: [String: Any] = ["cmd": "load", "uris": uris, "position": options.position.rawValue,
                                    "all_selected": options.allSelectedTracks]
+        // Scripts before version 4 only read "uri": they still load the (first) item.
+        if let first = uris.first { body["uri"] = first }
         _ = try decode(Empty.self, try await request(body, timeout: loadTimeout * Double(max(uris.count, 1))), resultOptional: true)
     }
 

@@ -44,6 +44,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Stream Deck & co.: the local HTTP endpoint follows its Behavior switch.
         streamDeck.onCommand = { [weak self] in self?.perform($0) }
         let forced = Dev.env("HM_STREAMDECK") != nil   // developer aid: test the endpoint without changing settings
+        streamDeck.token = model.config.streamDeckToken
         streamDeckWatch = model.$config.map { $0.streamDeckEnabled || forced }.removeDuplicates().sink { [weak self] on in
             self?.streamDeck.setEnabled(on)
         }

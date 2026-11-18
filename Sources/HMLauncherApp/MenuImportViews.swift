@@ -408,7 +408,7 @@ struct VersionsPage: View {
         } content: {
             VStack(alignment: .leading, spacing: DS.Space.xl) {
                 ProfilesCard(model: model)
-                SectionLabel(text: Loc.t("Verlauf des aktiven Profils", "History of the active profile")).padding(.top, DS.Space.s)
+                SectionLabel(text: Loc.t("Verlauf (alle Profile) – Wiederherstellen ersetzt das aktive Profil", "History (all profiles) – restoring replaces the active profile")).padding(.top, DS.Space.s)
                 saveCard
                 VStack(alignment: .leading, spacing: DS.Space.s) {
                     HStack {
