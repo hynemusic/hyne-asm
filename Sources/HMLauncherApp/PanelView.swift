@@ -65,7 +65,10 @@ struct PanelView: View {
     private var footer: some View {
         let state = viewModel.state
         return HStack(spacing: 6) {
-            if state.filter.isEmpty {
+            if viewModel.pinned {
+                Image(systemName: "pin.fill").font(.themed(10, .semibold))
+                Text(Loc.t("Angeheftet – ⇧ loslassen, dann schließt der nächste Klick", "Pinned – release ⇧ and the next insert closes"))
+            } else if state.filter.isEmpty {
                 Image(systemName: "magnifyingglass").font(.themed(10.5, .semibold))
                 Text(Loc.t("Tippen zum Suchen", "Type to search"))
             } else {
@@ -74,7 +77,7 @@ struct PanelView: View {
             }
         }
         .font(DS.Font.caption)
-        .foregroundColor(DS.textTertiary.opacity(0.75))
+        .foregroundColor(viewModel.pinned ? .accent : DS.textTertiary.opacity(0.75))
         .frame(maxWidth: .infinity, minHeight: Self.footerHeight, maxHeight: Self.footerHeight)
         .allowsHitTesting(false)
     }

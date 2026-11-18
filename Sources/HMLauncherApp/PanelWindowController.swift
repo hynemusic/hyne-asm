@@ -10,6 +10,8 @@ final class PanelViewModel: ObservableObject {
     @Published var columns = PanelGrid.columns
     /// Column width and entry height (resize grip).
     @Published var size = PanelSize.default
+    /// ⇧ held: inserting keeps the panel open (pinned mode).
+    @Published var pinned = false
     /// An entry being dragged to a new place: its index and the slot it would land in.
     @Published var drag: (from: Int, to: Int)?
     var rowStride: CGFloat { CGFloat(size.itemHeight) + 4 }
@@ -68,7 +70,7 @@ final class PanelWindowController {
                              onToggleFavorite: { [weak self] in self?.toggleFavorite($0) },
                              alternatives: { [weak self] row in self?.model.searchIndex.alternatives(forKey: row.usageKey) ?? [] },
                              onInsertVersion: { [weak self] row, version in
-                                 self?.hide()
+                                 if !NSEvent.modifierFlags.contains(.shift) { self?.hide() }
                                  self?.model.insert(uri: version.uri, usageKey: row.usageKey)
                              },
                              onReorder: { [weak self] in self?.reorder(from: $0, to: $1) },
@@ -104,8 +106,18 @@ final class PanelWindowController {
         layout()
         panel.orderFrontRegardless()
         outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
-            MainActor.assumeIsolated { self?.hide() }
+            MainActor.assumeIsolated {
+                // Pinned: clicks in Live (another track, a device) keep the panel open.
+                guard let self, !NSEvent.modifierFlags.contains(.shift) else { return }
+                self.hide()
+            }
         }
+        viewModel.pinned = NSEvent.modifierFlags.contains(.shift)
+        let flags: (NSEvent) -> Void = { [weak self] event in
+            MainActor.assumeIsolated { self?.viewModel.pinned = event.modifierFlags.contains(.shift) }
+        }
+        flagsMonitors = [NSEvent.addGlobalMonitorForEvents(matching: .flagsChanged, handler: flags),
+                         NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) { flags($0); return $0 }].compactMap { $0 }
     }
 
     /// The gear in the panel's top-right corner.
@@ -163,7 +175,12 @@ final class PanelWindowController {
         layout()
     }
 
+    private var flagsMonitors: [Any] = []
+
     func hide() {
+        flagsMonitors.forEach(NSEvent.removeMonitor)
+        flagsMonitors = []
+        viewModel.pinned = false
         hideFlyout()
         panel.orderOut(nil)
         if let m = outsideClickMonitor { NSEvent.removeMonitor(m); outsideClickMonitor = nil }
@@ -236,7 +253,8 @@ final class PanelWindowController {
             showFlyout(folder) // clicking a folder opens its side list
             return
         }
-        hide()
+        // Pinned mode: with ⇧ held the panel stays for the next insert; after letting go, the next one closes it.
+        if !NSEvent.modifierFlags.contains(.shift) { hide() }
         model.insert(row)
     }
 

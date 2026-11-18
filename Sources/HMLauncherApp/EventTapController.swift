@@ -120,6 +120,8 @@ final class EventTapController {
             guard let ch = NSEvent(cgEvent: event)?.characters?.first,
                   !ch.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) }) else { return nil }
             if let d = ch.wholeNumberValue, ch.isASCII { return .digit(d) }
+            // ⇧ + a digit key (pinned mode) types "!" etc.; it still picks the row.
+            if event.flags.contains(.maskShift), let d = DigitKeys.digit(forKeyCode: keyCode) { return .digit(d) }
             return .character(ch)
         }
     }
