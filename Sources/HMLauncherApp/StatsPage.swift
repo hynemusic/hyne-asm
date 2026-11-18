@@ -42,9 +42,10 @@ struct StatsPage: View {
             }
             .padding(.bottom, DS.Space.l)
         }
-        .onAppear(perform: refresh)
+        .onAppear { refresh() }
         .onReceive(NotificationCenter.default.publisher(for: UsageStore.didChange)) { _ in refresh() }
-        .onReceive(catalog.$items.dropFirst()) { _ in refresh() }
+        // @Published sends the new list before storing it: use the sent value, not catalog.items (still the old one).
+        .onReceive(catalog.$items) { refresh(items: $0) }
         .confirmationDialog(Loc.t("Zählerstände importieren", "Import insert counts"), isPresented: Binding(
             get: { pendingImport != nil }, set: { if !$0 { pendingImport = nil } })) {
             Button(Loc.t("Zu meinen hinzufügen", "Add to mine")) { applyImport(replace: false) }
@@ -330,8 +331,8 @@ struct StatsPage: View {
 
     // MARK: Actions
 
-    private func refresh() {
-        summary = UsageStats.summarize(model.usage.counts, items: catalog.items, config: model.config)
+    private func refresh(items: [PluginItem]? = nil) {
+        summary = UsageStats.summarize(model.usage.counts, items: items ?? catalog.items, config: model.config)
     }
 
     private func exportFile() {
