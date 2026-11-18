@@ -44,6 +44,7 @@ struct SettingsView: View {
                 case 0: pluginsPage
                 case 2: LESImportPage(model: model, catalog: catalog, importer: importer, onDone: { page = 0 })
                 case 3: VersionsPage(model: model)
+                case 4: StatsPage(model: model, catalog: catalog)
                 default: ShortcutsPage(shortcuts: $model.config.shortcuts, panelKeys: $model.config.panelKeys)
                 }
             }

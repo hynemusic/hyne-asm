@@ -78,9 +78,65 @@ public final class UsageStore {
         ConfigStore.defaultURL.deletingLastPathComponent().appendingPathComponent("usage.json")
     }
 
+    /// Posted after every change, so an open Stats page can refresh.
+    public static let didChange = Notification.Name("HYNEASM.usageDidChange")
+
     public func record(_ key: String) {
         counts[key, default: 0] += 1
+        save()
+    }
+
+    /// Replaces everything (import "replace", reset with `[:]`).
+    public func replaceAll(_ newCounts: [String: Int]) {
+        counts = newCounts.filter { $0.value > 0 }
+        save()
+    }
+
+    /// Adds imported counts to the existing ones.
+    public func merge(_ other: [String: Int]) {
+        for (key, value) in other where value > 0 { counts[key, default: 0] += value }
+        save()
+    }
+
+    public func reset() { replaceAll([:]) }
+
+    private func save() {
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? JSONEncoder().encode(counts).write(to: url, options: .atomic)
+        NotificationCenter.default.post(name: Self.didChange, object: self)
+    }
+}
+
+/// The file the Stats page exports and imports: the insert counts that rank search results.
+public struct UsageExport: Codable, Equatable {
+    public static let formatID = "hyne-asm-usage"
+    public static let fileExtension = "hmlusage"
+
+    public var format = UsageExport.formatID
+    public var version = 1
+    public var exported: Date
+    public var counts: [String: Int]
+
+    public init(counts: [String: Int], exported: Date = Date()) {
+        self.counts = counts
+        self.exported = exported
+    }
+
+    public func data() throws -> Data {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.dateEncodingStrategy = .iso8601
+        return try encoder.encode(self)
+    }
+
+    public enum ReadError: Error { case notUsageFile }
+
+    /// Reads an export, or a raw usage.json copied out of the app's folder.
+    public static func read(_ data: Data) throws -> [String: Int] {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        if let file = try? decoder.decode(UsageExport.self, from: data), file.format == formatID { return file.counts }
+        if let raw = try? decoder.decode([String: Int].self, from: data), raw.keys.allSatisfy({ $0.contains("|") }) { return raw }
+        throw ReadError.notUsageFile
     }
 }
