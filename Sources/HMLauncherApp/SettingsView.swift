@@ -6,6 +6,8 @@ import HMLauncherCore
 /// accept plugin URIs (text) from the browser don't react while entries are reordered.
 let entriesDragType = UTType(exportedAs: "local.hm.launcher.entries")
 let categoryDragType = UTType(exportedAs: "local.hm.launcher.category")
+/// Several folders/plugins dragged out of the browser at once.
+let browserDragType = UTType(exportedAs: "local.hm.launcher.browser")
 
 struct SettingsView: View {
     @ObservedObject var model: AppModel
@@ -17,6 +19,12 @@ struct SettingsView: View {
     /// Grouping ~3,300 items costs ~30 ms; recompute only when items or search change, not on every redraw.
     @State private var groups: [PluginGroup] = []
     @State private var variants: [String: PluginVariantGroup] = [:]
+    /// Groups without the search filter: a selected folder always adds all of its plugins.
+    @State private var allGroups: [String: PluginGroup] = [:]
+    /// Browser selection: "g:<group title>" for folders, "i:<uri>" for plugins.
+    @State private var browserSel: Set<String> = Set((ProcessInfo.processInfo.environment["HM_BROWSER_SELECT"] ?? "") // developer aid
+        .split(separator: ",").map(String.init))
+    @State private var browserAnchor: String?
     @State private var collapsed: Set<UUID> = []
     @State private var selection: Set<UUID> = []
     @State private var selectionAnchor: UUID?
@@ -104,8 +112,12 @@ struct SettingsView: View {
             .onAppear { regroup(catalog.items) }
             .onChange(of: search) { _ in regroup(catalog.items) }
             .onReceive(catalog.$items.dropFirst()) { regroup($0) }
-            HintText(text: Loc.t("Doppelklick oder ziehen fügt zu „\(category?.name ?? "")“ hinzu. Eigene Presets kannst du auch aus dem Finder hineinziehen.",
-                                 "Double-click or drag to add to “\(category?.name ?? "")”. You can also drag your own presets in from Finder."))
+            if browserSel.isEmpty {
+                HintText(text: Loc.t("Doppelklick oder ziehen fügt zu „\(category?.name ?? "")“ hinzu · ⇧/⌘-Klick wählt mehrere, auch ganze Ordner · Presets auch aus dem Finder.",
+                                     "Double-click or drag to add to “\(category?.name ?? "")” · ⇧/⌘-click selects several, also whole folders · presets also from Finder."))
+            } else {
+                browserSelectionBar
+            }
         }
         .padding(.horizontal, DS.Space.l)
         .padding(.top, DS.Space.l)
@@ -117,12 +129,20 @@ struct SettingsView: View {
         let collapsed = PluginVariants.collapse(items)
         variants = Dictionary(collapsed.map { ($0.preferred.uri, $0) }, uniquingKeysWith: { a, _ in a })
         groups = PluginGrouping.groups(collapsed.map(\.preferred), search: search)
+        if search.isEmpty || allGroups.isEmpty {
+            let all = search.isEmpty ? groups : PluginGrouping.groups(collapsed.map(\.preferred), search: "")
+            allGroups = Dictionary(all.map { ($0.title, $0) }, uniquingKeysWith: { a, _ in a })
+        }
     }
 
     private func folderHeader(_ group: PluginGroup) -> some View {
         let open = !search.isEmpty || expanded.contains(group.title)
+        let id = "g:" + group.title
+        let selected = browserSel.contains(id)
         return Button {
-            if expanded.contains(group.title) { expanded.remove(group.title) } else { expanded.insert(group.title) }
+            if !browserClick(id) {
+                if expanded.contains(group.title) { expanded.remove(group.title) } else { expanded.insert(group.title) }
+            }
         } label: {
             HStack(spacing: DS.Space.s) {
                 Image(systemName: "chevron.right")
@@ -143,12 +163,15 @@ struct SettingsView: View {
             }
             .padding(.horizontal, DS.Space.s)
             .frame(height: 28)
+            .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(selected ? DS.selection : .clear))
             .contentShape(Rectangle())
             .modifier(HoverHighlight())
         }
         .buttonStyle(.plain)
-        .disabled(!search.isEmpty)
+        .onDrag { browserDragPayload(for: id) } preview: { DragCountBadge(count: dragSelection(for: id).pluginCount) }
         .contextMenu {
+            addMenu(for: id)
+            Divider()
             if let rule = folderRule(group) {
                 ColorMenu(title: folderRuleTitle(rule), current: model.config.colorRule(rule), allowInherit: false) { picked in
                     model.config.setColorRule(picked == ColorPalette.noneID ? nil : picked, for: rule)
@@ -174,7 +197,9 @@ struct SettingsView: View {
     }
 
     private func pluginRow(_ item: PluginItem) -> some View {
-        HStack(spacing: DS.Space.s) {
+        let id = "i:" + item.uri
+        let selected = browserSel.contains(id)
+        return HStack(spacing: DS.Space.s) {
             RoundedRectangle(cornerRadius: 1.5).fill(Color(label: model.config.colorID(for: item)) ?? .clear).frame(width: 3, height: 14)
             Text(item.name).font(DS.Font.body).foregroundColor(DS.textSecondary).lineLimit(1)
             Spacer(minLength: DS.Space.s)
@@ -190,11 +215,21 @@ struct SettingsView: View {
         }
         .padding(.leading, 26).padding(.trailing, DS.Space.s)
         .frame(height: 26)
+        .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(selected ? DS.selection : .clear))
         .contentShape(Rectangle())
         .modifier(HoverHighlight())
         .onTapGesture(count: 2) { add(item, to: categoryID) }
-        .onDrag { NSItemProvider(object: item.uri as NSString) }
+        .simultaneousGesture(TapGesture().onEnded {
+            if !browserClick(id) { browserSel = [id] } // plain click selects just this one
+        })
+        .onDrag {
+            browserSel.contains(id) && browserSel.count > 1 ? browserDragPayload(for: id) : NSItemProvider(object: item.uri as NSString)
+        } preview: { DragCountBadge(count: browserSel.contains(id) ? dragSelection(for: id).pluginCount : 1) }
         .contextMenu {
+            if browserSel.contains(id) && browserSel.count > 1 {
+                addMenu(for: id)
+                Divider()
+            }
             Button(Loc.t("Zu „\(category?.name ?? "")“ hinzufügen", "Add to “\(category?.name ?? "")”")) { add(item, to: categoryID) }
             if let others = variants[item.uri]?.variants.dropFirst(), !others.isEmpty {
                 ForEach(Array(others), id: \.uri) { v in
@@ -212,6 +247,116 @@ struct SettingsView: View {
     }
 
     private func add(_ item: PluginItem, to id: UUID) { model.config.addEntry(item, to: id) }
+
+    // MARK: Browser multi-selection (folders and plugins)
+
+    /// Rows in the order they are drawn, for ⇧-click ranges.
+    private var browserOrder: [String] {
+        groups.flatMap { g -> [String] in
+            let open = !search.isEmpty || expanded.contains(g.title)
+            return ["g:" + g.title] + (open ? g.items.map { "i:" + $0.uri } : [])
+        }
+    }
+
+    /// ⇧ selects the range from the last clicked row, ⌘ toggles one. Returns false for a plain click
+    /// (which only remembers the row as the start of a later range).
+    private func browserClick(_ id: String) -> Bool {
+        let flags = NSEvent.modifierFlags
+        if flags.contains(.shift), let anchor = browserAnchor, let a = browserOrder.firstIndex(of: anchor), let b = browserOrder.firstIndex(of: id) {
+            browserSel.formUnion(browserOrder[min(a, b)...max(a, b)])
+            return true
+        }
+        if flags.contains(.command) || flags.contains(.shift) {
+            if browserSel.contains(id) { browserSel.remove(id) } else { browserSel.insert(id) }
+            browserAnchor = id
+            return true
+        }
+        browserAnchor = id
+        browserSel = []
+        return false
+    }
+
+    /// The current selection as folders + plugins (a folder always brings all of its plugins).
+    private func selection(of ids: Set<String>) -> BrowserSelection {
+        var result = BrowserSelection()
+        let byURI = Dictionary(variants.values.map { ($0.preferred.uri, $0.preferred) }, uniquingKeysWith: { a, _ in a })
+        for id in browserOrder.filter(ids.contains) + ids.filter({ !browserOrder.contains($0) }).sorted() {
+            if id.hasPrefix("g:"), let g = allGroups[String(id.dropFirst(2))] {
+                result.folders.append(.init(title: BrowserSection.displayTitle(g), items: g.items))
+            } else if id.hasPrefix("i:"), let item = byURI[String(id.dropFirst(2))] {
+                result.items.append(item)
+            }
+        }
+        return result
+    }
+
+    /// Dragging a selected row carries the whole selection; an unselected folder carries just itself.
+    private func dragSelection(for id: String) -> BrowserSelection {
+        selection(of: browserSel.contains(id) ? browserSel : [id])
+    }
+
+    private func browserDragPayload(for id: String) -> NSItemProvider {
+        BrowserDrag.selection = dragSelection(for: id)
+        let provider = NSItemProvider()
+        provider.registerDataRepresentation(forTypeIdentifier: browserDragType.identifier, visibility: .ownProcess) { done in
+            done(Data("selection".utf8), nil)
+            return nil
+        }
+        return provider
+    }
+
+    private func addSelection(_ sel: BrowserSelection, to target: UUID, folder: UUID? = nil, asFolders: Bool = true) {
+        model.config.add(sel, to: target, folder: folder, asFolders: asFolders)
+        selectedCategory = target
+        browserSel = []
+    }
+
+    /// "Add to …" menu for a row: the selection if the row is part of it, else the row alone.
+    @ViewBuilder
+    private func addMenu(for id: String) -> some View {
+        let sel = dragSelection(for: id)
+        let label = sel.folders.count + sel.items.count > 1
+            ? Loc.t("\(sel.folders.count + sel.items.count) ausgewählte", "\(sel.folders.count + sel.items.count) selected")
+            : (sel.folders.first?.title ?? sel.items.first?.name ?? "")
+        Button(Loc.t("„\(label)“ zu „\(category?.name ?? "")“ hinzufügen", "Add “\(label)” to “\(category?.name ?? "")”")) { addSelection(sel, to: categoryID) }
+        Menu(Loc.t("Zu Kategorie hinzufügen", "Add to Category")) {
+            ForEach(model.config.categories) { c in Button(c.name) { addSelection(sel, to: c.id) } }
+        }
+        if !sel.folders.isEmpty {
+            Button(Loc.t("Ohne Ordner hinzufügen (einzeln)", "Add Without Folders (loose)")) { addSelection(sel, to: categoryID, asFolders: false) }
+        }
+    }
+
+    private var browserSelectionBar: some View {
+        let sel = selection(of: browserSel)
+        let parts = [sel.folders.isEmpty ? nil : Loc.t("\(sel.folders.count) Ordner", "\(sel.folders.count) folder\(sel.folders.count == 1 ? "" : "s")"),
+                     sel.items.isEmpty ? nil : Loc.t("\(sel.items.count) Plugins", "\(sel.items.count) plugin\(sel.items.count == 1 ? "" : "s")")]
+        return HStack(spacing: DS.Space.s) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text(parts.compactMap { $0 }.joined(separator: " · ")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                Text(Loc.t("\(sel.pluginCount) Einträge insgesamt", "\(sel.pluginCount) entries in total")).font(.system(size: 10.5)).foregroundColor(DS.textTertiary)
+            }
+            Spacer(minLength: DS.Space.s)
+            Button(Loc.t("Zu „\(category?.name ?? "")“", "Add to “\(category?.name ?? "")”")) { addSelection(sel, to: categoryID) }
+                .buttonStyle(.borderedProminent).tint(.brandBlue).controlSize(.small)
+            Menu {
+                ForEach(model.config.categories.filter { $0.id != categoryID }) { c in
+                    Button(Loc.t("Zu „\(c.name)“", "To “\(c.name)”")) { addSelection(sel, to: c.id) }
+                }
+                if !sel.folders.isEmpty {
+                    Divider()
+                    Button(Loc.t("Zu „\(category?.name ?? "")“ ohne Ordner", "To “\(category?.name ?? "")” without folders")) { addSelection(sel, to: categoryID, asFolders: false) }
+                }
+                Divider()
+                Button(Loc.t("Auswahl aufheben", "Deselect")) { browserSel = [] }
+            } label: { Image(systemName: "ellipsis") }
+            .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+        }
+        .padding(.horizontal, DS.Space.m)
+        .frame(height: 46)
+        .background(RoundedRectangle(cornerRadius: DS.Radius.m).fill(DS.selection))
+        .overlay(RoundedRectangle(cornerRadius: DS.Radius.m).stroke(Color.brandBlue.opacity(0.5)))
+    }
 
     // MARK: Categories
 
@@ -271,7 +416,7 @@ struct SettingsView: View {
             if categoryMarker?.id == c.id { Rectangle().fill(Color.accent).frame(height: 3).offset(y: categoryMarker?.after == true ? 3 : -3) }
         }
         .modifier(CategoryDragSource(enabled: !c.isFavorites, id: c.id, name: c.name))
-        .onDrop(of: [categoryDragType, entriesDragType, .fileURL, .text], delegate: CategoryDropDelegate(
+        .onDrop(of: [categoryDragType, browserDragType, entriesDragType, .fileURL, .text], delegate: CategoryDropDelegate(
             category: c.id, isFavorites: c.isFavorites,
             marker: $categoryMarker, entryTarget: $dropCategory,
             moveCategory: { moveDraggedCategory(before: $0) },
@@ -344,7 +489,7 @@ struct SettingsView: View {
                                 // Just a count next to the cursor instead of a shrunken copy of the row.
                                 DragCountBadge(count: selection.contains(row.id) ? selection.count : 1)
                             }
-                            .onDrop(of: [entriesDragType, .fileURL, .text], delegate: RowDropDelegate(
+                            .onDrop(of: [browserDragType, entriesDragType, .fileURL, .text], delegate: RowDropDelegate(
                                 row: SettingsViewRow(id: row.id, isFolder: row.entry.isFolder), drop: dropState,
                                 perform: { spot, providers in dropOnRow(row, spot, providers, in: category) }))
                             .listRowBackground(Color.clear)
@@ -354,7 +499,7 @@ struct SettingsView: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                .onDrop(of: [entriesDragType, .fileURL, .text], isTargeted: nil) { providers in
+                .onDrop(of: [browserDragType, entriesDragType, .fileURL, .text], isTargeted: nil) { providers in
                     // Empty area below the rows: entries move to the end, browser plugins are added.
                     if let p = providers.first(where: { $0.hasItemConformingToTypeIdentifier(entriesDragType.identifier) }) {
                         loadEntryIDs(p) { model.config.moveEntries($0, toFolder: nil, before: nil, in: category.id) }
@@ -446,6 +591,7 @@ struct SettingsView: View {
             }
             return true
         }
+        if takeBrowserDrop(providers, into: category.id, folder: spot == .into ? row.entry.id : row.folderID) { return true }
         if importFiles(providers, into: category.id, folder: folder) { return true }
         for p in providers {
             _ = p.loadObject(ofClass: NSString.self) { obj, _ in
@@ -730,7 +876,17 @@ struct SettingsView: View {
         return a.runModal() == .alertFirstButtonReturn
     }
 
+    /// A browser selection (several folders/plugins) dropped onto the list, a row or a category.
+    private func takeBrowserDrop(_ providers: [NSItemProvider], into categoryID: UUID, folder: UUID?) -> Bool {
+        guard providers.contains(where: { $0.hasItemConformingToTypeIdentifier(browserDragType.identifier) }),
+              let sel = BrowserDrag.selection else { return false }
+        BrowserDrag.selection = nil
+        addSelection(sel, to: categoryID, folder: folder)
+        return true
+    }
+
     private func drop(_ providers: [NSItemProvider], into categoryID: UUID) -> Bool {
+        if takeBrowserDrop(providers, into: categoryID, folder: nil) { return true }
         if importFiles(providers, into: categoryID, folder: nil) { return true }
         for provider in providers {
             _ = provider.loadObject(ofClass: NSString.self) { object, _ in
@@ -1200,7 +1356,7 @@ private struct RowDropDelegate: DropDelegate {
         return y < 21 ? .before : .after
     }
 
-    func validateDrop(info: DropInfo) -> Bool { info.hasItemsConforming(to: [entriesDragType, .fileURL, .text]) }
+    func validateDrop(info: DropInfo) -> Bool { info.hasItemsConforming(to: [browserDragType, entriesDragType, .fileURL, .text]) }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
         let m = DropMarker(id: row.id, spot: spot(info))
@@ -1215,7 +1371,7 @@ private struct RowDropDelegate: DropDelegate {
     func performDrop(info: DropInfo) -> Bool {
         let s = spot(info)
         drop.marker = nil
-        return perform(s, info.itemProviders(for: [entriesDragType, .fileURL, .text]))
+        return perform(s, info.itemProviders(for: [browserDragType, entriesDragType, .fileURL, .text]))
     }
 }
 
@@ -1243,6 +1399,12 @@ private struct DragCountBadge: View {
             .frame(minWidth: 22, minHeight: 22)
             .background(Capsule().fill(Color.accent))
     }
+}
+
+/// The browser selection being dragged (set when the drag starts, taken by the drop).
+@MainActor
+enum BrowserDrag {
+    static var selection: BrowserSelection?
 }
 
 /// The category being dragged (set when the drag starts) — in-process and synchronous like `EntryDrag`.
@@ -1301,7 +1463,7 @@ private struct CategoryDropDelegate: DropDelegate {
     /// Favorites is always first, so a category dropped on it lands right after it.
     private func after(_ info: DropInfo) -> Bool { isFavorites || info.location.y >= 15 }
 
-    func validateDrop(info: DropInfo) -> Bool { info.hasItemsConforming(to: [categoryDragType, entriesDragType, .fileURL, .text]) }
+    func validateDrop(info: DropInfo) -> Bool { info.hasItemsConforming(to: [categoryDragType, browserDragType, entriesDragType, .fileURL, .text]) }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
         if isCategoryDrag(info) {
@@ -1326,7 +1488,7 @@ private struct CategoryDropDelegate: DropDelegate {
             moveCategory(after(info) ? nextCategory : category)
             return true
         }
-        return dropEntries(info.itemProviders(for: [entriesDragType, .fileURL, .text]))
+        return dropEntries(info.itemProviders(for: [browserDragType, entriesDragType, .fileURL, .text]))
     }
 
     /// Filled in by the list: the category below this one (nil = this is the last one).

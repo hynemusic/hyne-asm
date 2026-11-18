@@ -21,6 +21,11 @@
 			<key>UTTypeConformsTo</key><array><string>public.data</string></array>
 		</dict>
 		<dict>
+			<key>UTTypeIdentifier</key><string>local.hm.launcher.browser</string>
+			<key>UTTypeDescription</key><string>HYNE ASM browser selection</string>
+			<key>UTTypeConformsTo</key><array><string>public.data</string></array>
+		</dict>
+		<dict>
 			<key>UTTypeIdentifier</key><string>local.hm.launcher.category</string>
 			<key>UTTypeDescription</key><string>HYNE ASM category</string>
 			<key>UTTypeConformsTo</key><array><string>public.data</string></array>
