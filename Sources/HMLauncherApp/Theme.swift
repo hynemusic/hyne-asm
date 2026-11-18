@@ -1,17 +1,24 @@
 import SwiftUI
 import HMLauncherCore
 
-/// Colours of the panel (modelled on the reference screenshot), shared with the settings window.
+/// Colours of the panel, shared with the settings window.
+/// Brand palette "Signal" from the ASM Double Key logo (docs/logo/final): blue #3D5AFE + coral #FF6B57.
 extension Color {
+    /// Brand blue #3D5AFE: prominent buttons (white text on it stays readable).
+    static let brandBlue = Color(red: 0x3D / 255, green: 0x5A / 255, blue: 0xFE / 255)
+    /// Brand coral #FF6B57: accents on the dark panel (active bar, cursor, folder/star icons, text buttons).
+    static let brandCoral = Color(red: 0xFF / 255, green: 0x6B / 255, blue: 0x57 / 255)
+
     static let panelBackground = Color(red: 0.17, green: 0.17, blue: 0.17)
     static let panelSidebar = Color(red: 0.14, green: 0.14, blue: 0.14)
     static let rowBackground = Color(red: 0.24, green: 0.24, blue: 0.24)
-    static let rowHighlight = Color(red: 0.42, green: 0.39, blue: 0.35)
-    static let accent = Color(red: 0.96, green: 0.70, blue: 0.20)
+    /// Hovered/selected row: the row grey with ~35 % brand blue mixed in.
+    static let rowHighlight = Color(red: 0.24, green: 0.28, blue: 0.50)
+    static let accent = brandCoral
     static let dimText = Color(white: 0.55)
 }
 
-/// One row as it appears in the panel: number, icon, title, yellow bar when active.
+/// One row as it appears in the panel: number, icon, title, accent bar when active.
 struct LauncherRow<Trailing: View>: View {
     let number: Int?
     let symbol: String

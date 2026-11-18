@@ -6,6 +6,7 @@
 	<key>CFBundleName</key><string>HYNE ASM</string>
 	<key>CFBundleDisplayName</key><string>HYNE Ableton Shortcuts Manager</string>
 	<key>CFBundleExecutable</key><string>HYNE ASM</string>
+	<key>CFBundleIconFile</key><string>AppIcon</string>
 	<key>CFBundlePackageType</key><string>APPL</string>
 	<key>CFBundleShortVersionString</key><string>0.1</string>
 	<key>CFBundleVersion</key><string>1</string>

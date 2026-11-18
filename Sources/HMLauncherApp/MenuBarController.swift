@@ -13,7 +13,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     init(model: AppModel) {
         self.model = model
         super.init()
-        statusItem.button?.image = NSImage(systemSymbolName: "slider.horizontal.3", accessibilityDescription: "HYNE ASM")
+        statusItem.button?.image = Self.doubleKeyIcon()
         let menu = NSMenu()
         menu.delegate = self
         statusLine.isEnabled = false
@@ -25,6 +25,30 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         menu.addItem(.separator())
         menu.addItem(item({ Loc.t("HYNE ASM beenden", "Quit HYNE ASM") }, #selector(quit), "q"))
         statusItem.menu = menu
+    }
+
+    /// The ASM "Double Key" logo as a menu-bar template image (docs/logo/final): two offset rounded
+    /// squares, overlap knocked out. Drawn as vectors so it is sharp at every scale and follows
+    /// the menu bar's light/dark appearance. Geometry from the 256-unit logo canvas.
+    static func doubleKeyIcon() -> NSImage {
+        let size = NSSize(width: 18, height: 18)
+        let image = NSImage(size: size, flipped: true) { _ in
+            let s: CGFloat = 16 / 184          // logo spans 36…220 on its 256 canvas → 16 pt
+            let o: CGFloat = 1 - 36 * s        // 1 pt margin
+            func key(_ x: CGFloat, _ y: CGFloat) -> NSRect {
+                NSRect(x: o + x * s, y: o + y * s, width: 128 * s, height: 128 * s)
+            }
+            let path = NSBezierPath()
+            path.windingRule = .evenOdd
+            path.append(NSBezierPath(roundedRect: key(36, 36), xRadius: 28 * s, yRadius: 28 * s))
+            path.append(NSBezierPath(roundedRect: key(92, 92), xRadius: 28 * s, yRadius: 28 * s))
+            NSColor.black.setFill()
+            path.fill()
+            return true
+        }
+        image.isTemplate = true
+        image.accessibilityDescription = "HYNE ASM"
+        return image
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {

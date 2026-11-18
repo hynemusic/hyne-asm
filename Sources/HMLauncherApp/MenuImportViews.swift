@@ -64,7 +64,7 @@ struct LESImportPage: View {
                 Label(Loc.t("Vorschau erstellen", "Build Preview"), systemImage: "wand.and.stars").frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
-            .tint(.accent)
+            .tint(.brandBlue)
             .disabled(importer.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || catalog.items.isEmpty)
             if catalog.items.isEmpty {
                 Text(Loc.t("Erst mit Live verbinden – die Plugin-Liste wird zum Zuordnen gebraucht.",
@@ -252,7 +252,7 @@ struct LESImportPage: View {
                 .help(Loc.t("Zu deinen bestehenden Kategorien hinzufügen (gleichnamige werden zusammengeführt)",
                             "Add to your existing categories (same names are merged)"))
             Button(Loc.t("Ersetzen …", "Replace …")) { confirmReplace = true }
-                .buttonStyle(.borderedProminent).tint(.accent)
+                .buttonStyle(.borderedProminent).tint(.brandBlue)
                 .help(Loc.t("Alle Kategorien außer Favorites durch die Vorschau ersetzen",
                             "Replace all categories except Favorites with the preview"))
         }
@@ -392,7 +392,7 @@ struct VersionsPage: View {
                 TextField(Loc.t("Name der Version, z. B. „Live-Set Sommer“", "Version name, e.g. “Summer live set”"), text: $name)
                     .textFieldStyle(.roundedBorder).frame(maxWidth: 320)
                 Button(Loc.t("Aktuelles Menü sichern", "Save Current Menu")) { saveCurrent() }
-                    .buttonStyle(.borderedProminent).tint(.accent)
+                    .buttonStyle(.borderedProminent).tint(.brandBlue)
                 Spacer()
                 Button(Loc.t("Menü exportieren …", "Export Menu …")) { exportCurrent() }
                 Button(Loc.t("Menü-Datei importieren …", "Import Menu File …")) { importFile() }
