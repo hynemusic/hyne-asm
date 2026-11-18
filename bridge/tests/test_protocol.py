@@ -21,7 +21,7 @@ class ProtocolTests(unittest.TestCase):
     def test_hello_reports_versions(self):
         r = self.call({"id": 1, "cmd": "hello"})
         self.assertEqual(r, {"id": 1, "ok": True, "error": None,
-                             "result": {"script_version": "3", "live_version": "12.4.16"}})
+                             "result": {"script_version": "4", "live_version": "12.4.16"}})
 
     def test_list_returns_items(self):
         r = self.call({"id": 2, "cmd": "list"})

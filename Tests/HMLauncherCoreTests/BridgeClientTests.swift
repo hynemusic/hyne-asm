@@ -34,6 +34,34 @@ final class BridgeClientTests: XCTestCase {
         XCTAssertEqual(seen["uri"] as? String, "query:AudioFx#EQ%20Eight")
     }
 
+    func testLoadChainWithOptions() async throws {
+        var seen: [String: Any] = [:]
+        server.respond = { seen = $0; return ok($0) }
+        try await client.load(uris: ["u:a", "u:b"], options: InsertOptions(position: .afterSelected, allSelectedTracks: true))
+        XCTAssertEqual(seen["uris"] as? [String], ["u:a", "u:b"])
+        XCTAssertEqual(seen["position"] as? String, "after_selected")
+        XCTAssertEqual(seen["all_selected"] as? Bool, true)
+    }
+
+    func testRunsLiveAction() async throws {
+        var seen: [String: Any] = [:]
+        server.respond = { seen = $0; return ok($0) }
+        try await client.run(LiveAction(kind: .setTempo, value: 128))
+        XCTAssertEqual(seen["cmd"] as? String, "action")
+        XCTAssertEqual(seen["name"] as? String, "set_tempo")
+        XCTAssertEqual(seen["value"] as? Double, 128)
+    }
+
+    func testHelloReadsCapabilitiesAndOlderBridgesWithout() async throws {
+        server.respond = { ok($0, ["script_version": "4", "live_version": "12.4.16",
+                                    "capabilities": ["move_device": true, "multi_select": false]]) }
+        let hello = try await client.hello()
+        XCTAssertEqual(hello.capabilities, BridgeCapabilities(moveDevice: true, multiSelect: false))
+        server.respond = { ok($0, ["script_version": "3", "live_version": "12.4.16"]) }
+        let older = try await client.hello()
+        XCTAssertEqual(older.capabilities, BridgeCapabilities(moveDevice: false, multiSelect: false))
+    }
+
     func testLoadRemoteErrorThrowsRemote() async {
         server.respond = { ["id": $0["id"]!, "ok": false, "result": NSNull(), "error": "not_found"] }
         do { try await client.load(uri: "x"); XCTFail("expected error") }

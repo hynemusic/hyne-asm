@@ -4,6 +4,18 @@ import Network
 public struct HelloResult: Decodable, Sendable {
     public let scriptVersion: String
     public let liveVersion: String
+    /// Missing on scripts before version 4: nothing beyond the basics.
+    public let capabilities: BridgeCapabilities
+
+    enum CodingKeys: String, CodingKey { case scriptVersion, liveVersion, capabilities }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        scriptVersion = try c.decode(String.self, forKey: .scriptVersion)
+        liveVersion = try c.decode(String.self, forKey: .liveVersion)
+        capabilities = try c.decodeIfPresent(BridgeCapabilities.self, forKey: .capabilities)
+            ?? BridgeCapabilities(moveDevice: false, multiSelect: false)
+    }
 }
 
 public enum BridgeError: Error, Equatable, Sendable {
@@ -82,6 +94,20 @@ public actor BridgeClient {
     /// `refresh`: make Live walk its browser again (blocks Live ~1 s). Otherwise the bridge answers from its last walk.
     public func listItems(refresh: Bool = false) async throws -> [PluginItem] {
         try decode(ItemsResult.self, try await request(["cmd": "list", "refresh": refresh])).items
+    }
+
+    /// One item or a chain, loaded in order where the options say.
+    public func load(uris: [String], options: InsertOptions) async throws {
+        let body: [String: Any] = ["cmd": "load", "uris": uris, "position": options.position.rawValue,
+                                   "all_selected": options.allSelectedTracks]
+        _ = try decode(Empty.self, try await request(body, timeout: loadTimeout * Double(max(uris.count, 1))), resultOptional: true)
+    }
+
+    public func run(_ action: LiveAction) async throws {
+        var body: [String: Any] = ["cmd": "action", "name": action.kind.rawValue]
+        if let v = action.value { body["value"] = v }
+        if let v = action.value2 { body["value2"] = v }
+        _ = try decode(Empty.self, try await request(body), resultOptional: true)
     }
 
     public func load(uri: String) async throws {
