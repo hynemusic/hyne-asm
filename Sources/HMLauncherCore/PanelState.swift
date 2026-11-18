@@ -125,6 +125,10 @@ public struct PanelState {
 
     public static let maxGlobalResults = 50
 
+    /// Top-level entries of the fullest category: the panel takes that size when it opens, so hovering the
+    /// tabs never resizes it.
+    public var largestTabCount: Int { config.categories.map(\.entries.count).max() ?? 0 }
+
     private func uses(_ row: PanelRow) -> Int { usage[row.usageKey] ?? 0 }
 
     /// Hits from every installed plugin (one row per plugin), plugins already shown left out.

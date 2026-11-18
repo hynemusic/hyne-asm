@@ -46,9 +46,26 @@ struct PanelView: View {
             if !viewModel.state.filter.isEmpty { filterField }
             rowList
         }
+        .overlay(alignment: .bottom) { leftoverHint }
         .padding(Self.padding)
         .modifier(PanelChrome())
         .id(Palette.theme)
+    }
+
+    /// A short category in a panel sized for the fullest one: a quiet line in the free space instead of a void.
+    @ViewBuilder private var leftoverHint: some View {
+        let state = viewModel.state
+        if state.filter.isEmpty, state.openFolderName == nil,
+           viewModel.capacityRows - PanelGrid.rows(state.rows.count) >= 2 {
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass").font(.themed(10.5, .semibold))
+                Text(Loc.t("Tippen zum Suchen", "Type to search"))
+            }
+            .font(DS.Font.caption)
+            .foregroundColor(DS.textTertiary.opacity(0.75))
+            .padding(.bottom, 10)
+            .allowsHitTesting(false)
+        }
     }
 
     // MARK: Tabs

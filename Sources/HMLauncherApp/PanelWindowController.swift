@@ -6,6 +6,8 @@ import HMLauncherCore
 final class PanelViewModel: ObservableObject {
     @Published var state: PanelState
     @Published var hovered: Int?
+    /// Grid rows the panel was sized for when it opened (the fullest category).
+    @Published var capacityRows = 0
     /// Favorites gets a star in the tab bar.
     var favoritesID: UUID?
     init(state: PanelState) { self.state = state }
@@ -84,8 +86,12 @@ final class PanelWindowController {
         viewModel.favoritesID = model.config.favoritesID
         viewModel.hovered = nil
         topLeft = point
-        heightFloor = 0
-        columnsFloor = 1
+        // Sized for the fullest category right away: switching tabs never resizes the panel, and near the bottom
+        // of the screen the rows don't get pushed away from the mouse. Search and open folders can still grow it.
+        let largest = viewModel.state.largestTabCount
+        heightFloor = height(gridRows: PanelGrid.rows(largest), extra: 0)
+        columnsFloor = PanelGrid.columnsNeeded(local: largest, global: 0)
+        viewModel.capacityRows = min(PanelGrid.rows(largest), PanelView.maxVisibleRows)
         layout()
         panel.orderFrontRegardless()
         outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
@@ -194,17 +200,20 @@ final class PanelWindowController {
         layout()
     }
 
+    private func height(gridRows: Int, extra: CGFloat) -> CGFloat {
+        let visibleRows = CGFloat(min(max(gridRows, 1), PanelView.maxVisibleRows))
+        return PanelView.tabBarHeight + extra + visibleRows * PanelView.rowHeight + PanelView.padding * 2
+    }
+
     /// Height follows the row count; the top-left corner stays at the click, clamped to the screen.
     private func layout() {
         let all = viewModel.state.rows
         let globalCount = all.filter(\.isGlobal).count
         let gridRows = PanelGrid.rows(all.count - globalCount) + PanelGrid.rows(globalCount)
-        let visibleRows = CGFloat(min(max(gridRows, 1), PanelView.maxVisibleRows))
         let filterHeight: CGFloat = (viewModel.state.filter.isEmpty ? 0 : PanelView.filterHeight)
             + (viewModel.state.openFolderName == nil ? 0 : PanelView.filterHeight)
             + (globalCount > 0 && gridRows <= PanelView.maxVisibleRows ? PanelView.globalHeaderHeight : 0)
-        let needed = PanelView.tabBarHeight + filterHeight + visibleRows * PanelView.rowHeight + PanelView.padding * 2
-        let height = max(needed, heightFloor)
+        let height = max(height(gridRows: gridRows, extra: filterHeight), heightFloor)
         heightFloor = height
         let columns = max(PanelGrid.columnsNeeded(local: all.count - globalCount, global: globalCount), columnsFloor)
         columnsFloor = columns
