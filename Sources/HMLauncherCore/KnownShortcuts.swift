@@ -2,7 +2,7 @@ import Foundation
 
 /// A shortcut that Ableton Live or macOS already uses (Live 12 on the Mac, default settings).
 public struct KnownShortcut: Identifiable, Equatable, Sendable {
-    public enum App: String, Sendable { case live, macOS }
+    public enum App: String, Sendable { case live, macOS, hyne }
     /// Live/macOS shortcuts follow the character on the key, so ⌘Z is a different physical key on a German keyboard.
     public enum Key: Hashable, Sendable {
         case char(Character)
@@ -16,7 +16,7 @@ public struct KnownShortcut: Identifiable, Equatable, Sendable {
     public let key: Key
     public let modifiers: ModifierSet
 
-    init(_ app: App, _ section: String, _ title: String, _ key: Key, _ modifiers: ModifierSet) {
+    public init(_ app: App, _ section: String, _ title: String, _ key: Key, _ modifiers: ModifierSet) {
         self.app = app; self.section = section; self.title = title; self.key = key; self.modifiers = modifiers
     }
 
@@ -123,6 +123,19 @@ public enum KnownShortcuts {
     }
 
     public static var all: [KnownShortcut] { live + macOS }
+
+    /// The app's own shortcuts in the same form, for the keyboard overview (panel keys left out: they only
+    /// work while the panel is open).
+    public static func hyne(_ config: LauncherConfig) -> [KnownShortcut] {
+        let section = "HYNE ASM"
+        func s(_ title: String, _ c: KeyCombo) -> KnownShortcut { KnownShortcut(.hyne, section, title, .code(c.keyCode), c.modifiers) }
+        var list: [KnownShortcut] = []
+        if let c = config.shortcuts.closeFocused { list.append(s(Loc.t("Fokussiertes Plugin-Fenster schließen", "Close focused plugin window"), c)) }
+        list += config.shortcuts.closeAll.map { s(Loc.t("Alle Plugin-Fenster schließen", "Close all plugin windows"), $0) }
+        list += config.shortcuts.quickSearch.map { s(Loc.t("Schnellsuche öffnen", "Open quick search"), $0) }
+        list += config.itemShortcuts.map { s(Loc.t("„\($0.name)“ einfügen", "Insert “\($0.name)”"), $0.combo) }
+        return list
+    }
 
     public static func conflicts(with combo: KeyCombo, keyCode: (Character) -> UInt16?) -> [KnownShortcut] {
         all.filter { $0.matches(combo, keyCode: keyCode) }

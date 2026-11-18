@@ -1,4 +1,5 @@
 import AppKit
+import SwiftUI
 import HMLauncherCore
 
 @MainActor
@@ -28,6 +29,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 self?.settings.snapshot(to: URL(fileURLWithPath: path))
                 NSApp.terminate(nil)
             }
+        }
+        // Developer aid: HM_SNAPSHOT_KNOWN=<dir> saves the shortcut overview (plain and with a hovered shortcut), then quits.
+        if let dir = ProcessInfo.processInfo.environment["HM_SNAPSHOT_KNOWN"] {
+            let out = URL(fileURLWithPath: dir)
+            func render(_ name: String, hover: String?, then: @escaping () -> Void) {
+                KnownShortcutsSheet.debugHover = hover
+                let host = NSHostingView(rootView: KnownShortcutsSheet(config: model.config) {})
+                let w = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1180, height: 580), styleMask: [.borderless], backing: .buffered, defer: false)
+                w.contentView = host
+                w.appearance = NSAppearance(named: .darkAqua)
+                w.center()
+                w.orderFrontRegardless()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    if let rep = host.bitmapImageRepForCachingDisplay(in: host.bounds) {
+                        host.cacheDisplay(in: host.bounds, to: rep)
+                        try? rep.representation(using: .png, properties: [:])?.write(to: out.appendingPathComponent(name))
+                    }
+                    w.orderOut(nil)
+                    then()
+                }
+            }
+            let duplicate = KnownShortcuts.live.first { $0.title == Loc.t("Duplizieren", "Duplicate") }?.id
+            render("known.png", hover: nil) { render("known-hover.png", hover: duplicate) { NSApp.terminate(nil) } }
         }
         // Developer aid: HM_SNAPSHOT_PANEL=<dir> saves the panel (plain, typed filter) and the quick search, then quits.
         if let dir = ProcessInfo.processInfo.environment["HM_SNAPSHOT_PANEL"] {
