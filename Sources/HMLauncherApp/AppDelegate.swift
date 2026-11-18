@@ -59,6 +59,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             panel.hide()
             quickSearch.toggle()
             return true
+        case .nextProfile:
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.panel.hide()
+                self.model.config.switchToNextProfile()
+                self.model.showMessage(Loc.t("Profil: ", "Profile: ") + self.model.config.activeProfile.name)
+            }
+            return true
         }
     }
 

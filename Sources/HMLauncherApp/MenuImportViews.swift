@@ -398,15 +398,17 @@ struct VersionsPage: View {
     @State private var info: String?
 
     var body: some View {
-        PageContainer(title: Loc.t("Versionen", "Versions"),
-                      subtitle: Loc.t("Sichere dein Menü, spring zu einem älteren Stand zurück oder teile es als .hmlmenu-Datei.",
-                                      "Save your menu, go back to an earlier state or share it as an .hmlmenu file.")) {
+        PageContainer(title: Loc.t("Profile", "Profiles"),
+                      subtitle: Loc.t("Verschiedene Menüs für verschiedene Arbeit (z. B. Produktion und Mixing). Darunter: frühere Stände, Export und Import.",
+                                      "Different menus for different work (e.g. production and mixing). Below: earlier states, export and import.")) {
             HStack(spacing: DS.Space.s) {
                 Button { importFile() } label: { Label(Loc.t("Importieren …", "Import …"), systemImage: "square.and.arrow.down") }
                 Button { exportCurrent() } label: { Label(Loc.t("Exportieren …", "Export …"), systemImage: "square.and.arrow.up") }
             }
         } content: {
             VStack(alignment: .leading, spacing: DS.Space.xl) {
+                ProfilesCard(model: model)
+                SectionLabel(text: Loc.t("Verlauf des aktiven Profils", "History of the active profile")).padding(.top, DS.Space.s)
                 saveCard
                 VStack(alignment: .leading, spacing: DS.Space.s) {
                     HStack {

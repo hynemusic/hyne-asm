@@ -38,6 +38,11 @@ struct ShortcutsPage: View {
                         reset: { model.config.shortcuts.quickSearch = ShortcutSettings.default.quickSearch }) {
                     row(Loc.t("Schnellsuche öffnen", "Open quick search"), combos: $model.config.shortcuts.quickSearch, maxCount: 2, requireModifier: true)
                 }
+                section(Loc.t("Profile", "Profiles"), symbol: "person.2.crop.square.stack",
+                        note: Loc.t("Wechselt zum nächsten Profil (eigenes Menü). Standardmäßig aus.", "Switches to the next profile (its own menu). Off by default."),
+                        reset: { model.config.shortcuts.nextProfile = [] }) {
+                    row(Loc.t("Nächstes Profil", "Next profile"), combos: $model.config.shortcuts.nextProfile, maxCount: 2, requireModifier: true)
+                }
                 section(Loc.t("Im Panel", "In the Panel"), symbol: "rectangle.grid.1x2",
                         note: Loc.t("Fest: 1–9 fügen die Zeile ein, Tippen filtert, ⌫ löscht im Filter.", "Fixed: 1–9 insert that row, typing filters, ⌫ deletes in the filter."),
                         reset: { model.config.panelKeys = .default }) {

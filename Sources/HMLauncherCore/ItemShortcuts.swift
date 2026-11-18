@@ -33,6 +33,7 @@ public extension LauncherConfig {
         if shortcuts.closeFocused == combo { return Loc.t("Fokussiertes Plugin-Fenster schließen", "Close focused plugin window") }
         if shortcuts.closeAll.contains(combo) { return Loc.t("Alle Plugin-Fenster schließen", "Close all plugin windows") }
         if shortcuts.quickSearch.contains(combo) { return Loc.t("Schnellsuche öffnen", "Open quick search") }
+        if shortcuts.nextProfile.contains(combo) { return Loc.t("Nächstes Profil", "Next profile") }
         return itemShortcuts.first { $0.combo == combo && $0.id != itemID }?.name
     }
 }

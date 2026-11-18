@@ -99,6 +99,8 @@ public struct ShortcutSettings: Codable, Equatable, Sendable {
     public var closeAll: [KeyCombo]
     /// Opens the quick search window; empty = disabled.
     public var quickSearch: [KeyCombo]
+    /// Switches to the next profile; empty = disabled (the default).
+    public var nextProfile: [KeyCombo] = []
 
     public static let `default` = ShortcutSettings(
         closeFocused: KeyCombo(keyCode: 13, modifiers: [.cmd]),
@@ -118,6 +120,7 @@ public struct ShortcutSettings: Codable, Equatable, Sendable {
         closeFocused = try c.decodeIfPresent(KeyCombo.self, forKey: .closeFocused)
         closeAll = try c.decodeIfPresent([KeyCombo].self, forKey: .closeAll) ?? []
         quickSearch = try c.decodeIfPresent([KeyCombo].self, forKey: .quickSearch) ?? ShortcutSettings.default.quickSearch
+        nextProfile = try c.decodeIfPresent([KeyCombo].self, forKey: .nextProfile) ?? []
     }
 }
 
@@ -142,12 +145,16 @@ public struct LauncherConfig: Codable, Sendable {
     public var showRarelyUsed = true
     /// Entries the user chose to keep although they are rarely used.
     public var keptEntries: [UUID] = []
+    /// All profiles (named menus); the active one's menu is `categories`.
+    public var profiles: [Profile] = []
+    public var activeProfileID = UUID()
 
     public init(version: Int, categories: [Category], shortcuts: ShortcutSettings, panelKeys: PanelKeyBindings = .default) {
         self.version = version
         self.categories = categories
         self.shortcuts = shortcuts
         self.panelKeys = panelKeys
+        ensureProfile()
     }
 
     /// Fields added later decode with defaults, so older config files keep loading.
@@ -165,6 +172,9 @@ public struct LauncherConfig: Codable, Sendable {
         insert = (try? c.decodeIfPresent(InsertOptions.self, forKey: .insert)) ?? .default
         showRarelyUsed = try c.decodeIfPresent(Bool.self, forKey: .showRarelyUsed) ?? true
         keptEntries = try c.decodeIfPresent([UUID].self, forKey: .keptEntries) ?? []
+        profiles = try c.decodeIfPresent([Profile].self, forKey: .profiles) ?? []
+        activeProfileID = try c.decodeIfPresent(UUID.self, forKey: .activeProfileID) ?? UUID()
+        ensureProfile()
     }
 
     public static let currentVersion = 3

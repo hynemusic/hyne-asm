@@ -19,6 +19,9 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         statusLine.isEnabled = false
         menu.addItem(statusLine)
         menu.addItem(.separator())
+        profilesItem.submenu = NSMenu()
+        menu.addItem(profilesItem)
+        menu.addItem(.separator())
         menu.addItem(item({ Loc.t("Einstellungen …", "Settings …") }, #selector(openSettings), ","))
         menu.addItem(item({ Loc.t("Live-Script installieren …", "Install Live Script …") }, #selector(installScript)))
         menu.addItem(item({ Loc.t("Plugin-Liste neu laden", "Reload Plugin List") }, #selector(reload)))
@@ -51,13 +54,30 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         return image
     }
 
+    private let profilesItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
+
     func menuNeedsUpdate(_ menu: NSMenu) {
         for (item, title) in localized { item.title = title() }
+        // Profiles: the active one ticked; choosing another switches the menu.
+        profilesItem.title = Loc.t("Profil: ", "Profile: ") + model.config.activeProfile.name
+        profilesItem.submenu?.removeAllItems()
+        for profile in model.config.profiles {
+            let i = NSMenuItem(title: profile.name, action: #selector(switchProfile(_:)), keyEquivalent: "")
+            i.target = self
+            i.representedObject = profile.id
+            i.state = profile.id == model.config.activeProfileID ? .on : .off
+            profilesItem.submenu?.addItem(i)
+        }
         if model.isConnected {
             statusLine.title = Loc.t("Verbunden mit Live", "Connected to Live") + " \(model.liveVersion ?? "") · \(model.catalog.items.count) Plugins"
         } else {
             statusLine.title = Loc.t("Nicht mit Live verbunden", "Not connected to Live")
         }
+    }
+
+    @objc private func switchProfile(_ sender: NSMenuItem) {
+        guard let id = sender.representedObject as? UUID else { return }
+        model.config.switchProfile(to: id)
     }
 
     private func item(_ title: @escaping () -> String, _ action: Selector, _ key: String = "") -> NSMenuItem {

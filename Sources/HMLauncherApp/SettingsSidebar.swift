@@ -19,8 +19,8 @@ struct SettingsSidebar: View {
         [
             Item(id: 0, symbol: "square.grid.2x2", title: Loc.t("Bibliothek", "Library"),
                  subtitle: Loc.t("Plugins & Kategorien", "Plugins & categories")),
-            Item(id: 3, symbol: "clock.arrow.circlepath", title: Loc.t("Versionen", "Versions"),
-                 subtitle: Loc.t("Sichern & teilen", "Save & share")),
+            Item(id: 3, symbol: "person.2.crop.square.stack", title: Loc.t("Profile", "Profiles"),
+                 subtitle: Loc.t("Menüs wechseln & sichern", "Switch & save menus")),
             Item(id: 2, symbol: "square.and.arrow.down", title: Loc.t("LES-Import", "LES Import"),
                  subtitle: Loc.t("Aus menuconfig.ini", "From menuconfig.ini")),
             Item(id: 1, symbol: "command", title: Loc.t("Tastenkürzel", "Shortcuts"),

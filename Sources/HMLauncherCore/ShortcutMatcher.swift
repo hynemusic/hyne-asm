@@ -1,4 +1,4 @@
-public enum CloseShortcutAction: Equatable, Sendable { case closeFocused, closeAll, quickSearch }
+public enum CloseShortcutAction: Equatable, Sendable { case closeFocused, closeAll, quickSearch, nextProfile }
 
 /// Exact match on key code and modifiers (⌘⌥W is not ⌘W).
 public struct ShortcutMatcher {
@@ -11,6 +11,7 @@ public struct ShortcutMatcher {
         if settings.closeFocused == combo { return .closeFocused }
         if settings.closeAll.contains(combo) { return .closeAll }
         if settings.quickSearch.contains(combo) { return .quickSearch }
+        if settings.nextProfile.contains(combo) { return .nextProfile }
         return nil
     }
 }
