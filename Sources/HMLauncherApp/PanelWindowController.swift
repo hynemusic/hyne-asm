@@ -6,7 +6,10 @@ import HMLauncherCore
 final class PanelViewModel: ObservableObject {
     @Published var state: PanelState
     @Published var hovered: Int?
+    /// Favorites gets a star in the tab bar.
+    var favoritesID: UUID?
     init(state: PanelState) { self.state = state }
+    func isFavorites(_ id: UUID) -> Bool { id == favoritesID }
 }
 
 private final class LauncherPanel: NSPanel {
@@ -54,6 +57,13 @@ final class PanelWindowController {
         panel.contentView = FirstMouseHostingView(rootView: view)
     }
 
+    /// Developer aid: saves what the window shows as a PNG.
+    func snapshot(to url: URL) {
+        guard let view = panel.contentView, let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        try? rep.representation(using: .png, properties: [:])?.write(to: url)
+    }
+
     var isVisible: Bool { panel.isVisible }
 
     func contains(_ point: CGPoint) -> Bool {
@@ -62,6 +72,7 @@ final class PanelWindowController {
 
     func show(at point: CGPoint) {
         viewModel.state = PanelState(config: model.config, items: model.catalog.items, selectedTab: lastTab, usage: model.usage.counts)
+        viewModel.favoritesID = model.config.favoritesID
         viewModel.hovered = nil
         topLeft = point
         layout()
@@ -224,8 +235,10 @@ final class HUD {
         p.backgroundColor = .clear
         let box = NSView(frame: NSRect(origin: .zero, size: size))
         box.wantsLayer = true
-        box.layer?.backgroundColor = NSColor(white: 0.12, alpha: 0.92).cgColor
-        box.layer?.cornerRadius = 8
+        box.layer?.backgroundColor = NSColor(white: 0.115, alpha: 0.96).cgColor
+        box.layer?.cornerRadius = 10
+        box.layer?.borderWidth = 1
+        box.layer?.borderColor = NSColor(white: 1, alpha: 0.09).cgColor
         label.frame.origin = NSPoint(x: 14, y: (size.height - label.frame.height) / 2)
         box.addSubview(label)
         p.contentView = box
@@ -298,7 +311,7 @@ private struct FlyoutView: View {
         ScrollView(.vertical, showsIndicators: model.rows.count > PanelView.maxVisibleRows) {
             VStack(spacing: 4) {
                 if model.rows.isEmpty {
-                    Text(Loc.t("Leerer Ordner", "Empty folder")).font(.system(size: 12)).foregroundColor(.dimText)
+                    Text(Loc.t("Leerer Ordner", "Empty folder")).font(.system(size: 12)).foregroundColor(DS.textTertiary)
                         .frame(maxWidth: .infinity, minHeight: PanelView.rowHeight - 4)
                 }
                 ForEach(Array(model.rows.enumerated()), id: \.offset) { index, row in
@@ -315,7 +328,6 @@ private struct FlyoutView: View {
             }
         }
         .padding(PanelView.padding)
-        .background(Color.panelBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .modifier(PanelChrome())
     }
 }

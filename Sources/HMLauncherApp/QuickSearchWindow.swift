@@ -32,6 +32,13 @@ final class QuickSearchWindowController {
             onHover: { [weak self] in self?.viewModel.state?.highlight($0) }))
     }
 
+    /// Developer aid: saves what the window shows as a PNG.
+    func snapshot(to url: URL) {
+        guard let view = panel.contentView, let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        try? rep.representation(using: .png, properties: [:])?.write(to: url)
+    }
+
     var isVisible: Bool { panel.isVisible }
 
     func contains(_ point: CGPoint) -> Bool { panel.isVisible && panel.frame.contains(point) }
@@ -117,22 +124,27 @@ private struct QuickSearchView: View {
 
     var body: some View {
         let state = viewModel.state
+        let typing = !(state?.query ?? "").isEmpty
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                Image(systemName: "magnifyingglass").font(.system(size: 20, weight: .medium)).foregroundColor(.dimText)
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(typing ? .accent : DS.textTertiary)
                 if let q = state?.query, !q.isEmpty {
-                    (Text(q).foregroundColor(.white) + Text("▏").foregroundColor(.accent))
-                        .font(.system(size: 22))
+                    (Text(q).foregroundColor(DS.textPrimary) + Text("▏").foregroundColor(.accent))
+                        .font(.system(size: 21, weight: .medium))
                 } else {
-                    Text(Loc.t("Plugin suchen …", "Search plugins …")).font(.system(size: 22)).foregroundColor(.dimText)
+                    Text(Loc.t("Plugins und Presets suchen …", "Search plugins and presets …"))
+                        .font(.system(size: 21)).foregroundColor(DS.textTertiary)
                 }
                 Spacer()
-                Image(systemName: "pianokeys").foregroundColor(.dimText)
+                keyHint("↩", Loc.t("einfügen", "insert"))
+                keyHint("esc", Loc.t("schließen", "close"))
             }
             .padding(.horizontal, 18)
             .frame(height: QuickSearchWindowController.fieldHeight)
             if let results = state?.results, !results.isEmpty {
-                Divider().overlay(Color.white.opacity(0.08))
+                Rectangle().fill(Color.panelStroke).frame(height: 1)
                 ScrollViewReader { proxy in
                     ScrollView(.vertical, showsIndicators: results.count > QuickSearchWindowController.visibleResults) {
                         VStack(spacing: 4) {
@@ -146,9 +158,18 @@ private struct QuickSearchView: View {
                 }
             }
         }
-        .background(Color.panelBackground.opacity(0.97))
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.white.opacity(0.08)))
+        .modifier(PanelChrome(radius: 16))
+    }
+
+    private func keyHint(_ key: String, _ text: String) -> some View {
+        HStack(spacing: 5) {
+            Text(key)
+                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .foregroundColor(DS.textSecondary)
+                .padding(.horizontal, 5).frame(minWidth: 20, minHeight: 18)
+                .background(RoundedRectangle(cornerRadius: 5).fill(Color.white.opacity(0.07)))
+            Text(text).font(.system(size: 11)).foregroundColor(DS.textTertiary)
+        }
     }
 
     private func row(_ result: QuickResult, index: Int, highlighted: Bool) -> some View {
@@ -158,7 +179,12 @@ private struct QuickSearchView: View {
                         subtitle: result.place ?? Loc.t("Alle Plugins", "All plugins") + " · " + PluginGrouping.formatLabel(
                             PluginItem(uri: r.uri, name: r.name, source: r.source, path: r.path)),
                         active: highlighted, available: r.isAvailable, color: Color(label: r.colorID)) {
-                if highlighted { Text("↩").font(.system(size: 13, weight: .semibold)).foregroundColor(.dimText) }
+                if highlighted {
+                    Text("↩")
+                        .font(.system(size: 11, weight: .bold, design: .rounded)).foregroundColor(.white)
+                        .frame(width: 22, height: 20)
+                        .background(RoundedRectangle(cornerRadius: 5).fill(Color.accent))
+                }
             }
         }
         .buttonStyle(.plain)

@@ -29,6 +29,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 NSApp.terminate(nil)
             }
         }
+        // Developer aid: HM_SNAPSHOT_PANEL=<dir> saves the panel (plain, typed filter) and the quick search, then quits.
+        if let dir = ProcessInfo.processInfo.environment["HM_SNAPSHOT_PANEL"] {
+            let out = URL(fileURLWithPath: dir)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+                guard let self else { return }
+                let screen = NSScreen.main?.visibleFrame ?? .zero
+                self.panel.show(at: CGPoint(x: screen.midX - PanelView.width / 2, y: screen.maxY - 80))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    self.panel.snapshot(to: out.appendingPathComponent("panel.png"))
+                    for ch in "re" { _ = self.panel.handle(.character(ch)) }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                        self.panel.snapshot(to: out.appendingPathComponent("panel-filter.png"))
+                        self.panel.hide()
+                        self.quickSearch.show()
+                        for ch in "pro" { _ = self.quickSearch.handle(.character(ch)) }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                            self.quickSearch.snapshot(to: out.appendingPathComponent("quicksearch.png"))
+                            NSApp.terminate(nil)
+                        }
+                    }
+                }
+            }
+        }
 
         eventTap.onDoubleRightClick = { [weak self] point in self?.quickSearch.hide(); self?.panel.show(at: point) }
         // While the panel or the quick search is open, keys go to whichever is open.

@@ -24,37 +24,27 @@ struct PanelView: View {
             if let folder = viewModel.state.openFolderName {
                 Button(action: onCloseFolder) {
                     HStack(spacing: 6) {
-                        Image(systemName: "chevron.left").font(.system(size: 11, weight: .semibold))
-                        Text(categoryTitle).foregroundColor(.dimText)
-                        Text("/").foregroundColor(.dimText)
+                        Image(systemName: "chevron.left").font(.system(size: 10, weight: .bold)).foregroundColor(DS.textTertiary)
+                        Text(categoryTitle).foregroundColor(DS.textTertiary)
+                        Text("/").foregroundColor(DS.textTertiary)
                         Image(systemName: "folder.fill").foregroundColor(.accent)
-                        Text(folder).fontWeight(.semibold)
+                        Text(folder).fontWeight(.semibold).foregroundColor(DS.textPrimary)
                         Spacer()
+                        escHint
                     }
-                    .font(.system(size: 13))
-                    .foregroundColor(.white)
+                    .font(.system(size: 12.5))
                     .frame(height: Self.filterHeight)
-                    .padding(.horizontal, 10)
+                    .padding(.horizontal, 8)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .help(Loc.t("Zurück (Esc)", "Back (Esc)"))
             }
-            if !viewModel.state.filter.isEmpty {
-                HStack {
-                    Image(systemName: "magnifyingglass").foregroundColor(.dimText)
-                    Text(viewModel.state.filter).foregroundColor(.white)
-                    Spacer()
-                }
-                .font(.system(size: 13))
-                .frame(height: Self.filterHeight)
-                .padding(.horizontal, 10)
-            }
+            if !viewModel.state.filter.isEmpty { filterField }
             rowList
         }
         .padding(Self.padding)
-        .background(Color.panelBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .modifier(PanelChrome())
     }
 
     // MARK: Tabs
@@ -68,7 +58,7 @@ struct PanelView: View {
     }
 
     private var tabBar: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 2) {
             ForEach(visibleTabIndices, id: \.self) { i in tabButton(i) }
             Spacer(minLength: 0)
             let hidden = viewModel.state.tabs.indices.filter { !visibleTabIndices.contains($0) }
@@ -76,15 +66,18 @@ struct PanelView: View {
                 Menu {
                     ForEach(hidden, id: \.self) { i in Button(title(of: i)) { onSelectTab(i) } }
                 } label: {
-                    Text("⋯").font(.system(size: 15, weight: .semibold)).foregroundColor(.dimText)
+                    Image(systemName: "ellipsis").font(.system(size: 12, weight: .semibold)).foregroundColor(DS.textSecondary)
+                        .frame(width: 28, height: 24)
                 }
                 .menuStyle(.borderlessButton)
                 .menuIndicator(.hidden)
                 .fixedSize()
             }
         }
-        .padding(.horizontal, 6)
-        .frame(height: Self.tabBarHeight)
+        .padding(.horizontal, 2)
+        .frame(height: Self.tabBarHeight - 6)
+        .padding(.bottom, 6) // keeps tabBarHeight; the hairline sits in this gap
+        .overlay(alignment: .bottom) { Rectangle().fill(Color.panelStroke).frame(height: 1).padding(.bottom, 3) }
     }
 
     private func title(of index: Int) -> String {
@@ -96,12 +89,20 @@ struct PanelView: View {
     private func tabButton(_ index: Int) -> some View {
         let selected = index == viewModel.state.selectedTab
         return Button { onSelectTab(index) } label: {
-            VStack(spacing: 4) {
+            HStack(spacing: 5) {
+                if case .category(let id, _) = viewModel.state.tabs[index], viewModel.isFavorites(id) {
+                    Image(systemName: "star.fill").font(.system(size: 9.5)).foregroundColor(selected ? .accent : DS.textTertiary)
+                }
                 Text(title(of: index))
-                    .font(.system(size: 13, weight: selected ? .semibold : .regular))
-                    .foregroundColor(selected ? .white : .dimText)
+                    .font(.system(size: 12.5, weight: selected ? .semibold : .medium))
+                    .foregroundColor(selected ? DS.textPrimary : DS.textTertiary)
                     .lineLimit(1)
-                Rectangle().fill(selected ? Color.accent : .clear).frame(height: 2)
+            }
+            .padding(.horizontal, 10)
+            .frame(height: 26)
+            .background(RoundedRectangle(cornerRadius: 7).fill(selected ? Color.white.opacity(0.09) : .clear))
+            .overlay(alignment: .bottom) {
+                if selected { Capsule().fill(Color.accent).frame(width: 14, height: 2).offset(y: 1) }
             }
             .fixedSize()
             .contentShape(Rectangle())
@@ -119,9 +120,12 @@ struct PanelView: View {
             ScrollView(.vertical, showsIndicators: rows.count > PanelGrid.columns * Self.maxVisibleRows) {
                 VStack(spacing: 4) {
                     if rows.isEmpty {
-                        Text(viewModel.state.filter.isEmpty ? Loc.t("Keine Einträge – in den Einstellungen hinzufügen", "No entries – add some in Settings") : Loc.t("Nichts gefunden", "Nothing found"))
-                            .font(.system(size: 12)).foregroundColor(.dimText)
-                            .frame(maxWidth: .infinity, minHeight: Self.rowHeight - 4)
+                        HStack(spacing: 8) {
+                            Image(systemName: viewModel.state.filter.isEmpty ? "tray" : "magnifyingglass")
+                            Text(viewModel.state.filter.isEmpty ? Loc.t("Keine Einträge – in den Einstellungen hinzufügen", "No entries – add some in Settings") : Loc.t("Nichts gefunden", "Nothing found"))
+                        }
+                        .font(.system(size: 12)).foregroundColor(DS.textTertiary)
+                        .frame(maxWidth: .infinity, minHeight: Self.rowHeight - 4)
                     }
                     // Two columns of 10 (left first), category hits and "All plugins" hits as separate grids.
                     let firstGlobal = rows.firstIndex(where: \.isGlobal) ?? rows.count
@@ -159,14 +163,36 @@ struct PanelView: View {
     }
 
     private var globalHeader: some View {
-        HStack(spacing: 6) {
-            Image(systemName: "magnifyingglass").font(.system(size: 10))
-            Text(Loc.t("Alle Plugins", "All plugins")).font(.system(size: 11, weight: .semibold))
-            Rectangle().fill(Color.dimText.opacity(0.4)).frame(height: 1)
+        HStack(spacing: 8) {
+            SectionLabel(text: Loc.t("Alle Plugins & Presets", "All plugins & presets"))
+            Rectangle().fill(Color.panelStroke).frame(height: 1)
         }
-        .foregroundColor(.dimText)
-        .padding(.horizontal, 6)
+        .padding(.horizontal, 4)
         .frame(height: Self.globalHeaderHeight)
+    }
+
+    /// What has been typed so far, drawn like a search field. Height = `filterHeight`.
+    private var filterField: some View {
+        HStack(spacing: 7) {
+            Image(systemName: "magnifyingglass").font(.system(size: 11, weight: .semibold)).foregroundColor(.accent)
+            (Text(viewModel.state.filter).foregroundColor(DS.textPrimary) + Text("▏").foregroundColor(.accent))
+                .font(.system(size: 13, weight: .medium))
+            Spacer()
+            escHint
+        }
+        .padding(.horizontal, 9)
+        .frame(height: Self.filterHeight - 4)
+        .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(0.06)))
+        .overlay(RoundedRectangle(cornerRadius: 7).strokeBorder(Color.panelStroke))
+        .padding(.vertical, 2)
+    }
+
+    private var escHint: some View {
+        Text("esc")
+            .font(.system(size: 9.5, weight: .semibold, design: .rounded))
+            .foregroundColor(DS.textTertiary)
+            .padding(.horizontal, 5).frame(height: 15)
+            .background(RoundedRectangle(cornerRadius: 4).strokeBorder(Color.panelStroke))
     }
 
     private var categoryTitle: String {
@@ -180,8 +206,11 @@ struct PanelView: View {
             LauncherRow(number: index, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,
                         active: active, available: row.isAvailable, color: Color(label: row.colorID)) {
                 if row.folderID != nil {
-                    Text("\(row.childCount)").font(.system(size: 11)).foregroundColor(.dimText)
-                    Image(systemName: "chevron.right").font(.system(size: 11, weight: .semibold)).foregroundColor(.dimText)
+                    Text("\(row.childCount)")
+                        .font(.system(size: 10, weight: .semibold).monospacedDigit()).foregroundColor(DS.textSecondary)
+                        .padding(.horizontal, 6).padding(.vertical, 2)
+                        .background(Capsule().fill(Color.white.opacity(0.07)))
+                    Image(systemName: "chevron.right").font(.system(size: 10, weight: .bold)).foregroundColor(DS.textTertiary)
                 }
             }
             .opacity(row.isAvailable ? 1 : 0.5)

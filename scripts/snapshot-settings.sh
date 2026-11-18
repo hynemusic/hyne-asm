@@ -10,3 +10,5 @@ for page in 0 2 3 1; do
   HM_SETTINGS_PAGE=$page HM_SNAPSHOT="$OUT/page-$page.png" "$BIN" >/dev/null 2>&1 || true
 done
 ls "$OUT"
+HM_SNAPSHOT_PANEL="$OUT" "$BIN" >/dev/null 2>&1 || true
+ls "$OUT"

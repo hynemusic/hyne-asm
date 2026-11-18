@@ -18,7 +18,26 @@ extension Color {
     static let dimText = Color(white: 0.55)
 }
 
-/// One row as it appears in the panel: number, icon, title, accent bar when active.
+/// Surfaces of the floating panel, quick search and folder list.
+extension Color {
+    static let panelSurface = Color(white: 0.115)
+    static let panelRow = Color(white: 0.17)
+    static let panelStroke = Color.white.opacity(0.09)
+}
+
+/// Background, border and shadow shared by the panel, the quick search and the folder side list.
+struct PanelChrome: ViewModifier {
+    var radius: CGFloat = 12
+    func body(content: Content) -> some View {
+        content
+            .background(RoundedRectangle(cornerRadius: radius).fill(Color.panelSurface))
+            .clipShape(RoundedRectangle(cornerRadius: radius))
+            .overlay(RoundedRectangle(cornerRadius: radius).strokeBorder(Color.panelStroke))
+    }
+}
+
+/// One row as it appears in the panel: shortcut key, icon tile, title.
+/// Height 42 (+ 4 spacing = `PanelView.rowHeight`); the window layout relies on it.
 struct LauncherRow<Trailing: View>: View {
     let number: Int?
     let symbol: String
@@ -26,39 +45,49 @@ struct LauncherRow<Trailing: View>: View {
     var subtitle: String? = nil
     var active = false
     var available = true
-    /// Color label, drawn as a small bar at the left edge.
+    /// Color label: tints the icon tile.
     var color: Color? = nil
     @ViewBuilder var trailing: () -> Trailing
 
     var body: some View {
-        HStack(spacing: 12) {
-            Text(number.map { $0 < 9 ? "\($0 + 1)" : "" } ?? "")
-                .font(.system(size: 11)).foregroundColor(.dimText).frame(width: 12)
-            Image(systemName: symbol).font(.system(size: 15)).frame(width: 22)
+        HStack(spacing: 10) {
+            if let number { keyCap(number) }
+            iconTile
             VStack(alignment: .leading, spacing: 1) {
-                Text(title).font(.system(size: 15)).lineLimit(1)
+                Text(title).font(.system(size: 14, weight: .medium)).lineLimit(1)
                 if let subtitle {
-                    Text(subtitle).font(.system(size: 10)).foregroundColor(available ? .dimText : .orange).lineLimit(1)
+                    Text(subtitle).font(.system(size: 10.5))
+                        .foregroundColor(available ? DS.textTertiary : DS.warning).lineLimit(1)
                 }
             }
             Spacer(minLength: 4)
             trailing()
         }
-        .foregroundColor(available ? .white : .dimText)
-        .padding(.leading, 10)
-        .padding(.trailing, 8)
+        .foregroundColor(available ? DS.textPrimary : DS.textTertiary)
+        .padding(.leading, number == nil ? 7 : 6)
+        .padding(.trailing, 10)
         .frame(height: 42)
-        .background(active ? Color.rowHighlight : Color.rowBackground)
-        .overlay(alignment: .leading) {
-            if let color {
-                RoundedRectangle(cornerRadius: 2).fill(color).frame(width: 4, height: 24).padding(.leading, 4)
-            }
-        }
-        .overlay(alignment: .leading) {
-            if active { Rectangle().fill(Color.accent).frame(width: 3) }
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 5))
+        .background(RoundedRectangle(cornerRadius: 8).fill(active ? Color.brandBlue.opacity(0.32) : Color.panelRow))
+        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(active ? Color.brandBlue.opacity(0.75) : Color.white.opacity(0.04)))
         .contentShape(Rectangle())
+    }
+
+    /// 1–9 as a small key cap; rows from 10 on keep the slot empty so the icons stay aligned.
+    private func keyCap(_ index: Int) -> some View {
+        Text(index < 9 ? "\(index + 1)" : "")
+            .font(.system(size: 10.5, weight: .semibold, design: .rounded).monospacedDigit())
+            .foregroundColor(active ? .white : DS.textSecondary)
+            .frame(width: 18, height: 18)
+            .background(RoundedRectangle(cornerRadius: 5).fill(index < 9 ? (active ? Color.accent : Color.white.opacity(0.07)) : .clear))
+    }
+
+    private var iconTile: some View {
+        Image(systemName: symbol)
+            .font(.system(size: 13.5, weight: .medium))
+            .foregroundColor(color ?? (active ? .white : DS.textSecondary))
+            .frame(width: 30, height: 30)
+            .background(RoundedRectangle(cornerRadius: 7).fill((color ?? .white).opacity(color == nil ? 0.06 : 0.18)))
+            .overlay(RoundedRectangle(cornerRadius: 7).strokeBorder((color ?? .clear).opacity(0.35)))
     }
 }
 
