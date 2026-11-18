@@ -282,7 +282,7 @@ struct SettingsView: View {
             Button(Loc.t("Zu „\(category?.name ?? "")“ hinzufügen", "Add to “\(category?.name ?? "")”")) { add(item, to: categoryID) }
             if let others = variants[item.uri]?.variants.dropFirst(), !others.isEmpty {
                 ForEach(Array(others), id: \.uri) { v in
-                    Button(Loc.t("Als \(PluginGrouping.formatLabel(v)) hinzufügen", "Add as \(PluginGrouping.formatLabel(v))")) { add(v, to: categoryID) }
+                    Button(Loc.t("Als \(PluginVariants.label(v)) hinzufügen", "Add as \(PluginVariants.label(v))")) { add(v, to: categoryID) }
                 }
             }
             if categoryID != model.config.favoritesID {

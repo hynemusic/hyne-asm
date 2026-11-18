@@ -34,6 +34,8 @@ final class PanelWindowController {
     /// Tallest height since the panel opened. Switching to a shorter category (or filtering) never shrinks the
     /// panel while it is open, so the content doesn't jump away from the mouse.
     private var heightFloor: CGFloat = 0
+    /// Same for the width: one column grows to two while open, never back.
+    private var columnsFloor = 1
     private let flyout = FolderFlyout()
     private var flyoutFolder: UUID?
 
@@ -55,7 +57,12 @@ final class PanelWindowController {
                              onHoverRow: { [weak self] in self?.hovered($0) },
                              onSelectTab: { [weak self] in self?.selectTab($0) },
                              isFavorite: { [weak self] in self?.isFavorite($0) ?? false },
-                             onToggleFavorite: { [weak self] in self?.toggleFavorite($0) })
+                             onToggleFavorite: { [weak self] in self?.toggleFavorite($0) },
+                             alternatives: { [weak self] row in self?.model.searchIndex.alternatives(forKey: row.usageKey) ?? [] },
+                             onInsertVersion: { [weak self] row, version in
+                                 self?.hide()
+                                 self?.model.insert(uri: version.uri, usageKey: row.usageKey)
+                             })
         panel.contentView = FirstMouseHostingView(rootView: view)
     }
 
@@ -78,6 +85,7 @@ final class PanelWindowController {
         viewModel.hovered = nil
         topLeft = point
         heightFloor = 0
+        columnsFloor = 1
         layout()
         panel.orderFrontRegardless()
         outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
@@ -198,8 +206,10 @@ final class PanelWindowController {
         let needed = PanelView.tabBarHeight + filterHeight + visibleRows * PanelView.rowHeight + PanelView.padding * 2
         let height = max(needed, heightFloor)
         heightFloor = height
+        let columns = max(PanelGrid.columnsNeeded(local: all.count - globalCount, global: globalCount), columnsFloor)
+        columnsFloor = columns
         let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
-        var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: Self.width, height: height)
+        var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: PanelView.width(columns: columns), height: height)
         if let visible = screen?.visibleFrame {
             frame.origin.x = min(max(frame.minX, visible.minX), visible.maxX - frame.width)
             frame.origin.y = min(max(frame.minY, visible.minY), visible.maxY - frame.height)

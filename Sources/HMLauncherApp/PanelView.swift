@@ -17,6 +17,9 @@ struct PanelView: View {
     let onSelectTab: (Int) -> Void
     let isFavorite: (PanelRow) -> Bool
     let onToggleFavorite: (PanelRow) -> Void
+    /// Other versions of the row's plugin (Mono, other formats) and how to insert one.
+    var alternatives: (PanelRow) -> [PluginItem] = { _ in [] }
+    var onInsertVersion: (PanelRow, PluginItem) -> Void = { _, _ in }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -50,19 +53,32 @@ struct PanelView: View {
 
     // MARK: Tabs
 
-    private var visibleTabIndices: [Int] {
+    /// Up to `limit` tabs, the selected one always among them.
+    private func visibleTabIndices(_ limit: Int) -> [Int] {
         let count = viewModel.state.tabs.count
-        var shown = Array(0..<min(Self.maxVisibleTabs, count))
+        var shown = Array(0..<min(limit, count))
         let sel = viewModel.state.selectedTab
         if !shown.contains(sel) { shown[shown.count - 1] = sel }
         return shown
     }
 
+    /// As many tabs as fit the panel's width (one column is narrow); the rest go into the "⋯" menu.
     private var tabBar: some View {
+        ViewThatFits(in: .horizontal) {
+            ForEach(Array(stride(from: min(Self.maxVisibleTabs, viewModel.state.tabs.count), through: 1, by: -1)), id: \.self) { n in
+                tabRow(visibleTabIndices(n))
+            }
+        }
+        .frame(height: Self.tabBarHeight - 6)
+        .padding(.bottom, 6) // keeps tabBarHeight; the hairline sits in this gap
+        .overlay(alignment: .bottom) { Rectangle().fill(Color.panelStroke).frame(height: 1).padding(.bottom, 3) }
+    }
+
+    private func tabRow(_ shownTabs: [Int]) -> some View {
         HStack(spacing: 2) {
-            ForEach(visibleTabIndices, id: \.self) { i in tabButton(i) }
+            ForEach(shownTabs, id: \.self) { i in tabButton(i) }
             Spacer(minLength: 0)
-            let hidden = viewModel.state.tabs.indices.filter { !visibleTabIndices.contains($0) }
+            let hidden = viewModel.state.tabs.indices.filter { !shownTabs.contains($0) }
             if !hidden.isEmpty {
                 Menu {
                     ForEach(hidden, id: \.self) { i in Button(title(of: i)) { onSelectTab(i) } }
@@ -76,9 +92,6 @@ struct PanelView: View {
             }
         }
         .padding(.horizontal, 2)
-        .frame(height: Self.tabBarHeight - 6)
-        .padding(.bottom, 6) // keeps tabBarHeight; the hairline sits in this gap
-        .overlay(alignment: .bottom) { Rectangle().fill(Color.panelStroke).frame(height: 1).padding(.bottom, 3) }
     }
 
     private func title(of index: Int) -> String {
@@ -146,13 +159,18 @@ struct PanelView: View {
     static let globalHeaderHeight: CGFloat = 26
     static let columnWidth: CGFloat = 316
     static let columnSpacing: CGFloat = 6
-    static var width: CGFloat { columnWidth * CGFloat(PanelGrid.columns) + columnSpacing + padding * 2 }
+    static var width: CGFloat { width(columns: PanelGrid.columns) }
+    /// One column up to 10 entries, two beyond (`PanelGrid.columnsNeeded`).
+    static func width(columns: Int) -> CGFloat {
+        columnWidth * CGFloat(columns) + columnSpacing * CGFloat(columns - 1) + padding * 2
+    }
 
     private func grid(_ rows: [PanelRow], _ range: Range<Int>) -> some View {
-        VStack(spacing: 4) {
+        VStack(alignment: .leading, spacing: 4) {
             ForEach(Array(PanelGrid.blocks(range).enumerated()), id: \.offset) { _, block in
                 HStack(alignment: .top, spacing: Self.columnSpacing) {
-                    ForEach(Array(block.enumerated()), id: \.offset) { _, column in
+                    // Empty columns are left out, so a short category stays one column wide.
+                    ForEach(Array(block.filter { !$0.isEmpty }.enumerated()), id: \.offset) { _, column in
                         VStack(spacing: 4) {
                             ForEach(column, id: \.self) { index in rowView(rows[index], index: index).id(index) }
                         }
@@ -161,6 +179,7 @@ struct PanelView: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)   // a one-column section sits left in a two-column panel
     }
 
     private var globalHeader: some View {
@@ -226,7 +245,14 @@ struct PanelView: View {
         }
         .contextMenu {
             if row.folderID == nil {
-            Button(isFavorite(row) ? Loc.t("Aus Favoriten entfernen", "Remove from Favorites") : Loc.t("Zu Favoriten hinzufügen", "Add to Favorites")) { onToggleFavorite(row) }
+                Button(isFavorite(row) ? Loc.t("Aus Favoriten entfernen", "Remove from Favorites") : Loc.t("Zu Favoriten hinzufügen", "Add to Favorites")) { onToggleFavorite(row) }
+                let others = alternatives(row)
+                if !others.isEmpty {
+                    Divider()
+                    ForEach(others, id: \.uri) { v in
+                        Button(Loc.t("Als \(PluginVariants.label(v)) einfügen", "Insert as \(PluginVariants.label(v))")) { onInsertVersion(row, v) }
+                    }
+                }
             }
         }
         .help(row.isAvailable ? row.path.joined(separator: " / ") : Loc.t("Nicht mehr in Live gefunden", "No longer found in Live"))

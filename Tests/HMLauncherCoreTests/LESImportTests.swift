@@ -213,7 +213,7 @@ final class ImportDraftTests: XCTestCase {
         let effects = c.categories[1].entries
         XCTAssertEqual(effects.map(\.title), ["Fresh Air", "Kickstart", "Tools"]) // WIDE skipped, //Tools is a folder
         XCTAssertEqual(effects[1].name, "Kickstart 2")
-        XCTAssertEqual(effects[1].iconID, "drums")
+        XCTAssertEqual(effects[1].iconID, "sidechain")
         XCTAssertTrue(effects[2].isFolder)
         XCTAssertEqual(effects[2].children?.map(\.name), ["Utility"])
         XCTAssertEqual(c.categories[2].entries[0].title, "PROPHET V5")

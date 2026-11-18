@@ -28,3 +28,13 @@ final class PanelGridTests: XCTestCase {
         XCTAssertEqual(PanelGrid.blocks(3..<6), [[[3, 4, 5], []]])
     }
 }
+
+final class PanelGridColumnsTests: XCTestCase {
+    func testOneColumnUpToTenRowsTwoBeyond() {
+        XCTAssertEqual(PanelGrid.columnsNeeded(local: 4, global: 0), 1)
+        XCTAssertEqual(PanelGrid.columnsNeeded(local: 10, global: 0), 1)
+        XCTAssertEqual(PanelGrid.columnsNeeded(local: 11, global: 0), 2)
+        XCTAssertEqual(PanelGrid.columnsNeeded(local: 3, global: 12), 2)   // search hits spill into the second column
+        XCTAssertEqual(PanelGrid.columnsNeeded(local: 0, global: 0), 1)
+    }
+}

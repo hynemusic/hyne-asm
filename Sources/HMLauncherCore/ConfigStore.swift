@@ -54,7 +54,26 @@ public final class ConfigStore {
                 }
             }
         }
+        if config.version < 4 {
+            // v3 → v4: new icon kinds (amp, mic, repair, mastering …) for entries still on the generic icon,
+            // in folders and in every stored profile too.
+            config.categories = regessGeneric(config.categories)
+            for p in config.profiles.indices { config.profiles[p].categories = regessGeneric(config.profiles[p].categories) }
+        }
         config.version = LauncherConfig.currentVersion
+    }
+
+    private static func regessGeneric(_ categories: [Category]) -> [Category] {
+        func fix(_ e: Entry) -> Entry {
+            var e = e
+            if e.isFolder {
+                e.children = e.children?.map(fix)
+            } else if e.iconID == IconCatalog.defaultID, e.chain == nil, e.action == nil {
+                e.iconID = IconGuesser.guess(PluginItem(uri: e.uri, name: e.name, source: e.source, path: e.path))
+            }
+            return e
+        }
+        return categories.map { c in var c = c; c.entries = c.entries.map(fix); return c }
     }
 
     public func save(_ config: LauncherConfig) throws {

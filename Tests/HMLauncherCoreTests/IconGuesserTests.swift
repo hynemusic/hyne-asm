@@ -7,7 +7,7 @@ final class IconGuesserTests: XCTestCase {
     }
 
     func testPluginNames() {
-        XCTAssertEqual(guess("Kickstart 2"), "drums")
+        XCTAssertEqual(guess("Kickstart 2"), "sidechain")   // a sidechain-ducking plugin
         XCTAssertEqual(guess("Pro-L 2"), "limiter")
         XCTAssertEqual(guess("FabFilter Pro-Q 3"), "eq")
         XCTAssertEqual(guess("FabFilter Pro-C 2"), "compressor")
@@ -63,7 +63,7 @@ final class IconSyncTests: XCTestCase {
     func testAddEntryGuessesIcon() {
         var c = LauncherConfig.makeDefault()
         c.addEntry(item("Kickstart 2"), to: c.favoritesID)
-        XCTAssertEqual(c.categories[0].entries[0].iconID, "drums")
+        XCTAssertEqual(c.categories[0].entries[0].iconID, "sidechain")  // Kickstart ducks: sidechain
     }
 
     func testAddEntryReusesIconChosenElsewhere() {
@@ -94,7 +94,29 @@ final class IconSyncTests: XCTestCase {
         old.categories[0].entries[1].iconID = "heart"
         try ConfigStore(url: url).save(old)
         let loaded = ConfigStore(url: url).load()
-        XCTAssertEqual(loaded.version, 3)
+        XCTAssertEqual(loaded.version, LauncherConfig.currentVersion)
         XCTAssertEqual(loaded.categories[0].entries.map(\.iconID), ["compressor", "heart"])
+    }
+
+    /// v3 → v4: the new icon kinds reach entries still on the generic icon — also inside folders and in other profiles.
+    func testMigrationToV4RegessesGenericIconsEverywhere() throws {
+        let url = tempDir().appendingPathComponent("config.json")
+        var old = LauncherConfig.makeDefault()
+        old.version = 3
+        old.addEntry(item("soothe3", uri: "s"), to: old.favoritesID)
+        let folder = old.addFolder(named: "Mix", to: old.favoritesID)
+        old.addEntry(item("StandardCLIP", uri: "c"), to: old.favoritesID, folder: folder)
+        old.addEntry(item("Sidewidener II", uri: "w"), to: old.favoritesID)
+        old.categories[0].entries[0].iconID = IconCatalog.defaultID
+        old.categories[0].entries[1].children![0].iconID = IconCatalog.defaultID
+        old.categories[0].entries[2].iconID = "heart"                       // chosen by the user: stays
+        let other = old.addProfile(named: "Mixing", copyingCurrent: true)
+        try ConfigStore(url: url).save(old)
+        let loaded = ConfigStore(url: url).load()
+        XCTAssertEqual(loaded.version, 4)
+        XCTAssertEqual(loaded.categories[0].entries[0].iconID, "resonance")
+        XCTAssertEqual(loaded.categories[0].entries[1].children?[0].iconID, "limiter")
+        XCTAssertEqual(loaded.categories[0].entries[2].iconID, "heart")
+        XCTAssertEqual(loaded.profiles.first { $0.id == other }?.categories[0].entries[0].iconID, "resonance")
     }
 }

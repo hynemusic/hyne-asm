@@ -29,11 +29,32 @@ final class PluginVariantsTests: XCTestCase {
         XCTAssertEqual(prol.formats, ["VST3", "AU", "VST2"])
     }
 
-    func testWavesStereoAndMonoStaySeparateButMergeAcrossFormats() {
+    /// Mono/Stereo variants are one plugin: one row, Stereo VST3 inserted, the others kept as alternatives.
+    func testChannelVariantsMergeWithStereoPreferred() {
         let groups = PluginVariants.collapse(items)
-        XCTAssertEqual(group("cla-au-s", in: groups)?.preferred.uri, "cla-v3-s")
-        XCTAssertEqual(group("cla-au-m", in: groups)?.preferred.uri, "cla-v3-m")
-        XCTAssertNotEqual(group("cla-au-s", in: groups)?.preferred.uri, group("cla-au-m", in: groups)?.preferred.uri)
+        let cla = group("cla-au-m", in: groups)!
+        XCTAssertEqual(cla.preferred.uri, "cla-v3-s")
+        XCTAssertEqual(Set(cla.variants.map(\.uri)), ["cla-v3-s", "cla-au-s", "cla-v3-m", "cla-au-m"])
+        XCTAssertEqual(cla.formats, ["VST3", "AU"])
+        XCTAssertEqual(cla.channels, ["Stereo", "Mono"])
+    }
+
+    func testLibraryExamples() {
+        let lib = [
+            item("REDD17 Mono", uri: "r17m", path: ["VST3", "Waves"]), item("REDD17 Stereo", uri: "r17s", path: ["VST3", "Waves"]),
+            item("Reel ADT (m->s)", uri: "adt", path: ["VST3", "Waves"]),
+            item("Reel ADT Live Mono", uri: "adtlm", path: ["VST3", "Waves"]),
+            item("Reel ADT Live Mono/Stereo", uri: "adtlms", path: ["VST3", "Waves"]),
+            item("Reel ADT Live Stereo", uri: "adtls", path: ["VST3", "Waves"]),
+            item("Abbey Road Studio 3 (6->2)", uri: "ar62", path: ["VST3", "Waves"]),
+            item("Abbey Road Studio 3 (8->2)", uri: "ar82", path: ["VST3", "Waves"]),
+        ]
+        let groups = PluginVariants.collapse(lib)
+        XCTAssertEqual(groups.count, 4)   // REDD17 · Reel ADT · Reel ADT Live · Abbey Road Studio 3
+        XCTAssertEqual(group("r17m", in: groups)?.preferred.uri, "r17s")
+        XCTAssertEqual(group("adtlm", in: groups)?.preferred.uri, "adtls")
+        XCTAssertNotEqual(group("adt", in: groups)?.preferred.uri, group("adtls", in: groups)?.preferred.uri)  // "Live" is its own plugin
+        XCTAssertEqual(group("ar82", in: groups)?.variants.count, 2)
     }
 
     func testSingleFormatPluginsStay() {
@@ -48,15 +69,16 @@ final class PluginVariantsTests: XCTestCase {
     }
 
     func testCollapseCount() {
-        // Pro-L 2, CLA-76 mono, CLA-76 stereo, RX, Serum, Utility (Live), Utility (plugin)
-        XCTAssertEqual(PluginVariants.collapse(items).count, 7)
+        // Pro-L 2, CLA-76 (mono + stereo), RX, Serum, Utility (Live), Utility (plugin)
+        XCTAssertEqual(PluginVariants.collapse(items).count, 6)
     }
 
     func testKeyMatchesAcrossFormats() {
         let keys = PluginVariants.Keys(items)
         XCTAssertEqual(keys.key(items[0]), keys.key(items[1]))
         XCTAssertEqual(keys.key(items[5]), keys.key(items[7]))
-        XCTAssertNotEqual(keys.key(items[4]), keys.key(items[5]))
+        XCTAssertEqual(keys.key(items[4]), keys.key(items[5]))      // CLA-76 (m) and (s): one plugin
+        XCTAssertNotEqual(keys.key(items[0]), keys.key(items[4]))
     }
 }
 

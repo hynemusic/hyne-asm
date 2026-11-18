@@ -17,6 +17,11 @@ public enum PanelGrid {
         }
     }
 
+    /// Columns the panel needs: one while every section fits in a column of 10, else two.
+    public static func columnsNeeded(local: Int, global: Int) -> Int {
+        max(local, global) > rowsPerColumn ? columns : 1
+    }
+
     /// Visual row count of `count` items laid out this way.
     public static func rows(_ count: Int) -> Int {
         let blockSize = columns * rowsPerColumn

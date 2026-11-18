@@ -183,7 +183,7 @@ public struct LauncherConfig: Codable, Sendable {
         ensureProfile()
     }
 
-    public static let currentVersion = 3
+    public static let currentVersion = 4
 
     public static func makeDefault() -> LauncherConfig {
         LauncherConfig(

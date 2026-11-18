@@ -35,3 +35,25 @@ final class SearchIndexTests: XCTestCase {
         XCTAssertEqual(index.globalRows.first { $0.title == "Pro-Q 4" }?.iconID, "eq")
     }
 }
+
+final class SearchIndexAlternativesTests: XCTestCase {
+    func testAlternativesListTheOtherVersions() {
+        let items = [item("REDD17 Mono", uri: "m", path: ["VST3", "Waves"]), item("REDD17 Stereo", uri: "s", path: ["VST3", "Waves"]),
+                     item("Solo", uri: "x", path: ["VST3", "Y"])]
+        let index = SearchIndex(items: items, config: .makeDefault())
+        let row = index.globalRows.first { $0.uri == "s" }!
+        XCTAssertEqual(index.alternatives(forKey: row.usageKey).map(\.uri), ["m"])
+        XCTAssertTrue(index.alternatives(forKey: index.globalRows.first { $0.uri == "x" }!.usageKey).isEmpty)
+        XCTAssertEqual(PluginVariants.label(items[0]), "VST3 · Mono")
+    }
+}
+
+final class SearchIndexTitleTests: XCTestCase {
+    func testMergedChannelVersionsShowTheBaseName() {
+        let items = [item("REDD17 Mono", uri: "m", path: ["VST3", "Waves"]), item("REDD17 Stereo", uri: "s", path: ["VST3", "Waves"]),
+                     item("Lone Stereo", uri: "l", path: ["VST3", "Y"])]
+        let index = SearchIndex(items: items, config: .makeDefault())
+        XCTAssertEqual(index.globalRows.map(\.title).sorted(), ["Lone Stereo", "REDD17"])   // a single version keeps its full name
+        XCTAssertEqual(index.globalRows.first { $0.title == "REDD17" }?.uri, "s")
+    }
+}

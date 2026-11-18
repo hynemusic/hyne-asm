@@ -13,6 +13,8 @@ public final class SearchIndex: @unchecked Sendable {
     /// `Popularity.score` per global row (tie-break after the user's own counts).
     public let globalPopularity: [Int]
     private let rowIndexByKey: [String: Int]
+    /// Other versions of a plugin (formats, Mono/Stereo), for "Insert as …"; only for plugins that have some.
+    private let alternativesByKey: [String: [PluginItem]]
 
     public init(items: [PluginItem], config: LauncherConfig, newURIs: Set<String> = []) {
         resolver = EntryResolver.Index(items)
@@ -20,11 +22,18 @@ public final class SearchIndex: @unchecked Sendable {
         var usageKey: [String: String] = [:]
         for item in items { usageKey[item.uri] = keys.key(item) }
         self.usageKey = usageKey
-        let rows = PluginVariants.collapse(items).map(\.preferred)
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-            .map { item in
-                PanelRow(uri: item.uri, name: item.name, source: item.source, path: item.path,
-                         iconID: IconGuesser.guess(item), title: item.name, isAvailable: true,
+        let groups = PluginVariants.collapse(items)
+        var alternatives: [String: [PluginItem]] = [:]
+        for g in groups where g.variants.count > 1 { alternatives[keys.key(g.preferred)] = Array(g.variants.dropFirst()) }
+        alternativesByKey = alternatives
+        // Merged Mono/Stereo versions show the plain name ("REDD17"); a single version keeps its full name.
+        let titled = groups.map { g in (item: g.preferred, title: g.channels.isEmpty ? g.preferred.name : PluginVariants.channel(g.preferred.name).base) }
+        let rows = titled
+            .sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
+            .map { entry -> PanelRow in
+                let item = entry.item
+                return PanelRow(uri: item.uri, name: item.name, source: item.source, path: item.path,
+                         iconID: IconGuesser.guess(item), title: entry.title, isAvailable: true,
                          isGlobal: true, usageKey: keys.key(item), colorID: config.colorID(for: item),
                          isNew: newURIs.contains(item.uri))
             }
@@ -35,6 +44,8 @@ public final class SearchIndex: @unchecked Sendable {
         for (i, r) in rows.enumerated() where byKey[r.usageKey] == nil { byKey[r.usageKey] = i }
         rowIndexByKey = byKey
     }
+
+    public func alternatives(forKey key: String) -> [PluginItem] { alternativesByKey[key] ?? [] }
 
     public func globalRow(forKey key: String) -> PanelRow? {
         rowIndexByKey[key].map { globalRows[$0] }

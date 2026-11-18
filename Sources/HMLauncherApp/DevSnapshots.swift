@@ -58,6 +58,10 @@ extension AppDelegate {
                     self.panel.snapshot(to: out.appendingPathComponent("panel.png"))
                     for _ in 0..<3 { _ = self.panel.handle(.right) } // a shorter category: height must stay
                     self.panel.snapshot(to: out.appendingPathComponent("panel-short-tab.png"))
+                    // Opened fresh on the short category: one column wide.
+                    self.panel.hide()
+                    self.panel.show(at: CGPoint(x: screen.midX - PanelView.width / 2, y: screen.maxY - 80))
+                    self.panel.snapshot(to: out.appendingPathComponent("panel-short-fresh.png"))
                     _ = self.panel.handle(.right); _ = self.panel.handle(.right) // back towards Favorites
                     for ch in "re" { _ = self.panel.handle(.character(ch)) }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
