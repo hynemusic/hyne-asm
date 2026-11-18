@@ -55,8 +55,8 @@ struct SettingsView: View {
             Group {
                 switch page {
                 case 0: pluginsPage
-                case 2: LESImportPage(model: model, catalog: catalog, importer: importer, onDone: { page = 0 })
-                case 3: VersionsPage(model: model)
+                case 2: LESImportPage(model: model, catalog: catalog, importer: importer, onDone: { page = 0 }, onBack: { page = 3 })
+                case 3: VersionsPage(model: model, onOpenLESImport: { page = 2 })
                 case 4: StatsPage(model: model, catalog: catalog)
                 case 5: SearchTuningPage(model: model, catalog: catalog)
                 case 6: BehaviorPage(model: model, server: model.streamDeck)
@@ -72,6 +72,7 @@ struct SettingsView: View {
         .ignoresSafeArea()
         .themedColorScheme()
         .foregroundColor(DS.textPrimary)
+        .environment(\.locale, Loc.locale) // "1,455" in English even on a German Mac
     }
 
     private var pluginsPage: some View {
@@ -98,7 +99,7 @@ struct SettingsView: View {
             // Native split view: drag the dividers to give a column more room.
             HSplitView {
                 pluginBrowser.frame(minWidth: 260, idealWidth: 380, maxWidth: .infinity, maxHeight: .infinity).background(DS.surface)
-                categoryList.frame(minWidth: 180, idealWidth: 240, maxWidth: .infinity, maxHeight: .infinity).background(DS.surface)
+                categoryList.frame(minWidth: 150, idealWidth: 190, maxWidth: 340, maxHeight: .infinity).background(DS.surface)
                 // Darkest surface: the panel preview stands out like it does over Live.
                 entryList.frame(minWidth: 340, idealWidth: 560, maxWidth: .infinity, maxHeight: .infinity).background(DS.canvas)
             }

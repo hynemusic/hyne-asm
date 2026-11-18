@@ -104,8 +104,8 @@ struct StatsPage: View {
 
     private var tiles: some View {
         HStack(spacing: DS.Space.m) {
-            tile(Loc.t("Eingefügt", "Inserts"), "\(summary.total)", symbol: "plus.square.on.square")
-            tile(Loc.t("Verschiedene", "Different"), "\(summary.stats.count)", symbol: "square.stack.3d.up")
+            tile(Loc.t("Eingefügt", "Inserts"), Loc.number(summary.total), symbol: "plus.square.on.square")
+            tile(Loc.t("Verschiedene", "Different"), Loc.number(summary.stats.count), symbol: "square.stack.3d.up")
             tile(Loc.t("Meistgenutzt", "Most used"), summary.stats.first?.name ?? "–", symbol: "crown", small: true)
             tile(Loc.t("Anteil Top 10", "Top 10 share"), "\(Int((summary.topShare(10) * 100).rounded())) %", symbol: "chart.pie")
         }

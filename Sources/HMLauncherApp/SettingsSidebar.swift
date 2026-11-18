@@ -15,14 +15,31 @@ struct SettingsSidebar: View {
         let subtitle: String
     }
 
+    private struct Group: Identifiable {
+        let id: String
+        let title: String
+        let items: [Item]
+    }
+
+    /// Pages that open from another page (LES Import from Profiles) light up their parent.
+    private var highlighted: Int { page == 2 ? 3 : page }
+
+    private var groups: [Group] {
+        let byID = Dictionary(uniqueKeysWithValues: items.map { ($0.id, $0) })
+        func pick(_ ids: [Int]) -> [Item] { ids.compactMap { byID[$0] } }
+        return [
+            Group(id: "menu", title: Loc.t("Menü", "Menu"), items: pick([0, 3, 5])),
+            Group(id: "setup", title: Loc.t("Einrichtung", "Setup"), items: pick([1, 6])),
+            Group(id: "insights", title: Loc.t("Einblicke", "Insights"), items: pick([4])),
+        ]
+    }
+
     private var items: [Item] {
         [
             Item(id: 0, symbol: "square.grid.2x2", title: Loc.t("Bibliothek", "Library"),
                  subtitle: Loc.t("Plugins & Kategorien", "Plugins & categories")),
             Item(id: 3, symbol: "person.2.crop.square.stack", title: Loc.t("Profile", "Profiles"),
                  subtitle: Loc.t("Menüs wechseln & sichern", "Switch & save menus")),
-            Item(id: 2, symbol: "square.and.arrow.down", title: Loc.t("LES-Import", "LES Import"),
-                 subtitle: Loc.t("Aus menuconfig.ini", "From menuconfig.ini")),
             Item(id: 1, symbol: "command", title: Loc.t("Tastenkürzel", "Shortcuts"),
                  subtitle: Loc.t("Fenster, Suche, Panel", "Windows, search, panel")),
             Item(id: 6, symbol: "slider.horizontal.3", title: Loc.t("Verhalten", "Behavior"),
@@ -43,8 +60,19 @@ struct SettingsSidebar: View {
             if !Palette.current.logoColors.isEmpty {
                 LogoStripe(height: 3).padding(.horizontal, DS.Space.l).padding(.bottom, DS.Space.l)
             }
-            VStack(spacing: 2) {
-                ForEach(items) { item in navRow(item) }
+            VStack(alignment: .leading, spacing: DS.Space.l) {
+                ForEach(groups) { group in
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(group.title.uppercased())
+                            .font(DS.Font.caption.weight(.semibold))
+                            .tracking(0.6)
+                            .foregroundColor(DS.textTertiary)
+                            .padding(.horizontal, DS.Space.s)
+                            .padding(.bottom, 4)
+                            .accessibilityAddTraits(.isHeader)
+                        ForEach(group.items) { item in navRow(item) }
+                    }
+                }
             }
             .padding(.horizontal, DS.Space.s)
             Spacer()
@@ -68,7 +96,7 @@ struct SettingsSidebar: View {
     }
 
     private func navRow(_ item: Item) -> some View {
-        let selected = page == item.id
+        let selected = highlighted == item.id
         return Button { page = item.id } label: {
             HStack(spacing: 10) {
                 Image(systemName: item.symbol)
@@ -101,7 +129,7 @@ struct SettingsSidebar: View {
                     Text(model.isConnected ? Loc.t("Mit Live verbunden", "Connected to Live") : Loc.t("Live nicht verbunden", "Live not connected"))
                         .font(DS.Font.caption.weight(.medium)).foregroundColor(DS.textSecondary)
                     Text(model.isConnected
-                         ? "Live \(model.liveVersion ?? "") · \(pluginCount) " + Loc.t("Einträge", "items")
+                         ? "Live \(model.liveVersion ?? "") · \(Loc.number(pluginCount)) " + Loc.t("Einträge", "items")
                          : Loc.t("In Live ASMbridge wählen", "Select ASMbridge in Live"))
                         .font(DS.Font.caption).foregroundColor(DS.textTertiary).lineLimit(1)
                 }

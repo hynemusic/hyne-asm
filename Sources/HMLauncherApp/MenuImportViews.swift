@@ -24,6 +24,7 @@ struct LESImportPage: View {
     @ObservedObject var catalog: PluginCatalog
     @ObservedObject var importer: LESImportModel
     let onDone: () -> Void
+    var onBack: () -> Void = {}
     @State private var renaming: UUID?
     @State private var confirmReplace = false
 
@@ -32,12 +33,19 @@ struct LESImportPage: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
+            Button(action: onBack) {
+                Label(Loc.t("Profile", "Profiles"), systemImage: "chevron.left")
+                    .font(DS.Font.caption.weight(.medium)).foregroundColor(.accent)
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, DS.Space.xxl)
+            .padding(.top, 28)
             PageHeader(title: Loc.t("LES-Import", "LES Import"),
                        subtitle: Loc.t("Übernimm dein Menü aus Live Enhancement Suite. Du siehst vorher genau, was zugeordnet wird.",
                                        "Bring over your menu from Live Enhancement Suite. You see exactly what gets matched before anything changes."))
                 .padding(.horizontal, DS.Space.xxl)
-                .padding(.top, 40)
+                .padding(.top, DS.Space.s)
                 .padding(.bottom, DS.Space.l)
                 .hairline(.bottom)
             HStack(spacing: 0) {
@@ -393,6 +401,7 @@ private struct PluginPicker: View {
 
 struct VersionsPage: View {
     @ObservedObject var model: AppModel
+    var onOpenLESImport: () -> Void = {}
     @State private var name = ""
     @State private var restoring: MenuVersion?
     @State private var info: String?
@@ -408,6 +417,7 @@ struct VersionsPage: View {
         } content: {
             VStack(alignment: .leading, spacing: DS.Space.xl) {
                 ProfilesCard(model: model)
+                lesCard
                 SectionLabel(text: Loc.t("Verlauf (alle Profile) – Wiederherstellen ersetzt das aktive Profil", "History (all profiles) – restoring replaces the active profile")).padding(.top, DS.Space.s)
                 saveCard
                 VStack(alignment: .leading, spacing: DS.Space.s) {
@@ -445,6 +455,25 @@ struct VersionsPage: View {
         } message: {
             Text(Loc.t("Dein jetziges Menü wird vorher automatisch gesichert.", "Your current menu is saved automatically first."))
         }
+    }
+
+    /// LES Import lives here: it fills the active profile, so it belongs with profiles rather than in the sidebar.
+    private var lesCard: some View {
+        HStack(spacing: DS.Space.m) {
+            Image(systemName: "square.and.arrow.down")
+                .font(.system(size: 14)).foregroundColor(.accent)
+                .frame(width: 28, height: 28)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(Loc.t("Aus Live Enhancement Suite übernehmen", "Bring Over from Live Enhancement Suite"))
+                    .font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                Text(Loc.t("Liest menuconfig.ini und zeigt vorher, was zugeordnet wird.",
+                           "Reads menuconfig.ini and shows what gets matched before anything changes."))
+                    .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+            }
+            Spacer()
+            Button(Loc.t("LES-Import …", "LES Import …"), action: onOpenLESImport)
+        }
+        .dsCard(padding: DS.Space.m)
     }
 
     private var saveCard: some View {

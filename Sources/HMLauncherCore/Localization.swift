@@ -17,4 +17,11 @@ public enum Loc {
     public static func t(_ de: String, _ en: String) -> String {
         language == .de ? de : en
     }
+
+    /// Locale for numbers and dates, matching the UI language (an English UI on a German Mac shows "1,455").
+    public static var locale: Locale { Locale(identifier: language == .de ? "de_DE" : "en_US") }
+
+    public static func number(_ value: Int) -> String {
+        value.formatted(.number.locale(locale))
+    }
 }

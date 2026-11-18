@@ -34,4 +34,15 @@ final class LocalizationTests: XCTestCase {
         c.language = .en
         XCTAssertEqual(try JSONDecoder().decode(LauncherConfig.self, from: JSONEncoder().encode(c)).language, .en)
     }
+
+    func testNumbersFollowTheUILanguageNotTheSystemRegion() {
+        let saved = Loc.language
+        defer { Loc.language = saved }
+        Loc.language = .en
+        XCTAssertEqual(Loc.number(1455), "1,455")
+        XCTAssertTrue(Loc.locale.identifier.hasPrefix("en"))
+        Loc.language = .de
+        XCTAssertEqual(Loc.number(1455), "1.455")
+        XCTAssertTrue(Loc.locale.identifier.hasPrefix("de"))
+    }
 }
