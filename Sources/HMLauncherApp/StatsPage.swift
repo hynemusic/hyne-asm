@@ -13,6 +13,7 @@ struct StatsPage: View {
     @State private var pendingImport: [String: Int]?
     @State private var confirmReset = false
     @State private var info: String?
+    @State private var removing: UsageStat?
 
     var body: some View {
         PageContainer(title: Loc.t("Statistik", "Stats"),
@@ -49,6 +50,19 @@ struct StatsPage: View {
         } message: {
             Text(Loc.t("„Hinzufügen“ zählt beide zusammen. „Ersetzen“ sichert deine jetzigen Zahlen vorher als Backup.",
                        "“Add” sums both. “Replace” backs up your current numbers first."))
+        }
+        .confirmationDialog(Loc.t("„\(removing?.name ?? "")“ aus der Statistik entfernen?", "Remove “\(removing?.name ?? "")” from the stats?"),
+                            isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } })) {
+            Button(Loc.t("Entfernen", "Remove"), role: .destructive) {
+                if let stat = removing {
+                    model.usage.remove(stat.key)
+                    info = Loc.t("„\(stat.name)“ entfernt.", "Removed “\(stat.name)”.")
+                }
+                removing = nil
+            }
+        } message: {
+            Text(Loc.t("Sein Zähler (\(removing?.count ?? 0)×) wird gelöscht – in der Suche rutscht es dann nicht mehr nach oben. Das Plugin selbst bleibt.",
+                       "Its count (\(removing?.count ?? 0)×) is deleted, so it no longer moves up in search. The plugin itself stays."))
         }
         .confirmationDialog(Loc.t("Statistik zurücksetzen?", "Reset stats?"), isPresented: $confirmReset) {
             Button(Loc.t("Zurücksetzen", "Reset"), role: .destructive) { reset() }
@@ -223,6 +237,7 @@ struct StatsPage: View {
             .frame(width: 160, height: 6)
             Text(percent(stat.count)).font(DS.Font.caption.monospacedDigit()).foregroundColor(DS.textTertiary).frame(width: 40, alignment: .trailing)
             Text("\(stat.count)").font(DS.Font.bodyStrong.monospacedDigit()).foregroundColor(DS.textPrimary).frame(width: 40, alignment: .trailing)
+            IconButton(symbol: "xmark", help: Loc.t("Aus der Statistik entfernen", "Remove from stats")) { removing = stat }
         }
         .padding(.horizontal, DS.Space.m)
         .frame(height: 48)

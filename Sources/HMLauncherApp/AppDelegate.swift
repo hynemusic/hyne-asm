@@ -73,8 +73,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func handleShortcut(_ keyCode: UInt16, _ mods: ModifierSet) -> Bool {
-        guard let pid = monitor.livePID,
-              let action = ShortcutMatcher(settings: model.config.shortcuts).match(keyCode: keyCode, modifiers: mods) else { return false }
+        guard let pid = monitor.livePID else { return false }
+        guard let action = ShortcutMatcher(settings: model.config.shortcuts).match(keyCode: keyCode, modifiers: mods) else {
+            guard let item = ShortcutMatcher.itemShortcut(keyCode: keyCode, modifiers: mods, in: model.config.itemShortcuts) else { return false }
+            DispatchQueue.main.async { self.insert(item) } // outside the tap callback
+            return true
+        }
         switch action {
         case .closeFocused: return WindowCloser.closeFocused(pid: pid)
         case .closeAll:
@@ -85,6 +89,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             panel.hide()
             quickSearch.toggle()
             return true
+        }
+    }
+
+    private let hud = HUD()
+
+    /// A plugin shortcut: insert straight into the selected track (best format, like the panel).
+    private func insert(_ shortcut: ItemShortcut) {
+        let items = model.catalog.items
+        let target = items.first { $0.uri == shortcut.uri }
+            ?? PluginVariants.collapse(items.filter { $0.name == shortcut.name && $0.source == shortcut.source }).first?.preferred
+        guard let target else {
+            hud.show(Loc.t("„\(shortcut.name)“ nicht gefunden", "“\(shortcut.name)” not found"))
+            return
+        }
+        panel.hide()
+        quickSearch.hide()
+        let client = model.client, usage = model.usage, hud = self.hud
+        let key = PluginVariants.Keys(items).key(target)
+        Task { @MainActor in
+            do {
+                try await client.load(uri: target.uri)
+                usage.record(key)
+            } catch BridgeError.notConnected {
+                hud.show(Loc.t("Nicht mit Live verbunden", "Not connected to Live"))
+            } catch {
+                hud.show(Loc.t("Laden fehlgeschlagen", "Loading failed"))
+            }
         }
     }
 

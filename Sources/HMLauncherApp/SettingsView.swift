@@ -22,6 +22,8 @@ struct SettingsView: View {
     @State private var selectionAnchor: UUID?
     @State private var bulkIcons = false
     @State private var dropCategory: UUID?
+    /// Set by "Assign Shortcut …": the Shortcuts page opens with this plugin waiting for its keys.
+    @State private var shortcutRequest: PluginItem?
     /// Where a dragged category would land: in front of this category (nil id = end of the list).
     @State private var categoryMarker: CategoryMarker?
     /// Held without observing it: drag updates redraw only the rows (which observe it), not the whole window.
@@ -45,7 +47,8 @@ struct SettingsView: View {
                 case 2: LESImportPage(model: model, catalog: catalog, importer: importer, onDone: { page = 0 })
                 case 3: VersionsPage(model: model)
                 case 4: StatsPage(model: model, catalog: catalog)
-                default: ShortcutsPage(shortcuts: $model.config.shortcuts, panelKeys: $model.config.panelKeys)
+                case 5: SearchTuningPage(model: model, catalog: catalog)
+                default: ShortcutsPage(model: model, catalog: catalog, request: $shortcutRequest)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -201,6 +204,9 @@ struct SettingsView: View {
             if categoryID != model.config.favoritesID {
                 Button(Loc.t("Zu Favoriten hinzufügen", "Add to Favorites")) { add(item, to: model.config.favoritesID) }
             }
+            Divider()
+            Button(model.config.itemShortcut(for: item).map { Loc.t("Tastenkürzel ändern (\(KeyNames.describe($0.combo))) …", "Change Shortcut (\(KeyNames.describe($0.combo))) …") }
+                   ?? Loc.t("Tastenkürzel zuweisen …", "Assign Shortcut …")) { requestShortcut(item) }
         }
         .help(item.path.joined(separator: " / "))
     }
@@ -293,6 +299,11 @@ struct SettingsView: View {
         guard let id = CategoryDrag.id else { return }
         CategoryDrag.id = nil
         model.config.moveCategory(id, before: anchor)
+    }
+
+    private func requestShortcut(_ item: PluginItem) {
+        shortcutRequest = item
+        page = 1
     }
 
     private func startRenaming(_ id: UUID) {
@@ -613,7 +624,10 @@ struct SettingsView: View {
             onColor: { color in multi ? setColorForSelection(color) : model.config.setColor(color, entry: entry.id, in: category.id) },
             onRuleColor: { model.config.setColorRule($1, for: $0) },
             onDissolve: { model.config.dissolveFolder(entry.id, in: category.id) },
-            drop: dropState)
+            drop: dropState,
+            onShortcut: entry.isFolder ? nil : { requestShortcut(catalog.index.resolve(entry) ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)) },
+            shortcutLabel: entry.isFolder ? nil : model.config.itemShortcut(for: catalog.index.resolve(entry)
+                ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)).map { KeyNames.describe($0.combo) })
     }
 
     private func header(_ title: String) -> some View {
@@ -759,6 +773,9 @@ private struct EntryRow: View {
     let onRuleColor: (ColorRule, String?) -> Void
     let onDissolve: () -> Void
     @ObservedObject var drop: DropState
+    /// "Shortcut …": opens the Shortcuts page with this plugin ready to record.
+    var onShortcut: (() -> Void)? = nil
+    var shortcutLabel: String? = nil
     private var dropSpot: DropSpot? { drop.marker?.id == entry.id ? drop.marker?.spot : nil }
     @State private var showIcons = false
     @State private var renaming = false
@@ -860,6 +877,9 @@ private struct EntryRow: View {
         } else {
             Button(Loc.t("Anzeigename ändern …", "Change Display Name …")) { name = entry.displayName ?? entry.name; renaming = true }
             if entry.displayName != nil { Button(Loc.t("Originalnamen verwenden", "Use Original Name")) { onName(nil) } }
+            if let onShortcut {
+                Button(shortcutLabel.map { Loc.t("Tastenkürzel ändern (\($0)) …", "Change Shortcut (\($0)) …") } ?? Loc.t("Tastenkürzel zuweisen …", "Assign Shortcut …"), action: onShortcut)
+            }
             Divider()
             let targets = folders
             if !targets.isEmpty {
@@ -926,8 +946,10 @@ private struct IconPicker: View {
 // MARK: - Shortcuts
 
 struct ShortcutsPage: View {
-    @Binding var shortcuts: ShortcutSettings
-    @Binding var panelKeys: PanelKeyBindings
+    @ObservedObject var model: AppModel
+    @ObservedObject var catalog: PluginCatalog
+    @Binding var request: PluginItem?
+    @State private var picking = false
 
     var body: some View {
         PageContainer(title: Loc.t("Tastenkürzel", "Shortcuts"),
@@ -937,44 +959,115 @@ struct ShortcutsPage: View {
             VStack(alignment: .leading, spacing: DS.Space.xl) {
                 section(Loc.t("Plugin-Fenster", "Plugin Windows"), symbol: "macwindow.on.rectangle",
                         note: Loc.t("Kürzel brauchen ⌘, ⌃ oder ⌥.", "Shortcuts need ⌘, ⌃ or ⌥."),
-                        reset: { shortcuts = .default }) {
+                        reset: { model.config.shortcuts = .default }) {
                     row(Loc.t("Fokussiertes Plugin-Fenster schließen", "Close focused plugin window"),
-                        combos: Binding(get: { shortcuts.closeFocused.map { [$0] } ?? [] },
-                                        set: { shortcuts.closeFocused = $0.last }),
+                        combos: Binding(get: { model.config.shortcuts.closeFocused.map { [$0] } ?? [] },
+                                        set: { model.config.shortcuts.closeFocused = $0.last }),
                         maxCount: 1, requireModifier: true)
                     divider
-                    row(Loc.t("Alle Plugin-Fenster schließen", "Close all plugin windows"), combos: $shortcuts.closeAll, maxCount: 4, requireModifier: true)
+                    row(Loc.t("Alle Plugin-Fenster schließen", "Close all plugin windows"), combos: $model.config.shortcuts.closeAll, maxCount: 4, requireModifier: true)
                 }
                 section(Loc.t("Schnellsuche", "Quick Search"), symbol: "magnifyingglass",
                         note: Loc.t("Öffnet das Suchfenster in der Bildschirmmitte. macOS nutzt ⌃Leertaste evtl. für den Sprachwechsel.",
                                     "Opens the search window in the middle of the screen. macOS may use ⌃Space for switching input languages."),
-                        reset: { shortcuts.quickSearch = ShortcutSettings.default.quickSearch }) {
-                    row(Loc.t("Schnellsuche öffnen", "Open quick search"), combos: $shortcuts.quickSearch, maxCount: 2, requireModifier: true)
+                        reset: { model.config.shortcuts.quickSearch = ShortcutSettings.default.quickSearch }) {
+                    row(Loc.t("Schnellsuche öffnen", "Open quick search"), combos: $model.config.shortcuts.quickSearch, maxCount: 2, requireModifier: true)
                 }
                 section(Loc.t("Im Panel", "In the Panel"), symbol: "rectangle.grid.1x2",
                         note: Loc.t("Fest: 1–9 fügen die Zeile ein, Tippen filtert, ⌫ löscht im Filter.", "Fixed: 1–9 insert that row, typing filters, ⌫ deletes in the filter."),
-                        reset: { panelKeys = .default }) {
+                        reset: { model.config.panelKeys = .default }) {
                     ForEach(Array(PanelKeyAction.allCases.enumerated()), id: \.element) { i, action in
                         if i > 0 { divider }
-                        row(action.label, combos: Binding(get: { panelKeys[action] }, set: { panelKeys[action] = $0 }),
+                        row(action.label, combos: Binding(get: { model.config.panelKeys[action] }, set: { model.config.panelKeys[action] = $0 }),
                             maxCount: 4, requireModifier: false)
                     }
                 }
+                pluginShortcutsSection
             }
             .padding(.bottom, DS.Space.l)
         }
     }
 
+    // MARK: Plugin shortcuts
+
+    private var pluginShortcutsSection: some View {
+        section(Loc.t("Plugin-Kürzel", "Plugin Shortcuts"), symbol: "bolt",
+                note: Loc.t("Fügt ein Plugin, Rack oder Preset sofort in die ausgewählte Spur ein – ganz ohne Panel. Kürzel brauchen ⌘, ⌃ oder ⌥.",
+                            "Inserts a plugin, rack or preset straight into the selected track – no panel needed. Shortcuts need ⌘, ⌃ or ⌥."),
+                resetTitle: Loc.t("Kürzel hinzufügen …", "Add Shortcut …"), reset: { picking = true }) {
+            if let pending = request {
+                itemRow(pending, combo: nil, id: nil, pending: true)
+                if !model.config.itemShortcuts.isEmpty { divider }
+            }
+            ForEach(Array(model.config.itemShortcuts.enumerated()), id: \.element.id) { i, shortcut in
+                if i > 0 { divider }
+                itemRow(shortcut.item, combo: shortcut.combo, id: shortcut.id, pending: false)
+            }
+            if request == nil && model.config.itemShortcuts.isEmpty {
+                Text(Loc.t("Noch keine. Klick oben auf „Kürzel hinzufügen …“ oder in der Bibliothek per Rechtsklick „Tastenkürzel zuweisen …“.",
+                           "None yet. Click “Add Shortcut …” above, or right-click a plugin in the Library and choose “Assign Shortcut …”."))
+                    .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(DS.Space.l)
+            }
+        }
+        .popover(isPresented: $picking, arrowEdge: .top) {
+            ItemPicker(items: catalog.items, title: Loc.t("Kürzel für …", "Shortcut for …")) { item in
+                request = item
+                picking = false
+            }
+        }
+    }
+
+    private func itemRow(_ item: PluginItem, combo: KeyCombo?, id: UUID?, pending: Bool) -> some View {
+        let owner = combo.flatMap { model.config.shortcutOwner(of: $0, ignoring: id) }
+        let resolved = catalog.items.first { $0.uri == item.uri } ?? catalog.items.first { $0.name == item.name && $0.source == item.source }
+        return HStack(spacing: DS.Space.s) {
+            Image(systemName: IconCatalog.symbolName(for: IconGuesser.guess(resolved ?? item)))
+                .font(.system(size: 12)).foregroundColor(DS.textSecondary)
+                .frame(width: 26, height: 26)
+                .background(RoundedRectangle(cornerRadius: 6).fill(DS.raised))
+            VStack(alignment: .leading, spacing: 1) {
+                Text(item.name).font(DS.Font.body).foregroundColor(DS.textPrimary).lineLimit(1)
+                if let owner {
+                    Label(Loc.t("Auch belegt: \(owner)", "Also used by: \(owner)"), systemImage: "exclamationmark.triangle.fill")
+                        .font(.system(size: 10.5)).foregroundColor(DS.warning)
+                } else if pending {
+                    Text(Loc.t("Klick auf + und drück die Tasten", "Click + and press the keys")).font(.system(size: 10.5)).foregroundColor(.accent)
+                } else if resolved == nil, !catalog.items.isEmpty {
+                    Text(Loc.t("Nicht mehr in Live gefunden", "No longer found in Live")).font(.system(size: 10.5)).foregroundColor(DS.warning)
+                } else {
+                    Text(UsageKind(item.source).title).font(.system(size: 10.5)).foregroundColor(DS.textTertiary)
+                }
+            }
+            Spacer(minLength: DS.Space.l)
+            KeyRecorder(combo: combo, requireModifier: true,
+                        onChange: { newCombo in
+                            model.config.setItemShortcut(newCombo, for: item)
+                            if pending { request = nil }
+                        },
+                        onRemove: combo == nil ? nil : { model.config.setItemShortcut(nil, for: item) })
+            if pending {
+                IconButton(symbol: "xmark", help: Loc.t("Abbrechen", "Cancel")) { request = nil }
+            }
+        }
+        .padding(.horizontal, DS.Space.l)
+        .frame(height: 48)
+        .background(pending ? Color.accent.opacity(0.07) : .clear)
+    }
+
     private var divider: some View { Rectangle().fill(DS.hairline).frame(height: 1).padding(.leading, DS.Space.l) }
 
-    private func section<Content: View>(_ title: String, symbol: String, note: String, reset: @escaping () -> Void,
+    private func section<Content: View>(_ title: String, symbol: String, note: String,
+                                        resetTitle: String = Loc.t("Standard wiederherstellen", "Restore Defaults"),
+                                        reset: @escaping () -> Void,
                                         @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: DS.Space.s) {
             HStack(alignment: .firstTextBaseline) {
                 Label { Text(title).font(.system(size: 15, weight: .semibold)).foregroundColor(DS.textPrimary) }
                     icon: { Image(systemName: symbol).foregroundColor(.accent) }
                 Spacer()
-                Button(Loc.t("Standard wiederherstellen", "Restore Defaults"), action: reset)
+                Button(resetTitle, action: reset)
                     .buttonStyle(.borderless).font(DS.Font.caption).foregroundColor(DS.textSecondary)
             }
             Text(note).font(DS.Font.caption).foregroundColor(DS.textTertiary)

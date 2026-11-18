@@ -116,6 +116,10 @@ public struct LauncherConfig: Codable, Sendable {
     public var language: Language?
     /// Color rules by `ColorRule.key` (Live devices, a manufacturer) → `ColorPalette` id.
     public var colorRules: [String: String] = [:]
+    /// Pinned / hidden search results per search term.
+    public var searchRules: [SearchRule] = []
+    /// Key combinations that insert a single plugin, rack or preset.
+    public var itemShortcuts: [ItemShortcut] = []
 
     public init(version: Int, categories: [Category], shortcuts: ShortcutSettings, panelKeys: PanelKeyBindings = .default) {
         self.version = version
@@ -133,6 +137,8 @@ public struct LauncherConfig: Codable, Sendable {
         panelKeys = try c.decodeIfPresent(PanelKeyBindings.self, forKey: .panelKeys) ?? .default
         language = try c.decodeIfPresent(Language.self, forKey: .language)
         colorRules = try c.decodeIfPresent([String: String].self, forKey: .colorRules) ?? [:]
+        searchRules = try c.decodeIfPresent([SearchRule].self, forKey: .searchRules) ?? []
+        itemShortcuts = try c.decodeIfPresent([ItemShortcut].self, forKey: .itemShortcuts) ?? []
     }
 
     public static let currentVersion = 3

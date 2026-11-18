@@ -16,9 +16,11 @@ public struct QuickSearch {
     private let global: [(row: PanelRow, prepared: SearchMatcher.Prepared)]
     private let favorites: [QuickResult]
     private let usage: [String: Int]
+    private let rules: [SearchRule]
 
     public init(config: LauncherConfig, items: [PluginItem], usage: [String: Int]) {
         self.usage = usage
+        rules = config.searchRules
         let index = EntryResolver.Index(items)
         let keys = PluginVariants.Keys(items)
         let byURI = Dictionary(items.map { ($0.uri, $0) }, uniquingKeysWith: { a, _ in a })
@@ -74,7 +76,12 @@ public struct QuickSearch {
             .compactMap { g in SearchMatcher.score(g.prepared, q).map { (g.row, $0) } }
             .sorted { a, b in a.1 != b.1 ? a.1 > b.1 : uses(a.0) > uses(b.0) }
             .map { QuickResult(row: $0.0, place: nil) }
-        return Array((localHits + globalHits).prefix(Self.maxResults))
+        // The user's search rules: hidden results go, pinned ones lead (even if their name doesn't match).
+        let shaped = SearchTuning.apply(localHits + globalHits, key: \.row.usageKey, rule: SearchTuning.rule(for: query, in: rules)) { key in
+            if let l = local.first(where: { $0.row.usageKey == key }) { return QuickResult(row: l.row, place: l.place) }
+            return global.first { $0.row.usageKey == key }.map { QuickResult(row: $0.row, place: nil) }
+        }
+        return Array(shaped.prefix(Self.maxResults))
     }
 
     /// Most used plugins first; without any history, the Favorites.

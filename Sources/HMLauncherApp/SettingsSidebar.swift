@@ -25,6 +25,8 @@ struct SettingsSidebar: View {
                  subtitle: Loc.t("menuconfig.ini übernehmen", "Bring over menuconfig.ini")),
             Item(id: 1, symbol: "command", title: Loc.t("Tastenkürzel", "Shortcuts"),
                  subtitle: Loc.t("Fenster, Suche, Panel", "Windows, search, panel")),
+            Item(id: 5, symbol: "text.magnifyingglass", title: Loc.t("Suche formen", "Shape Search"),
+                 subtitle: Loc.t("Anpinnen & ausblenden", "Pin & hide results")),
             Item(id: 4, symbol: "chart.bar.xaxis", title: Loc.t("Statistik", "Stats"),
                  subtitle: Loc.t("Was du am meisten nutzt", "What you use most")),
         ]

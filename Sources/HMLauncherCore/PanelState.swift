@@ -85,13 +85,21 @@ public struct PanelState {
         }
         guard !filter.isEmpty else { return candidates }
         let query = SearchMatcher.Prepared(filter)
-        let local = candidates.enumerated()
+        let rule = SearchTuning.rule(for: filter, in: config.searchRules)
+        let ranked = candidates.enumerated()
             .compactMap { i, r in SearchMatcher.score(SearchMatcher.Prepared(r.title), query).map { (r, $0, i) } }
             .sorted { a, b in
                 a.1 != b.1 ? a.1 > b.1 : (uses(a.0) != uses(b.0) ? uses(a.0) > uses(b.0) : a.2 < b.2)
             }
             .map(\.0)
-        return local + globalMatches(excluding: Set(local.map(\.usageKey)), limit: Self.maxGlobalResults, markGlobal: true)
+        // The user's search rules: hidden results go, pinned ones lead (in the category part and in "all plugins").
+        let local = SearchTuning.apply(ranked, key: \.usageKey, rule: rule)
+        let excluded = Set(local.map(\.usageKey)).union(rule?.hidden ?? [])
+        let global = SearchTuning.apply(globalMatches(excluding: excluded, limit: Self.maxGlobalResults, markGlobal: true),
+                                        key: \.usageKey, rule: rule) { key in
+            excluded.contains(key) ? nil : allRows.first { $0.usageKey == key }.map(Self.markedGlobal)
+        }
+        return local + global
     }
 
     public static let maxGlobalResults = 50
@@ -106,14 +114,14 @@ public struct PanelState {
             if let score = SearchMatcher.score(allPrepared[i], query) { hits.append((r, score)) }
         }
         hits.sort { a, b in a.score != b.score ? a.score > b.score : uses(a.row) > uses(b.row) } // stable: alphabetical
-        return hits.prefix(limit ?? hits.count).map { hit in
-            var g = hit.row
-            if markGlobal {
-                g.isGlobal = true
-                g.iconID = IconGuesser.guess(PluginItem(uri: g.uri, name: g.name, source: g.source, path: g.path))
-            }
-            return g
-        }
+        return hits.prefix(limit ?? hits.count).map { markGlobal ? Self.markedGlobal($0.row) : $0.row }
+    }
+
+    private static func markedGlobal(_ row: PanelRow) -> PanelRow {
+        var g = row
+        g.isGlobal = true
+        g.iconID = IconGuesser.guess(PluginItem(uri: g.uri, name: g.name, source: g.source, path: g.path))
+        return g
     }
 
     /// The plugins of a folder in the current category, for the side list that opens on hover.

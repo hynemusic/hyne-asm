@@ -18,7 +18,7 @@ public struct UsageStat: Identifiable, Equatable, Sendable {
 public enum UsageKind: String, CaseIterable, Sendable {
     case plugins, live, maxForLive, presets
 
-    init(_ source: ItemSource) {
+    public init(_ source: ItemSource) {
         switch source {
         case .plugins: self = .plugins
         case .instruments, .audioEffects, .midiEffects: self = .live
@@ -103,7 +103,7 @@ public enum UsageStats {
     }
 
     /// "plugins|serum 2" → "Serum 2".
-    static func readableName(_ key: String) -> String {
+    public static func readableName(_ key: String) -> String {
         let name = key.split(separator: "|", maxSplits: 1).last.map(String.init) ?? key
         return name.split(separator: " ").map { $0.prefix(1).uppercased() + $0.dropFirst() }.joined(separator: " ")
     }

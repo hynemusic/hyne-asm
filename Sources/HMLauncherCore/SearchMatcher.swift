@@ -100,6 +100,12 @@ public final class UsageStore {
 
     public func reset() { replaceAll([:]) }
 
+    /// Forgets one plugin's count (Stats page), so it no longer ranks higher in search.
+    public func remove(_ key: String) {
+        counts[key] = nil
+        save()
+    }
+
     private func save() {
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? JSONEncoder().encode(counts).write(to: url, options: .atomic)
