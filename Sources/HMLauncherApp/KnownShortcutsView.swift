@@ -213,7 +213,7 @@ struct KnownShortcutsSheet: View {
         .padding(DS.Space.xl)
         .frame(width: 1180, height: 580)
         .background(DS.canvas)
-        .preferredColorScheme(.dark)
+        .themedColorScheme()
     }
 
     private var header: some View {
@@ -264,7 +264,7 @@ struct KnownShortcutsSheet: View {
             }
         }
         .padding(DS.Space.m)
-        .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(Color(white: 0.075)))
+        .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(Palette.current.keyboardBase))
         .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
     }
 
@@ -330,7 +330,7 @@ struct KnownShortcutsSheet: View {
 private func appColor(_ app: KnownShortcut.App) -> Color {
     switch app {
     case .live: return .brandCoral
-    case .macOS: return Color(white: 0.75)
+    case .macOS: return DS.textTertiary
     case .hyne: return .brandBlue
     }
 }
@@ -367,11 +367,11 @@ private struct KeyCap: View, Equatable {
         let h = short ? unit * 0.62 : unit
         return ZStack(alignment: .topLeading) {
             RoundedRectangle(cornerRadius: 6)
-                .fill(lit ? Color.brandBlue : (filterOn ? Color.brandBlue.opacity(0.4) : Color(white: 0.2)))
-                .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(lit ? Color.white.opacity(0.35) : Color.white.opacity(0.06)))
+                .fill(lit ? Color.brandBlue : (filterOn ? Color.brandBlue.opacity(0.4) : Palette.current.keyFill))
+                .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(lit ? Color.ink.opacity(0.35) : Color.ink.opacity(0.06)))
             Text(label)
                 .font(.system(size: label.count > 2 ? 10 : 13, weight: .medium, design: .rounded))
-                .foregroundColor(lit ? .white : (apps.isEmpty && !isModifier ? DS.textTertiary : DS.textPrimary))
+                .foregroundColor(lit ? .onBrandBlue : (apps.isEmpty && !isModifier ? DS.textTertiary : DS.textPrimary))
                 .frame(width: w, height: h)
             if !isModifier && !apps.isEmpty && !lit {
                 HStack(spacing: 2) {

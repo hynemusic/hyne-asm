@@ -49,6 +49,7 @@ struct SettingsView: View {
             SettingsSidebar(page: $page, model: model, pluginCount: catalog.items.count)
                 .frame(width: 216)
                 .hairline(.trailing)
+                .id(Palette.theme) // a new theme redraws everything (colours are read while drawing)
             Group {
                 switch page {
                 case 0: pluginsPage
@@ -61,12 +62,13 @@ struct SettingsView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(DS.canvas)
+            .id(Palette.theme)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(DS.canvas)
         .ignoresSafeArea()
-        .preferredColorScheme(.dark)
-        .foregroundColor(.white)
+        .themedColorScheme()
+        .foregroundColor(DS.textPrimary)
     }
 
     private var pluginsPage: some View {
@@ -686,7 +688,7 @@ struct SettingsView: View {
                 .padding(.horizontal, 5).frame(minWidth: 18, minHeight: 17)
                 .background(RoundedRectangle(cornerRadius: 4).fill(DS.raised))
                 .overlay(RoundedRectangle(cornerRadius: 4).stroke(DS.hairline))
-            Text(text).font(DS.Font.caption).foregroundColor(DS.textTertiary)
+            Text(text).font(DS.Font.caption).foregroundColor(DS.textTertiary).fixedSize()
         }
     }
 
@@ -1086,7 +1088,7 @@ private struct IconPicker: View {
                             if icon.id == selected { Rectangle().fill(Color.accent).frame(height: 2) }
                         }
                         .cornerRadius(5)
-                        .foregroundColor(.white)
+                        .foregroundColor(DS.textPrimary)
                     }
                     .buttonStyle(.plain)
                 }
@@ -1095,7 +1097,7 @@ private struct IconPicker: View {
         }
         .frame(width: 470, height: 380)
         .background(Color.panelBackground)
-        .preferredColorScheme(.dark)
+        .themedColorScheme()
     }
 }
 
@@ -1419,7 +1421,7 @@ private struct DragCountBadge: View {
     var body: some View {
         Text("\(count)")
             .font(.system(size: 12, weight: .bold, design: .rounded))
-            .foregroundColor(.black)
+            .foregroundColor(.onAccent)
             .padding(.horizontal, 7)
             .frame(minWidth: 22, minHeight: 22)
             .background(Capsule().fill(Color.accent))
@@ -1463,7 +1465,7 @@ private struct CategoryDragSource: ViewModifier {
             } preview: {
                 Text(name)
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.onAccent)
                     .padding(.horizontal, 10).padding(.vertical, 4)
                     .background(Capsule().fill(Color.accent))
             }

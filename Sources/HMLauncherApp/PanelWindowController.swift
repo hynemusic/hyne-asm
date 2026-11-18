@@ -232,7 +232,7 @@ final class HUD {
     func show(_ text: String) {
         let label = NSTextField(labelWithString: text)
         label.font = .systemFont(ofSize: 13, weight: .medium)
-        label.textColor = .white
+        label.textColor = NSColor(Palette.current.textPrimary)
         label.sizeToFit()
         let size = NSSize(width: label.frame.width + 28, height: 34)
         let p = panel ?? NSPanel(contentRect: .zero, styleMask: [.nonactivatingPanel, .borderless], backing: .buffered, defer: true)
@@ -241,10 +241,10 @@ final class HUD {
         p.backgroundColor = .clear
         let box = NSView(frame: NSRect(origin: .zero, size: size))
         box.wantsLayer = true
-        box.layer?.backgroundColor = NSColor(white: 0.115, alpha: 0.96).cgColor
+        box.layer?.backgroundColor = NSColor(Palette.current.panelSurface).withAlphaComponent(0.97).cgColor
         box.layer?.cornerRadius = 10
         box.layer?.borderWidth = 1
-        box.layer?.borderColor = NSColor(white: 1, alpha: 0.09).cgColor
+        box.layer?.borderColor = NSColor(Palette.current.panelStroke).cgColor
         label.frame.origin = NSPoint(x: 14, y: (size.height - label.frame.height) / 2)
         box.addSubview(label)
         p.contentView = box
@@ -335,5 +335,6 @@ private struct FlyoutView: View {
         }
         .padding(PanelView.padding)
         .modifier(PanelChrome())
+        .id(Palette.theme)
     }
 }

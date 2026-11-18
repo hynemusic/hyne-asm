@@ -1,33 +1,38 @@
 import SwiftUI
 import HMLauncherCore
 
-/// Colours of the panel, shared with the settings window.
-/// Brand palette "Signal" from the ASM Double Key logo (docs/logo/final): blue #3D5AFE + coral #FF6B57.
+/// Colours of the panel and the settings, taken from the current theme (`Palette`).
+/// Original theme = brand palette "Signal" from the ASM Double Key logo: blue #3D5AFE + coral #FF6B57.
 extension Color {
-    /// Brand blue #3D5AFE: prominent buttons (white text on it stays readable).
-    static let brandBlue = Color(red: 0x3D / 255, green: 0x5A / 255, blue: 0xFE / 255)
-    /// Brand coral #FF6B57: accents on the dark panel (active bar, cursor, folder/star icons, text buttons).
-    static let brandCoral = Color(red: 0xFF / 255, green: 0x6B / 255, blue: 0x57 / 255)
+    /// Prominent buttons, selection (brand blue in the original theme).
+    static var brandBlue: Color { Palette.current.accentStrong }
+    /// Highlights: active marks, caret, folder/star icons, text buttons (brand coral in the original theme).
+    static var brandCoral: Color { Palette.current.accent }
+    /// Text on `brandBlue`.
+    static var onBrandBlue: Color { Palette.current.onAccentStrong }
+    /// Text on `brandCoral`/`accent`.
+    static var onAccent: Color { Palette.current.onAccent }
+    /// White on dark themes, black on the light one — for small neutral tints.
+    static var ink: Color { Palette.current.ink }
 
-    static let panelBackground = Color(red: 0.17, green: 0.17, blue: 0.17)
-    static let panelSidebar = Color(red: 0.14, green: 0.14, blue: 0.14)
-    static let rowBackground = Color(red: 0.24, green: 0.24, blue: 0.24)
-    /// Hovered/selected row: the row grey with ~35 % brand blue mixed in.
-    static let rowHighlight = Color(red: 0.24, green: 0.28, blue: 0.50)
-    static let accent = brandCoral
-    static let dimText = Color(white: 0.55)
+    static var panelBackground: Color { Palette.current.surface }
+    static var panelSidebar: Color { Palette.current.sidebar }
+    static var rowBackground: Color { Palette.current.raised }
+    static var rowHighlight: Color { Palette.current.accentStrong.opacity(0.35) }
+    static var accent: Color { brandCoral }
+    static var dimText: Color { Palette.current.textTertiary }
 }
 
 /// Surfaces of the floating panel, quick search and folder list.
 extension Color {
-    static let panelSurface = Color(white: 0.115)
-    static let panelRow = Color(white: 0.17)
-    static let panelStroke = Color.white.opacity(0.09)
+    static var panelSurface: Color { Palette.current.panelSurface }
+    static var panelRow: Color { Palette.current.panelRow }
+    static var panelStroke: Color { Palette.current.panelStroke }
 }
 
 /// Background, border and shadow shared by the panel, the quick search and the folder side list.
 struct PanelChrome: ViewModifier {
-    var radius: CGFloat = 12
+    var radius: CGFloat = 12 * Palette.current.radiusScale
     func body(content: Content) -> some View {
         content
             .background(RoundedRectangle(cornerRadius: radius).fill(Color.panelSurface))
@@ -54,9 +59,9 @@ struct LauncherRow<Trailing: View>: View {
             if let number { keyCap(number) }
             iconTile
             VStack(alignment: .leading, spacing: 1) {
-                Text(title).font(.system(size: 14, weight: .medium)).lineLimit(1)
+                Text(title).font(.themed(14, .medium)).lineLimit(1)
                 if let subtitle {
-                    Text(subtitle).font(.system(size: 10.5))
+                    Text(subtitle).font(.themed(10.5))
                         .foregroundColor(available ? DS.textTertiary : DS.warning).lineLimit(1)
                 }
             }
@@ -67,8 +72,8 @@ struct LauncherRow<Trailing: View>: View {
         .padding(.leading, number == nil ? 7 : 6)
         .padding(.trailing, 10)
         .frame(height: 42)
-        .background(RoundedRectangle(cornerRadius: 8).fill(active ? Color.brandBlue.opacity(0.32) : Color.panelRow))
-        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(active ? Color.brandBlue.opacity(0.75) : Color.white.opacity(0.04)))
+        .background(RoundedRectangle(cornerRadius: CGFloat(8).themedRadius).fill(active ? Color.brandBlue.opacity(0.32) : Color.panelRow))
+        .overlay(RoundedRectangle(cornerRadius: CGFloat(8).themedRadius).strokeBorder(active ? Color.brandBlue.opacity(0.75) : Color.ink.opacity(0.04)))
         .contentShape(Rectangle())
     }
 
@@ -76,18 +81,18 @@ struct LauncherRow<Trailing: View>: View {
     private func keyCap(_ index: Int) -> some View {
         Text(index < 9 ? "\(index + 1)" : "")
             .font(.system(size: 10.5, weight: .semibold, design: .rounded).monospacedDigit())
-            .foregroundColor(active ? .white : DS.textSecondary)
+            .foregroundColor(active ? .onAccent : DS.textSecondary)
             .frame(width: 18, height: 18)
-            .background(RoundedRectangle(cornerRadius: 5).fill(index < 9 ? (active ? Color.accent : Color.white.opacity(0.07)) : .clear))
+            .background(RoundedRectangle(cornerRadius: CGFloat(5).themedRadius).fill(index < 9 ? (active ? Color.accent : Color.ink.opacity(0.07)) : .clear))
     }
 
     private var iconTile: some View {
         Image(systemName: symbol)
-            .font(.system(size: 13.5, weight: .medium))
-            .foregroundColor(color ?? (active ? .white : DS.textSecondary))
+            .font(.themed(13.5, .medium))
+            .foregroundColor(color ?? (active ? DS.textPrimary : DS.textSecondary))
             .frame(width: 30, height: 30)
-            .background(RoundedRectangle(cornerRadius: 7).fill((color ?? .white).opacity(color == nil ? 0.06 : 0.18)))
-            .overlay(RoundedRectangle(cornerRadius: 7).strokeBorder((color ?? .clear).opacity(0.35)))
+            .background(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).fill((color ?? .ink).opacity(color == nil ? 0.06 : 0.18)))
+            .overlay(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).strokeBorder((color ?? .clear).opacity(0.35)))
     }
 }
 

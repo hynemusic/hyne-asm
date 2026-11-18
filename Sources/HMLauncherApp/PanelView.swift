@@ -24,7 +24,7 @@ struct PanelView: View {
             if let folder = viewModel.state.openFolderName {
                 Button(action: onCloseFolder) {
                     HStack(spacing: 6) {
-                        Image(systemName: "chevron.left").font(.system(size: 10, weight: .bold)).foregroundColor(DS.textTertiary)
+                        Image(systemName: "chevron.left").font(.themed(10, .bold)).foregroundColor(DS.textTertiary)
                         Text(categoryTitle).foregroundColor(DS.textTertiary)
                         Text("/").foregroundColor(DS.textTertiary)
                         Image(systemName: "folder.fill").foregroundColor(.accent)
@@ -32,7 +32,7 @@ struct PanelView: View {
                         Spacer()
                         escHint
                     }
-                    .font(.system(size: 12.5))
+                    .font(.themed(12.5))
                     .frame(height: Self.filterHeight)
                     .padding(.horizontal, 8)
                     .contentShape(Rectangle())
@@ -45,6 +45,7 @@ struct PanelView: View {
         }
         .padding(Self.padding)
         .modifier(PanelChrome())
+        .id(Palette.theme)
     }
 
     // MARK: Tabs
@@ -66,7 +67,7 @@ struct PanelView: View {
                 Menu {
                     ForEach(hidden, id: \.self) { i in Button(title(of: i)) { onSelectTab(i) } }
                 } label: {
-                    Image(systemName: "ellipsis").font(.system(size: 12, weight: .semibold)).foregroundColor(DS.textSecondary)
+                    Image(systemName: "ellipsis").font(.themed(12, .semibold)).foregroundColor(DS.textSecondary)
                         .frame(width: 28, height: 24)
                 }
                 .menuStyle(.borderlessButton)
@@ -91,16 +92,16 @@ struct PanelView: View {
         return Button { onSelectTab(index) } label: {
             HStack(spacing: 5) {
                 if case .category(let id, _) = viewModel.state.tabs[index], viewModel.isFavorites(id) {
-                    Image(systemName: "star.fill").font(.system(size: 9.5)).foregroundColor(selected ? .accent : DS.textTertiary)
+                    Image(systemName: "star.fill").font(.themed(9.5)).foregroundColor(selected ? .accent : DS.textTertiary)
                 }
                 Text(title(of: index))
-                    .font(.system(size: 12.5, weight: selected ? .semibold : .medium))
+                    .font(.themed(12.5, selected ? .semibold : .medium))
                     .foregroundColor(selected ? DS.textPrimary : DS.textTertiary)
                     .lineLimit(1)
             }
             .padding(.horizontal, 10)
             .frame(height: 26)
-            .background(RoundedRectangle(cornerRadius: 7).fill(selected ? Color.white.opacity(0.09) : .clear))
+            .background(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).fill(selected ? Color.ink.opacity(0.09) : .clear))
             .overlay(alignment: .bottom) {
                 if selected { Capsule().fill(Color.accent).frame(width: 14, height: 2).offset(y: 1) }
             }
@@ -124,7 +125,7 @@ struct PanelView: View {
                             Image(systemName: viewModel.state.filter.isEmpty ? "tray" : "magnifyingglass")
                             Text(viewModel.state.filter.isEmpty ? Loc.t("Keine Einträge – in den Einstellungen hinzufügen", "No entries – add some in Settings") : Loc.t("Nichts gefunden", "Nothing found"))
                         }
-                        .font(.system(size: 12)).foregroundColor(DS.textTertiary)
+                        .font(.themed(12)).foregroundColor(DS.textTertiary)
                         .frame(maxWidth: .infinity, minHeight: Self.rowHeight - 4)
                     }
                     // Two columns of 10 (left first), category hits and "All plugins" hits as separate grids.
@@ -174,16 +175,16 @@ struct PanelView: View {
     /// What has been typed so far, drawn like a search field. Height = `filterHeight`.
     private var filterField: some View {
         HStack(spacing: 7) {
-            Image(systemName: "magnifyingglass").font(.system(size: 11, weight: .semibold)).foregroundColor(.accent)
+            Image(systemName: "magnifyingglass").font(.themed(11, .semibold)).foregroundColor(.accent)
             (Text(viewModel.state.filter).foregroundColor(DS.textPrimary) + Text("▏").foregroundColor(.accent))
-                .font(.system(size: 13, weight: .medium))
+                .font(.themed(13, .medium))
             Spacer()
             escHint
         }
         .padding(.horizontal, 9)
         .frame(height: Self.filterHeight - 4)
-        .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(0.06)))
-        .overlay(RoundedRectangle(cornerRadius: 7).strokeBorder(Color.panelStroke))
+        .background(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).fill(Color.ink.opacity(0.06)))
+        .overlay(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).strokeBorder(Color.panelStroke))
         .padding(.vertical, 2)
     }
 
@@ -192,7 +193,7 @@ struct PanelView: View {
             .font(.system(size: 9.5, weight: .semibold, design: .rounded))
             .foregroundColor(DS.textTertiary)
             .padding(.horizontal, 5).frame(height: 15)
-            .background(RoundedRectangle(cornerRadius: 4).strokeBorder(Color.panelStroke))
+            .background(RoundedRectangle(cornerRadius: CGFloat(4).themedRadius).strokeBorder(Color.panelStroke))
     }
 
     private var categoryTitle: String {
@@ -207,10 +208,10 @@ struct PanelView: View {
                         active: active, available: row.isAvailable, color: Color(label: row.colorID)) {
                 if row.folderID != nil {
                     Text("\(row.childCount)")
-                        .font(.system(size: 10, weight: .semibold).monospacedDigit()).foregroundColor(DS.textSecondary)
+                        .font(.themed(10, .semibold).monospacedDigit()).foregroundColor(DS.textSecondary)
                         .padding(.horizontal, 6).padding(.vertical, 2)
-                        .background(Capsule().fill(Color.white.opacity(0.07)))
-                    Image(systemName: "chevron.right").font(.system(size: 10, weight: .bold)).foregroundColor(DS.textTertiary)
+                        .background(Capsule().fill(Color.ink.opacity(0.07)))
+                    Image(systemName: "chevron.right").font(.themed(10, .bold)).foregroundColor(DS.textTertiary)
                 }
             }
             .opacity(row.isAvailable ? 1 : 0.5)

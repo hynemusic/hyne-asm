@@ -25,7 +25,6 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             w.titleVisibility = .hidden
             w.contentMinSize = NSSize(width: 900, height: 560)
             w.setContentSize(NSSize(width: 1320, height: 820))
-            w.appearance = NSAppearance(named: .darkAqua)
             w.isReleasedWhenClosed = false
             w.delegate = self
             w.center()

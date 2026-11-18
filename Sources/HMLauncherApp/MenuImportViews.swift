@@ -372,7 +372,7 @@ private struct PluginPicker: View {
         }
         .padding(10)
         .frame(width: 380, height: 420)
-        .preferredColorScheme(.dark)
+        .themedColorScheme()
     }
 
     private func row(_ item: PluginItem) -> some View {

@@ -120,6 +120,8 @@ public struct LauncherConfig: Codable, Sendable {
     public var searchRules: [SearchRule] = []
     /// Key combinations that insert a single plugin, rack or preset.
     public var itemShortcuts: [ItemShortcut] = []
+    /// Look of the app's windows.
+    public var theme: AppTheme = .original
 
     public init(version: Int, categories: [Category], shortcuts: ShortcutSettings, panelKeys: PanelKeyBindings = .default) {
         self.version = version
@@ -139,6 +141,7 @@ public struct LauncherConfig: Codable, Sendable {
         colorRules = try c.decodeIfPresent([String: String].self, forKey: .colorRules) ?? [:]
         searchRules = try c.decodeIfPresent([SearchRule].self, forKey: .searchRules) ?? []
         itemShortcuts = try c.decodeIfPresent([ItemShortcut].self, forKey: .itemShortcuts) ?? []
+        theme = (try? c.decodeIfPresent(AppTheme.self, forKey: .theme)) ?? .original
     }
 
     public static let currentVersion = 3

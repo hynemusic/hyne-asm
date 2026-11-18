@@ -55,8 +55,8 @@ struct SettingsSidebar: View {
                 .resizable().interpolation(.high)
                 .frame(width: 34, height: 34)
             VStack(alignment: .leading, spacing: 1) {
-                Text("HYNE ASM").font(.system(size: 14, weight: .bold)).foregroundColor(DS.textPrimary)
-                Text("Ableton Shortcuts Manager").font(.system(size: 10.5)).foregroundColor(DS.textTertiary).lineLimit(1)
+                Text("HYNE ASM").font(.themed(14, .bold)).foregroundColor(DS.textPrimary)
+                Text("Ableton Shortcuts Manager").font(.themed(10.5)).foregroundColor(DS.textTertiary).lineLimit(1)
             }
         }
         .accessibilityElement(children: .combine)
@@ -67,13 +67,13 @@ struct SettingsSidebar: View {
         return Button { page = item.id } label: {
             HStack(spacing: 10) {
                 Image(systemName: item.symbol)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(selected ? .white : DS.textSecondary)
+                    .font(.themed(13, .medium))
+                    .foregroundColor(selected ? .onBrandBlue : DS.textSecondary)
                     .frame(width: 26, height: 26)
                     .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(selected ? Color.brandBlue : DS.raised))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(item.title).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
-                    Text(item.subtitle).font(.system(size: 10.5)).foregroundColor(DS.textTertiary).lineLimit(1)
+                    Text(item.subtitle).font(.themed(10.5)).foregroundColor(DS.textTertiary).lineLimit(1)
                 }
                 Spacer(minLength: 0)
             }
@@ -98,10 +98,11 @@ struct SettingsSidebar: View {
                     Text(model.isConnected
                          ? "Live \(model.liveVersion ?? "") · \(pluginCount) " + Loc.t("Einträge", "items")
                          : Loc.t("ASMbridge als Control Surface wählen", "Choose ASMbridge as control surface"))
-                        .font(.system(size: 10)).foregroundColor(DS.textTertiary).lineLimit(1)
+                        .font(.themed(10)).foregroundColor(DS.textTertiary).lineLimit(1)
                 }
             }
             .accessibilityElement(children: .combine)
+            ThemeButton(theme: $model.config.theme)
             Picker(selection: $model.config.language) {
                 Text(Loc.t("Automatisch", "Automatic")).tag(Language?.none)
                 Text("Deutsch").tag(Language?.some(.de))
@@ -111,6 +112,85 @@ struct SettingsSidebar: View {
             }
             .controlSize(.small)
             .help(Loc.t("Sprache", "Language"))
+        }
+    }
+}
+
+/// Sidebar button showing the current theme; opens previews of all themes.
+struct ThemeButton: View {
+    @Binding var theme: AppTheme
+    @State private var open = false
+
+    var body: some View {
+        Button { open = true } label: {
+            HStack(spacing: 8) {
+                ThemeSwatch(palette: Palette.make(theme)).frame(width: 30, height: 20)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(Loc.t("Design", "Theme")).font(.themed(10)).foregroundColor(DS.textTertiary)
+                    Text(theme.title).font(DS.Font.caption.weight(.semibold)).foregroundColor(DS.textPrimary)
+                }
+                Spacer()
+                Image(systemName: "chevron.up.chevron.down").font(.themed(9, .semibold)).foregroundColor(DS.textTertiary)
+            }
+            .padding(6)
+            .background(RoundedRectangle(cornerRadius: DS.Radius.m).fill(DS.raised))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: $open, arrowEdge: .trailing) {
+            VStack(alignment: .leading, spacing: DS.Space.m) {
+                Text(Loc.t("Design wählen", "Choose a theme")).font(DS.Font.columnTitle).foregroundColor(DS.textPrimary)
+                ForEach(AppTheme.allCases, id: \.self) { t in
+                    Button { theme = t; open = false } label: { card(t) }.buttonStyle(.plain)
+                }
+            }
+            .padding(DS.Space.l)
+            .frame(width: 300)
+        }
+    }
+
+    private func card(_ t: AppTheme) -> some View {
+        let p = Palette.make(t)
+        let chosen = t == theme
+        return HStack(spacing: DS.Space.m) {
+            ThemeSwatch(palette: p).frame(width: 74, height: 46)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(t.title).font(.system(size: 13, weight: .semibold, design: p.fontDesign)).foregroundColor(DS.textPrimary)
+                Text(t.subtitle).font(.themed(11)).foregroundColor(DS.textTertiary)
+            }
+            Spacer()
+            if chosen { Image(systemName: "checkmark.circle.fill").foregroundColor(.brandBlue) }
+        }
+        .padding(DS.Space.s)
+        .background(RoundedRectangle(cornerRadius: DS.Radius.m).fill(chosen ? DS.selection : DS.raised.opacity(0.5)))
+        .overlay(RoundedRectangle(cornerRadius: DS.Radius.m).stroke(chosen ? Color.brandBlue.opacity(0.6) : DS.hairline))
+        .contentShape(Rectangle())
+    }
+}
+
+/// A tiny picture of a theme: its panel with two rows, a highlighted one and the accents.
+struct ThemeSwatch: View {
+    let palette: Palette
+
+    var body: some View {
+        GeometryReader { geo in
+            let r = 6 * palette.radiusScale
+            ZStack(alignment: .topLeading) {
+                RoundedRectangle(cornerRadius: r).fill(palette.panelSurface)
+                RoundedRectangle(cornerRadius: r).strokeBorder(palette.panelStroke)
+                VStack(alignment: .leading, spacing: geo.size.height * 0.08) {
+                    HStack(spacing: 3) {
+                        Capsule().fill(palette.accent).frame(width: geo.size.width * 0.18, height: 2.5)
+                        Spacer()
+                    }
+                    RoundedRectangle(cornerRadius: r * 0.5).fill(palette.accentStrong.opacity(0.45))
+                        .overlay(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 1).fill(palette.accent).frame(width: 3).padding(2)
+                        }
+                    RoundedRectangle(cornerRadius: r * 0.5).fill(palette.panelRow)
+                }
+                .padding(geo.size.width * 0.09)
+            }
         }
     }
 }

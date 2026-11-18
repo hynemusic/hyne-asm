@@ -158,7 +158,7 @@ struct SearchTuningPage: View {
         return HStack(spacing: DS.Space.m) {
             Text(index < 9 ? "\(index + 1)" : "")
                 .font(.system(size: 10.5, weight: .semibold, design: .rounded).monospacedDigit())
-                .foregroundColor(isPinned ? .white : DS.textSecondary)
+                .foregroundColor(isPinned ? .onAccent : DS.textSecondary)
                 .frame(width: 18, height: 18)
                 .background(RoundedRectangle(cornerRadius: 5).fill(isPinned ? Color.accent : (index < 9 ? DS.raised : .clear)))
             Image(systemName: IconCatalog.symbolName(for: r.iconID))
@@ -255,7 +255,7 @@ struct SearchTuningPage: View {
                 HStack(spacing: DS.Space.s) {
                     Text(rule.query)
                         .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                        .foregroundColor(active ? .white : DS.textPrimary)
+                        .foregroundColor(active ? .onBrandBlue : DS.textPrimary)
                         .padding(.horizontal, 7).padding(.vertical, 3)
                         .background(RoundedRectangle(cornerRadius: 5).fill(active ? Color.brandBlue : DS.raised))
                     Text([rule.pinned.isEmpty ? nil : Loc.t("\(rule.pinned.count) oben", "\(rule.pinned.count) pinned"),

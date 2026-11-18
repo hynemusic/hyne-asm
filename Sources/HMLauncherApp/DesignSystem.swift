@@ -14,37 +14,45 @@ enum DS {
     }
 
     enum Radius {
-        static let s: CGFloat = 6
-        static let m: CGFloat = 8
-        static let l: CGFloat = 12
+        static var s: CGFloat { 6 * Palette.current.radiusScale }
+        static var m: CGFloat { 8 * Palette.current.radiusScale }
+        static var l: CGFloat { 12 * Palette.current.radiusScale }
     }
 
-    // Surfaces, darkest to lightest. Each step is a layer that sits on the one before.
-    static let canvas = Color(white: 0.105)      // page background
-    static let sidebar = Color(white: 0.135)     // navigation
-    static let surface = Color(white: 0.145)     // columns, cards
-    static let raised = Color(white: 0.195)      // rows and fields inside cards
-    static let hover = Color(white: 0.235)
-    static let hairline = Color.white.opacity(0.07)
+    // Surfaces from the current theme. Each step is a layer that sits on the one before.
+    static var canvas: Color { Palette.current.canvas }       // page background
+    static var sidebar: Color { Palette.current.sidebar }     // navigation
+    static var surface: Color { Palette.current.surface }     // columns, cards
+    static var raised: Color { Palette.current.raised }       // rows and fields inside cards
+    static var hover: Color { Palette.current.hover }
+    static var hairline: Color { Palette.current.hairline }
 
-    static let textPrimary = Color(white: 0.94)
-    static let textSecondary = Color(white: 0.68)
-    static let textTertiary = Color(white: 0.56)
+    static var textPrimary: Color { Palette.current.textPrimary }
+    static var textSecondary: Color { Palette.current.textSecondary }
+    static var textTertiary: Color { Palette.current.textTertiary }
 
-    /// Selected navigation item / category: a quiet brand-blue tint.
-    static let selection = Color.brandBlue.opacity(0.30)
-    static let success = Color(red: 0.30, green: 0.80, blue: 0.50)
-    static let warning = Color(red: 1.0, green: 0.75, blue: 0.30)
+    /// Selected navigation item / category: a quiet tint of the strong accent.
+    static var selection: Color { Palette.current.accentStrong.opacity(Palette.current.isDark ? 0.30 : 0.16) }
+    static var success: Color { Palette.current.success }
+    static var warning: Color { Palette.current.warning }
 
     enum Font {
-        static let pageTitle = SwiftUI.Font.system(size: 22, weight: .bold)
-        static let pageSubtitle = SwiftUI.Font.system(size: 13)
-        static let columnTitle = SwiftUI.Font.system(size: 13, weight: .semibold)
-        static let body = SwiftUI.Font.system(size: 13)
-        static let bodyStrong = SwiftUI.Font.system(size: 13, weight: .medium)
-        static let caption = SwiftUI.Font.system(size: 11)
-        static let sectionLabel = SwiftUI.Font.system(size: 10.5, weight: .semibold)
-        static let badge = SwiftUI.Font.system(size: 9.5, weight: .semibold)
+        private static var design: SwiftUI.Font.Design { Palette.current.fontDesign }
+        static var pageTitle: SwiftUI.Font { .system(size: 22, weight: .bold, design: design) }
+        static var pageSubtitle: SwiftUI.Font { .system(size: 13, design: design) }
+        static var columnTitle: SwiftUI.Font { .system(size: 13, weight: .semibold, design: design) }
+        static var body: SwiftUI.Font { .system(size: 13, design: design) }
+        static var bodyStrong: SwiftUI.Font { .system(size: 13, weight: .medium, design: design) }
+        static var caption: SwiftUI.Font { .system(size: 11, design: design) }
+        static var sectionLabel: SwiftUI.Font { .system(size: 10.5, weight: .semibold, design: design) }
+        static var badge: SwiftUI.Font { .system(size: 9.5, weight: .semibold, design: design) }
+    }
+}
+
+extension View {
+    /// Light or dark controls (text fields, pickers, menus) to match the theme.
+    func themedColorScheme() -> some View {
+        preferredColorScheme(Palette.current.isDark ? .dark : .light)
     }
 }
 

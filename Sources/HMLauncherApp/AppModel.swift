@@ -7,6 +7,7 @@ final class AppModel: ObservableObject {
     @Published var config: LauncherConfig {
         didSet {
             Loc.language = Language.resolve(config.language)
+            if oldValue.theme != config.theme { Self.applyTheme(config.theme) }
             saveConfig()
         }
     }
@@ -26,8 +27,15 @@ final class AppModel: ObservableObject {
         let loaded = store.load()
         Loc.language = Language.resolve(loaded.language)
         config = loaded
+        Self.applyTheme(loaded.theme)
         catalog = PluginCatalog(cacheURL: PluginCatalog.defaultCacheURL, client: client)
         saveConfig() // persists migrations right away
+    }
+
+    /// HM_THEME=<name> previews a theme without saving it (developer aid for screenshots).
+    private static func applyTheme(_ theme: AppTheme) {
+        let preview = ProcessInfo.processInfo.environment["HM_THEME"].flatMap(AppTheme.init(rawValue:))
+        Palette.apply(preview ?? theme)
     }
 
     func start() {

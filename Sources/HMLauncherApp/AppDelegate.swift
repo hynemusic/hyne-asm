@@ -38,7 +38,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 let host = NSHostingView(rootView: KnownShortcutsSheet(config: model.config) {})
                 let w = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1180, height: 580), styleMask: [.borderless], backing: .buffered, defer: false)
                 w.contentView = host
-                w.appearance = NSAppearance(named: .darkAqua)
                 w.center()
                 w.orderFrontRegardless()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

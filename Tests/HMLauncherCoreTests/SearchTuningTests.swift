@@ -82,11 +82,15 @@ final class SearchTuningTests: XCTestCase {
         let back = try JSONDecoder().decode(LauncherConfig.self, from: JSONEncoder().encode(c))
         XCTAssertEqual(back.searchRules, c.searchRules)
         XCTAssertEqual(back.itemShortcuts, c.itemShortcuts)
+        XCTAssertEqual(back.theme, .original)
+        var themed = c; themed.theme = .retro
+        XCTAssertEqual(try JSONDecoder().decode(LauncherConfig.self, from: JSONEncoder().encode(themed)).theme, .retro)
 
         var old = try JSONSerialization.jsonObject(with: JSONEncoder().encode(LauncherConfig.makeDefault())) as! [String: Any]
         old["searchRules"] = nil; old["itemShortcuts"] = nil
         let decoded = try JSONDecoder().decode(LauncherConfig.self, from: JSONSerialization.data(withJSONObject: old))
         XCTAssertTrue(decoded.searchRules.isEmpty && decoded.itemShortcuts.isEmpty)
+        XCTAssertEqual(decoded.theme, .original)
     }
 }
 

@@ -221,7 +221,7 @@ struct StatsPage: View {
                 .font(.system(size: 12))
                 .foregroundColor(tint ?? DS.textSecondary)
                 .frame(width: 28, height: 28)
-                .background(RoundedRectangle(cornerRadius: 7).fill((tint ?? .white).opacity(tint == nil ? 0.06 : 0.18)))
+                .background(RoundedRectangle(cornerRadius: 7).fill((tint ?? .ink).opacity(tint == nil ? 0.06 : 0.18)))
             VStack(alignment: .leading, spacing: 1) {
                 Text(stat.name).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary).lineLimit(1)
                 Text(stat.kind.title).font(.system(size: 10.5)).foregroundColor(DS.textTertiary)
