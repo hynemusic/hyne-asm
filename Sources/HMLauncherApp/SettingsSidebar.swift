@@ -19,14 +19,14 @@ struct SettingsSidebar: View {
         [
             Item(id: 0, symbol: "square.grid.2x2", title: Loc.t("Bibliothek", "Library"),
                  subtitle: Loc.t("Plugins, Presets & Kategorien", "Plugins, presets & categories")),
-            Item(id: 4, symbol: "chart.bar.xaxis", title: Loc.t("Statistik", "Stats"),
-                 subtitle: Loc.t("Was du am meisten nutzt", "What you use most")),
             Item(id: 3, symbol: "clock.arrow.circlepath", title: Loc.t("Versionen", "Versions"),
                  subtitle: Loc.t("Sichern & teilen", "Save & share")),
             Item(id: 2, symbol: "square.and.arrow.down", title: Loc.t("LES-Import", "LES Import"),
                  subtitle: Loc.t("menuconfig.ini übernehmen", "Bring over menuconfig.ini")),
             Item(id: 1, symbol: "command", title: Loc.t("Tastenkürzel", "Shortcuts"),
                  subtitle: Loc.t("Fenster, Suche, Panel", "Windows, search, panel")),
+            Item(id: 4, symbol: "chart.bar.xaxis", title: Loc.t("Statistik", "Stats"),
+                 subtitle: Loc.t("Was du am meisten nutzt", "What you use most")),
         ]
     }
 
