@@ -10,16 +10,53 @@ struct BehaviorPage: View {
 
     var body: some View {
         PageContainer(title: Loc.t("Verhalten", "Behavior"),
-                      subtitle: Loc.t("Wie HYNE ASM in Live einfügt – und wie andere Geräte es steuern.",
-                                      "How HYNE ASM inserts into Live – and how other devices control it."),
+                      subtitle: Loc.t("Wie das Panel aussieht, wie HYNE ASM in Live einfügt – und wie andere Geräte es steuern.",
+                                      "How the panel is laid out, how HYNE ASM inserts into Live – and how other devices control it."),
                       maxWidth: 780) { EmptyView() } content: {
             VStack(alignment: .leading, spacing: DS.Space.xl) {
+                panelCard
                 insertCard
                 hintsCard
                 streamDeckCard
             }
             .padding(.bottom, DS.Space.l)
         }
+    }
+
+    // MARK: Panel
+
+    private var panelCard: some View {
+        card(Loc.t("Panel", "Panel"), symbol: "rectangle.split.3x1") {
+            HStack(alignment: .center, spacing: DS.Space.l) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(Loc.t("Spalten nebeneinander", "Columns side by side")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                    Text(Loc.t("Jede Spalte fasst 9 Einträge. Das Panel nimmt nur so viele Spalten, wie die vollste Kategorie braucht; was nicht passt, geht darunter weiter.",
+                               "Each column holds 9 entries. The panel only uses as many columns as the fullest category needs; anything beyond continues below."))
+                        .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: DS.Space.m)
+                columnPreview
+                Stepper(value: $model.config.panelColumns, in: 1...PanelGrid.maxColumns) {
+                    Text("\(model.config.panelColumns)").font(DS.Font.bodyStrong.monospacedDigit()).foregroundColor(DS.textPrimary)
+                        .frame(minWidth: 16, alignment: .trailing)
+                }
+                .fixedSize()
+            }
+        }
+    }
+
+    /// Tiny picture of the panel with the chosen number of columns.
+    private var columnPreview: some View {
+        HStack(spacing: 2) {
+            ForEach(0..<model.config.panelColumns, id: \.self) { _ in
+                RoundedRectangle(cornerRadius: 1.5).fill(Color.accent.opacity(0.55)).frame(width: 6, height: 22)
+            }
+        }
+        .padding(4)
+        .frame(width: 80, height: 32)
+        .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(DS.raised))
+        .accessibilityHidden(true)
     }
 
     // MARK: Inserting

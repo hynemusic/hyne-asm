@@ -38,3 +38,34 @@ final class PanelGridColumnsTests: XCTestCase {
         XCTAssertEqual(PanelGrid.columnsNeeded(local: 0, global: 0), 1)
     }
 }
+
+final class PanelGridSettingTests: XCTestCase {
+    func testColumnsGrowUpToTheSetting() {
+        XCTAssertEqual(PanelGrid.columnsNeeded(local: 25, global: 0, max: 3), 3)   // 9 + 9 + 7
+        XCTAssertEqual(PanelGrid.columnsNeeded(local: 25, global: 0, max: 2), 2)
+        XCTAssertEqual(PanelGrid.columnsNeeded(local: 12, global: 0, max: 5), 2)   // only as many as needed
+        XCTAssertEqual(PanelGrid.columnsNeeded(local: 80, global: 0, max: 9), 9)
+        XCTAssertEqual(PanelGrid.columnsNeeded(local: 25, global: 0, max: 1), 1)
+    }
+
+    func testBlocksAndRowsFollowTheColumnCount() {
+        let b = PanelGrid.blocks(0..<25, columns: 3)
+        XCTAssertEqual(b.count, 1)
+        XCTAssertEqual(b[0].map(\.count), [9, 9, 7])
+        XCTAssertEqual(PanelGrid.rows(25, columns: 3), 9)
+        XCTAssertEqual(PanelGrid.rows(25, columns: 1), 25)
+    }
+
+    func testConfigKeepsTheSettingBetweenOneAndNine() throws {
+        var c = LauncherConfig.makeDefault()
+        XCTAssertEqual(c.panelColumns, 2)
+        c.panelColumns = 14
+        XCTAssertEqual(c.panelColumns, 9)
+        c.panelColumns = 0
+        XCTAssertEqual(c.panelColumns, 1)
+        c.panelColumns = 4
+        XCTAssertEqual(try JSONDecoder().decode(LauncherConfig.self, from: JSONEncoder().encode(c)).panelColumns, 4)
+        let old = #"{"version": 4, "categories": []}"#.data(using: .utf8)!
+        XCTAssertEqual(try JSONDecoder().decode(LauncherConfig.self, from: old).panelColumns, 2)
+    }
+}

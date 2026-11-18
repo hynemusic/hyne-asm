@@ -8,6 +8,8 @@ final class PanelViewModel: ObservableObject {
     @Published var hovered: Int?
     /// Grid rows the panel was sized for when it opened (the fullest category).
     @Published var capacityRows = 0
+    /// Columns side by side (the setting, limited to what fits on the screen).
+    @Published var columns = PanelGrid.columns
     /// Favorites gets a star in the tab bar.
     var favoritesID: UUID?
     init(state: PanelState) { self.state = state }
@@ -88,10 +90,15 @@ final class PanelWindowController {
         topLeft = point
         // Sized for the fullest category right away: switching tabs never resizes the panel, and near the bottom
         // of the screen the rows don't get pushed away from the mouse. Search and open folders can still grow it.
+        let screen = NSScreen.screens.first { $0.frame.contains(point) } ?? NSScreen.main
+        let fitting = max(1, Int(((screen?.visibleFrame.width ?? 1600) - PanelView.padding * 2 + PanelView.columnSpacing)
+                                 / (PanelView.columnWidth + PanelView.columnSpacing)))
+        let columns = min(model.config.panelColumns, fitting)
+        viewModel.columns = columns
         let largest = viewModel.state.largestTabCount
-        heightFloor = height(gridRows: PanelGrid.rows(largest), extra: 0)
-        columnsFloor = PanelGrid.columnsNeeded(local: largest, global: 0)
-        viewModel.capacityRows = min(PanelGrid.rows(largest), PanelView.maxVisibleRows)
+        heightFloor = height(gridRows: PanelGrid.rows(largest, columns: columns), extra: 0)
+        columnsFloor = PanelGrid.columnsNeeded(local: largest, global: 0, max: columns)
+        viewModel.capacityRows = min(PanelGrid.rows(largest, columns: columns), PanelView.maxVisibleRows)
         layout()
         panel.orderFrontRegardless()
         outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
@@ -152,7 +159,7 @@ final class PanelWindowController {
         guard flyoutFolder != folder || !flyout.isVisible else { return }
         flyoutFolder = folder
         let index = viewModel.state.rows.firstIndex { $0.folderID == folder } ?? 0
-        let column = (index % (PanelGrid.columns * PanelGrid.rowsPerColumn)) / PanelGrid.rowsPerColumn
+        let column = (index % (viewModel.columns * PanelGrid.rowsPerColumn)) / PanelGrid.rowsPerColumn
         let rowMinX = panel.frame.minX + PanelView.padding + CGFloat(column) * (PanelView.columnWidth + PanelView.columnSpacing)
         let rowFrame = NSRect(x: rowMinX, y: panel.frame.minY, width: PanelView.columnWidth, height: panel.frame.height)
         let mouse = NSEvent.mouseLocation
@@ -209,13 +216,15 @@ final class PanelWindowController {
     private func layout() {
         let all = viewModel.state.rows
         let globalCount = all.filter(\.isGlobal).count
-        let gridRows = PanelGrid.rows(all.count - globalCount) + PanelGrid.rows(globalCount)
+        let gridRows = PanelGrid.rows(all.count - globalCount, columns: viewModel.columns)
+            + PanelGrid.rows(globalCount, columns: viewModel.columns)
         let filterHeight: CGFloat = (viewModel.state.filter.isEmpty ? 0 : PanelView.filterHeight)
             + (viewModel.state.openFolderName == nil ? 0 : PanelView.filterHeight)
             + (globalCount > 0 && gridRows <= PanelView.maxVisibleRows ? PanelView.globalHeaderHeight : 0)
         let height = max(height(gridRows: gridRows, extra: filterHeight), heightFloor)
         heightFloor = height
-        let columns = max(PanelGrid.columnsNeeded(local: all.count - globalCount, global: globalCount), columnsFloor)
+        let columns = max(PanelGrid.columnsNeeded(local: all.count - globalCount, global: globalCount, max: viewModel.columns),
+                          columnsFloor)
         columnsFloor = columns
         let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
         var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: PanelView.width(columns: columns), height: height)

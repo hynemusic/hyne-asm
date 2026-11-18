@@ -56,7 +56,7 @@ struct PanelView: View {
     @ViewBuilder private var leftoverHint: some View {
         let state = viewModel.state
         if state.filter.isEmpty, state.openFolderName == nil,
-           viewModel.capacityRows - PanelGrid.rows(state.rows.count) >= 2 {
+           viewModel.capacityRows - PanelGrid.rows(state.rows.count, columns: viewModel.columns) >= 2 {
             HStack(spacing: 6) {
                 Image(systemName: "magnifyingglass").font(.themed(10.5, .semibold))
                 Text(Loc.t("Tippen zum Suchen", "Type to search"))
@@ -148,7 +148,7 @@ struct PanelView: View {
     private var rowList: some View {
         let rows = viewModel.state.rows
         return ScrollViewReader { proxy in
-            ScrollView(.vertical, showsIndicators: rows.count > PanelGrid.columns * Self.maxVisibleRows) {
+            ScrollView(.vertical, showsIndicators: rows.count > viewModel.columns * Self.maxVisibleRows) {
                 VStack(spacing: 4) {
                     if rows.isEmpty {
                         HStack(spacing: 8) {
@@ -177,14 +177,14 @@ struct PanelView: View {
     static let columnWidth: CGFloat = 316
     static let columnSpacing: CGFloat = 6
     static var width: CGFloat { width(columns: PanelGrid.columns) }
-    /// One column up to 9 entries, two beyond (`PanelGrid.columnsNeeded`).
+    /// One column per 9 entries, up to the setting (`PanelGrid.columnsNeeded`).
     static func width(columns: Int) -> CGFloat {
         columnWidth * CGFloat(columns) + columnSpacing * CGFloat(columns - 1) + padding * 2
     }
 
     private func grid(_ rows: [PanelRow], _ range: Range<Int>) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            ForEach(Array(PanelGrid.blocks(range).enumerated()), id: \.offset) { _, block in
+            ForEach(Array(PanelGrid.blocks(range, columns: viewModel.columns).enumerated()), id: \.offset) { _, block in
                 HStack(alignment: .top, spacing: Self.columnSpacing) {
                     // Empty columns are left out, so a short category stays one column wide.
                     ForEach(Array(block.filter { !$0.isEmpty }.enumerated()), id: \.offset) { _, column in
