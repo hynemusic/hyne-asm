@@ -48,6 +48,8 @@ struct LauncherRow<Trailing: View>: View {
     let number: Int?
     let symbol: String
     let title: String
+    /// The panel's resize grip changes it; everywhere else 42.
+    var height: CGFloat = 42
     var subtitle: String? = nil
     var active = false
     var available = true
@@ -72,7 +74,7 @@ struct LauncherRow<Trailing: View>: View {
         .foregroundColor(available ? DS.textPrimary : DS.textTertiary)
         .padding(.leading, number == nil ? 7 : 6)
         .padding(.trailing, 10)
-        .frame(height: 42)
+        .frame(height: height)
         .background(RoundedRectangle(cornerRadius: CGFloat(8).themedRadius).fill(active ? Color.brandBlue.opacity(0.32) : Color.panelRow))
         .overlay(RoundedRectangle(cornerRadius: CGFloat(8).themedRadius).strokeBorder(active ? Color.brandBlue.opacity(0.75) : Color.ink.opacity(0.04)))
         .contentShape(Rectangle())

@@ -153,6 +153,8 @@ public struct LauncherConfig: Codable, Sendable {
         set { storedPanelColumns = min(max(newValue, 1), PanelGrid.maxColumns) }
     }
     private var storedPanelColumns = PanelGrid.columns
+    /// Width of a panel column and height of an entry (resize grip in the panel).
+    public var panelSize = PanelSize.default
     /// Secret part of every Stream Deck link, so a web page can't trigger commands on the local endpoint.
     public var streamDeckToken = LauncherConfig.newToken()
     /// All profiles (named menus); the active one's menu is `categories`.
@@ -184,6 +186,7 @@ public struct LauncherConfig: Codable, Sendable {
         keptEntries = try c.decodeIfPresent([UUID].self, forKey: .keptEntries) ?? []
         streamDeckEnabled = try c.decodeIfPresent(Bool.self, forKey: .streamDeckEnabled) ?? false
         panelColumns = try c.decodeIfPresent(Int.self, forKey: .storedPanelColumns) ?? PanelGrid.columns
+        panelSize = (try? c.decodeIfPresent(PanelSize.self, forKey: .panelSize)) ?? .default
         streamDeckToken = try c.decodeIfPresent(String.self, forKey: .streamDeckToken) ?? LauncherConfig.newToken()
         profiles = try c.decodeIfPresent([Profile].self, forKey: .profiles) ?? []
         activeProfileID = try c.decodeIfPresent(UUID.self, forKey: .activeProfileID) ?? UUID()

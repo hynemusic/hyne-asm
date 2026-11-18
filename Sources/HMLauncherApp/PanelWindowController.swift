@@ -8,6 +8,12 @@ final class PanelViewModel: ObservableObject {
     @Published var hovered: Int?
     /// Columns side by side (the setting, limited to what fits on the screen).
     @Published var columns = PanelGrid.columns
+    /// Column width and entry height (resize grip).
+    @Published var size = PanelSize.default
+    /// An entry being dragged to a new place: its index and the slot it would land in.
+    @Published var drag: (from: Int, to: Int)?
+    var rowStride: CGFloat { CGFloat(size.itemHeight) + 4 }
+    var columnWidth: CGFloat { CGFloat(size.columnWidth) }
     /// Favorites gets a star in the tab bar.
     var favoritesID: UUID?
     init(state: PanelState) { self.state = state }
@@ -64,7 +70,10 @@ final class PanelWindowController {
                              onInsertVersion: { [weak self] row, version in
                                  self?.hide()
                                  self?.model.insert(uri: version.uri, usageKey: row.usageKey)
-                             })
+                             },
+                             onReorder: { [weak self] in self?.reorder(from: $0, to: $1) },
+                             onResize: { [weak self] in self?.resize(active: $0) },
+                             onOpenSettings: { [weak self] in self?.hide(); self?.onOpenSettings?() })
         panel.contentView = FirstMouseHostingView(rootView: view)
     }
 
@@ -85,22 +94,73 @@ final class PanelWindowController {
         viewModel.state = PanelState(config: model.config, index: model.searchIndex, selectedTab: lastTab, usage: model.usage.counts)
         viewModel.favoritesID = model.config.favoritesID
         viewModel.hovered = nil
+        viewModel.drag = nil
+        viewModel.size = model.config.panelSize
+        if let dev = Dev.env("HM_PANEL_SIZE")?.split(separator: ",").compactMap({ Double($0) }), dev.count == 2 {
+            viewModel.size = PanelSize(columnWidth: dev[0], itemHeight: dev[1]) // developer aid
+        }
         topLeft = point
-        // Sized for the fullest category right away: switching tabs never resizes the panel, and near the bottom
-        // of the screen the rows don't get pushed away from the mouse. Search and open folders can still grow it.
-        let screen = NSScreen.screens.first { $0.frame.contains(point) } ?? NSScreen.main
-        let fitting = max(1, Int(((screen?.visibleFrame.width ?? 1600) - PanelView.padding * 2 + PanelView.columnSpacing)
-                                 / (PanelView.columnWidth + PanelView.columnSpacing)))
-        let columns = min(model.config.panelColumns, fitting)
-        viewModel.columns = columns
-        let largest = viewModel.state.largestTabCount
-        heightFloor = height(gridRows: PanelGrid.rows(largest, columns: columns), extra: 0)
-        columnsFloor = PanelGrid.columnsNeeded(local: largest, global: 0, max: columns)
+        resetFloors()
         layout()
         panel.orderFrontRegardless()
         outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
             MainActor.assumeIsolated { self?.hide() }
         }
+    }
+
+    /// The gear in the panel's top-right corner.
+    var onOpenSettings: (() -> Void)?
+
+    /// Sized for the fullest category right away: switching tabs never resizes the panel, and near the bottom
+    /// of the screen the rows don't get pushed away from the mouse. Search and open folders can still grow it.
+    private func resetFloors() {
+        let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
+        let fitting = max(1, Int(((screen?.visibleFrame.width ?? 1600) - PanelView.padding * 2 + PanelView.columnSpacing)
+                                 / (viewModel.columnWidth + PanelView.columnSpacing)))
+        let columns = min(model.config.panelColumns, fitting)
+        viewModel.columns = columns
+        let largest = viewModel.state.largestTabCount
+        heightFloor = height(gridRows: PanelGrid.rows(largest, columns: columns), extra: 0)
+        columnsFloor = PanelGrid.columnsNeeded(local: largest, global: 0, max: columns)
+    }
+
+    // MARK: Resize grip
+
+    private var resizeStart: (mouse: CGPoint, size: PanelSize, columns: Int, rows: Int)?
+
+    /// Width per column follows the horizontal move, entry height the vertical one; saved when let go.
+    private func resize(active: Bool) {
+        guard active else {
+            if resizeStart != nil { model.config.panelSize = viewModel.size }
+            resizeStart = nil
+            return
+        }
+        let mouse = NSEvent.mouseLocation
+        if resizeStart == nil {
+            let rows = max(1, min(PanelGrid.rows(viewModel.state.largestTabCount, columns: viewModel.columns), PanelView.maxVisibleRows))
+            resizeStart = (mouse, viewModel.size, max(columnsFloor, 1), rows)
+        }
+        guard let start = resizeStart else { return }
+        let dx = mouse.x - start.mouse.x
+        let dy = start.mouse.y - mouse.y   // dragging down makes entries taller
+        viewModel.size = PanelSize(columnWidth: start.size.columnWidth + Double(dx) / Double(start.columns),
+                                   itemHeight: start.size.itemHeight + Double(dy) / Double(start.rows))
+        resetFloors()
+        layout(animated: false)
+    }
+
+    // MARK: Reordering
+
+    /// An entry dragged to a new slot: saved to the category (or the open folder) right away.
+    private func reorder(from: Int, to: Int) {
+        let state = viewModel.state
+        guard state.filter.isEmpty, case .category(let id, _) = state.tabs[state.selectedTab] else { return }
+        let folder = state.openFolderID
+        model.config.moveEntry(in: id, folder: folder, from: from, to: to)
+        var fresh = PanelState(config: model.config, index: model.searchIndex, selectedTab: state.selectedTab, usage: model.usage.counts)
+        if let folder { fresh.openFolder(folder) }
+        viewModel.state = fresh
+        layout()
     }
 
     func hide() {
@@ -157,11 +217,11 @@ final class PanelWindowController {
         flyoutFolder = folder
         let index = viewModel.state.rows.firstIndex { $0.folderID == folder } ?? 0
         let column = (index % (viewModel.columns * PanelGrid.rowsPerColumn)) / PanelGrid.rowsPerColumn
-        let rowMinX = panel.frame.minX + PanelView.padding + CGFloat(column) * (PanelView.columnWidth + PanelView.columnSpacing)
-        let rowFrame = NSRect(x: rowMinX, y: panel.frame.minY, width: PanelView.columnWidth, height: panel.frame.height)
+        let rowMinX = panel.frame.minX + PanelView.padding + CGFloat(column) * (viewModel.columnWidth + PanelView.columnSpacing)
+        let rowFrame = NSRect(x: rowMinX, y: panel.frame.minY, width: viewModel.columnWidth, height: panel.frame.height)
         let mouse = NSEvent.mouseLocation
         flyout.show(rows: viewModel.state.folderRows(folder),
-                    besides: rowFrame, top: mouse.y + PanelView.rowHeight / 2 + PanelView.padding,
+                    besides: rowFrame, top: mouse.y + viewModel.rowStride / 2 + PanelView.padding,
                     onInsert: { [weak self] in self?.insert($0) })
     }
 
@@ -206,11 +266,11 @@ final class PanelWindowController {
 
     private func height(gridRows: Int, extra: CGFloat) -> CGFloat {
         let visibleRows = CGFloat(min(max(gridRows, 1), PanelView.maxVisibleRows))
-        return PanelView.tabBarHeight + extra + visibleRows * PanelView.rowHeight + PanelView.footerHeight + PanelView.padding * 2
+        return PanelView.tabBarHeight + extra + visibleRows * viewModel.rowStride + PanelView.footerHeight + PanelView.padding * 2
     }
 
     /// Height follows the row count; the top-left corner stays at the click, clamped to the screen.
-    private func layout() {
+    private func layout(animated: Bool = true) {
         let all = viewModel.state.rows
         let globalCount = all.filter(\.isGlobal).count
         let gridRows = PanelGrid.rows(all.count - globalCount, columns: viewModel.columns)
@@ -224,12 +284,12 @@ final class PanelWindowController {
                           columnsFloor)
         columnsFloor = columns
         let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
-        var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: PanelView.width(columns: columns), height: height)
+        var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: PanelView.width(columns: columns, columnWidth: viewModel.size.columnWidth), height: height)
         if let visible = screen?.visibleFrame {
             frame.origin.x = min(max(frame.minX, visible.minX), visible.maxX - frame.width)
             frame.origin.y = min(max(frame.minY, visible.minY), visible.maxY - frame.height)
         }
-        guard panel.isVisible, frame != panel.frame else { panel.setFrame(frame, display: true); return }
+        guard animated, panel.isVisible, frame != panel.frame else { panel.setFrame(frame, display: true); return }
         // Grows with a short ease-out instead of snapping, so the eye can follow where the new rows appear.
         NSAnimationContext.runAnimationGroup { context in
             context.duration = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? 0 : 0.16

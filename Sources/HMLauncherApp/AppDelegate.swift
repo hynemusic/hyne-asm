@@ -23,6 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         settings = SettingsWindowController(model: model)
         quickSearch = QuickSearchWindowController(model: model)
         menuBar.onOpenSettings = { [weak self] in self?.settings.show() }
+        panel.onOpenSettings = { [weak self] in self?.settings.show() }
         #if DEBUG
         runDevSnapshots()
         #endif

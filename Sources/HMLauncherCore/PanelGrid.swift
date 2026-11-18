@@ -33,3 +33,47 @@ public enum PanelGrid {
         return full * rowsPerColumn + min(count % blockSize, rowsPerColumn)
     }
 }
+
+/// How big the panel's entries are: dragged with the panel's resize grip, kept in the config.
+public struct PanelSize: Codable, Equatable, Sendable {
+    public static let widthRange: ClosedRange<Double> = 240...560
+    public static let heightRange: ClosedRange<Double> = 34...64
+    public static let `default` = PanelSize(columnWidth: 316, itemHeight: 42)
+
+    public var columnWidth: Double
+    public var itemHeight: Double
+
+    /// Values outside the ranges are pulled back in.
+    public init(columnWidth: Double, itemHeight: Double) {
+        self.columnWidth = min(max(columnWidth, Self.widthRange.lowerBound), Self.widthRange.upperBound)
+        self.itemHeight = min(max(itemHeight, Self.heightRange.lowerBound), Self.heightRange.upperBound)
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(columnWidth: try c.decode(Double.self, forKey: .columnWidth),
+                  itemHeight: try c.decode(Double.self, forKey: .itemHeight))
+    }
+}
+
+public extension PanelGrid {
+    /// The slot under a point of the grid (dragging to reorder), clamped to the existing entries.
+    static func index(atX x: Double, y: Double, columns: Int, columnStride: Double, rowStride: Double, count: Int) -> Int {
+        guard count > 0 else { return 0 }
+        let columns = max(columns, 1)
+        let blockHeight = rowStride * Double(rowsPerColumn)
+        let block = max(Int(y / blockHeight), 0)
+        let row = min(max(Int((y - Double(block) * blockHeight) / rowStride), 0), rowsPerColumn - 1)
+        let column = min(max(Int(x / columnStride), 0), columns - 1)
+        let index = (block * columns + column) * rowsPerColumn + row
+        return min(max(index, 0), count - 1)
+    }
+
+    /// Indices in display order while entry `from` is dragged to slot `to`.
+    static func order(count: Int, moving from: Int, to: Int) -> [Int] {
+        var order = Array(0..<count)
+        guard order.indices.contains(from), order.indices.contains(to) else { return order }
+        order.insert(order.remove(at: from), at: to)
+        return order
+    }
+}

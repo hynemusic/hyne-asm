@@ -22,6 +22,11 @@ struct PanelView: View {
     /// Other versions of the row's plugin (Mono, other formats) and how to insert one.
     var alternatives: (PanelRow) -> [PluginItem] = { _ in [] }
     var onInsertVersion: (PanelRow, PluginItem) -> Void = { _, _ in }
+    /// Entry `from` dropped on slot `to` (category or open folder, no search active).
+    var onReorder: (Int, Int) -> Void = { _, _ in }
+    /// Resize grip: true while dragging, false when let go.
+    var onResize: (Bool) -> Void = { _ in }
+    var onOpenSettings: () -> Void = {}
 
     var body: some View {
         VStack(spacing: 0) {
@@ -50,6 +55,7 @@ struct PanelView: View {
             Spacer(minLength: 0)
             footer
         }
+        .overlay(alignment: .bottomTrailing) { resizeGrip }
         .padding(Self.padding)
         .modifier(PanelChrome())
         .id(Palette.theme)
@@ -71,6 +77,19 @@ struct PanelView: View {
         .foregroundColor(DS.textTertiary.opacity(0.75))
         .frame(maxWidth: .infinity, minHeight: Self.footerHeight, maxHeight: Self.footerHeight)
         .allowsHitTesting(false)
+    }
+
+    /// Bottom-right corner: drag to make the entries wider or taller (saved).
+    private var resizeGrip: some View {
+        Image(systemName: "arrow.up.left.and.arrow.down.right")
+            .font(.themed(9.5, .semibold))
+            .foregroundColor(DS.textTertiary.opacity(0.8))
+            .frame(width: 22, height: Self.footerHeight)
+            .contentShape(Rectangle())
+            .gesture(DragGesture(minimumDistance: 0)
+                .onChanged { _ in onResize(true) }
+                .onEnded { _ in onResize(false) })
+            .help(Loc.t("Ziehen: Einträge breiter oder höher machen", "Drag to make the entries wider or taller"))
     }
 
     // MARK: Tabs
@@ -112,6 +131,14 @@ struct PanelView: View {
                 .menuIndicator(.hidden)
                 .fixedSize()
             }
+            Button(action: onOpenSettings) {
+                Image(systemName: "gearshape").font(.themed(12, .medium)).foregroundColor(DS.textSecondary)
+                    .frame(width: 26, height: 24)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .modifier(HoverHighlight())
+            .help(Loc.t("Einstellungen", "Settings"))
         }
         .padding(.horizontal, 2)
     }
@@ -161,14 +188,14 @@ struct PanelView: View {
                             Text(viewModel.state.filter.isEmpty ? Loc.t("Keine Einträge – in den Einstellungen hinzufügen", "No entries – add some in Settings") : Loc.t("Nichts gefunden", "Nothing found"))
                         }
                         .font(DS.Font.secondary).foregroundColor(DS.textTertiary)
-                        .frame(maxWidth: .infinity, minHeight: Self.rowHeight - 4)
+                        .frame(maxWidth: .infinity, minHeight: viewModel.rowStride - 4)
                     }
-                    // Two columns of 10 (left first), category hits and "All plugins" hits as separate grids.
+                    // Columns of 9 (left first), category hits and "All plugins" hits as separate grids.
                     let firstGlobal = rows.firstIndex(where: \.isGlobal) ?? rows.count
-                    if firstGlobal > 0 { grid(rows, 0..<firstGlobal) }
+                    if firstGlobal > 0 { grid(rows, 0..<firstGlobal, reorderable: viewModel.state.filter.isEmpty) }
                     if firstGlobal < rows.count {
                         globalHeader
-                        grid(rows, firstGlobal..<rows.count)
+                        grid(rows, firstGlobal..<rows.count, reorderable: false)
                     }
                 }
             }
@@ -179,29 +206,56 @@ struct PanelView: View {
     }
 
     static let globalHeaderHeight: CGFloat = 26
-    static let columnWidth: CGFloat = 316
     static let columnSpacing: CGFloat = 6
-    static var width: CGFloat { width(columns: PanelGrid.columns) }
+    static var width: CGFloat { width(columns: PanelGrid.columns, columnWidth: PanelSize.default.columnWidth) }
     /// One column per 9 entries, up to the setting (`PanelGrid.columnsNeeded`).
-    static func width(columns: Int) -> CGFloat {
-        columnWidth * CGFloat(columns) + columnSpacing * CGFloat(columns - 1) + padding * 2
+    static func width(columns: Int, columnWidth: Double) -> CGFloat {
+        CGFloat(columnWidth) * CGFloat(columns) + columnSpacing * CGFloat(columns - 1) + padding * 2
     }
 
-    private func grid(_ rows: [PanelRow], _ range: Range<Int>) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+    /// Slots in a grid; while an entry is dragged, the others make room for it.
+    private func grid(_ rows: [PanelRow], _ range: Range<Int>, reorderable: Bool) -> some View {
+        let order: [Int] = {
+            guard reorderable, let d = viewModel.drag else { return Array(0..<rows.count) }
+            return PanelGrid.order(count: range.count, moving: d.from, to: d.to)
+        }()
+        return VStack(alignment: .leading, spacing: 4) {
             ForEach(Array(PanelGrid.blocks(range, columns: viewModel.columns).enumerated()), id: \.offset) { _, block in
                 HStack(alignment: .top, spacing: Self.columnSpacing) {
                     // Empty columns are left out, so a short category stays one column wide.
                     ForEach(Array(block.filter { !$0.isEmpty }.enumerated()), id: \.offset) { _, column in
                         VStack(spacing: 4) {
-                            ForEach(column, id: \.self) { index in rowView(rows[index], index: index).id(index) }
+                            ForEach(column, id: \.self) { slot in
+                                let source = order[slot]
+                                rowView(rows[source], index: slot, source: source, reorderable: reorderable).id(slot)
+                            }
                         }
-                        .frame(width: Self.columnWidth, alignment: .top)
+                        .frame(width: viewModel.columnWidth, alignment: .top)
                     }
                 }
             }
         }
+        .coordinateSpace(name: reorderable ? Self.reorderSpace : "grid-\(range.lowerBound)")
         .frame(maxWidth: .infinity, alignment: .leading)   // a one-column section sits left in a two-column panel
+        .animation(.easeOut(duration: 0.12), value: viewModel.drag?.to)
+    }
+
+    private static let reorderSpace = "panelReorder"
+
+    /// Long enough a move to be a drag, not a click; the slot follows the pointer.
+    private func reorderGesture(source: Int, count: Int) -> some Gesture {
+        DragGesture(minimumDistance: 6, coordinateSpace: .named(Self.reorderSpace))
+            .onChanged { value in
+                let to = PanelGrid.index(atX: value.location.x, y: value.location.y, columns: viewModel.columns,
+                                         columnStride: viewModel.columnWidth + Self.columnSpacing,
+                                         rowStride: viewModel.rowStride, count: count)
+                let from = viewModel.drag?.from ?? source
+                if viewModel.drag?.from != from || viewModel.drag?.to != to { viewModel.drag = (from, to) }
+            }
+            .onEnded { _ in
+                if let d = viewModel.drag, d.from != d.to { onReorder(d.from, d.to) }
+                viewModel.drag = nil
+            }
     }
 
     private var globalHeader: some View {
@@ -245,10 +299,12 @@ struct PanelView: View {
         return ""
     }
 
-    private func rowView(_ row: PanelRow, index: Int) -> some View {
-        let active = viewModel.state.highlighted == index || viewModel.hovered == index
+    private func rowView(_ row: PanelRow, index: Int, source: Int, reorderable: Bool) -> some View {
+        let dragged = reorderable && viewModel.drag?.from == source
+        let active = dragged || (viewModel.drag == nil && (viewModel.state.highlighted == index || viewModel.hovered == index))
         return Button { onInsert(row) } label: {
             LauncherRow(number: index, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,
+                        height: CGFloat(viewModel.size.itemHeight),
                         active: active, available: row.isAvailable, color: Color(label: row.colorID)) {
                 if row.isNew { NewBadge() }
                 if row.folderID != nil {
@@ -262,7 +318,12 @@ struct PanelView: View {
             .opacity(row.isAvailable ? 1 : 0.5)
         }
         .buttonStyle(.plain)
+        .scaleEffect(dragged ? 1.02 : 1)
+        .shadow(color: .black.opacity(dragged ? 0.35 : 0), radius: 6, y: 2)
+        .zIndex(dragged ? 1 : 0)
+        .highPriorityGesture(reorderable ? reorderGesture(source: source, count: viewModel.state.rows.count) : nil)
         .onHover { inside in
+            guard viewModel.drag == nil else { return }
             if inside { viewModel.hovered = index; onHoverRow(row) } else if viewModel.hovered == index { viewModel.hovered = nil }
         }
         .contextMenu {
