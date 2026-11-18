@@ -6,7 +6,9 @@ struct PanelView: View {
     static let tabBarHeight: CGFloat = 38
     static let filterHeight: CGFloat = 28
     static let padding: CGFloat = 8
-    static let maxVisibleRows = 10
+    /// One column's worth (keys 1–9); more rows scroll.
+    static let maxVisibleRows = PanelGrid.rowsPerColumn
+    static let footerHeight: CGFloat = 22
     static let maxVisibleTabs = 6
 
     @ObservedObject var viewModel: PanelViewModel
@@ -45,27 +47,30 @@ struct PanelView: View {
             }
             if !viewModel.state.filter.isEmpty { filterField }
             rowList
+            Spacer(minLength: 0)
+            footer
         }
-        .overlay(alignment: .bottom) { leftoverHint }
         .padding(Self.padding)
         .modifier(PanelChrome())
         .id(Palette.theme)
     }
 
-    /// A short category in a panel sized for the fullest one: a quiet line in the free space instead of a void.
-    @ViewBuilder private var leftoverHint: some View {
+    /// Bottom line of every category: how to search, or how many hits the search found.
+    private var footer: some View {
         let state = viewModel.state
-        if state.filter.isEmpty, state.openFolderName == nil,
-           viewModel.capacityRows - PanelGrid.rows(state.rows.count, columns: viewModel.columns) >= 2 {
-            HStack(spacing: 6) {
+        return HStack(spacing: 6) {
+            if state.filter.isEmpty {
                 Image(systemName: "magnifyingglass").font(.themed(10.5, .semibold))
                 Text(Loc.t("Tippen zum Suchen", "Type to search"))
+            } else {
+                let n = state.rows.count
+                Text(n == 1 ? Loc.t("1 Treffer", "1 result") : Loc.t("\(n) Treffer", "\(n) results"))
             }
-            .font(DS.Font.caption)
-            .foregroundColor(DS.textTertiary.opacity(0.75))
-            .padding(.bottom, 10)
-            .allowsHitTesting(false)
         }
+        .font(DS.Font.caption)
+        .foregroundColor(DS.textTertiary.opacity(0.75))
+        .frame(maxWidth: .infinity, minHeight: Self.footerHeight, maxHeight: Self.footerHeight)
+        .allowsHitTesting(false)
     }
 
     // MARK: Tabs

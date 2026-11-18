@@ -6,8 +6,6 @@ import HMLauncherCore
 final class PanelViewModel: ObservableObject {
     @Published var state: PanelState
     @Published var hovered: Int?
-    /// Grid rows the panel was sized for when it opened (the fullest category).
-    @Published var capacityRows = 0
     /// Columns side by side (the setting, limited to what fits on the screen).
     @Published var columns = PanelGrid.columns
     /// Favorites gets a star in the tab bar.
@@ -98,7 +96,6 @@ final class PanelWindowController {
         let largest = viewModel.state.largestTabCount
         heightFloor = height(gridRows: PanelGrid.rows(largest, columns: columns), extra: 0)
         columnsFloor = PanelGrid.columnsNeeded(local: largest, global: 0, max: columns)
-        viewModel.capacityRows = min(PanelGrid.rows(largest, columns: columns), PanelView.maxVisibleRows)
         layout()
         panel.orderFrontRegardless()
         outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
@@ -209,7 +206,7 @@ final class PanelWindowController {
 
     private func height(gridRows: Int, extra: CGFloat) -> CGFloat {
         let visibleRows = CGFloat(min(max(gridRows, 1), PanelView.maxVisibleRows))
-        return PanelView.tabBarHeight + extra + visibleRows * PanelView.rowHeight + PanelView.padding * 2
+        return PanelView.tabBarHeight + extra + visibleRows * PanelView.rowHeight + PanelView.footerHeight + PanelView.padding * 2
     }
 
     /// Height follows the row count; the top-left corner stays at the click, clamped to the screen.
