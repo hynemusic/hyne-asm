@@ -14,6 +14,7 @@ struct StatsPage: View {
     @State private var confirmReset = false
     @State private var info: String?
     @State private var removing: UsageStat?
+    @State private var removingEntry: RareEntry?
 
     var body: some View {
         PageContainer(title: Loc.t("Statistik", "Stats"),
@@ -35,8 +36,9 @@ struct StatsPage: View {
                     tiles
                     topChart
                     kindCard
-                    allList
                 }
+                if model.config.showRarelyUsed { rarelyUsedCard }
+                if summary.total > 0 { allList }
             }
             .padding(.bottom, DS.Space.l)
         }
@@ -63,6 +65,19 @@ struct StatsPage: View {
         } message: {
             Text(Loc.t("Sein Zähler (\(removing?.count ?? 0)×) wird gelöscht – in der Suche rutscht es dann nicht mehr nach oben. Das Plugin selbst bleibt.",
                        "Its count (\(removing?.count ?? 0)×) is deleted, so it no longer moves up in search. The plugin itself stays."))
+        }
+        .confirmationDialog(Loc.t("„\(removingEntry?.entry.title ?? "")“ aus dem Panel entfernen?", "Remove “\(removingEntry?.entry.title ?? "")” from the panel?"),
+                            isPresented: Binding(get: { removingEntry != nil }, set: { if !$0 { removingEntry = nil } })) {
+            Button(Loc.t("Entfernen", "Remove"), role: .destructive) {
+                if let rare = removingEntry {
+                    model.config.removeEntry(rare.entry.id, from: rare.categoryID)
+                    info = Loc.t("„\(rare.entry.title)“ aus „\(rare.place)“ entfernt.", "Removed “\(rare.entry.title)” from “\(rare.place)”.")
+                }
+                removingEntry = nil
+            }
+        } message: {
+            Text(Loc.t("Der Eintrag verschwindet aus „\(removingEntry?.place ?? "")“. Das Plugin bleibt installiert, und ältere Menüstände findest du unter Versionen.",
+                       "The entry disappears from “\(removingEntry?.place ?? "")”. The plugin stays installed, and earlier menus are under Versions."))
         }
         .confirmationDialog(Loc.t("Statistik zurücksetzen?", "Reset stats?"), isPresented: $confirmReset) {
             Button(Loc.t("Zurücksetzen", "Reset"), role: .destructive) { reset() }
@@ -192,6 +207,59 @@ struct StatsPage: View {
                 }
             }
         }
+    }
+
+    /// Panel entries inserted at most once: candidates to tidy up. Keep hides one, the eye button hides the section.
+    @ViewBuilder
+    private var rarelyUsedCard: some View {
+        let rare = RarelyUsed.entries(config: model.config, index: model.searchIndex, usage: model.usage.counts)
+        if !rare.isEmpty {
+            VStack(alignment: .leading, spacing: DS.Space.s) {
+                HStack {
+                    SectionLabel(text: Loc.t("Im Panel, aber kaum genutzt", "In your panel, rarely used"))
+                    Spacer()
+                    Button(Loc.t("Hinweise ausblenden", "Hide these hints")) { model.config.showRarelyUsed = false }
+                        .buttonStyle(.borderless).font(DS.Font.caption).foregroundColor(DS.textSecondary)
+                        .help(Loc.t("Wieder einschalten unter Verhalten", "Turn back on under Behavior"))
+                }
+                VStack(spacing: 0) {
+                    ForEach(Array(rare.prefix(12).enumerated()), id: \.element.id) { i, item in
+                        if i > 0 { Rectangle().fill(DS.hairline).frame(height: 1).padding(.leading, 52) }
+                        rareRow(item)
+                    }
+                    if rare.count > 12 {
+                        Text(Loc.t("… und \(rare.count - 12) weitere", "… and \(rare.count - 12) more"))
+                            .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+                            .frame(maxWidth: .infinity, alignment: .leading).padding(DS.Space.m)
+                    }
+                }
+                .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
+                .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+            }
+        }
+    }
+
+    private func rareRow(_ item: RareEntry) -> some View {
+        HStack(spacing: DS.Space.m) {
+            Image(systemName: IconCatalog.symbolName(for: item.entry.iconID))
+                .font(.system(size: 12)).foregroundColor(DS.textSecondary)
+                .frame(width: 28, height: 28)
+                .background(RoundedRectangle(cornerRadius: 7).fill(DS.raised))
+            VStack(alignment: .leading, spacing: 1) {
+                Text(item.entry.title).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary).lineLimit(1)
+                Text(item.place).font(DS.Font.caption).foregroundColor(DS.textTertiary).lineLimit(1)
+            }
+            Spacer()
+            Text(item.count == 0 ? Loc.t("nie eingefügt", "never inserted") : Loc.t("1× eingefügt", "inserted once"))
+                .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+            Button(Loc.t("Behalten", "Keep")) { model.config.keepEntry(item.entry.id) }
+                .controlSize(.small)
+                .help(Loc.t("Nicht mehr als kaum genutzt anzeigen", "Stop listing it as rarely used"))
+            Button(Loc.t("Entfernen …", "Remove …")) { removingEntry = item }
+                .controlSize(.small)
+        }
+        .padding(.horizontal, DS.Space.m)
+        .frame(height: 50)
     }
 
     private var allList: some View {

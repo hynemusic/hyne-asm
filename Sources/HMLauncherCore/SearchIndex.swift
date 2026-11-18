@@ -14,7 +14,7 @@ public final class SearchIndex: @unchecked Sendable {
     public let globalPopularity: [Int]
     private let rowIndexByKey: [String: Int]
 
-    public init(items: [PluginItem], config: LauncherConfig) {
+    public init(items: [PluginItem], config: LauncherConfig, newURIs: Set<String> = []) {
         resolver = EntryResolver.Index(items)
         let keys = PluginVariants.Keys(items)
         var usageKey: [String: String] = [:]
@@ -25,7 +25,8 @@ public final class SearchIndex: @unchecked Sendable {
             .map { item in
                 PanelRow(uri: item.uri, name: item.name, source: item.source, path: item.path,
                          iconID: IconGuesser.guess(item), title: item.name, isAvailable: true,
-                         isGlobal: true, usageKey: keys.key(item), colorID: config.colorID(for: item))
+                         isGlobal: true, usageKey: keys.key(item), colorID: config.colorID(for: item),
+                         isNew: newURIs.contains(item.uri))
             }
         globalRows = rows
         globalPrepared = rows.map { SearchMatcher.Prepared($0.title) }

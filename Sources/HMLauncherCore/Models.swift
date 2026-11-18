@@ -138,6 +138,10 @@ public struct LauncherConfig: Codable, Sendable {
     public var theme: AppTheme = .original
     /// Where inserted items land and on which tracks.
     public var insert: InsertOptions = .default
+    /// Stats page: list panel entries that are hardly used (can be switched off).
+    public var showRarelyUsed = true
+    /// Entries the user chose to keep although they are rarely used.
+    public var keptEntries: [UUID] = []
 
     public init(version: Int, categories: [Category], shortcuts: ShortcutSettings, panelKeys: PanelKeyBindings = .default) {
         self.version = version
@@ -159,6 +163,8 @@ public struct LauncherConfig: Codable, Sendable {
         itemShortcuts = try c.decodeIfPresent([ItemShortcut].self, forKey: .itemShortcuts) ?? []
         theme = (try? c.decodeIfPresent(AppTheme.self, forKey: .theme)) ?? .original
         insert = (try? c.decodeIfPresent(InsertOptions.self, forKey: .insert)) ?? .default
+        showRarelyUsed = try c.decodeIfPresent(Bool.self, forKey: .showRarelyUsed) ?? true
+        keptEntries = try c.decodeIfPresent([UUID].self, forKey: .keptEntries) ?? []
     }
 
     public static let currentVersion = 3

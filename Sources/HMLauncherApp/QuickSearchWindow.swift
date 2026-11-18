@@ -172,6 +172,7 @@ private struct QuickSearchView: View {
                         subtitle: result.place ?? Loc.t("Alle Plugins", "All plugins") + " · " + PluginGrouping.formatLabel(
                             PluginItem(uri: r.uri, name: r.name, source: r.source, path: r.path)),
                         active: highlighted, available: r.isAvailable, color: Color(label: r.colorID)) {
+                if r.isNew { NewBadge() }
                 if highlighted {
                     Text("↩")
                         .font(DS.Font.keycap).foregroundColor(.onAccent)

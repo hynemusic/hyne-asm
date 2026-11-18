@@ -17,13 +17,19 @@ final class AppModel: ObservableObject {
     @Published private(set) var liveVersion: String?
     let catalog: PluginCatalog
     private var catalogWatch: AnyCancellable?
+    private var usageWatch: AnyCancellable?
     private var cachedIndex: SearchIndex?
     private var indexRebuild: Task<Void, Never>?
 
     /// Search data for the panel and the quick search, rebuilt only when the plugin list or the menu changed.
+    /// When each item was first seen, for NEW badges.
+    let seen = SeenStore(url: SeenStore.defaultURL)
+    /// Newly installed items not yet filed or inserted (badge + "New" group in the settings browser).
+    @Published private(set) var newURIs: Set<String> = []
+
     var searchIndex: SearchIndex {
         if let cachedIndex { return cachedIndex }
-        let index = SearchIndex(items: catalog.items, config: config)
+        let index = SearchIndex(items: catalog.items, config: config, newURIs: newURIs)
         cachedIndex = index
         return index
     }
@@ -33,14 +39,19 @@ final class AppModel: ObservableObject {
     private func invalidateSearchIndex() {
         cachedIndex = nil
         indexRebuild?.cancel()
-        let items = catalog.items, config = config
+        let items = catalog.items, config = config, seen = seen, counts = usage.counts
         indexRebuild = Task { [weak self] in
             try? await Task.sleep(nanoseconds: 400_000_000)
             guard !Task.isCancelled else { return }
             // Built off the main thread, so editing in the settings never stutters.
-            let index = await Task.detached(priority: .utility) { SearchIndex(items: items, config: config) }.value
-            guard !Task.isCancelled, let self, self.cachedIndex == nil else { return }
-            self.cachedIndex = index
+            let (index, fresh) = await Task.detached(priority: .utility) { () -> (SearchIndex, Set<String>) in
+                seen.update(with: items)
+                let fresh = NewItems.uris(items: items, seen: seen, config: config, usage: counts)
+                return (SearchIndex(items: items, config: config, newURIs: fresh), fresh)
+            }.value
+            guard !Task.isCancelled, let self else { return }
+            if self.newURIs != fresh { self.newURIs = fresh }
+            if self.cachedIndex == nil { self.cachedIndex = index }
         }
     }
     let versions = MenuVersionStore(directory: MenuVersionStore.defaultDirectory)
@@ -62,6 +73,10 @@ final class AppModel: ObservableObject {
         catalogWatch = catalog.$items.dropFirst().sink { [weak self] _ in
             DispatchQueue.main.async { self?.invalidateSearchIndex() }
         }
+        usageWatch = NotificationCenter.default.publisher(for: UsageStore.didChange).sink { [weak self] _ in
+            DispatchQueue.main.async { self?.invalidateSearchIndex() }
+        }
+        invalidateSearchIndex() // first NEW check
     }
 
     /// HM_THEME=<name> previews a theme without saving it (developer aid for screenshots).

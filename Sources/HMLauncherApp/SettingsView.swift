@@ -118,6 +118,16 @@ struct SettingsView: View {
             }
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 1) {
+                    let fresh = newItems
+                    if !fresh.isEmpty {
+                        HStack(spacing: 6) {
+                            SectionLabel(text: Loc.t("Neu installiert", "Newly installed"))
+                            NewBadge()
+                        }
+                        .padding(.top, 2).padding(.bottom, DS.Space.xs).padding(.leading, DS.Space.xs)
+                        ForEach(fresh, id: \.uri) { item in pluginRow(item) }
+                        Spacer().frame(height: DS.Space.m)
+                    }
                     SectionLabel(text: Loc.t("Live", "Live"))
                         .padding(.top, 2).padding(.bottom, DS.Space.xs).padding(.leading, DS.Space.xs)
                     LiveActionsGroup(search: search, categoryName: category?.name ?? "") { action in
@@ -151,6 +161,14 @@ struct SettingsView: View {
         .padding(.horizontal, DS.Space.l)
         .padding(.top, DS.Space.l)
         .padding(.bottom, DS.Space.l)
+    }
+
+    /// Newly installed items (best format), newest name first; filtered by the search like the groups.
+    private var newItems: [PluginItem] {
+        guard !model.newURIs.isEmpty else { return [] }
+        return variants.values.map(\.preferred)
+            .filter { model.newURIs.contains($0.uri) && (search.isEmpty || SearchMatcher.score($0.name, search) != nil) }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
     /// One row per plugin (its best format); the other formats are kept for the badges and "Add as …".
@@ -231,6 +249,7 @@ struct SettingsView: View {
         return HStack(spacing: DS.Space.s) {
             RoundedRectangle(cornerRadius: 1.5).fill(Color(label: model.config.colorID(for: item)) ?? .clear).frame(width: 3, height: 14)
             Text(item.name).font(DS.Font.body).foregroundColor(DS.textSecondary).lineLimit(1)
+            if model.newURIs.contains(item.uri) { NewBadge() }
             Spacer(minLength: DS.Space.s)
             ForEach(variants[item.uri]?.formats ?? [PluginGrouping.formatLabel(item)], id: \.self) { format in
                 let preferred = format == PluginGrouping.formatLabel(item)

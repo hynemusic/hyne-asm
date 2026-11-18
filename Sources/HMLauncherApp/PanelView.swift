@@ -209,6 +209,7 @@ struct PanelView: View {
         return Button { onInsert(row) } label: {
             LauncherRow(number: index, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,
                         active: active, available: row.isAvailable, color: Color(label: row.colorID)) {
+                if row.isNew { NewBadge() }
                 if row.folderID != nil {
                     Text("\(row.childCount)")
                         .font(DS.Font.badge.monospacedDigit()).foregroundColor(DS.textSecondary)

@@ -322,3 +322,16 @@ struct SelectedText: ViewModifier {
             .background(RoundedRectangle(cornerRadius: 3).fill(isSelected ? Color.brandBlue.opacity(0.45) : .clear))
     }
 }
+
+/// "NEW" next to a newly installed plugin or preset.
+struct NewBadge: View {
+    var body: some View {
+        Text(Loc.t("NEU", "NEW"))
+            .font(DS.Font.badge)
+            .tracking(0.5)
+            .foregroundColor(.onAccent)
+            .padding(.horizontal, 5).padding(.vertical, 2)
+            .background(RoundedRectangle(cornerRadius: 4).fill(Color.accent))
+            .accessibilityLabel(Loc.t("Neu", "New"))
+    }
+}
