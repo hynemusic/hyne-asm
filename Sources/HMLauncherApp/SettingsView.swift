@@ -112,8 +112,9 @@ struct SettingsView: View {
             .onAppear { regroup(catalog.items) }
             .onChange(of: search) { _ in regroup(catalog.items) }
             .onReceive(catalog.$items.dropFirst()) { regroup($0) }
-            Text(Loc.t("Doppelklick oder ziehen fügt zu „\(category?.name ?? "")“ hinzu.", "Double-click or drag to add to “\(category?.name ?? "")”."))
-                .font(.caption).foregroundColor(.dimText)
+            Text(Loc.t("Doppelklick oder ziehen fügt zu „\(category?.name ?? "")“ hinzu. Eigene Presets (.adg, .vstpreset …) kannst du auch aus dem Finder hineinziehen.",
+                       "Double-click or drag to add to “\(category?.name ?? "")”. You can also drag your own presets (.adg, .vstpreset …) in from Finder."))
+                .font(.caption).foregroundColor(.dimText).fixedSize(horizontal: false, vertical: true)
         }
         .padding(12)
     }
@@ -132,7 +133,7 @@ struct SettingsView: View {
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: open ? "chevron.down" : "chevron.right").font(.system(size: 9, weight: .bold)).frame(width: 10)
-                Image(systemName: group.title.hasPrefix("Live") ? "square.stack.3d.up" : "folder").foregroundColor(.accent)
+                Image(systemName: group.title.hasPrefix(PresetFormat.groupPrefix) ? "doc.on.doc" : group.title.hasPrefix("Live") ? "square.stack.3d.up" : "folder").foregroundColor(.accent)
                 Text(group.title).font(.system(size: 13, weight: .semibold))
                 Spacer()
                 Text("\(group.items.count)").font(.caption).foregroundColor(.dimText)
@@ -252,7 +253,7 @@ struct SettingsView: View {
             if categoryMarker?.id == c.id { Rectangle().fill(Color.accent).frame(height: 3).offset(y: categoryMarker?.after == true ? 3 : -3) }
         }
         .modifier(CategoryDragSource(enabled: !c.isFavorites, id: c.id, name: c.name))
-        .onDrop(of: [categoryDragType, entriesDragType, .text], delegate: CategoryDropDelegate(
+        .onDrop(of: [categoryDragType, entriesDragType, .fileURL, .text], delegate: CategoryDropDelegate(
             category: c.id, isFavorites: c.isFavorites,
             marker: $categoryMarker, entryTarget: $dropCategory,
             moveCategory: { moveDraggedCategory(before: $0) },
@@ -318,7 +319,7 @@ struct SettingsView: View {
                                 // Just a count next to the cursor instead of a shrunken copy of the row.
                                 DragCountBadge(count: selection.contains(row.id) ? selection.count : 1)
                             }
-                            .onDrop(of: [entriesDragType, .text], delegate: RowDropDelegate(
+                            .onDrop(of: [entriesDragType, .fileURL, .text], delegate: RowDropDelegate(
                                 row: SettingsViewRow(id: row.id, isFolder: row.entry.isFolder), drop: dropState,
                                 perform: { spot, providers in dropOnRow(row, spot, providers, in: category) }))
                             .listRowBackground(Color.clear)
@@ -327,7 +328,7 @@ struct SettingsView: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                .onDrop(of: [entriesDragType, .text], isTargeted: nil) { providers in
+                .onDrop(of: [entriesDragType, .fileURL, .text], isTargeted: nil) { providers in
                     // Empty area below the rows: entries move to the end, browser plugins are added.
                     if let p = providers.first(where: { $0.hasItemConformingToTypeIdentifier(entriesDragType.identifier) }) {
                         loadEntryIDs(p) { model.config.moveEntries($0, toFolder: nil, before: nil, in: category.id) }
@@ -418,6 +419,7 @@ struct SettingsView: View {
             }
             return true
         }
+        if importFiles(providers, into: category.id, folder: folder) { return true }
         for p in providers {
             _ = p.loadObject(ofClass: NSString.self) { obj, _ in
                 guard let uri = obj as? String else { return }
@@ -585,7 +587,104 @@ struct SettingsView: View {
         Text(title).font(.system(size: 15, weight: .semibold))
     }
 
+    // MARK: Presets from Finder
+
+    /// Handles a drop of files from Finder. Returns false when the drop holds no files (then it's a plugin URI).
+    private func importFiles(_ providers: [NSItemProvider], into categoryID: UUID, folder: UUID?) -> Bool {
+        let files = providers.filter { $0.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) }
+        guard !files.isEmpty else { return false }
+        let group = DispatchGroup()
+        var urls: [URL] = []
+        let lock = NSLock()
+        for p in files {
+            group.enter()
+            _ = p.loadObject(ofClass: NSURL.self) { obj, _ in
+                if let url = obj as? URL { lock.lock(); urls.append(url); lock.unlock() }
+                group.leave()
+            }
+        }
+        group.notify(queue: .main) { importPresets(urls, into: categoryID, folder: folder) }
+        return true
+    }
+
+    /// Presets Live already lists are added right away. Others are copied into the User Library (after asking),
+    /// then added as soon as Live has picked them up.
+    private func importPresets(_ urls: [URL], into categoryID: UUID, folder: UUID?) {
+        let presets = urls.filter(PresetFormat.isPresetFile)
+        if presets.isEmpty {
+            alert(Loc.t("Keine Presets", "No presets"),
+                  Loc.t("Ziehen kannst du .adg, .adv, .vstpreset, .aupreset, .fxp, .fxb und .amxd.",
+                        "You can drag in .adg, .adv, .vstpreset, .aupreset, .fxp, .fxb and .amxd files."))
+            return
+        }
+        Task { @MainActor in
+            var missing = addMatches(presets, into: categoryID, folder: folder)
+            if missing.isEmpty { return }
+            try? await catalog.refresh() // the list may just be older than the file
+            missing = addMatches(missing, into: categoryID, folder: folder)
+            if missing.isEmpty { return }
+
+            let library = PresetImport.userLibraryURL
+            let names = missing.map(\.lastPathComponent).joined(separator: "\n")
+            guard confirm(Loc.t("In die User Library kopieren?", "Copy into the User Library?"),
+                          Loc.t("Live kennt diese Presets noch nicht:\n\(names)\n\nHYNE ASM kopiert sie nach „User Library/Presets/HYNE ASM“, damit Live sie laden kann. Die Originale bleiben, wo sie sind.",
+                                "Live doesn't know these presets yet:\n\(names)\n\nHYNE ASM copies them to “User Library/Presets/HYNE ASM” so Live can load them. The originals stay where they are."),
+                          ok: Loc.t("Kopieren", "Copy")) else { return }
+            var copies: [URL] = []
+            for file in missing {
+                let target = PresetImport.isInside(file, library) ? file : PresetImport.copyDestination(for: file)
+                if target != file {
+                    do {
+                        try FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
+                        try FileManager.default.copyItem(at: file, to: target)
+                    } catch {
+                        alert(Loc.t("Kopieren fehlgeschlagen", "Copy failed"), "\(file.lastPathComponent): \(error.localizedDescription)")
+                        continue
+                    }
+                }
+                copies.append(target)
+            }
+            // Live scans the User Library on its own; give it a few seconds.
+            for _ in 0..<12 where !copies.isEmpty {
+                try? await Task.sleep(nanoseconds: 1_500_000_000)
+                try? await catalog.refresh()
+                copies = addMatches(copies, into: categoryID, folder: folder)
+            }
+            if !copies.isEmpty {
+                alert(Loc.t("Noch nicht in Live", "Not in Live yet"),
+                      Loc.t("Live hat \(copies.map(\.lastPathComponent).joined(separator: ", ")) noch nicht eingelesen. Die Datei liegt in „User Library/Presets/HYNE ASM“ – lade die Liste gleich mit ↻ neu und füg sie dann hinzu.",
+                            "Live hasn't picked up \(copies.map(\.lastPathComponent).joined(separator: ", ")) yet. The file is in “User Library/Presets/HYNE ASM” – reload the list with ↻ in a moment and add it then."))
+            }
+        }
+    }
+
+    /// Adds every file Live lists and returns the ones it doesn't (yet).
+    private func addMatches(_ files: [URL], into categoryID: UUID, folder: UUID?) -> [URL] {
+        files.filter { file in
+            guard let item = PresetImport.match(file, in: catalog.items) else { return true }
+            model.config.addEntry(item, to: categoryID, folder: folder)
+            return false
+        }
+    }
+
+    private func alert(_ title: String, _ text: String) {
+        let a = NSAlert()
+        a.messageText = title
+        a.informativeText = text
+        a.runModal()
+    }
+
+    private func confirm(_ title: String, _ text: String, ok: String) -> Bool {
+        let a = NSAlert()
+        a.messageText = title
+        a.informativeText = text
+        a.addButton(withTitle: ok)
+        a.addButton(withTitle: Loc.t("Abbrechen", "Cancel"))
+        return a.runModal() == .alertFirstButtonReturn
+    }
+
     private func drop(_ providers: [NSItemProvider], into categoryID: UUID) -> Bool {
+        if importFiles(providers, into: categoryID, folder: nil) { return true }
         for provider in providers {
             _ = provider.loadObject(ofClass: NSString.self) { object, _ in
                 guard let uri = object as? String else { return }
@@ -966,7 +1065,7 @@ private struct RowDropDelegate: DropDelegate {
         return y < 21 ? .before : .after
     }
 
-    func validateDrop(info: DropInfo) -> Bool { info.hasItemsConforming(to: [entriesDragType, .text]) }
+    func validateDrop(info: DropInfo) -> Bool { info.hasItemsConforming(to: [entriesDragType, .fileURL, .text]) }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
         let m = DropMarker(id: row.id, spot: spot(info))
@@ -981,7 +1080,7 @@ private struct RowDropDelegate: DropDelegate {
     func performDrop(info: DropInfo) -> Bool {
         let s = spot(info)
         drop.marker = nil
-        return perform(s, info.itemProviders(for: [entriesDragType, .text]))
+        return perform(s, info.itemProviders(for: [entriesDragType, .fileURL, .text]))
     }
 }
 
@@ -1067,7 +1166,7 @@ private struct CategoryDropDelegate: DropDelegate {
     /// Favorites is always first, so a category dropped on it lands right after it.
     private func after(_ info: DropInfo) -> Bool { isFavorites || info.location.y >= 15 }
 
-    func validateDrop(info: DropInfo) -> Bool { info.hasItemsConforming(to: [categoryDragType, entriesDragType, .text]) }
+    func validateDrop(info: DropInfo) -> Bool { info.hasItemsConforming(to: [categoryDragType, entriesDragType, .fileURL, .text]) }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
         if isCategoryDrag(info) {
@@ -1092,7 +1191,7 @@ private struct CategoryDropDelegate: DropDelegate {
             moveCategory(after(info) ? nextCategory : category)
             return true
         }
-        return dropEntries(info.itemProviders(for: [entriesDragType, .text]))
+        return dropEntries(info.itemProviders(for: [entriesDragType, .fileURL, .text]))
     }
 
     /// Filled in by the list: the category below this one (nil = this is the last one).

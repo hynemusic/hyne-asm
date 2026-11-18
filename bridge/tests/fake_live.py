@@ -12,9 +12,10 @@ def folder(name, uri, children):
 
 
 class FakeBrowser:
-    def __init__(self, **roots):
+    def __init__(self, user_folders=None, **roots):
         for name, children in roots.items():
             setattr(self, name, folder(name, "root:" + name, children))
+        self.user_folders = user_folders or []
         self.loaded = []
 
     def load_item(self, item):

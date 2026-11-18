@@ -53,6 +53,7 @@ public enum IconGuesser {
         for rule in rules where rule.keywords.contains(where: { matches($0, name: name, words: words) }) {
             return rule.icon
         }
+        if item.source.isPreset { return PresetFormat.fallbackIcon(item) }
         switch item.source {
         case .instruments: return "synth"
         case .midiEffects: return "midi"

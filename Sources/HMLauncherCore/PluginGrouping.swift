@@ -22,6 +22,13 @@ public enum PluginGrouping {
         let matches = search.isEmpty ? items : items.filter { SearchMatcher.score(SearchMatcher.Prepared($0.name), query) != nil }
         var result: [PluginGroup] = []
 
+        // Own presets first, one group per folder they were saved in.
+        let presets = matches.filter { $0.source.isPreset }
+        let byFolder = Dictionary(grouping: presets, by: PresetFormat.groupTitle)
+        for title in byFolder.keys.sorted(by: { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }) {
+            result.append(PluginGroup(title: title, items: byFolder[title]!.sorted(by: byName)))
+        }
+
         for (source, title) in liveGroups {
             let group = matches.filter { $0.source == source }.sorted(by: byName)
             if !group.isEmpty { result.append(PluginGroup(title: title, items: group)) }
@@ -42,6 +49,7 @@ public enum PluginGrouping {
     }
 
     public static func formatLabel(_ item: PluginItem) -> String {
+        if item.source.isPreset { return PresetFormat.label(item) }
         guard item.source == .plugins else { return "Live" }
         switch formatRank(item) {
         case 0: return "VST3"

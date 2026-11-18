@@ -1,9 +1,40 @@
+try:
+    from urllib.parse import unquote
+except ImportError:  # pragma: no cover - Live's older Python
+    from urllib import unquote
+
 ROOTS = ("plugins", "instruments", "audio_effects", "midi_effects", "max_for_live")
 PRESET_MARKER = ":FileId_"
 
+# Own presets: only the User Library and the folders added under "Places" in Live's browser.
+PRESET_EXTENSIONS = (".adg", ".adv", ".vstpreset", ".aupreset", ".fxp", ".fxb", ".amxd")
+# User Library folders that never hold device presets but can be huge (walking them would stall Live).
+SKIPPED_USER_LIBRARY_FOLDERS = ("Samples", "Clips", "Grooves", "Templates", "Remote Scripts", "Defaults")
+# Upper bound on browser nodes visited per preset root, so a giant sample folder can't freeze Live.
+MAX_PRESET_NODES = 40000
+
+
+def preset_format(name, uri):
+    """The preset's file extension without the dot ("adg"), from its name or URI; None if it is no preset."""
+    for text in ((name or "").lower(), unquote(uri or "").lower()):
+        for ext in PRESET_EXTENSIONS:
+            if text.endswith(ext):
+                return ext[1:]
+    return None
+
+
+def is_preset_file(name, uri):
+    return preset_format(name, uri) is not None
+
+
+def display_name(name, fmt):
+    suffix = "." + fmt
+    return name[:-len(suffix)] if name.lower().endswith(suffix) else name
+
 
 class BrowserIndex(object):
-    """Flattens Live's browser roots into loadable device/plugin entries (presets excluded)."""
+    """Flattens Live's browser roots into loadable entries: devices and plugins (factory presets excluded)
+    plus the user's own presets from the User Library and Places folders."""
 
     def __init__(self, browser):
         self._browser = browser
@@ -16,12 +47,23 @@ class BrowserIndex(object):
             node = getattr(self._browser, root, None)
             if node is not None:
                 self._walk(node, root, [], items)
+        self._walk_presets(items)
         return items
 
     def find(self, uri):
         if uri not in self._by_uri:
             self.build()
         return self._by_uri.get(uri)
+
+    def browse(self, path):
+        """Children of a User Library path (debugging aid): name, uri and flags."""
+        node = getattr(self._browser, "user_library", None)
+        for name in path or []:
+            node = next((c for c in node.children if c.name == name), None) if node is not None else None
+        if node is None:
+            return None
+        return [{"name": c.name, "uri": c.uri, "is_folder": bool(c.is_folder), "is_loadable": bool(c.is_loadable)}
+                for c in list(node.children)[:300]]
 
     def _walk(self, node, root, path, out):
         for child in node.children:
@@ -30,6 +72,31 @@ class BrowserIndex(object):
                 self._by_uri[child.uri] = child
             if child.is_folder:
                 self._walk(child, root, path + [child.name], out)
+
+    def _walk_presets(self, out):
+        library = getattr(self._browser, "user_library", None)
+        if library is not None:
+            self._walk_preset_root(library, "user_library", [], out, skip=SKIPPED_USER_LIBRARY_FOLDERS)
+        for place in list(getattr(self._browser, "user_folders", None) or []):
+            self._walk_preset_root(place, "user_folders", [place.name], out, skip=())
+
+    def _walk_preset_root(self, root_node, source, base, out, skip):
+        budget = [MAX_PRESET_NODES]
+        stack = [(root_node, list(base), True)]
+        while stack and budget[0] > 0:
+            node, path, top = stack.pop()
+            for child in node.children:
+                budget[0] -= 1
+                if budget[0] <= 0:
+                    return
+                fmt = preset_format(child.name, child.uri) if child.is_loadable else None
+                if fmt is not None:
+                    if child.uri not in self._by_uri:
+                        out.append({"uri": child.uri, "name": display_name(child.name, fmt), "source": source,
+                                    "path": list(path), "format": fmt})
+                        self._by_uri[child.uri] = child
+                elif child.is_folder and not (top and child.name in skip):
+                    stack.append((child, path + [child.name], False))
 
     @staticmethod
     def _keep(root, uri):

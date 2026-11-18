@@ -5,6 +5,11 @@ public enum ItemSource: String, Codable, CaseIterable, Sendable {
     case audioEffects = "audio_effects"
     case midiEffects = "midi_effects"
     case maxForLive = "max_for_live"
+    /// The user's own presets (.adg, .vstpreset …) from Live's User Library and from the folders under "Places".
+    case userLibrary = "user_library"
+    case userFolders = "user_folders"
+
+    public var isPreset: Bool { self == .userLibrary || self == .userFolders }
 }
 
 public struct PluginItem: Codable, Hashable, Sendable {
@@ -12,9 +17,11 @@ public struct PluginItem: Codable, Hashable, Sendable {
     public var name: String
     public var source: ItemSource
     public var path: [String]
+    /// Presets only: file extension without the dot ("adg", "vstpreset"). Nil for devices and plugins.
+    public var format: String?
 
-    public init(uri: String, name: String, source: ItemSource, path: [String]) {
-        self.uri = uri; self.name = name; self.source = source; self.path = path
+    public init(uri: String, name: String, source: ItemSource, path: [String], format: String? = nil) {
+        self.uri = uri; self.name = name; self.source = source; self.path = path; self.format = format
     }
 }
 

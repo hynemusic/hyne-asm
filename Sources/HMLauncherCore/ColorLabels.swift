@@ -45,7 +45,7 @@ public enum ColorRule: Hashable, Sendable {
     public static func forItem(_ item: PluginItem) -> [ColorRule] {
         switch item.source {
         case .instruments, .audioEffects, .midiEffects: return [.liveDevices]
-        case .maxForLive: return []
+        case .maxForLive, .userLibrary, .userFolders: return []
         case .plugins:
             guard PluginGrouping.formatLabel(item) != "VST2", item.path.count > 1 else { return [] }
             return [.vendor(item.path[1])]

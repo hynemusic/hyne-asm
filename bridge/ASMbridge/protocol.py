@@ -1,4 +1,4 @@
-SCRIPT_VERSION = "1"
+SCRIPT_VERSION = "2"
 
 
 def _reply(req_id, ok, result=None, error=None):
@@ -22,4 +22,9 @@ def handle_request(req, index, browser, live_version):
         except Exception as e:  # Live raises plain RuntimeErrors
             return _reply(req_id, False, error="load_failed: %s" % e)
         return _reply(req_id, True)
+    if cmd == "browse":
+        children = index.browse(req.get("path") or [])
+        if children is None:
+            return _reply(req_id, False, error="not_found")
+        return _reply(req_id, True, {"children": children})
     return _reply(req_id, False, error="unknown_cmd")

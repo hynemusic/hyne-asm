@@ -73,6 +73,20 @@ final class BridgeClientTests: XCTestCase {
         XCTAssertEqual(result[2999], PluginItem(uri: "u:2999", name: "Plugin 2999", source: .plugins, path: ["VST3", "Vendor"]))
     }
 
+    func testListDecodesPresetsAndSkipsUnknownSources() async throws {
+        let items: [[String: Any]] = [
+            ["uri": "u:glue", "name": "My Glue", "source": "user_library", "path": ["Presets"], "format": "adg"],
+            ["uri": "u:new", "name": "Future", "source": "some_new_root", "path": []],
+            ["uri": "u:eq", "name": "EQ Eight", "source": "audio_effects", "path": []],
+        ]
+        server.respond = { ok($0, ["items": items]) }
+        let result = try await client.listItems()
+        XCTAssertEqual(result.map(\.name), ["My Glue", "EQ Eight"])
+        XCTAssertEqual(result[0].format, "adg")
+        XCTAssertEqual(result[0].source, .userLibrary)
+        XCTAssertNil(result[1].format)
+    }
+
     func testResponsesMatchedById() async throws {
         server.reverseOrder = true
         server.respond = { req in

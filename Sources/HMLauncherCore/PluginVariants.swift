@@ -19,6 +19,8 @@ public enum PluginVariants {
         }
 
         public func key(_ item: PluginItem) -> String {
+            // Presets with the same name in different folders are different files.
+            if item.source.isPreset { return "preset|" + item.uri }
             guard item.source == .plugins else { return item.source.rawValue + "|" + LESMatcher.normalize(item.name) }
             var name = LESMatcher.normalize(item.name)
             if PluginGrouping.formatLabel(item) == "VST2", let vendor = vendors.first(where: { name.hasPrefix($0 + " ") }) {

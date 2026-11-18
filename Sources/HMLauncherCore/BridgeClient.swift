@@ -18,7 +18,21 @@ private struct Envelope<R: Decodable>: Decodable {
 }
 
 private struct Empty: Decodable {}
-private struct ItemsResult: Decodable { let items: [PluginItem] }
+/// Lossy: an item the app can't decode (e.g. a source a newer bridge adds) is skipped instead of failing the list.
+private struct ItemsResult: Decodable {
+    let items: [PluginItem]
+
+    private struct Lossy: Decodable {
+        let item: PluginItem?
+        init(from decoder: Decoder) throws { item = try? PluginItem(from: decoder) }
+    }
+    private enum CodingKeys: String, CodingKey { case items }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        items = try c.decode([Lossy].self, forKey: .items).compactMap(\.item)
+    }
+}
 private struct IDOnly: Decodable { let id: Int? }
 
 /// TCP client for the ASMbridge remote script (newline-delimited JSON on 127.0.0.1:47820).
