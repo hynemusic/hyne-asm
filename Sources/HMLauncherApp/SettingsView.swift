@@ -30,6 +30,8 @@ struct SettingsView: View {
     @State private var selectionAnchor: UUID?
     @State private var bulkIcons = false
     @State private var dropCategory: UUID?
+    /// Open chain builder: nil id = new chain in the current category.
+    @State private var chainEditor: ChainEditTarget?
     /// Set by "Assign Shortcut …": the Shortcuts page opens with this plugin waiting for its keys.
     @State private var shortcutRequest: PluginItem?
     /// Where a dragged category would land: in front of this category (nil id = end of the list).
@@ -72,6 +74,25 @@ struct SettingsView: View {
     }
 
     private var pluginsPage: some View {
+        libraryColumns
+            .sheet(item: $chainEditor) { target in chainSheet(target) }
+    }
+
+    private func chainSheet(_ target: ChainEditTarget) -> some View {
+        let existing = target.entryID.flatMap { id in category?.entries.flatMap { [$0] + ($0.children ?? []) }.first { $0.id == id } }
+        return ChainBuilderSheet(items: catalog.items, name: existing?.title ?? "", steps: existing?.chain ?? [],
+                                 onSave: { name, steps in
+                                     if let id = target.entryID {
+                                         model.config.updateChain(id, in: categoryID, name: name, steps: steps)
+                                     } else {
+                                         model.config.addChain(named: name, steps: steps, to: categoryID)
+                                     }
+                                     chainEditor = nil
+                                 },
+                                 onCancel: { chainEditor = nil })
+    }
+
+    private var libraryColumns: some View {
         VStack(spacing: 0) {
             // Native split view: drag the dividers to give a column more room.
             HSplitView {
@@ -97,6 +118,12 @@ struct SettingsView: View {
             }
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 1) {
+                    SectionLabel(text: Loc.t("Live", "Live"))
+                        .padding(.top, 2).padding(.bottom, DS.Space.xs).padding(.leading, DS.Space.xs)
+                    LiveActionsGroup(search: search, categoryName: category?.name ?? "") { action in
+                        model.config.addAction(action, to: categoryID)
+                    }
+                    .padding(.bottom, DS.Space.m)
                     ForEach(Array(groups.enumerated()), id: \.element.id) { i, group in
                         if i == 0 || BrowserSection(group) != BrowserSection(groups[i - 1]) {
                             SectionLabel(text: BrowserSection(group).title)
@@ -465,6 +492,9 @@ struct SettingsView: View {
                 Label(Loc.t("Panel-Vorschau", "Panel preview"), systemImage: "eye")
                     .font(DS.Font.caption).foregroundColor(DS.textTertiary)
                     .help(Loc.t("So erscheint die Kategorie im Panel in Live", "This is how the category looks in the panel in Live"))
+                IconButton(symbol: "link.badge.plus", help: Loc.t("Neue Kette: mehrere Plugins oder Presets mit einer Taste", "New chain: several plugins or presets with one key")) {
+                    chainEditor = ChainEditTarget(entryID: nil)
+                }
                 IconButton(symbol: "folder.badge.plus", help: Loc.t("Neuen Ordner in dieser Kategorie anlegen", "Create a new folder in this category")) { newFolder() }
             }
             if let category {
@@ -747,7 +777,8 @@ struct SettingsView: View {
             selectionCount: multi ? selection.count : 1,
             onSelect: { select(entry.id, rows: flatRows(category)) },
             onGroup: groupSelection,
-            available: entry.isFolder || catalog.items.isEmpty || catalog.index.resolve(entry) != nil,
+            available: entry.isFolder || entry.action != nil || catalog.items.isEmpty
+                || (entry.chain.map { $0.allSatisfy { catalog.index.resolve(Entry(item: $0)) != nil } } ?? (catalog.index.resolve(entry) != nil)),
             isExpanded: !collapsed.contains(entry.id),
             folders: folders.map { ($0.id, $0.title) },
             inFolder: row.folderID != nil,
@@ -773,7 +804,8 @@ struct SettingsView: View {
             onRuleColor: { model.config.setColorRule($1, for: $0) },
             onDissolve: { model.config.dissolveFolder(entry.id, in: category.id) },
             drop: dropState,
-            onShortcut: entry.isFolder ? nil : { requestShortcut(catalog.index.resolve(entry) ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)) },
+            onEditChain: entry.chain == nil ? nil : { chainEditor = ChainEditTarget(entryID: entry.id) },
+            onShortcut: entry.isFolder || entry.chain != nil || entry.action != nil ? nil : { requestShortcut(catalog.index.resolve(entry) ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)) },
             shortcutLabel: entry.isFolder ? nil : model.config.itemShortcut(for: catalog.index.resolve(entry)
                 ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)).map { KeyNames.describe($0.combo) })
     }
@@ -932,4 +964,9 @@ private enum BrowserSection: Equatable {
         }
         return group.title
     }
+}
+
+struct ChainEditTarget: Identifiable {
+    let id = UUID()
+    let entryID: UUID?
 }

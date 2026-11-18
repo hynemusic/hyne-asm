@@ -17,6 +17,30 @@ public extension LauncherConfig {
         }
     }
 
+    /// A chain of items inserted one after the other; returns its entry id.
+    @discardableResult
+    mutating func addChain(named name: String, steps: [PluginItem], to categoryID: UUID, folder: UUID? = nil) -> UUID {
+        let entry = Entry(chainNamed: name, steps: steps)
+        withContainer(categoryID, folder) { $0.append(entry) }
+        return entry.id
+    }
+
+    mutating func updateChain(_ id: UUID, in categoryID: UUID, name: String, steps: [PluginItem]) {
+        updateEntry(id, in: categoryID) { e in
+            e.name = name
+            e.displayName = nil
+            e.chain = steps
+        }
+    }
+
+    /// A Live action; the same action with the same values only once per container.
+    mutating func addAction(_ action: LiveAction, to categoryID: UUID, folder: UUID? = nil) {
+        withContainer(categoryID, folder) { list in
+            guard !list.contains(where: { $0.action == action }) else { return }
+            list.append(Entry(action: action))
+        }
+    }
+
     @discardableResult
     mutating func addFolder(named name: String, to categoryID: UUID) -> UUID {
         let folder = Entry(folderNamed: name)

@@ -33,6 +33,7 @@ struct EntryRow: View {
     let onDissolve: () -> Void
     @ObservedObject var drop: DropState
     /// "Shortcut …": opens the Shortcuts page with this plugin ready to record.
+    var onEditChain: (() -> Void)? = nil
     var onShortcut: (() -> Void)? = nil
     var shortcutLabel: String? = nil
     private var dropSpot: DropSpot? { drop.marker?.id == entry.id ? drop.marker?.spot : nil }
@@ -134,6 +135,7 @@ struct EntryRow: View {
             Button(Loc.t("Ordner auflösen", "Dissolve Folder"), action: onDissolve)
             Button(Loc.t("Ordner löschen", "Delete Folder"), role: .destructive, action: onRemove)
         } else {
+            if let onEditChain { Button(Loc.t("Kette bearbeiten …", "Edit Chain …"), action: onEditChain) }
             Button(Loc.t("Anzeigename ändern …", "Change Display Name …")) { name = entry.displayName ?? entry.name; renaming = true }
             if entry.displayName != nil { Button(Loc.t("Originalnamen verwenden", "Use Original Name")) { onName(nil) } }
             if let onShortcut {
@@ -163,6 +165,11 @@ struct EntryRow: View {
 
     private var subtitle: String? {
         if entry.isFolder { return Loc.t("Ordner", "Folder") }
+        if entry.action != nil { return Loc.t("Live-Aktion", "Live action") }
+        if let steps = entry.chain {
+            guard available else { return Loc.t("Ein Schritt fehlt in Live", "A step is missing in Live") }
+            return Loc.t("Kette", "Chain") + " · " + steps.map(\.name).joined(separator: " → ")
+        }
         guard available else { return Loc.t("Nicht mehr in Live gefunden", "No longer found in Live") }
         let path = entry.path.joined(separator: " / ")
         return entry.displayName == nil ? path : "\(entry.name) · \(path)"

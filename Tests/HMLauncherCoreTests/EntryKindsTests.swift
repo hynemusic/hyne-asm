@@ -65,3 +65,28 @@ final class EntryKindsTests: XCTestCase {
         XCTAssertEqual(UsageKind(key: "action|tempo 128"), .custom)
     }
 }
+
+final class EntryKindsEditingTests: XCTestCase {
+    let proQ = item("Pro-Q 4", uri: "pq", path: ["VST3", "FabFilter"])
+
+    func testAddChainAndActionsWithDifferentValues() {
+        var c = LauncherConfig.makeDefault()
+        let fx = c.categories[2].id
+        let chainID = c.addChain(named: "Vocal", steps: [proQ], to: fx)
+        c.addAction(LiveAction(kind: .setTempo, value: 128), to: fx)
+        c.addAction(LiveAction(kind: .setTempo, value: 174), to: fx)
+        c.addAction(LiveAction(kind: .setTempo, value: 128), to: fx)   // same one twice: ignored
+        let entries = c.categories[2].entries
+        XCTAssertEqual(entries.map(\.title), ["Vocal", "Tempo 128", "Tempo 174"])
+        XCTAssertEqual(entries[0].id, chainID)
+    }
+
+    func testUpdateChain() {
+        var c = LauncherConfig.makeDefault()
+        let fx = c.categories[2].id
+        let id = c.addChain(named: "Vocal", steps: [proQ], to: fx)
+        c.updateChain(id, in: fx, name: "Vocal 2", steps: [proQ, proQ])
+        XCTAssertEqual(c.categories[2].entries[0].title, "Vocal 2")
+        XCTAssertEqual(c.categories[2].entries[0].chain?.count, 2)
+    }
+}
