@@ -31,6 +31,9 @@ final class PanelWindowController {
     private var outsideClickMonitor: Any?
     private var lastTab = 0
     private var topLeft = CGPoint.zero
+    /// Tallest height since the panel opened. Switching to a shorter category (or filtering) never shrinks the
+    /// panel while it is open, so the content doesn't jump away from the mouse.
+    private var heightFloor: CGFloat = 0
     private let hud = HUD()
     private let flyout = FolderFlyout()
     private var flyoutFolder: UUID?
@@ -75,6 +78,7 @@ final class PanelWindowController {
         viewModel.favoritesID = model.config.favoritesID
         viewModel.hovered = nil
         topLeft = point
+        heightFloor = 0
         layout()
         panel.orderFrontRegardless()
         outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
@@ -206,7 +210,9 @@ final class PanelWindowController {
         let filterHeight: CGFloat = (viewModel.state.filter.isEmpty ? 0 : PanelView.filterHeight)
             + (viewModel.state.openFolderName == nil ? 0 : PanelView.filterHeight)
             + (globalCount > 0 && gridRows <= PanelView.maxVisibleRows ? PanelView.globalHeaderHeight : 0)
-        let height = PanelView.tabBarHeight + filterHeight + visibleRows * PanelView.rowHeight + PanelView.padding * 2
+        let needed = PanelView.tabBarHeight + filterHeight + visibleRows * PanelView.rowHeight + PanelView.padding * 2
+        let height = max(needed, heightFloor)
+        heightFloor = height
         let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
         var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: Self.width, height: height)
         if let visible = screen?.visibleFrame {
