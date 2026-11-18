@@ -9,7 +9,8 @@ public struct KnownShortcut: Identifiable, Equatable, Sendable {
         case code(UInt16)   // keys without a character: Space, Tab, Esc, arrows, F-keys
     }
 
-    public var id: String { "\(app.rawValue)|\(section)|\(title)" }
+    /// Includes the keys: one command can have several combinations ("Close all plugin windows": ⌥⌘W and ⌘Esc).
+    public var id: String { "\(app.rawValue)|\(section)|\(title)|\(key)|\(modifiers.rawValue)" }
     public let app: App
     public let section: String
     public let title: String

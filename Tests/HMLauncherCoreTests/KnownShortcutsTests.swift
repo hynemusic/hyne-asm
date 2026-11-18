@@ -33,3 +33,11 @@ final class KnownShortcutsTests: XCTestCase {
         }
     }
 }
+
+final class HyneShortcutListTests: XCTestCase {
+    func testEveryCombinationHasItsOwnID() {
+        let list = KnownShortcuts.hyne(.makeDefault())   // close all has ⌘⌃W and ⌘Esc
+        XCTAssertEqual(list.count, Set(list.map(\.id)).count)
+        XCTAssertEqual(list.filter { $0.title == list[1].title }.count, 2)
+    }
+}

@@ -135,11 +135,45 @@ private enum KeyboardModel {
     }
 }
 
+/// Everything the overview needs, worked out once when it opens (it used to be rebuilt for every key on every
+/// mouse move, which made hovering lag).
+@MainActor
+private struct ShortcutIndex {
+    let all: [KnownShortcut]
+    /// Shortcut id → its main key in the current layout.
+    let code: [String: UInt16]
+    let describe: [String: String]
+    /// Live/macOS shortcut id → the HYNE ASM shortcuts on the same combination.
+    let ownUses: [String: [String]]
+    let rows: [[KeySpec]]
+
+    init(config: LauncherConfig) {
+        let own = KnownShortcuts.hyne(config)
+        all = KnownShortcuts.live + KnownShortcuts.macOS + own
+        var code: [String: UInt16] = [:]
+        var describe: [String: String] = [:]
+        for s in all {
+            code[s.id] = KeyboardLayout.keyCode(of: s)
+            describe[s.id] = KeyboardLayout.describe(s)
+        }
+        var ownUses: [String: [String]] = [:]
+        for s in all where s.app != .hyne {
+            let hits = own.filter { code[$0.id] != nil && code[$0.id] == code[s.id] && $0.modifiers == s.modifiers }.map(\.title)
+            if !hits.isEmpty { ownUses[s.id] = hits }
+        }
+        self.code = code
+        self.describe = describe
+        self.ownUses = ownUses
+        rows = KeyboardModel.rows(iso: KeyboardLayout.isISO)
+    }
+}
+
 /// Sheet: a keyboard on the left, the shortcuts on the right. Hovering a shortcut lights up its keys; hovering a key
 /// shows the shortcuts that use it. Clicking ⌘ ⌥ ⇧ ⌃ filters by those modifiers.
 struct KnownShortcutsSheet: View {
     let config: LauncherConfig
     let onClose: () -> Void
+    @State private var index: ShortcutIndex
     @State private var query = ""
     @State private var app: KnownShortcut.App? = nil
     @State private var hoveredShortcut: String? = KnownShortcutsSheet.debugHover
@@ -148,31 +182,32 @@ struct KnownShortcutsSheet: View {
     @State private var hoveredKey: UInt16?
     @State private var modFilter: ModifierSet = []
 
-    private static let unit: CGFloat = 40
-    private static let gap: CGFloat = 5
+    static let unit: CGFloat = 40
+    static let gap: CGFloat = 5
 
-    private var all: [KnownShortcut] { KnownShortcuts.live + KnownShortcuts.macOS + KnownShortcuts.hyne(config) }
-
-    private var list: [KnownShortcut] {
-        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
-        return all.filter { s in
-            (app == nil || s.app == app)
-                && (modFilter.isEmpty || s.modifiers == modFilter)
-                && (q.isEmpty || s.title.lowercased().contains(q) || KeyboardLayout.describe(s).lowercased().contains(q))
-        }
+    init(config: LauncherConfig, onClose: @escaping () -> Void) {
+        self.config = config
+        self.onClose = onClose
+        _index = State(initialValue: ShortcutIndex(config: config))
     }
 
-    private var hovered: KnownShortcut? { all.first { $0.id == hoveredShortcut } }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: DS.Space.l) {
+        // Worked out once per redraw and handed to the keys and rows, which only redraw when their own inputs change.
+        let visible = index.all.filter { (app == nil || $0.app == app) && (modFilter.isEmpty || $0.modifiers == modFilter) }
+        var byKey: [UInt16: [KnownShortcut]] = [:]
+        for s in visible { if let c = index.code[s.id] { byKey[c, default: []].append(s) } }
+        let hovered = hoveredShortcut.flatMap { id in index.all.first { $0.id == id } }
+        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+        let list = q.isEmpty ? visible : visible.filter { $0.title.lowercased().contains(q) || (index.describe[$0.id] ?? "").lowercased().contains(q) }
+
+        return VStack(alignment: .leading, spacing: DS.Space.l) {
             header
             HStack(alignment: .top, spacing: DS.Space.xl) {
                 VStack(alignment: .leading, spacing: DS.Space.m) {
-                    keyboard
+                    keyboard(byKey: byKey, hovered: hovered)
                     legend
                 }
-                listColumn.frame(width: 360)
+                listColumn(list).frame(width: 360)
             }
         }
         .padding(DS.Space.xl)
@@ -196,11 +231,35 @@ struct KnownShortcutsSheet: View {
 
     // MARK: Keyboard
 
-    private var keyboard: some View {
-        VStack(alignment: .leading, spacing: Self.gap) {
-            ForEach(Array(KeyboardModel.rows(iso: KeyboardLayout.isISO).enumerated()), id: \.offset) { r, row in
+    private func keyboard(byKey: [UInt16: [KnownShortcut]], hovered: KnownShortcut?) -> some View {
+        let hoveredCode = hovered.flatMap { index.code[$0.id] }
+        return VStack(alignment: .leading, spacing: Self.gap) {
+            ForEach(Array(index.rows.enumerated()), id: \.offset) { r, row in
                 HStack(spacing: Self.gap) {
-                    ForEach(row) { key in keyView(key, short: r == 0) }
+                    ForEach(row) { key in
+                        let isModifier = !key.modifier.isEmpty
+                        let lit: Bool = {
+                            if let hovered {
+                                return isModifier ? hovered.modifiers.contains(key.modifier) : (key.code != nil && key.code == hoveredCode)
+                            }
+                            return isModifier ? modFilter.contains(key.modifier) : (key.code != nil && key.code == hoveredKey)
+                        }()
+                        let uses = key.code.flatMap { byKey[$0] } ?? []
+                        KeyCap(label: key.label, width: key.width, short: r == 0, isModifier: isModifier,
+                               lit: lit, filterOn: isModifier && modFilter.contains(key.modifier),
+                               apps: [KnownShortcut.App.live, .macOS, .hyne].filter { a in uses.contains { $0.app == a } },
+                               tooltip: uses.map { "\(index.describe[$0.id] ?? "")  \($0.title)" }.joined(separator: "\n"),
+                               onHover: { inside in
+                                   guard !isModifier, let code = key.code else { return }
+                                   if inside { if hoveredKey != code { hoveredKey = code }; if hoveredShortcut != nil { hoveredShortcut = nil } }
+                                   else if hoveredKey == code { hoveredKey = nil }
+                               },
+                               onTap: {
+                                   guard isModifier else { return }
+                                   if modFilter.contains(key.modifier) { modFilter.remove(key.modifier) } else { modFilter.insert(key.modifier) }
+                               })
+                        .equatable()
+                    }
                 }
             }
         }
@@ -209,61 +268,11 @@ struct KnownShortcutsSheet: View {
         .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
     }
 
-    /// Shortcuts on this key under the current modifier filter.
-    private func uses(_ code: UInt16) -> [KnownShortcut] {
-        all.filter { KeyboardLayout.keyCode(of: $0) == code && (modFilter.isEmpty || $0.modifiers == modFilter) && (app == nil || $0.app == app) }
-    }
-
-    private func keyView(_ key: KeySpec, short: Bool) -> some View {
-        let width = key.width * Self.unit + (key.width - 1) * Self.gap
-        let height = short ? Self.unit * 0.62 : Self.unit
-        let isModifier = !key.modifier.isEmpty
-        let lit: Bool = {
-            if let h = hovered {
-                if isModifier { return h.modifiers.contains(key.modifier) }
-                return key.code != nil && KeyboardLayout.keyCode(of: h) == key.code
-            }
-            if isModifier { return modFilter.contains(key.modifier) }
-            return key.code != nil && key.code == hoveredKey
-        }()
-        let usedBy = key.code.map(uses) ?? []
-        let apps = Set(usedBy.map(\.app))
-        return ZStack(alignment: .topLeading) {
-            RoundedRectangle(cornerRadius: 6)
-                .fill(lit ? Color.brandBlue : (isModifier && modFilter.contains(key.modifier) ? Color.brandBlue.opacity(0.4) : Color(white: 0.2)))
-                .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(lit ? Color.white.opacity(0.35) : Color.white.opacity(0.06)))
-                .shadow(color: .black.opacity(0.5), radius: 0, y: 1.5)
-            Text(key.label)
-                .font(.system(size: key.label.count > 2 ? 10 : 13, weight: .medium, design: .rounded))
-                .foregroundColor(lit ? .white : (usedBy.isEmpty && !isModifier ? DS.textTertiary : DS.textPrimary))
-                .frame(width: width, height: height)
-            if !isModifier && !apps.isEmpty && !lit {
-                HStack(spacing: 2) {
-                    ForEach([KnownShortcut.App.live, .macOS, .hyne].filter(apps.contains), id: \.self) { a in
-                        Circle().fill(color(a)).frame(width: 5, height: 5)
-                    }
-                }
-                .padding(5)
-            }
-        }
-        .frame(width: width, height: height)
-        .contentShape(Rectangle())
-        .onHover { inside in
-            guard !isModifier, let code = key.code else { return }
-            if inside { hoveredKey = code; hoveredShortcut = nil } else if hoveredKey == code { hoveredKey = nil }
-        }
-        .onTapGesture {
-            guard isModifier else { return }
-            if modFilter.contains(key.modifier) { modFilter.remove(key.modifier) } else { modFilter.insert(key.modifier) }
-        }
-        .help(usedBy.isEmpty ? "" : usedBy.map { "\(KeyboardLayout.describe($0))  \($0.title)" }.joined(separator: "\n"))
-    }
-
     private var legend: some View {
         HStack(spacing: DS.Space.l) {
             ForEach([KnownShortcut.App.live, .macOS, .hyne], id: \.self) { a in
                 HStack(spacing: 5) {
-                    Circle().fill(color(a)).frame(width: 7, height: 7)
+                    Circle().fill(appColor(a)).frame(width: 7, height: 7)
                     Text(appName(a)).font(DS.Font.caption).foregroundColor(DS.textSecondary)
                 }
             }
@@ -277,7 +286,7 @@ struct KnownShortcutsSheet: View {
 
     // MARK: List
 
-    private var listColumn: some View {
+    private func listColumn(_ list: [KnownShortcut]) -> some View {
         VStack(alignment: .leading, spacing: DS.Space.m) {
             Picker("", selection: $app) {
                 Text(Loc.t("Alle", "All")).tag(KnownShortcut.App?.none)
@@ -293,42 +302,118 @@ struct KnownShortcutsSheet: View {
                         if list.isEmpty {
                             Text(Loc.t("Keine Kürzel", "No shortcuts")).font(DS.Font.caption).foregroundColor(DS.textTertiary).padding(DS.Space.m)
                         }
-                        ForEach(list) { s in row(s).id(s.id) }
+                        ForEach(list) { s in
+                            let onKey = hoveredKey != nil && index.code[s.id] == hoveredKey
+                            ShortcutRow(shortcut: s, keys: index.describe[s.id] ?? "", own: index.ownUses[s.id] ?? [],
+                                        highlighted: hoveredShortcut == s.id || onKey,
+                                        dimmed: hoveredKey != nil && !onKey,
+                                        onHover: { inside in
+                                            if inside { if hoveredShortcut != s.id { hoveredShortcut = s.id }; if hoveredKey != nil { hoveredKey = nil } }
+                                            else if hoveredShortcut == s.id { hoveredShortcut = nil }
+                                        })
+                            .equatable()
+                            .id(s.id)
+                        }
                     }
                 }
                 .onChange(of: hoveredKey) { code in
-                    if let code, let first = list.first(where: { KeyboardLayout.keyCode(of: $0) == code }) {
-                        withAnimation(.easeOut(duration: 0.15)) { proxy.scrollTo(first.id, anchor: .center) }
-                    }
+                    // Jump (no animation) to the first shortcut on the hovered key.
+                    if let code, let first = list.first(where: { index.code[$0.id] == code }) { proxy.scrollTo(first.id, anchor: .center) }
                 }
             }
             .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
             .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
         }
     }
+}
 
-    /// Where HYNE ASM uses the same combination (for Live/macOS rows), for the warning tooltip.
-    private func ownUses(_ s: KnownShortcut) -> [String] {
-        guard s.app != .hyne, let code = KeyboardLayout.keyCode(of: s) else { return [] }
-        return KnownShortcuts.hyne(config).filter { KeyboardLayout.keyCode(of: $0) == code && $0.modifiers == s.modifiers }.map(\.title)
+private func appColor(_ app: KnownShortcut.App) -> Color {
+    switch app {
+    case .live: return .brandCoral
+    case .macOS: return Color(white: 0.75)
+    case .hyne: return .brandBlue
+    }
+}
+
+private func appName(_ app: KnownShortcut.App) -> String {
+    switch app {
+    case .live: return "Ableton Live"
+    case .macOS: return "macOS"
+    case .hyne: return "HYNE ASM"
+    }
+}
+
+/// One key. Equatable on what it shows, so hovering redraws only the keys whose look changes.
+private struct KeyCap: View, Equatable {
+    let label: String
+    let width: CGFloat
+    let short: Bool
+    let isModifier: Bool
+    let lit: Bool
+    let filterOn: Bool
+    let apps: [KnownShortcut.App]
+    let tooltip: String
+    let onHover: (Bool) -> Void
+    let onTap: () -> Void
+
+    static func == (a: KeyCap, b: KeyCap) -> Bool {
+        a.label == b.label && a.width == b.width && a.short == b.short && a.lit == b.lit && a.filterOn == b.filterOn
+            && a.apps == b.apps && a.tooltip == b.tooltip
     }
 
-    private func row(_ s: KnownShortcut) -> some View {
-        let onKey = hoveredKey != nil && KeyboardLayout.keyCode(of: s) == hoveredKey
-        let dimmed = hoveredKey != nil && !onKey
-        let own = ownUses(s)
-        return HStack(spacing: DS.Space.s) {
-            Circle().fill(color(s.app)).frame(width: 6, height: 6)
+    var body: some View {
+        let unit = KnownShortcutsSheet.unit, gap = KnownShortcutsSheet.gap
+        let w = width * unit + (width - 1) * gap
+        let h = short ? unit * 0.62 : unit
+        return ZStack(alignment: .topLeading) {
+            RoundedRectangle(cornerRadius: 6)
+                .fill(lit ? Color.brandBlue : (filterOn ? Color.brandBlue.opacity(0.4) : Color(white: 0.2)))
+                .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(lit ? Color.white.opacity(0.35) : Color.white.opacity(0.06)))
+            Text(label)
+                .font(.system(size: label.count > 2 ? 10 : 13, weight: .medium, design: .rounded))
+                .foregroundColor(lit ? .white : (apps.isEmpty && !isModifier ? DS.textTertiary : DS.textPrimary))
+                .frame(width: w, height: h)
+            if !isModifier && !apps.isEmpty && !lit {
+                HStack(spacing: 2) {
+                    ForEach(apps, id: \.self) { a in Circle().fill(appColor(a)).frame(width: 5, height: 5) }
+                }
+                .padding(5)
+            }
+        }
+        .frame(width: w, height: h)
+        .contentShape(Rectangle())
+        .onHover(perform: onHover)
+        .onTapGesture(perform: onTap)
+        .help(tooltip)
+    }
+}
+
+/// One list row, Equatable for the same reason as `KeyCap`.
+private struct ShortcutRow: View, Equatable {
+    let shortcut: KnownShortcut
+    let keys: String
+    let own: [String]
+    let highlighted: Bool
+    let dimmed: Bool
+    let onHover: (Bool) -> Void
+
+    static func == (a: ShortcutRow, b: ShortcutRow) -> Bool {
+        a.shortcut.id == b.shortcut.id && a.keys == b.keys && a.own == b.own && a.highlighted == b.highlighted && a.dimmed == b.dimmed
+    }
+
+    var body: some View {
+        HStack(spacing: DS.Space.s) {
+            Circle().fill(appColor(shortcut.app)).frame(width: 6, height: 6)
             VStack(alignment: .leading, spacing: 1) {
-                Text(s.title).font(DS.Font.body).foregroundColor(DS.textPrimary).lineLimit(1)
-                Text(s.app == .hyne ? "HYNE ASM" : "\(appName(s.app)) · \(s.section)").font(.system(size: 10)).foregroundColor(DS.textTertiary)
+                Text(shortcut.title).font(DS.Font.body).foregroundColor(DS.textPrimary).lineLimit(1)
+                Text(shortcut.app == .hyne ? "HYNE ASM" : "\(appName(shortcut.app)) · \(shortcut.section)")
+                    .font(.system(size: 10)).foregroundColor(DS.textTertiary)
             }
             if !own.isEmpty {
-                ConflictBadge(title: Loc.t("\(KeyboardLayout.describe(s)) ist auch in HYNE ASM belegt", "\(KeyboardLayout.describe(s)) is also used in HYNE ASM"),
-                              lines: own)
+                ConflictBadge(title: Loc.t("\(keys) ist auch in HYNE ASM belegt", "\(keys) is also used in HYNE ASM"), lines: own)
             }
             Spacer(minLength: DS.Space.s)
-            Text(KeyboardLayout.describe(s))
+            Text(keys)
                 .font(.system(size: 11.5, weight: .semibold, design: .rounded))
                 .foregroundColor(DS.textSecondary)
                 .padding(.horizontal, 7).frame(minWidth: 30, minHeight: 22)
@@ -336,27 +421,9 @@ struct KnownShortcutsSheet: View {
         }
         .padding(.horizontal, DS.Space.m)
         .frame(height: 40)
-        .background(hoveredShortcut == s.id || onKey ? DS.selection : .clear)
+        .background(highlighted ? DS.selection : .clear)
         .opacity(dimmed ? 0.35 : 1)
         .contentShape(Rectangle())
-        .onHover { inside in
-            if inside { hoveredShortcut = s.id; hoveredKey = nil } else if hoveredShortcut == s.id { hoveredShortcut = nil }
-        }
-    }
-
-    private func color(_ app: KnownShortcut.App) -> Color {
-        switch app {
-        case .live: return .brandCoral
-        case .macOS: return Color(white: 0.75)
-        case .hyne: return .brandBlue
-        }
-    }
-
-    private func appName(_ app: KnownShortcut.App) -> String {
-        switch app {
-        case .live: return "Ableton Live"
-        case .macOS: return "macOS"
-        case .hyne: return "HYNE ASM"
-        }
+        .onHover(perform: onHover)
     }
 }
