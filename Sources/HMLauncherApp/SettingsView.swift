@@ -59,6 +59,7 @@ struct SettingsView: View {
                 case 3: VersionsPage(model: model)
                 case 4: StatsPage(model: model, catalog: catalog)
                 case 5: SearchTuningPage(model: model, catalog: catalog)
+                case 6: BehaviorPage(model: model, server: model.streamDeck)
                 default: ShortcutsPage(model: model, catalog: catalog, request: $shortcutRequest)
                 }
             }
@@ -288,6 +289,7 @@ struct SettingsView: View {
                 Button(Loc.t("Zu Favoriten hinzufügen", "Add to Favorites")) { add(item, to: model.config.favoritesID) }
             }
             Divider()
+            Button(Loc.t("Stream-Deck-Link kopieren", "Copy Stream Deck Link")) { StreamDeckLink.copy(.insert(name: item.name)) }
             Button(model.config.itemShortcut(for: item).map { Loc.t("Tastenkürzel ändern (\(KeyNames.describe($0.combo))) …", "Change Shortcut (\(KeyNames.describe($0.combo))) …") }
                    ?? Loc.t("Tastenkürzel zuweisen …", "Assign Shortcut …")) { requestShortcut(item) }
         }

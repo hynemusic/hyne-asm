@@ -25,6 +25,8 @@ struct SettingsSidebar: View {
                  subtitle: Loc.t("Aus menuconfig.ini", "From menuconfig.ini")),
             Item(id: 1, symbol: "command", title: Loc.t("Tastenkürzel", "Shortcuts"),
                  subtitle: Loc.t("Fenster, Suche, Panel", "Windows, search, panel")),
+            Item(id: 6, symbol: "slider.horizontal.3", title: Loc.t("Verhalten", "Behavior"),
+                 subtitle: Loc.t("Einfügen & Stream Deck", "Inserting & Stream Deck")),
             Item(id: 5, symbol: "text.magnifyingglass", title: Loc.t("Suche formen", "Shape Search"),
                  subtitle: Loc.t("Anpinnen & ausblenden", "Pin & hide results")),
             Item(id: 4, symbol: "chart.bar.xaxis", title: Loc.t("Statistik", "Stats"),

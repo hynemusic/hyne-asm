@@ -15,6 +15,9 @@ final class AppModel: ObservableObject {
     }
     @Published private(set) var isConnected = false
     @Published private(set) var liveVersion: String?
+    /// What the running Live script supports (insert after the selected device, all selected tracks).
+    @Published private(set) var capabilities: BridgeCapabilities?
+    @Published private(set) var scriptVersion: String?
     let catalog: PluginCatalog
     private var catalogWatch: AnyCancellable?
     private var usageWatch: AnyCancellable?
@@ -22,6 +25,8 @@ final class AppModel: ObservableObject {
     private var indexRebuild: Task<Void, Never>?
 
     /// Search data for the panel and the quick search, rebuilt only when the plugin list or the menu changed.
+    /// Local HTTP endpoint for Stream Deck (Behavior page shows its state).
+    let streamDeck = StreamDeckServer()
     /// When each item was first seen, for NEW badges.
     let seen = SeenStore(url: SeenStore.defaultURL)
     /// Newly installed items not yet filed or inserted (badge + "New" group in the settings browser).
@@ -200,9 +205,12 @@ final class AppModel: ObservableObject {
 
     private func connectionChanged(_ connected: Bool) {
         isConnected = connected
-        guard connected else { liveVersion = nil; return }
+        guard connected else { liveVersion = nil; capabilities = nil; scriptVersion = nil; return }
         Task {
-            liveVersion = try? await client.hello().liveVersion
+            let hello = try? await client.hello()
+            liveVersion = hello?.liveVersion
+            capabilities = hello?.capabilities
+            scriptVersion = hello?.scriptVersion
             try? await catalog.refresh()
         }
     }

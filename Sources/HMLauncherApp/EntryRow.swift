@@ -136,6 +136,7 @@ struct EntryRow: View {
             Button(Loc.t("Ordner löschen", "Delete Folder"), role: .destructive, action: onRemove)
         } else {
             if let onEditChain { Button(Loc.t("Kette bearbeiten …", "Edit Chain …"), action: onEditChain) }
+            Button(Loc.t("Stream-Deck-Link kopieren", "Copy Stream Deck Link")) { StreamDeckLink.copy(.insert(name: entry.title)) }
             Button(Loc.t("Anzeigename ändern …", "Change Display Name …")) { name = entry.displayName ?? entry.name; renaming = true }
             if entry.displayName != nil { Button(Loc.t("Originalnamen verwenden", "Use Original Name")) { onName(nil) } }
             if let onShortcut {

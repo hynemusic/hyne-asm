@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 import HMLauncherCore
 
@@ -40,6 +41,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         model.start()
         startEventTap()
+        // Stream Deck & co.: the local HTTP endpoint follows its Behavior switch.
+        streamDeck.onCommand = { [weak self] in self?.perform($0) }
+        let forced = Dev.env("HM_STREAMDECK") != nil   // developer aid: test the endpoint without changing settings
+        streamDeckWatch = model.$config.map { $0.streamDeckEnabled || forced }.removeDuplicates().sink { [weak self] on in
+            self?.streamDeck.setEnabled(on)
+        }
     }
 
     private func handleShortcut(_ keyCode: UInt16, _ mods: ModifierSet) -> Bool {
@@ -67,6 +74,48 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 self.model.showMessage(Loc.t("Profil: ", "Profile: ") + self.model.config.activeProfile.name)
             }
             return true
+        }
+    }
+
+    private var streamDeck: StreamDeckServer { model.streamDeck }
+    private var streamDeckWatch: AnyCancellable?
+
+    /// `hyneasm://…` links (Stream Deck "Open", Apple Shortcuts, scripts).
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls {
+            if let command = RemoteCommand(url: url) { perform(command) }
+        }
+    }
+
+    /// Runs a command from outside the app.
+    func perform(_ command: RemoteCommand) {
+        switch command {
+        case .insert(let name):
+            guard let row = RemoteTarget.row(named: name, config: model.config, index: model.searchIndex) else {
+                model.showMessage(Loc.t("„\(name)“ nicht gefunden", "“\(name)” not found"))
+                return
+            }
+            model.insert(row)
+        case .action(let action):
+            model.run(action, usageKey: "action|" + action.title.lowercased())
+        case .quickSearch:
+            panel.hide()
+            quickSearch.show()
+        case .panel:
+            quickSearch.hide()
+            panel.show(at: NSEvent.mouseLocation)
+        case .profile(let name):
+            guard let profile = model.config.profiles.first(where: { $0.name.lowercased() == name.lowercased() }) else {
+                model.showMessage(Loc.t("Profil „\(name)“ nicht gefunden", "Profile “\(name)” not found"))
+                return
+            }
+            model.config.switchProfile(to: profile.id)
+            model.showMessage(Loc.t("Profil: ", "Profile: ") + profile.name)
+        case .nextProfile:
+            model.config.switchToNextProfile()
+            model.showMessage(Loc.t("Profil: ", "Profile: ") + model.config.activeProfile.name)
+        case .closePluginWindows:
+            if let pid = monitor.livePID { WindowCloser.closeAll(pid: pid) }
         }
     }
 
