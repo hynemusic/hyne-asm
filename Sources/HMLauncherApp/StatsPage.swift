@@ -37,8 +37,8 @@ struct StatsPage: View {
                     topChart
                     kindCard
                 }
-                if model.config.showRarelyUsed { rarelyUsedCard }
                 if summary.total > 0 { allList }
+                if model.config.showRarelyUsed { rarelyUsedCard }
             }
             .padding(.bottom, DS.Space.l)
         }
