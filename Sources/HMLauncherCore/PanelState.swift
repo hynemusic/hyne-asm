@@ -28,6 +28,8 @@ public enum PanelTab: Equatable, Sendable {
 public enum PanelKey: Equatable, Sendable {
     case digit(Int), character(Character)
     case backspace, left, right, tab, up, down, returnKey, escape
+    /// Text editing in the filter / quick search: ⌘A, ⌥⌫, ⌘⌫.
+    case selectAll, deleteWord, deleteToStart
 }
 
 public enum PanelAction: Equatable, Sendable {
@@ -42,7 +44,10 @@ public struct PanelState {
     private let usage: [String: Int]
     public private(set) var tabs: [PanelTab]
     public private(set) var selectedTab: Int
-    public private(set) var filter = ""
+    private var input = TextInput()
+    public var filter: String { input.text }
+    /// ⌘A selected the whole filter (drawn highlighted; the next key replaces it).
+    public var isFilterSelected: Bool { input.isAllSelected }
     public private(set) var highlighted: Int?
     /// The folder shown instead of the category's top level.
     public private(set) var openFolderID: UUID?
@@ -136,42 +141,41 @@ public struct PanelState {
 
     public mutating func selectTab(_ index: Int) {
         selectedTab = (index % tabs.count + tabs.count) % tabs.count
-        filter = ""
+        input = TextInput()
         highlighted = nil
         openFolderID = nil
     }
 
     public mutating func openFolder(_ id: UUID) {
         openFolderID = id
-        filter = ""
+        input = TextInput()
         highlighted = nil
     }
 
     public mutating func closeFolder() {
         openFolderID = nil
-        filter = ""
+        input = TextInput()
         highlighted = nil
     }
 
     public mutating func handle(_ key: PanelKey) -> PanelAction {
         switch key {
-        case .digit(let d):
-            if !filter.isEmpty { return edit { $0.append(String(d)) } }
+        case .digit(let d) where filter.isEmpty:
             guard (1...9).contains(d) else { return .none }
             return insert(at: d - 1)
-        case .character(let c):
-            return edit { $0.append(c) }
-        case .backspace:
-            if filter.isEmpty, openFolderID != nil { closeFolder(); return .none }
-            return edit { if !$0.isEmpty { $0.removeLast() } }
+        case .backspace where filter.isEmpty && openFolderID != nil:
+            closeFolder()
+            return .none
         case .left:
             selectTab(selectedTab - 1)
         case .right, .tab:
             selectTab(selectedTab + 1)
         case .down:
+            input.deselect()
             guard !rows.isEmpty else { return .none }
             highlighted = highlighted.map { min($0 + 1, rows.count - 1) } ?? 0
         case .up:
+            input.deselect()
             guard !rows.isEmpty else { return .none }
             highlighted = highlighted.map { max($0 - 1, 0) } ?? 0
         case .returnKey:
@@ -180,13 +184,9 @@ public struct PanelState {
         case .escape:
             if openFolderID != nil { closeFolder(); return .none }
             return .close
+        default:
+            if input.apply(key) { highlighted = nil }
         }
-        return .none
-    }
-
-    private mutating func edit(_ change: (inout String) -> Void) -> PanelAction {
-        change(&filter)
-        highlighted = nil
         return .none
     }
 

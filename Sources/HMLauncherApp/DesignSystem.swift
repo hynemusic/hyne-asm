@@ -312,3 +312,13 @@ struct TextCaret: View {
             .accessibilityHidden(true)
     }
 }
+
+/// ⌘A selection: the text on a tinted highlight, like a selected macOS text field.
+struct SelectedText: ViewModifier {
+    let isSelected: Bool
+    func body(content: Content) -> some View {
+        content
+            .padding(.horizontal, isSelected ? 2 : 0)
+            .background(RoundedRectangle(cornerRadius: 3).fill(isSelected ? Color.brandBlue.opacity(0.45) : .clear))
+    }
+}

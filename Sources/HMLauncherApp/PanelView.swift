@@ -178,7 +178,8 @@ struct PanelView: View {
             Image(systemName: "magnifyingglass").font(.themed(11, .semibold)).foregroundColor(.accent)
             HStack(spacing: 1) {
                 Text(viewModel.state.filter).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
-                TextCaret(height: 15)
+                    .modifier(SelectedText(isSelected: viewModel.state.isFilterSelected))
+                if !viewModel.state.isFilterSelected { TextCaret(height: 15) }
             }
             Spacer()
             escHint

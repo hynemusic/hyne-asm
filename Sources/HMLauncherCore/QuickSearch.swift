@@ -97,7 +97,10 @@ public struct QuickSearch {
 /// Typing and keys of the quick search window.
 public struct QuickSearchState {
     private let search: QuickSearch
-    public private(set) var query = ""
+    private var input = TextInput()
+    public var query: String { input.text }
+    /// ⌘A selected the whole query (drawn highlighted; the next key replaces it).
+    public var isQuerySelected: Bool { input.isAllSelected }
     public private(set) var highlighted = 0
     public private(set) var results: [QuickResult]
 
@@ -108,16 +111,23 @@ public struct QuickSearchState {
 
     public mutating func handle(_ key: PanelKey) -> PanelAction {
         switch key {
-        case .character(let c): setQuery(query + String(c))
-        case .digit(let d): setQuery(query + String(d))
-        case .backspace: if !query.isEmpty { setQuery(String(query.dropLast())) }
-        case .down: highlighted = min(highlighted + 1, max(results.count - 1, 0))
-        case .up: highlighted = max(highlighted - 1, 0)
+        case .down:
+            input.deselect()
+            highlighted = min(highlighted + 1, max(results.count - 1, 0))
+        case .up:
+            input.deselect()
+            highlighted = max(highlighted - 1, 0)
         case .returnKey:
             guard results.indices.contains(highlighted), results[highlighted].row.isAvailable else { return .none }
             return .insert(results[highlighted].row)
         case .escape: return .close
         case .left, .right, .tab: break
+        default:
+            let before = query
+            if input.apply(key), query != before {
+                results = search.results(query)
+                highlighted = 0
+            }
         }
         return .none
     }
@@ -126,9 +136,4 @@ public struct QuickSearchState {
         if results.indices.contains(index) { highlighted = index }
     }
 
-    private mutating func setQuery(_ q: String) {
-        query = q
-        results = search.results(q)
-        highlighted = 0
-    }
 }

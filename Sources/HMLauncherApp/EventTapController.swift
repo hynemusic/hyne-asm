@@ -78,6 +78,9 @@ final class EventTapController {
             if let key = panelBindings?().key(for: KeyCombo(keyCode: keyCode, modifiers: mods)) {
                 return panelKeyHandler?(key) ?? false
             }
+            if let key = Self.editKey(keyCode, mods, event) {
+                return panelKeyHandler?(key) ?? false
+            }
             if mods.isDisjoint(with: [.cmd, .ctrl]), let key = Self.textKey(keyCode, event) {
                 return panelKeyHandler?(key) ?? false
             }
@@ -93,6 +96,18 @@ final class EventTapController {
         if flags.contains(.maskShift) { m.insert(.shift) }
         if flags.contains(.maskControl) { m.insert(.ctrl) }
         return m
+    }
+
+    /// macOS text-field editing for the filter / quick search: ⌘A select all, ⌥⌫ delete word, ⌘⌫ delete to start.
+    /// (Without this, ⌘A would reach Live and select everything in the set.)
+    static func editKey(_ keyCode: UInt16, _ mods: ModifierSet, _ event: CGEvent) -> PanelKey? {
+        if keyCode == 51 {
+            if mods.contains(.cmd) { return .deleteToStart }
+            if mods.contains(.alt) { return .deleteWord }
+            return nil
+        }
+        if mods == [.cmd], NSEvent(cgEvent: event)?.charactersIgnoringModifiers?.lowercased() == "a" { return .selectAll }
+        return nil
     }
 
     /// Fixed panel keys: ⌫ edits the filter, digits pick rows, everything printable filters.

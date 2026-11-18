@@ -120,7 +120,8 @@ private struct QuickSearchView: View {
                 HStack(spacing: 1) {
                     if let q = state?.query, !q.isEmpty {
                         Text(q).font(DS.Font.field).foregroundColor(DS.textPrimary)
-                        TextCaret(height: 26)
+                            .modifier(SelectedText(isSelected: state?.isQuerySelected ?? false))
+                        if !(state?.isQuerySelected ?? false) { TextCaret(height: 26) }
                     } else {
                         // Caret before the placeholder, like a real empty field.
                         TextCaret(height: 26)
