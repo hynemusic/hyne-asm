@@ -89,4 +89,21 @@ final class EntryKindsEditingTests: XCTestCase {
         XCTAssertEqual(c.categories[2].entries[0].title, "Vocal 2")
         XCTAssertEqual(c.categories[2].entries[0].chain?.count, 2)
     }
+
+    func testChangingAnActionsValueRenamesItUnlessRenamedByHand() throws {
+        var c = LauncherConfig.makeDefault()
+        let fav = c.favoritesID
+        c.addAction(LiveAction(kind: .setTempo, value: 120), to: fav)
+        let id = try XCTUnwrap(c.categories[0].entries.last?.id)
+        c.updateAction(id, in: fav, to: LiveAction(kind: .setTempo, value: 128))
+        var e = try XCTUnwrap(c.categories[0].entries.last)
+        XCTAssertEqual(e.action?.value, 128)
+        XCTAssertEqual(e.title, LiveAction(kind: .setTempo, value: 128).title)
+
+        c.setDisplayName("Fast", entry: id, in: fav)
+        c.updateAction(id, in: fav, to: LiveAction(kind: .setTempo, value: 174))
+        e = try XCTUnwrap(c.categories[0].entries.last)
+        XCTAssertEqual(e.action?.value, 174)
+        XCTAssertEqual(e.title, "Fast")
+    }
 }

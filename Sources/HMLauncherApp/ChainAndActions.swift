@@ -102,10 +102,13 @@ struct ChainBuilderSheet: View {
 /// Value editor for actions that need one (tempo, time signature) before they become an entry.
 struct LiveActionValueEditor: View {
     let kind: LiveActionKind
+    /// Editing an existing entry: starts from its values and the button says "Save".
+    var initial: LiveAction? = nil
     let onAdd: (LiveAction) -> Void
     @State private var bpm: Double = 120
     @State private var numerator = 4
     @State private var denominator = 4
+    @FocusState private var bpmFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: DS.Space.m) {
@@ -114,6 +117,7 @@ struct LiveActionValueEditor: View {
                 HStack {
                     TextField("BPM", value: $bpm, format: .number.precision(.fractionLength(0...2)))
                         .textFieldStyle(.roundedBorder).frame(width: 80)
+                        .focused($bpmFocused)
                     Stepper("", value: $bpm, in: 20...999, step: 1).labelsHidden()
                     Text("BPM").font(DS.Font.secondary).foregroundColor(DS.textTertiary)
                 }
@@ -126,7 +130,7 @@ struct LiveActionValueEditor: View {
                         .labelsHidden().frame(width: 64)
                 }
             }
-            Button(Loc.t("Hinzufügen", "Add")) {
+            Button(initial == nil ? Loc.t("Hinzufügen", "Add") : Loc.t("Sichern", "Save")) {
                 onAdd(kind == .setTempo ? LiveAction(kind: kind, value: min(max(bpm, 20), 999))
                                         : LiveAction(kind: kind, value: Double(numerator), value2: denominator))
             }
@@ -134,6 +138,14 @@ struct LiveActionValueEditor: View {
         }
         .padding(DS.Space.l)
         .frame(width: 240)
+        .onAppear {
+            if let initial {
+                bpm = initial.value ?? bpm
+                numerator = Int(initial.value ?? 4)
+                denominator = initial.value2 ?? 4
+            }
+            bpmFocused = kind == .setTempo
+        }
     }
 }
 

@@ -34,11 +34,14 @@ struct EntryRow: View {
     @ObservedObject var drop: DropState
     /// "Shortcut …": opens the Shortcuts page with this plugin ready to record.
     var onEditChain: (() -> Void)? = nil
+    /// Tempo / time signature entries: new values from the right-click menu.
+    var onUpdateAction: ((LiveAction) -> Void)? = nil
     var streamDeckToken = ""
     var onShortcut: (() -> Void)? = nil
     var shortcutLabel: String? = nil
     private var dropSpot: DropSpot? { drop.marker?.id == entry.id ? drop.marker?.spot : nil }
     @State private var showIcons = false
+    @State private var editingValue = false
     @State private var renaming = false
     @State private var name = ""
     @State private var hovered = false
@@ -86,6 +89,14 @@ struct EntryRow: View {
         }
         .onAppear { if startRenaming { name = entry.title; renaming = true; startRenaming = false } }
         .contextMenu { menu }
+        .popover(isPresented: $editingValue, arrowEdge: .leading) {
+            if let action = entry.action {
+                LiveActionValueEditor(kind: action.kind, initial: action) { updated in
+                    onUpdateAction?(updated)
+                    editingValue = false
+                }
+            }
+        }
     }
 
     @ViewBuilder private var menu: some View {
@@ -137,6 +148,11 @@ struct EntryRow: View {
             Button(Loc.t("Ordner löschen", "Delete Folder"), role: .destructive, action: onRemove)
         } else {
             if let onEditChain { Button(Loc.t("Kette bearbeiten …", "Edit Chain …"), action: onEditChain) }
+            if onUpdateAction != nil, let kind = entry.action?.kind, kind.takesValue {
+                Button(kind == .setTempo ? Loc.t("Tempo ändern …", "Change Tempo …")
+                                         : Loc.t("Taktart ändern …", "Change Time Signature …")) { editingValue = true }
+                Divider()
+            }
             Button(Loc.t("Stream-Deck-Link kopieren", "Copy Stream Deck Link")) { StreamDeckLink.copy(.insert(name: entry.title), token: streamDeckToken) }
             Button(Loc.t("Anzeigename ändern …", "Change Display Name …")) { name = entry.displayName ?? entry.name; renaming = true }
             if entry.displayName != nil { Button(Loc.t("Originalnamen verwenden", "Use Original Name")) { onName(nil) } }

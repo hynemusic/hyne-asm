@@ -837,6 +837,7 @@ struct SettingsView: View {
             onDissolve: { model.config.dissolveFolder(entry.id, in: category.id) },
             drop: dropState,
             onEditChain: entry.chain == nil ? nil : { chainEditor = ChainEditTarget(entryID: entry.id) },
+            onUpdateAction: entry.action?.kind.takesValue == true ? { model.config.updateAction(entry.id, in: category.id, to: $0) } : nil,
             streamDeckToken: model.config.streamDeckToken,
             onShortcut: entry.isFolder || entry.chain != nil || entry.action != nil ? nil : { requestShortcut(catalog.index.resolve(entry) ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)) },
             shortcutLabel: entry.isFolder ? nil : model.config.itemShortcut(for: catalog.index.resolve(entry)

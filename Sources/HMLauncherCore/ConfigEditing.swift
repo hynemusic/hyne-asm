@@ -33,6 +33,14 @@ public extension LauncherConfig {
         }
     }
 
+    /// New values for an action entry ("Tempo 120" → "Tempo 128"); a name the user typed stays.
+    mutating func updateAction(_ id: UUID, in categoryID: UUID, to action: LiveAction) {
+        updateEntry(id, in: categoryID) { e in
+            e.action = action
+            e.name = action.title
+        }
+    }
+
     /// A Live action; the same action with the same values only once per container.
     mutating func addAction(_ action: LiveAction, to categoryID: UUID, folder: UUID? = nil) {
         withContainer(categoryID, folder) { list in
