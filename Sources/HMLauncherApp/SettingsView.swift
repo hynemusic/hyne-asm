@@ -15,6 +15,7 @@ struct SettingsView: View {
     @State private var search = ""
     @State private var selectedCategory: UUID?
     @State private var expanded: Set<String> = []
+    @State private var actionsOpen = Dev.env("HM_BROWSER_SELECT")?.contains("a:") == true // developer aid opens it
     @State private var renamingCategory: UUID?
     /// Grouping ~3,300 items costs ~30 ms; recompute only when items or search change, not on every redraw.
     @State private var groups: [PluginGroup] = []
@@ -132,9 +133,13 @@ struct SettingsView: View {
                     }
                     SectionLabel(text: Loc.t("Live", "Live"))
                         .padding(.top, 2).padding(.bottom, DS.Space.xs).padding(.leading, DS.Space.xs)
-                    LiveActionsGroup(search: search, categoryName: category?.name ?? "") { action in
-                        model.config.addAction(action, to: categoryID)
-                    }
+                    LiveActionsGroup(search: search, categoryName: category?.name ?? "", open: $actionsOpen,
+                                     selected: browserSel,
+                                     onClick: { id in if !browserClick(id) { browserSel = [id] } },
+                                     onAdd: { model.config.addAction($0, to: categoryID) },
+                                     dragPayload: { browserDragPayload(for: $0) },
+                                     dragCount: { dragSelection(for: $0).pluginCount },
+                                     onAddSelection: { addSelection(dragSelection(for: $0), to: categoryID) })
                     .padding(.bottom, DS.Space.m)
                     ForEach(Array(groups.enumerated()), id: \.element.id) { i, group in
                         if i == 0 || BrowserSection(group) != BrowserSection(groups[i - 1]) {
@@ -303,7 +308,7 @@ struct SettingsView: View {
 
     /// Rows in the order they are drawn, for ⇧-click ranges.
     private var browserOrder: [String] {
-        groups.flatMap { g -> [String] in
+        LiveActionsGroup.order(search: search, open: actionsOpen) + groups.flatMap { g -> [String] in
             let open = !search.isEmpty || expanded.contains(g.title)
             return ["g:" + g.title] + (open ? g.items.map { "i:" + $0.uri } : [])
         }
@@ -336,6 +341,8 @@ struct SettingsView: View {
                 result.folders.append(.init(title: BrowserSection.displayTitle(g), items: g.items))
             } else if id.hasPrefix("i:"), let item = byURI[String(id.dropFirst(2))] {
                 result.items.append(item)
+            } else if id.hasPrefix("a:"), let kind = LiveActionKind(rawValue: String(id.dropFirst(2))) {
+                result.actions.append(LiveAction(kind: kind))
             }
         }
         return result
@@ -366,9 +373,10 @@ struct SettingsView: View {
     @ViewBuilder
     private func addMenu(for id: String) -> some View {
         let sel = dragSelection(for: id)
-        let label = sel.folders.count + sel.items.count > 1
-            ? Loc.t("\(sel.folders.count + sel.items.count) ausgewählte", "\(sel.folders.count + sel.items.count) selected")
-            : (sel.folders.first?.title ?? sel.items.first?.name ?? "")
+        let n = sel.folders.count + sel.items.count + sel.actions.count
+        let label = n > 1
+            ? Loc.t("\(n) ausgewählte", "\(n) selected")
+            : (sel.folders.first?.title ?? sel.items.first?.name ?? sel.actions.first?.title ?? "")
         Button(Loc.t("„\(label)“ zu „\(category?.name ?? "")“ hinzufügen", "Add “\(label)” to “\(category?.name ?? "")”")) { addSelection(sel, to: categoryID) }
         Menu(Loc.t("Zu Kategorie hinzufügen", "Add to Category")) {
             ForEach(model.config.categories) { c in Button(c.name) { addSelection(sel, to: c.id) } }
@@ -381,7 +389,9 @@ struct SettingsView: View {
     private var browserSelectionBar: some View {
         let sel = selection(of: browserSel)
         let parts = [sel.folders.isEmpty ? nil : Loc.t("\(sel.folders.count) Ordner", "\(sel.folders.count) folder\(sel.folders.count == 1 ? "" : "s")"),
-                     sel.items.isEmpty ? nil : Loc.t("\(sel.items.count) Plugins", "\(sel.items.count) plugin\(sel.items.count == 1 ? "" : "s")")]
+                     sel.items.isEmpty ? nil : Loc.t("\(sel.items.count) Plugins", "\(sel.items.count) plugin\(sel.items.count == 1 ? "" : "s")"),
+                     sel.actions.isEmpty ? nil : Loc.t("\(sel.actions.count) Live-Aktion\(sel.actions.count == 1 ? "" : "en")",
+                                                      "\(sel.actions.count) Live action\(sel.actions.count == 1 ? "" : "s")")]
         return HStack(spacing: DS.Space.s) {
             VStack(alignment: .leading, spacing: 1) {
                 Text(parts.compactMap { $0 }.joined(separator: " · ")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)

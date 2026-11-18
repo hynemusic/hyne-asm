@@ -43,7 +43,7 @@ struct SettingsSidebar: View {
             Item(id: 1, symbol: "command", title: Loc.t("Tastenkürzel", "Shortcuts"),
                  subtitle: Loc.t("Fenster, Suche, Panel", "Windows, search, panel")),
             Item(id: 6, symbol: "slider.horizontal.3", title: Loc.t("Verhalten", "Behavior"),
-                 subtitle: Loc.t("Panel, Einfügen, Stream Deck", "Panel, inserting, Stream Deck")),
+                 subtitle: Loc.t("Panel, Einfügen, Geräte", "Panel, inserting, devices")),
             Item(id: 5, symbol: "text.magnifyingglass", title: Loc.t("Suche formen", "Shape Search"),
                  subtitle: Loc.t("Anpinnen & ausblenden", "Pin & hide results")),
             Item(id: 4, symbol: "chart.bar.xaxis", title: Loc.t("Statistik", "Stats"),

@@ -141,14 +141,33 @@ struct LiveActionValueEditor: View {
 struct LiveActionsGroup: View {
     let search: String
     let categoryName: String
+    @Binding var open: Bool
+    /// Browser selection ids ("a:<kind>" for actions), shared with plugins and folders.
+    let selected: Set<String>
+    /// A click on a row: ⇧/⌘ extend the selection, a plain click selects just it.
+    let onClick: (String) -> Void
     let onAdd: (LiveAction) -> Void
-    @State private var open = false
+    /// Dragging carries the whole selection when the row is part of it.
+    let dragPayload: (String) -> NSItemProvider
+    let dragCount: (String) -> Int
+    /// "Add N selected to …" when the row belongs to a larger selection.
+    let onAddSelection: (String) -> Void
     @State private var editing: LiveActionKind?
 
-    private var kinds: [LiveActionKind] {
+    static func kinds(matching search: String) -> [LiveActionKind] {
         let q = search.trimmingCharacters(in: .whitespaces)
         return q.isEmpty ? LiveActionKind.allCases : LiveActionKind.allCases.filter { SearchMatcher.score($0.title, q) != nil }
     }
+
+    static func id(_ kind: LiveActionKind) -> String { "a:" + kind.rawValue }
+
+    /// Row ids in drawing order, for ⇧-click ranges.
+    static func order(search: String, open: Bool) -> [String] {
+        let isOpen = open || !search.trimmingCharacters(in: .whitespaces).isEmpty
+        return isOpen ? kinds(matching: search).map(id) : []
+    }
+
+    private var kinds: [LiveActionKind] { Self.kinds(matching: search) }
 
     var body: some View {
         if !kinds.isEmpty {
@@ -181,7 +200,9 @@ struct LiveActionsGroup: View {
     private var isOpen: Bool { open || !search.trimmingCharacters(in: .whitespaces).isEmpty }
 
     private func row(_ kind: LiveActionKind) -> some View {
-        HStack(spacing: DS.Space.s) {
+        let id = Self.id(kind)
+        let isSelected = selected.contains(id)
+        return HStack(spacing: DS.Space.s) {
             Image(systemName: IconCatalog.symbolName(for: kind.iconID)).font(.system(size: 11)).foregroundColor(DS.textTertiary).frame(width: 14)
             Text(kind.title).font(DS.Font.body).foregroundColor(DS.textSecondary).lineLimit(1)
             if kind.takesValue {
@@ -193,10 +214,17 @@ struct LiveActionsGroup: View {
         }
         .padding(.leading, 26).padding(.trailing, DS.Space.s)
         .frame(height: 26)
+        .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(isSelected ? DS.selection : .clear))
         .contentShape(Rectangle())
         .modifier(HoverHighlight())
         .onTapGesture(count: 2) { add(kind) }
+        .simultaneousGesture(TapGesture().onEnded { onClick(id) })
+        .onDrag { dragPayload(id) } preview: { DragCountBadge(count: dragCount(id)) }
         .contextMenu {
+            if isSelected && selected.count > 1 {
+                Button(Loc.t("\(selected.count) ausgewählte zu „\(categoryName)“ hinzufügen", "Add \(selected.count) Selected to “\(categoryName)”")) { onAddSelection(id) }
+                Divider()
+            }
             Button(Loc.t("Zu „\(categoryName)“ hinzufügen …", "Add to “\(categoryName)” …")) { add(kind) }
         }
         .popover(isPresented: Binding(get: { editing == kind }, set: { if !$0 { editing = nil } }), arrowEdge: .trailing) {
@@ -205,11 +233,13 @@ struct LiveActionsGroup: View {
                 editing = nil
             }
         }
-        .help(kind.takesValue ? Loc.t("Doppelklick: Wert wählen und hinzufügen", "Double-click: choose a value and add")
-                              : Loc.t("Doppelklick fügt hinzu", "Double-click to add"))
+        .help(kind.takesValue ? Loc.t("Doppelklick: Wert wählen und hinzufügen · ⇧/⌘ wählt mehrere (Tempo 120, 4/4)",
+                                      "Double-click: choose a value and add · ⇧/⌘ selects several (Tempo 120, 4/4)")
+                              : Loc.t("Doppelklick fügt hinzu · ⇧/⌘ wählt mehrere", "Double-click to add · ⇧/⌘ selects several"))
     }
 
     private func add(_ kind: LiveActionKind) {
         if kind.takesValue { editing = kind } else { onAdd(LiveAction(kind: kind)) }
     }
 }
+

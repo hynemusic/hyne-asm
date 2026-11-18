@@ -41,4 +41,23 @@ final class BrowserSelectionTests: XCTestCase {
         c.add(sel, to: c.favoritesID, folder: target)
         XCTAssertEqual(entries(c, c.favoritesID).first?.children?.map(\.name), ["Pro-Q 4", "Pro-L 2", "Glue"])
     }
+
+    func testLiveActionsJoinTheSelection() {
+        var c = LauncherConfig.makeDefault()
+        let fx = c.categories[2].id
+        let sel = BrowserSelection(items: [proQ], actions: [LiveAction(kind: .tapTempo), LiveAction(kind: .setTempo)])
+        XCTAssertEqual(sel.pluginCount, 3)
+        XCTAssertFalse(sel.isEmpty)
+        c.add(sel, to: fx)
+        c.add(sel, to: fx) // nothing twice
+        XCTAssertEqual(entries(c, fx).map(\.title), ["Pro-Q 4", LiveAction(kind: .tapTempo).title, LiveAction(kind: .setTempo).title])
+    }
+
+    func testLiveActionsGoIntoATargetFolder() {
+        var c = LauncherConfig.makeDefault()
+        let folder = c.addFolder(named: "Transport", to: c.favoritesID)
+        c.add(BrowserSelection(actions: [LiveAction(kind: .toggleMetronome)]), to: c.favoritesID, folder: folder)
+        XCTAssertEqual(entries(c, c.favoritesID).first?.children?.map(\.title), [LiveAction(kind: .toggleMetronome).title])
+        XCTAssertTrue(BrowserSelection(actions: [LiveAction(kind: .toggleMetronome)]).folders.isEmpty)
+    }
 }

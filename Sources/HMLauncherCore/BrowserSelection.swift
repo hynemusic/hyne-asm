@@ -10,17 +10,20 @@ public struct BrowserSelection: Equatable, Sendable {
 
     public var folders: [Folder]
     public var items: [PluginItem]
+    /// Live actions (with their default values: Tempo 120, 4/4).
+    public var actions: [LiveAction]
 
-    public init(folders: [Folder] = [], items: [PluginItem] = []) {
+    public init(folders: [Folder] = [], items: [PluginItem] = [], actions: [LiveAction] = []) {
         self.folders = folders
         self.items = items
+        self.actions = actions
     }
 
-    public var isEmpty: Bool { folders.isEmpty && items.isEmpty }
-    /// Number of plugins it adds (an item inside a selected folder counts once).
+    public var isEmpty: Bool { folders.isEmpty && items.isEmpty && actions.isEmpty }
+    /// Number of entries it adds (an item inside a selected folder counts once).
     public var pluginCount: Int {
         let inFolders = Set(folders.flatMap { $0.items.map(\.uri) })
-        return inFolders.count + items.filter { !inFolders.contains($0.uri) }.count
+        return inFolders.count + items.filter { !inFolders.contains($0.uri) }.count + actions.count
     }
 }
 
@@ -35,6 +38,7 @@ public extension LauncherConfig {
         let loose = selection.items.filter { !inFolders.contains($0.uri) }
         if folder != nil || !asFolders {
             for item in selection.folders.flatMap(\.items) + loose { addEntry(item, to: categoryID, folder: folder) }
+            for action in selection.actions { addAction(action, to: categoryID, folder: folder) }
             return
         }
         for f in selection.folders {
@@ -43,5 +47,6 @@ public extension LauncherConfig {
             for item in f.items { addEntry(item, to: categoryID, folder: id) }
         }
         for item in loose { addEntry(item, to: categoryID) }
+        for action in selection.actions { addAction(action, to: categoryID) }
     }
 }
