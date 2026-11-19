@@ -197,11 +197,14 @@ struct PadStripe: View {
     var height: CGFloat = 3.5
 
     var body: some View {
-        let fill: Color = active ? Palette.current.onLitPad.opacity(0.3) : (color ?? Palette.current.padStripe)
+        // A labeled stripe keeps its color and glow when the pad lights up; on the pad's own color it shows a
+        // touch brighter so it stays visible. Unlabeled stripes stay dim.
+        let fill: Color = color.map { active ? $0.mix(.white, 0.45) : $0 }
+            ?? (active ? Palette.current.onLitPad.opacity(0.3) : Palette.current.padStripe)
         Capsule()
             .fill(fill)
             .frame(width: width, height: height)
-            .shadow(color: active || color == nil ? .clear : (color ?? .clear).opacity(0.55), radius: 4)
+            .shadow(color: (color ?? .clear).opacity(active ? 0.9 : 0.55), radius: active ? 5 : 4)
     }
 }
 
