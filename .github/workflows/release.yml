@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: macos-15
+    runs-on: macos-15-intel   # the app is built universal on any Mac; this pool is usually free sooner
     env:
       TAG: ${{ github.event.inputs.tag || github.ref_name }}
     steps:
