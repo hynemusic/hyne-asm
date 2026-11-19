@@ -108,7 +108,8 @@ surface (Input/Output: None).
 ### Releases
 
 Pushing a tag `vX.Y.Z` runs `.github/workflows/release.yml`: it tests, builds with `HM_VERSION=X.Y.Z`, signs with the
-project's "HYNE ASM" certificate (stored as repository secrets), packages a DMG with `scripts/make-dmg.sh` and
+project's "HYNE ASM" certificate (stored as repository secrets), checks tag, version, certificate fingerprint and
+architectures with `scripts/verify-release.sh`, packages a DMG with `scripts/make-dmg.sh` and
 publishes it with its SHA-256 checksum on the Releases page.
 
 ## License

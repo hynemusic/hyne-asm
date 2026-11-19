@@ -20,6 +20,9 @@ jobs:
     env:
       TAG: ${{ github.event.inputs.tag || github.ref_name }}
     steps:
+      - name: Check the tag
+        run: echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' || { echo "Tag '$TAG' is not vX.Y.Z"; exit 1; }
+
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
@@ -55,11 +58,7 @@ jobs:
           VERSION="${TAG#v}"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           HM_SIGN_IDENTITY="HYNE ASM" HM_VERSION="$VERSION" scripts/build-app.sh
-          APP="build/HYNE Ableton Shortcuts Manager.app"
-          codesign -dvvv "$APP" 2>&1 | grep -q "^Authority=HYNE ASM$" || { echo "Not signed with HYNE ASM"; exit 1; }
-          PLIST_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Contents/Info.plist")"
-          [ "$PLIST_VERSION" = "$VERSION" ] || { echo "Version mismatch: $PLIST_VERSION vs $VERSION"; exit 1; }
-          lipo -archs "$APP/Contents/MacOS/HYNE ASM"
+          scripts/verify-release.sh "build/HYNE Ableton Shortcuts Manager.app" "$TAG"
 
       - name: Package
         run: scripts/make-dmg.sh "build/HYNE Ableton Shortcuts Manager.app" "$VERSION"
@@ -77,7 +76,7 @@ jobs:
           Built and signed by GitHub Actions from this exact commit (${{ github.sha }}):
           ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           NOTES
-          gh release create "$TAG" build/HYNE-ASM-$VERSION.dmg build/HYNE-ASM-$VERSION.dmg.sha256 \
+          gh release create "$TAG" "build/HYNE-ASM-$VERSION.dmg" "build/HYNE-ASM-$VERSION.dmg.sha256" \
             --title "HYNE ASM $VERSION" --notes-file "$RUNNER_TEMP/notes.md" --verify-tag
 
       - name: Remove the temporary keychain
