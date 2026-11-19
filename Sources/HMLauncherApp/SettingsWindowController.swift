@@ -44,7 +44,10 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
     private static var title: String { "HYNE ASM – " + Loc.t("Einstellungen", "Settings") }
 
+    /// Back to a menu-bar-only app, unless another window (the welcome window) is still open.
     func windowWillClose(_ notification: Notification) {
-        NSApp.setActivationPolicy(.accessory)
+        if NSApp.windows.filter({ $0.isVisible && $0 !== window && $0.styleMask.contains(.titled) }).isEmpty {
+            NSApp.setActivationPolicy(.accessory)
+        }
     }
 }

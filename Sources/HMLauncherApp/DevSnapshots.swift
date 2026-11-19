@@ -25,6 +25,15 @@ extension AppDelegate {
                 NSApp.terminate(nil)
             }
         }
+        // Developer aid: HM_ONBOARDING_STEP=<0-4> + HM_ONBOARDING_SNAPSHOT=<file.png> saves that welcome step, then quits.
+        if let raw = Dev.env("HM_ONBOARDING_STEP"), let step = OnboardingStep(rawValue: Int(raw) ?? 0),
+           let path = Dev.env("HM_ONBOARDING_SNAPSHOT") {
+            onboarding.show(step: step)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
+                self?.onboarding.snapshot(to: URL(fileURLWithPath: path))
+                NSApp.terminate(nil)
+            }
+        }
         // Developer aid: HM_SNAPSHOT_KNOWN=<dir> saves the shortcut overview (plain and with a hovered shortcut), then quits.
         if let dir = Dev.env("HM_SNAPSHOT_KNOWN") {
             let out = URL(fileURLWithPath: dir)

@@ -92,7 +92,7 @@ struct PanelView: View {
             .gesture(DragGesture(minimumDistance: 0)
                 .onChanged { _ in onResize(true) }
                 .onEnded { _ in onResize(false) })
-            .help(Loc.t("Ziehen: Einträge breiter oder höher machen", "Drag to make the entries wider or taller"))
+            .tooltip(Loc.t("Größe ändern", "Resize entries"))
     }
 
     // MARK: Tabs
@@ -133,6 +133,7 @@ struct PanelView: View {
                 .menuStyle(.borderlessButton)
                 .menuIndicator(.hidden)
                 .fixedSize()
+                .tooltip(Loc.t("Weitere Kategorien", "More categories"))
             }
             Button(action: onOpenSettings) {
                 Image(systemName: "gearshape").font(.themed(12, .medium)).foregroundColor(DS.textSecondary)
@@ -141,7 +142,7 @@ struct PanelView: View {
             }
             .buttonStyle(.plain)
             .modifier(HoverHighlight())
-            .help(Loc.t("Einstellungen", "Settings"))
+            .tooltip(Loc.t("Einstellungen öffnen", "Open Settings"))
         }
         .padding(.horizontal, 2)
     }
