@@ -3,9 +3,9 @@
 Plugins, Presets und Live-Befehle in Sekunden einfügen: ein doppelter Rechtsklick in Ableton Live öffnet dein eigenes
 Menü, ⌃Leertaste öffnet die Schnellsuche. Kostenlos und Open Source.
 
-<img width="634" height="708" alt="image" src="https://github.com/user-attachments/assets/366634e0-5eca-4422-9169-3689a5eb204b" />
+<img width="634" height="708" scale="50%" alt="image" src="https://github.com/user-attachments/assets/366634e0-5eca-4422-9169-3689a5eb204b" />
 
-<img width="616" height="439" alt="image" src="https://github.com/user-attachments/assets/21036308-9619-496e-b00a-29f2d8469dc9" />
+<img width="616" height="439" scale="50%" alt="image" src="https://github.com/user-attachments/assets/21036308-9619-496e-b00a-29f2d8469dc9" />
 
 
 
