@@ -1,36 +1,11 @@
-/// The panel shows its rows in columns of 9: items fill the left column first, then the next one;
-/// beyond `columns × 9` the same pattern continues below. How many columns sit side by side is a setting
-/// (`LauncherConfig.panelColumns`, 1–9, default 2).
+/// Helpers for laying out the panel's entries (see `PanelPage` for where each entry sits on a page).
 public enum PanelGrid {
-    public static let columns = 2
-    public static let maxColumns = 9
-    public static let rowsPerColumn = 9
-
-    /// Blocks → columns → row indices, for the given index range.
-    public static func blocks(_ indices: Range<Int>, columns: Int = columns) -> [[[Int]]] {
-        let all = Array(indices)
-        let columns = max(columns, 1)
-        let blockSize = columns * rowsPerColumn
-        return stride(from: 0, to: max(all.count, 1), by: blockSize).map { start in
-            let block = Array(all[start..<min(start + blockSize, all.count)])
-            return (0..<columns).map { c in
-                let from = c * rowsPerColumn
-                return from < block.count ? Array(block[from..<min(from + rowsPerColumn, block.count)]) : []
-            }
-        }
-    }
-
-    /// Columns the panel needs: as many as the fullest section fills, at most `max`.
-    public static func columnsNeeded(local: Int, global: Int, max limit: Int = columns) -> Int {
-        let needed = (Swift.max(local, global) + rowsPerColumn - 1) / rowsPerColumn
-        return Swift.min(Swift.max(needed, 1), Swift.max(limit, 1))
-    }
-
-    /// Visual row count of `count` items laid out this way.
-    public static func rows(_ count: Int, columns: Int = columns) -> Int {
-        let blockSize = max(columns, 1) * rowsPerColumn
-        let full = count / blockSize
-        return full * rowsPerColumn + min(count % blockSize, rowsPerColumn)
+    /// Indices in display order while entry `from` is dragged to slot `to`.
+    public static func order(count: Int, moving from: Int, to: Int) -> [Int] {
+        var order = Array(0..<count)
+        guard order.indices.contains(from), order.indices.contains(to) else { return order }
+        order.insert(order.remove(at: from), at: to)
+        return order
     }
 }
 
@@ -56,24 +31,90 @@ public struct PanelSize: Codable, Equatable, Sendable {
     }
 }
 
-public extension PanelGrid {
-    /// The slot under a point of the grid (dragging to reorder), clamped to the existing entries.
-    static func index(atX x: Double, y: Double, columns: Int, columnStride: Double, rowStride: Double, count: Int) -> Int {
-        guard count > 0 else { return 0 }
-        let columns = max(columns, 1)
-        let blockHeight = rowStride * Double(rowsPerColumn)
-        let block = max(Int(y / blockHeight), 0)
-        let row = min(max(Int((y - Double(block) * blockHeight) / rowStride), 0), rowsPerColumn - 1)
-        let column = min(max(Int(x / columnStride), 0), columns - 1)
-        let index = (block * columns + column) * rowsPerColumn + row
-        return min(max(index, 0), count - 1)
+/// How many pads one page of the panel shows: columns × rows (each 2–8, default 3 × 3).
+public struct PanelGridSize: Codable, Equatable, Sendable {
+    public static let range = 2...8
+    public static let `default` = PanelGridSize(columns: 3, rows: 3)
+
+    public var columns: Int { didSet { columns = Self.clamp(columns) } }
+    public var rows: Int { didSet { rows = Self.clamp(rows) } }
+    public var pageSize: Int { columns * rows }
+
+    public init(columns: Int, rows: Int) {
+        self.columns = Self.clamp(columns)
+        self.rows = Self.clamp(rows)
     }
 
-    /// Indices in display order while entry `from` is dragged to slot `to`.
-    static func order(count: Int, moving from: Int, to: Int) -> [Int] {
-        var order = Array(0..<count)
-        guard order.indices.contains(from), order.indices.contains(to) else { return order }
-        order.insert(order.remove(at: from), at: to)
-        return order
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(columns: try c.decode(Int.self, forKey: .columns), rows: try c.decode(Int.self, forKey: .rows))
+    }
+
+    private static func clamp(_ v: Int) -> Int { min(max(v, range.lowerBound), range.upperBound) }
+}
+
+/// Where the panel lists the categories: a tab bar on top, or a column on the left.
+public enum CategoryPlacement: String, Codable, CaseIterable, Sendable {
+    case top, left
+}
+
+/// How the panel shows a page: square pads in a grid, or rows of a list.
+public enum PanelStyle: String, Codable, CaseIterable, Sendable {
+    case grid, list
+}
+
+/// Size of a list page: columns side by side (1–4), each up to 9 rows (keys 1–9 run down the first column).
+public struct PanelListSize: Codable, Equatable, Sendable {
+    public static let columnRange = 1...4
+    public static let rowRange = 2...9
+    public static let `default` = PanelListSize(columns: 2, rows: 9)
+
+    public var columns: Int { didSet { columns = Self.clamp(columns, Self.columnRange) } }
+    public var rows: Int { didSet { rows = Self.clamp(rows, Self.rowRange) } }
+    public var pageSize: Int { columns * rows }
+
+    public init(columns: Int, rows: Int) {
+        self.columns = Self.clamp(columns, Self.columnRange)
+        self.rows = Self.clamp(rows, Self.rowRange)
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(columns: try c.decode(Int.self, forKey: .columns), rows: try c.decode(Int.self, forKey: .rows))
+    }
+
+    private static func clamp(_ v: Int, _ r: ClosedRange<Int>) -> Int { min(max(v, r.lowerBound), r.upperBound) }
+}
+
+/// One page of the panel: how many entries it holds and where each sits. A grid fills row by row
+/// (like the keys 1–9 on a keypad); a list fills its left column first, then the next.
+public struct PanelPage: Equatable, Sendable {
+    public let columns: Int
+    public let rows: Int
+    public let columnMajor: Bool
+    public var size: Int { columns * rows }
+
+    public init(columns: Int, rows: Int, columnMajor: Bool) {
+        self.columns = max(columns, 1)
+        self.rows = max(rows, 1)
+        self.columnMajor = columnMajor
+    }
+
+    public init(style: PanelStyle, grid: PanelGridSize, list: PanelListSize) {
+        switch style {
+        case .grid: self.init(columns: grid.columns, rows: grid.rows, columnMajor: false)
+        case .list: self.init(columns: list.columns, rows: list.rows, columnMajor: true)
+        }
+    }
+
+    /// Slot (0-based, within the page) at a row and column.
+    public func slot(row: Int, column: Int) -> Int {
+        columnMajor ? column * rows + row : row * columns + column
+    }
+
+    /// Row and column of a slot within the page.
+    public func position(of slot: Int) -> (row: Int, column: Int) {
+        let s = slot % size
+        return columnMajor ? (s % rows, s / rows) : (s / columns, s % columns)
     }
 }

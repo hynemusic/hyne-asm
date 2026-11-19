@@ -31,8 +31,8 @@ struct ChainBuilderSheet: View {
             VStack(alignment: .leading, spacing: DS.Space.xs) {
                 Text(initialSteps.isEmpty ? Loc.t("Neue Kette", "New Chain") : Loc.t("Kette bearbeiten", "Edit Chain"))
                     .font(DS.Font.title).foregroundColor(DS.textPrimary)
-                Text(Loc.t("Diese Einträge werden der Reihe nach eingefügt – mit einer Taste.",
-                           "These items are inserted in order – with one key."))
+                Text(Loc.t("Eine Taste fügt diese Einträge der Reihe nach ein.",
+                           "One key inserts these items in order."))
                     .font(DS.Font.secondary).foregroundColor(DS.textTertiary)
             }
             TextField(Loc.t("Name, z. B. „Vocal Basic“", "Name, e.g. “Vocal Basic”"), text: $name)
@@ -48,8 +48,7 @@ struct ChainBuilderSheet: View {
                     stepRow(i, step)
                 }
             }
-            .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-            .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+            .plate(lit: false, radius: DS.Radius.l, filled: true)
             Button { picking = true } label: { Label(Loc.t("Schritt hinzufügen …", "Add Step …"), systemImage: "plus") }
                 .popover(isPresented: $picking, arrowEdge: .bottom) {
                     ItemPicker(items: items, title: Loc.t("Schritt hinzufügen", "Add step")) { item in
@@ -226,7 +225,7 @@ struct LiveActionsGroup: View {
         }
         .padding(.leading, 26).padding(.trailing, DS.Space.s)
         .frame(height: 26)
-        .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(isSelected ? DS.selection : .clear))
+        .plate(lit: isSelected, radius: DS.Radius.s)
         .contentShape(Rectangle())
         .modifier(HoverHighlight())
         .onTapGesture(count: 2) { add(kind) }
@@ -245,9 +244,9 @@ struct LiveActionsGroup: View {
                 editing = nil
             }
         }
-        .help(kind.takesValue ? Loc.t("Doppelklick: Wert wählen und hinzufügen · ⇧/⌘ wählt mehrere (Tempo 120, 4/4)",
-                                      "Double-click: choose a value and add · ⇧/⌘ selects several (Tempo 120, 4/4)")
-                              : Loc.t("Doppelklick fügt hinzu · ⇧/⌘ wählt mehrere", "Double-click to add · ⇧/⌘ selects several"))
+        .help(kind.takesValue ? Loc.t("Doppelklick wählt einen Wert und fügt hinzu, z. B. Tempo 120 oder 4/4. Mit ⇧ oder ⌘ mehrere wählen.",
+                                      "Double-click to pick a value and add it, like Tempo 120 or 4/4. Hold ⇧ or ⌘ to pick several.")
+                              : Loc.t("Doppelklick fügt hinzu · ⇧/⌘ wählt mehrere", "Double-click to add. Hold ⇧ or ⌘ to pick several."))
     }
 
     private func add(_ kind: LiveActionKind) {

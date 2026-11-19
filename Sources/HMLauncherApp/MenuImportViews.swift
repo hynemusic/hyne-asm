@@ -85,8 +85,8 @@ struct LESImportPage: View {
             .tint(.brandBlue)
             .disabled(importer.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || catalog.items.isEmpty)
             if catalog.items.isEmpty {
-                Text(Loc.t("Erst mit Live verbinden – die Plugin-Liste wird zum Zuordnen gebraucht.",
-                           "Connect to Live first – the plugin list is needed for matching."))
+                Text(Loc.t("Verbinde zuerst Live. Zum Zuordnen braucht es die Plugin-Liste.",
+                           "Connect to Live first. Matching needs its plugin list."))
                     .font(DS.Font.caption).foregroundColor(DS.warning)
             }
         }
@@ -247,8 +247,8 @@ struct LESImportPage: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                Text(Loc.t("Ziehen sortiert · Klick auf ⚠️/❌ wählt das richtige Plugin · Rechtsklick links: umbenennen, Ordner ↔ Kategorie, zusammenführen",
-                           "Drag to reorder · click ⚠️/❌ to pick the right plugin · right-click on the left: rename, folder ↔ category, merge"))
+                Text(Loc.t("Ziehen sortiert. Klick auf ⚠️ oder ❌, um das richtige Plugin zu wählen. Rechtsklick links zum Umbenennen, Umwandeln oder Zusammenführen.",
+                           "Drag to reorder. Click ⚠️ or ❌ to pick the right plugin. Right-click on the left to rename, convert or merge."))
                     .font(DS.Font.caption).foregroundColor(DS.textTertiary)
             }
         }
@@ -305,12 +305,12 @@ private struct ImportRowView: View {
 
     var body: some View {
         let item = row.match.item
-        LauncherRow(number: index,
-                    symbol: IconCatalog.symbolName(for: item.map(IconGuesser.guess) ?? IconCatalog.defaultID),
-                    title: row.display,
-                    subtitle: subtitle,
-                    active: hovered,
-                    available: row.match.status != .notFound) {
+        LauncherListRow(number: index,
+                        symbol: IconCatalog.symbolName(for: item.map(IconGuesser.guess) ?? IconCatalog.defaultID),
+                        title: row.display,
+                        active: hovered,
+                        available: row.match.status != .notFound,
+                        subtitle: subtitle) {
             if hovered {
                 Button(action: onRemove) { Image(systemName: "xmark.circle.fill") }
                     .buttonStyle(.borderless).foregroundColor(.dimText)
@@ -418,7 +418,7 @@ struct VersionsPage: View {
             VStack(alignment: .leading, spacing: DS.Space.xl) {
                 ProfilesCard(model: model)
                 lesCard
-                SectionLabel(text: Loc.t("Verlauf (alle Profile) – Wiederherstellen ersetzt das aktive Profil", "History (all profiles) – restoring replaces the active profile")).padding(.top, DS.Space.s)
+                SectionLabel(text: Loc.t("Verlauf aller Profile. Wiederherstellen ersetzt das aktive Profil.", "History of all profiles. Restoring one replaces the active profile.")).padding(.top, DS.Space.s)
                 saveCard
                 VStack(alignment: .leading, spacing: DS.Space.s) {
                     HStack {
@@ -439,8 +439,7 @@ struct VersionsPage: View {
                                 versionRow(version)
                             }
                         }
-                        .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-                        .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+                        .plate(lit: false, radius: DS.Radius.l, filled: true)
                     }
                 }
             }
@@ -548,7 +547,7 @@ struct VersionsPage: View {
         panel.allowedContentTypes = [menuType]
         guard panel.runModal() == .OK, let url = panel.url else { return }
         run { try model.importMenuFile(url) }
-        info = Loc.t("Importiert: \(url.lastPathComponent) – vorheriges Menü gesichert.", "Imported: \(url.lastPathComponent) – previous menu saved.")
+        info = Loc.t("Importiert: \(url.lastPathComponent) – vorheriges Menü gesichert.", "Imported: \(url.lastPathComponent) . Your previous menu was saved.")
     }
 
     private var menuType: UTType { UTType(filenameExtension: MenuDocument.fileExtension) ?? .json }

@@ -60,7 +60,7 @@ enum KeyboardLayout {
         alert.alertStyle = .warning
         alert.messageText = Loc.t("\(KeyNames.describe(combo)) ist schon belegt", "\(KeyNames.describe(combo)) is already in use")
         alert.informativeText = lines.map { "• " + $0 }.joined(separator: "\n") + "\n\n"
-            + Loc.t("Während Live vorne ist, gewinnt dein HYNE-ASM-Kürzel – die Funktion oben ist dann nicht mehr per Tastatur erreichbar. Trotzdem setzen?",
+            + Loc.t("Während Live vorne ist, gewinnt dein HYNE-ASM-Kürzel, und die Funktion oben ist dann nicht mehr per Tastatur erreichbar. Trotzdem setzen?",
                     "While Live is in front your HYNE ASM shortcut wins, so the command above can no longer be reached by keyboard. Set it anyway?")
         alert.addButton(withTitle: Loc.t("Trotzdem setzen", "Set Anyway"))
         alert.addButton(withTitle: Loc.t("Abbrechen", "Cancel"))
@@ -321,8 +321,7 @@ struct KnownShortcutsSheet: View {
                     if let code, let first = list.first(where: { index.code[$0.id] == code }) { proxy.scrollTo(first.id, anchor: .center) }
                 }
             }
-            .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-            .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+            .plate(lit: false, radius: DS.Radius.l, filled: true)
         }
     }
 }

@@ -22,11 +22,16 @@ final class PanelStateTests: XCTestCase {
         XCTAssertEqual(s.rows.map(\.title), ["EQ Eight", "Utility", "Pro-L 2"])
     }
 
-    func testLargestTabCountSizesThePanelForEveryCategory() {
+    func testRowsFollowTabFolderAndFilterChanges() {
         var s = makeState()
-        XCTAssertEqual(s.largestTabCount, 3)   // Favorites has 3, the second category 1
+        XCTAssertEqual(s.rows.count, 3)
         s.selectTab(1)
-        XCTAssertEqual(s.largestTabCount, 3)   // same whichever tab is open
+        XCTAssertEqual(s.rows.count, 1)        // the second category has one entry
+        s.selectTab(0)
+        _ = s.handle(.character("u"))
+        XCTAssertTrue(s.rows.contains { $0.title == "Utility" })
+        _ = s.handle(.backspace)
+        XCTAssertEqual(s.rows.map(\.title), ["EQ Eight", "Utility", "Pro-L 2"])
     }
 
     func testDigitInsertsRowWhenFilterEmpty() {

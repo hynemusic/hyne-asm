@@ -6,20 +6,78 @@ import HMLauncherCore
 final class PanelViewModel: ObservableObject {
     @Published var state: PanelState
     @Published var hovered: Int?
-    /// Columns side by side (the setting, limited to what fits on the screen).
-    @Published var columns = PanelGrid.columns
+    /// Grid or list, its page size and where the categories sit (Settings → Behavior).
+    @Published var style = PanelStyle.grid
+    @Published var pageLayout = PanelPage(columns: 3, rows: 3, columnMajor: false)
+    @Published var placement = CategoryPlacement.top
+    var metrics: PageMetrics { PageMetrics(style: style, page: pageLayout, size: size) }
+    /// The page of 9 on show, and which way the last turn went (for the slide).
+    @Published var page = 0
+    var forward = true
     /// Column width and entry height (resize grip).
     @Published var size = PanelSize.default
     /// ⇧ held: inserting keeps the panel open (pinned mode).
     @Published var pinned = false
     /// An entry being dragged to a new place: its index and the slot it would land in.
     @Published var drag: (from: Int, to: Int)?
-    var rowStride: CGFloat { CGFloat(size.itemHeight) + 4 }
-    var columnWidth: CGFloat { CGFloat(size.columnWidth) }
     /// Favorites gets a star in the tab bar.
     var favoritesID: UUID?
     init(state: PanelState) { self.state = state }
     func isFavorites(_ id: UUID) -> Bool { id == favoritesID }
+
+    var pageCount: Int { max(1, (state.rows.count + pageLayout.size - 1) / pageLayout.size) }
+
+    /// Slides to `page` (in from the right when moving forward); no slide with Reduce Motion.
+    func turn(to page: Int) {
+        let target = min(max(page, 0), pageCount - 1)
+        guard target != self.page else { return }
+        forward = target > self.page
+        hovered = nil
+        withAnimation(NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? nil : .easeOut(duration: 0.14)) {
+            self.page = target
+        }
+    }
+
+    // Scroll wheel and two-finger trackpad swipes over the panel turn pages: one page per gesture (trackpad)
+    // or per few wheel notches, whichever axis moves more.
+    private var scrollSum: CGFloat = 0
+    private var scrollTurned = false
+    private var lastWheelTurn = Date.distantPast
+
+    func scroll(_ event: ScrollSample) {
+        let trackpad = event.precise
+        if trackpad && event.began { scrollSum = 0; scrollTurned = false }
+        if trackpad && event.ended { scrollSum = 0; scrollTurned = false; return }
+        if event.momentum { return }   // the coast after a swipe is not a second swipe
+        let dx = -event.dx, dy = -event.dy
+        scrollSum += abs(dx) > abs(dy) ? dx : dy
+        let threshold: CGFloat = trackpad ? 40 : 3
+        guard abs(scrollSum) >= threshold else { return }
+        if trackpad {
+            guard !scrollTurned else { return }
+            scrollTurned = true
+        } else {
+            guard Date().timeIntervalSince(lastWheelTurn) > 0.12 else { return }
+            lastWheelTurn = Date()
+        }
+        turn(to: page + (scrollSum > 0 ? 1 : -1))
+        scrollSum = 0
+    }
+}
+
+/// What the page turning needs from a scroll event (plain values, safe to hand across isolation).
+struct ScrollSample: Sendable {
+    let dx: CGFloat, dy: CGFloat
+    let precise: Bool
+    let began: Bool, ended: Bool, momentum: Bool
+
+    init(_ e: NSEvent) {
+        dx = e.scrollingDeltaX; dy = e.scrollingDeltaY
+        precise = e.hasPreciseScrollingDeltas
+        began = e.phase == .began || e.phase == .mayBegin
+        ended = e.phase == .ended || e.phase == .cancelled
+        momentum = !e.momentumPhase.isEmpty
+    }
 }
 
 private final class LauncherPanel: NSPanel {
@@ -41,11 +99,6 @@ final class PanelWindowController {
     private var outsideClickMonitor: Any?
     private var lastTab = 0
     private var topLeft = CGPoint.zero
-    /// Tallest height since the panel opened. Switching to a shorter category (or filtering) never shrinks the
-    /// panel while it is open, so the content doesn't jump away from the mouse.
-    private var heightFloor: CGFloat = 0
-    /// Same for the width: one column grows to two while open, never back.
-    private var columnsFloor = 1
     private let flyout = FolderFlyout()
     private var flyoutFolder: UUID?
 
@@ -97,13 +150,26 @@ final class PanelWindowController {
         viewModel.favoritesID = model.config.favoritesID
         viewModel.hovered = nil
         viewModel.drag = nil
+        viewModel.page = 0
+        viewModel.style = model.config.panelStyle
+        viewModel.pageLayout = model.config.panelPage
+        viewModel.placement = model.config.categoryPlacement
+        // Developer aids: HM_PANEL_STYLE=list, HM_PANEL_GRID=4x2, HM_PANEL_PLACEMENT=left preview without
+        // changing the config.
+        if let style = Dev.env("HM_PANEL_STYLE").flatMap(PanelStyle.init(rawValue:)) {
+            viewModel.style = style
+            viewModel.pageLayout = PanelPage(style: style, grid: model.config.panelGrid, list: model.config.panelList)
+        }
+        if let g = Dev.env("HM_PANEL_GRID")?.split(separator: "x").compactMap({ Int($0) }), g.count == 2 {
+            viewModel.pageLayout = PanelPage(columns: g[0], rows: g[1], columnMajor: viewModel.style == .list)
+        }
+        if let p = Dev.env("HM_PANEL_PLACEMENT").flatMap(CategoryPlacement.init(rawValue:)) { viewModel.placement = p }
         if !model.panelOpened { model.panelOpened = true }
         viewModel.size = model.config.panelSize
         if let dev = Dev.env("HM_PANEL_SIZE")?.split(separator: ",").compactMap({ Double($0) }), dev.count == 2 {
             viewModel.size = PanelSize(columnWidth: dev[0], itemHeight: dev[1]) // developer aid
         }
         topLeft = point
-        resetFloors()
         layout()
         panel.orderFrontRegardless()
         outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
@@ -118,24 +184,21 @@ final class PanelWindowController {
             MainActor.assumeIsolated { self?.viewModel.pinned = event.modifierFlags.contains(.shift) }
         }
         flagsMonitors = [NSEvent.addGlobalMonitorForEvents(matching: .flagsChanged, handler: flags),
-                         NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) { flags($0); return $0 }].compactMap { $0 }
+                         NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) { flags($0); return $0 },
+                         NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
+                             let sample = ScrollSample(event)
+                             let windowNumber = event.windowNumber
+                             let handled = MainActor.assumeIsolated { () -> Bool in
+                                 guard let self, windowNumber == self.panel.windowNumber else { return false }
+                                 self.viewModel.scroll(sample)
+                                 return true
+                             }
+                             return handled ? nil : event
+                         }].compactMap { $0 }
     }
 
     /// The gear in the panel's top-right corner.
     var onOpenSettings: (() -> Void)?
-
-    /// Sized for the fullest category right away: switching tabs never resizes the panel, and near the bottom
-    /// of the screen the rows don't get pushed away from the mouse. Search and open folders can still grow it.
-    private func resetFloors() {
-        let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
-        let fitting = max(1, Int(((screen?.visibleFrame.width ?? 1600) - PanelView.padding * 2 + PanelView.columnSpacing)
-                                 / (viewModel.columnWidth + PanelView.columnSpacing)))
-        let columns = min(model.config.panelColumns, fitting)
-        viewModel.columns = columns
-        let largest = viewModel.state.largestTabCount
-        heightFloor = height(gridRows: PanelGrid.rows(largest, columns: columns), extra: 0)
-        columnsFloor = PanelGrid.columnsNeeded(local: largest, global: 0, max: columns)
-    }
 
     // MARK: Resize grip
 
@@ -150,15 +213,15 @@ final class PanelWindowController {
         }
         let mouse = NSEvent.mouseLocation
         if resizeStart == nil {
-            let rows = max(1, min(PanelGrid.rows(viewModel.state.largestTabCount, columns: viewModel.columns), PanelView.maxVisibleRows))
-            resizeStart = (mouse, viewModel.size, max(columnsFloor, 1), rows)
+            resizeStart = (mouse, viewModel.size, viewModel.pageLayout.columns, viewModel.pageLayout.rows)
         }
         guard let start = resizeStart else { return }
         let dx = mouse.x - start.mouse.x
         let dy = start.mouse.y - mouse.y   // dragging down makes entries taller
-        viewModel.size = PanelSize(columnWidth: start.size.columnWidth + Double(dx) / Double(start.columns),
+        // Grid: `columnWidth` is three pads wide, so a pad grows by dx / columns. List: it is one row wide.
+        let widthFactor = viewModel.style == .grid ? 3.0 : 1.0
+        viewModel.size = PanelSize(columnWidth: start.size.columnWidth + widthFactor * Double(dx) / Double(start.columns),
                                    itemHeight: start.size.itemHeight + Double(dy) / Double(start.rows))
-        resetFloors()
         layout(animated: false)
     }
 
@@ -191,6 +254,8 @@ final class PanelWindowController {
     /// Returns true: while the panel is open every key belongs to it.
     func handle(_ key: PanelKey) -> Bool {
         var state = viewModel.state
+        state.page = viewModel.page
+        state.pageSize = viewModel.pageLayout.size
         let action = state.handle(key)
         viewModel.state = state
         lastTab = state.selectedTab
@@ -235,12 +300,14 @@ final class PanelWindowController {
         guard flyoutFolder != folder || !flyout.isVisible else { return }
         flyoutFolder = folder
         let index = viewModel.state.rows.firstIndex { $0.folderID == folder } ?? 0
-        let column = (index % (viewModel.columns * PanelGrid.rowsPerColumn)) / PanelGrid.rowsPerColumn
-        let rowMinX = panel.frame.minX + PanelView.padding + CGFloat(column) * (viewModel.columnWidth + PanelView.columnSpacing)
-        let rowFrame = NSRect(x: rowMinX, y: panel.frame.minY, width: viewModel.columnWidth, height: panel.frame.height)
-        let mouse = NSEvent.mouseLocation
+        // Right beside the folder pad, its first row level with the pad's top: the list covers the pads to the
+        // folder's right, so no other folder sits between the pointer and the list.
+        let item = viewModel.metrics.frame(ofSlot: index)
+        let padX = panel.frame.minX + PanelView.gridMinX(viewModel.placement) + item.minX
+        let padTop = panel.frame.maxY - PanelView.gridTopInset(viewModel.placement) - item.minY
+        let padFrame = NSRect(x: padX, y: padTop - item.height, width: item.width, height: item.height)
         flyout.show(rows: viewModel.state.folderRows(folder),
-                    besides: rowFrame, top: mouse.y + viewModel.rowStride / 2 + PanelView.padding,
+                    besides: padFrame, top: padTop + PanelView.padding,
                     onInsert: { [weak self] in self?.insert($0) })
     }
 
@@ -284,27 +351,12 @@ final class PanelWindowController {
         layout()
     }
 
-    private func height(gridRows: Int, extra: CGFloat) -> CGFloat {
-        let visibleRows = CGFloat(min(max(gridRows, 1), PanelView.maxVisibleRows))
-        return PanelView.tabBarHeight + extra + visibleRows * viewModel.rowStride + PanelView.footerHeight + PanelView.padding * 2
-    }
-
-    /// Height follows the row count; the top-left corner stays at the click, clamped to the screen.
+    /// Always one page of 3×3 pads; the top-left corner stays at the click, clamped to the screen.
     private func layout(animated: Bool = true) {
-        let all = viewModel.state.rows
-        let globalCount = all.filter(\.isGlobal).count
-        let gridRows = PanelGrid.rows(all.count - globalCount, columns: viewModel.columns)
-            + PanelGrid.rows(globalCount, columns: viewModel.columns)
-        let filterHeight: CGFloat = (viewModel.state.filter.isEmpty ? 0 : PanelView.filterHeight)
-            + (viewModel.state.openFolderName == nil ? 0 : PanelView.filterHeight)
-            + (globalCount > 0 && gridRows <= PanelView.maxVisibleRows ? PanelView.globalHeaderHeight : 0)
-        let height = max(height(gridRows: gridRows, extra: filterHeight), heightFloor)
-        heightFloor = height
-        let columns = max(PanelGrid.columnsNeeded(local: all.count - globalCount, global: globalCount, max: viewModel.columns),
-                          columnsFloor)
-        columnsFloor = columns
+        let size = PanelView.size(viewModel.metrics, placement: viewModel.placement)
+        let height = size.height
         let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
-        var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: PanelView.width(columns: columns, columnWidth: viewModel.size.columnWidth), height: height)
+        var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: size.width, height: height)
         if let visible = screen?.visibleFrame {
             frame.origin.x = min(max(frame.minX, visible.minX), visible.maxX - frame.width)
             frame.origin.y = min(max(frame.minY, visible.minY), visible.maxY - frame.height)
@@ -419,8 +471,9 @@ private struct FlyoutView: View {
                 }
                 ForEach(Array(model.rows.enumerated()), id: \.offset) { index, row in
                     Button { model.onInsert(row) } label: {
-                        LauncherRow(number: nil, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,
-                                    active: model.hovered == index, available: row.isAvailable, color: Color(label: row.colorID))
+                        LauncherListRow(number: nil, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,
+                                        height: PanelView.rowHeight - 4, active: model.hovered == index,
+                                        available: row.isAvailable, color: Color(label: row.colorID), showsNumber: false) {}
                             .opacity(row.isAvailable ? 1 : 0.5)
                     }
                     .buttonStyle(.plain)

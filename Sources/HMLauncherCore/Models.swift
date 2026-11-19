@@ -147,14 +147,17 @@ public struct LauncherConfig: Codable, Sendable {
     public var keptEntries: [UUID] = []
     /// Local HTTP endpoint for Stream Deck & co. (127.0.0.1 only); off unless switched on.
     public var streamDeckEnabled = false
-    /// Columns of 9 entries the panel may put side by side (1–9).
-    public var panelColumns: Int {
-        get { storedPanelColumns }
-        set { storedPanelColumns = min(max(newValue, 1), PanelGrid.maxColumns) }
-    }
-    private var storedPanelColumns = PanelGrid.columns
     /// Width of a panel column and height of an entry (resize grip in the panel).
     public var panelSize = PanelSize.default
+    /// Pads per page of the panel (columns × rows).
+    public var panelGrid = PanelGridSize.default
+    /// Pads in a grid or rows of a list, and the list's size.
+    public var panelStyle: PanelStyle = .grid
+    public var panelList = PanelListSize.default
+    /// The page the panel shows, from the style and its size.
+    public var panelPage: PanelPage { PanelPage(style: panelStyle, grid: panelGrid, list: panelList) }
+    /// Categories as tabs on top of the panel or as a column on its left.
+    public var categoryPlacement: CategoryPlacement = .top
     /// The welcome window was finished or skipped.
     public var onboardingDone = false
     /// Secret part of every Stream Deck link, so a web page can't trigger commands on the local endpoint.
@@ -187,8 +190,11 @@ public struct LauncherConfig: Codable, Sendable {
         showRarelyUsed = try c.decodeIfPresent(Bool.self, forKey: .showRarelyUsed) ?? true
         keptEntries = try c.decodeIfPresent([UUID].self, forKey: .keptEntries) ?? []
         streamDeckEnabled = try c.decodeIfPresent(Bool.self, forKey: .streamDeckEnabled) ?? false
-        panelColumns = try c.decodeIfPresent(Int.self, forKey: .storedPanelColumns) ?? PanelGrid.columns
         panelSize = (try? c.decodeIfPresent(PanelSize.self, forKey: .panelSize)) ?? .default
+        panelGrid = (try? c.decodeIfPresent(PanelGridSize.self, forKey: .panelGrid)) ?? .default
+        categoryPlacement = (try? c.decodeIfPresent(CategoryPlacement.self, forKey: .categoryPlacement)) ?? .top
+        panelStyle = (try? c.decodeIfPresent(PanelStyle.self, forKey: .panelStyle)) ?? .grid
+        panelList = (try? c.decodeIfPresent(PanelListSize.self, forKey: .panelList)) ?? .default
         onboardingDone = try c.decodeIfPresent(Bool.self, forKey: .onboardingDone) ?? false
         streamDeckToken = try c.decodeIfPresent(String.self, forKey: .streamDeckToken) ?? LauncherConfig.newToken()
         profiles = try c.decodeIfPresent([Profile].self, forKey: .profiles) ?? []

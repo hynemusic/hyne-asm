@@ -168,16 +168,19 @@ private struct QuickSearchView: View {
     private func row(_ result: QuickResult, index: Int, highlighted: Bool) -> some View {
         let r = result.row
         return Button { onInsert(r) } label: {
-            LauncherRow(number: nil, symbol: IconCatalog.symbolName(for: r.iconID), title: r.title,
-                        subtitle: result.place ?? Loc.t("Alle Plugins", "All plugins") + " · " + PluginGrouping.formatLabel(
-                            PluginItem(uri: r.uri, name: r.name, source: r.source, path: r.path)),
-                        active: highlighted, available: r.isAvailable, color: Color(label: r.colorID)) {
+            // Same rows as the panel's list: dark plate, icon in the label color, short glowing stripe, lit when chosen.
+            LauncherListRow(number: nil, symbol: IconCatalog.symbolName(for: r.iconID), title: r.title,
+                            height: PanelView.rowHeight - 4,
+                            active: highlighted, available: r.isAvailable, color: Color(label: r.colorID),
+                            subtitle: result.place ?? Loc.t("Alle Plugins", "All plugins") + " · " + PluginGrouping.formatLabel(
+                                PluginItem(uri: r.uri, name: r.name, source: r.source, path: r.path)),
+                            showsNumber: false) {
                 if r.isNew { NewBadge() }
                 if highlighted {
                     Text("↩")
-                        .font(DS.Font.keycap).foregroundColor(.onAccent)
+                        .font(DS.Font.keycap).foregroundColor(Palette.current.onLitPad)
                         .frame(width: 22, height: 20)
-                        .background(RoundedRectangle(cornerRadius: CGFloat(5).themedRadius).fill(Color.accent))
+                        .background(RoundedRectangle(cornerRadius: CGFloat(5).themedRadius).fill(Palette.current.onLitPad.opacity(0.15)))
                 }
             }
         }

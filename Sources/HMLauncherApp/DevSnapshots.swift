@@ -73,14 +73,19 @@ extension AppDelegate {
                     self.panel.snapshot(to: out.appendingPathComponent("panel-short-fresh.png"))
                     _ = self.panel.handle(.right); _ = self.panel.handle(.right) // back towards Favorites
                     for ch in "re" { _ = self.panel.handle(.character(ch)) }
+                    _ = self.panel.handle(.down); _ = self.panel.handle(.down) // a highlighted (lit) entry
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                         self.panel.snapshot(to: out.appendingPathComponent("panel-filter.png"))
-                        self.panel.hide()
-                        self.quickSearch.show()
-                        for ch in "pro" { _ = self.quickSearch.handle(.character(ch)) }
+                        for _ in 0..<9 { _ = self.panel.handle(.down) } // highlight on page 2: the page turns
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                            self.quickSearch.snapshot(to: out.appendingPathComponent("quicksearch.png"))
-                            NSApp.terminate(nil)
+                            self.panel.snapshot(to: out.appendingPathComponent("panel-page2.png"))
+                            self.panel.hide()
+                            self.quickSearch.show()
+                            for ch in "pro" { _ = self.quickSearch.handle(.character(ch)) }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                self.quickSearch.snapshot(to: out.appendingPathComponent("quicksearch.png"))
+                                NSApp.terminate(nil)
+                            }
                         }
                     }
                 }

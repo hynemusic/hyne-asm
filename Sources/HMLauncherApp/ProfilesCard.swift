@@ -24,8 +24,7 @@ struct ProfilesCard: View {
                     row(profile)
                 }
             }
-            .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-            .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+            .plate(lit: false, radius: DS.Radius.l, filled: true)
             HintText(text: Loc.t("Tipp: Unter Tastenkürzel lässt sich „Nächstes Profil“ auf eine Taste legen; im Menüleisten-Menü wechselst du auch.",
                                  "Tip: “Next profile” can get a key under Shortcuts; the menu bar menu switches too."))
         }

@@ -76,8 +76,8 @@ struct SearchTuningPage: View {
 
     var body: some View {
         PageContainer(title: Loc.t("Suche formen", "Shape Search"),
-                      subtitle: Loc.t("Tipp einen Suchbegriff und bestimm, was oben steht und was gar nicht erscheint. Gilt im Panel und in der Schnellsuche – auch für längere Eingaben (eine Regel für „ser“ gilt auch bei „serum“).",
-                                      "Type a search and decide what comes first and what never shows. Applies to the panel and the quick search – also to longer input (a rule for “ser” also applies to “serum”)."),
+                      subtitle: Loc.t("Tipp einen Suchbegriff und bestimm, was oben steht und was gar nicht erscheint. Gilt im Panel und in der Schnellsuche, auch für längere Eingaben: eine Regel für „ser“ gilt auch bei „serum“.",
+                                      "Type a search and decide what comes first and what never shows. Works in the panel and the quick search, and for longer input too: a rule for “ser” also applies to “serum”."),
                       maxWidth: 1040, scrolls: false) { EmptyView() } content: {
             HStack(alignment: .top, spacing: DS.Space.xl) {
                 VStack(alignment: .leading, spacing: DS.Space.m) {
@@ -138,8 +138,7 @@ struct SearchTuningPage: View {
                     hiddenSection(rule)
                 }
             }
-            .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-            .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+            .plate(lit: false, radius: DS.Radius.l, filled: true)
         }
     }
 
@@ -234,8 +233,7 @@ struct SearchTuningPage: View {
                         ruleRow(rule)
                     }
                 }
-                .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-                .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+                .plate(lit: false, radius: DS.Radius.l, filled: true)
             }
         }
     }

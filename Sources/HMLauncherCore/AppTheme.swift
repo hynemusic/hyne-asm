@@ -16,7 +16,7 @@ public enum AppTheme: String, Codable, CaseIterable, Sendable {
 
     public var subtitle: String {
         switch self {
-        case .original: return Loc.t("Dunkel mit Blau und Koralle", "Dark with blue and coral")
+        case .original: return Loc.t("Warmes Schwarz, leuchtende Pads in Orange", "Warm black, glowing pads in orange")
         case .ableton: return Loc.t("Lives Grau mit Orange", "Live's grey with orange")
         case .hyne: return Loc.t("Aus deinem Live-Theme", "From your Live theme")
         case .light: return Loc.t("Weiß und klar", "White and clean")

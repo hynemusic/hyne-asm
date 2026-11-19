@@ -35,6 +35,10 @@ struct Palette {
     var keyFill: Color
     /// Retro: the four PlayStation logo colours (stripe on top of the windows, 1–9 key caps).
     var logoColors: [Color] = []
+    /// Pads: top of the pad's gradient (bottom is `panelRow`), the unlit stripe / page dot, text on a lit pad.
+    var padTop: Color? = nil
+    var padStripe: Color = Color.white.opacity(0.12)
+    var onLitPad: Color = Color(white: 0.08)
     var radiusScale: CGFloat = 1
     /// Face for display roles (titles, labels, names, key caps); reading text always uses the standard face.
     var displayDesign: Font.Design = .default
@@ -46,13 +50,15 @@ struct Palette {
     static func make(_ theme: AppTheme) -> Palette {
         switch theme {
         case .original:
+            // Warm black like a pad controller's housing, Ableton orange for the lit pad and the active category.
             return Palette(isDark: true,
-                           canvas: Color(white: 0.105), sidebar: Color(white: 0.135), surface: Color(white: 0.145),
-                           raised: Color(white: 0.195), hover: Color(white: 0.235), hairline: Color.white.opacity(0.07),
-                           textPrimary: Color(white: 0.94), textSecondary: Color(white: 0.68), textTertiary: Color(white: 0.56),
-                           accent: hex(0xFF6B57), accentStrong: hex(0x3D5AFE),
-                           panelSurface: Color(white: 0.115), panelRow: Color(white: 0.17), panelStroke: Color.white.opacity(0.09),
-                           ink: .white, keyboardBase: Color(white: 0.075), keyFill: Color(white: 0.2))
+                           canvas: hex(0x0C0B0A), sidebar: hex(0x141311), surface: hex(0x121110),
+                           raised: hex(0x1D1C1A), hover: hex(0x262421), hairline: Color.white.opacity(0.07),
+                           textPrimary: hex(0xEEEAE4), textSecondary: hex(0xB5AFA6), textTertiary: hex(0x8D877E),
+                           accent: hex(0xFF8C1A), accentStrong: hex(0xFF8C1A), onAccentStrong: hex(0x15120E), onAccent: hex(0x15120E),
+                           panelSurface: hex(0x121110), panelRow: hex(0x1D1C1A), panelStroke: Color.white.opacity(0.07),
+                           ink: .white, keyboardBase: hex(0x0C0B0A), keyFill: hex(0x262421),
+                           padTop: hex(0x262421), padStripe: hex(0x34312D), onLitPad: hex(0x15120E))
         case .ableton:
             // Live 12's neutral dark greys with its orange highlight and light-blue selection.
             return Palette(isDark: true,

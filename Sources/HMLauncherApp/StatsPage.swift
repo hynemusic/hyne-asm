@@ -64,7 +64,7 @@ struct StatsPage: View {
                 removing = nil
             }
         } message: {
-            Text(Loc.t("Sein Zähler (\(removing?.count ?? 0)×) wird gelöscht – in der Suche rutscht es dann nicht mehr nach oben. Das Plugin selbst bleibt.",
+            Text(Loc.t("Sein Zähler (\(removing?.count ?? 0)×) wird gelöscht, in der Suche rutscht es dann nicht mehr nach oben. Das Plugin selbst bleibt.",
                        "Its count (\(removing?.count ?? 0)×) is deleted, so it no longer moves up in search. The plugin itself stays."))
         }
         .confirmationDialog(Loc.t("„\(removingEntry?.entry.title ?? "")“ aus dem Panel entfernen?", "Remove “\(removingEntry?.entry.title ?? "")” from the panel?"),
@@ -94,8 +94,8 @@ struct StatsPage: View {
         VStack(spacing: DS.Space.m) {
             Image(systemName: "chart.bar.xaxis").font(.system(size: 30)).foregroundColor(DS.textTertiary)
             Text(Loc.t("Noch nichts eingefügt", "Nothing inserted yet")).font(DS.Font.bodyStrong).foregroundColor(DS.textSecondary)
-            Text(Loc.t("Füg Plugins über das Panel oder die Schnellsuche ein – hier siehst du dann, was du am meisten nutzt.",
-                       "Insert plugins from the panel or quick search – this page then shows what you use most."))
+            Text(Loc.t("Füg Plugins über das Panel oder die Schnellsuche ein. Hier siehst du dann, was du am meisten nutzt.",
+                       "Insert plugins from the panel or quick search, and this page shows what you use most."))
                 .font(DS.Font.caption).foregroundColor(DS.textTertiary).multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, minHeight: 260)
@@ -115,7 +115,7 @@ struct StatsPage: View {
         VStack(alignment: .leading, spacing: DS.Space.s) {
             HStack(spacing: 6) {
                 Image(systemName: symbol).font(.system(size: 11, weight: .semibold)).foregroundColor(.accent)
-                Text(title.uppercased()).font(DS.Font.sectionLabel).tracking(0.6).foregroundColor(DS.textTertiary)
+                Text(title).font(DS.Font.sectionLabel).foregroundColor(DS.textTertiary)
             }
             Text(value)
                 .font(DS.Font.metric(compact: small))
@@ -234,8 +234,7 @@ struct StatsPage: View {
                             .frame(maxWidth: .infinity, alignment: .leading).padding(DS.Space.m)
                     }
                 }
-                .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-                .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+                .plate(lit: false, radius: DS.Radius.l, filled: true)
             }
         }
     }
@@ -277,8 +276,7 @@ struct StatsPage: View {
                     statRow(rank, stat)
                 }
             }
-            .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-            .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+            .plate(lit: false, radius: DS.Radius.l, filled: true)
         }
     }
 

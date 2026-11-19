@@ -39,6 +39,14 @@ struct EntryRow: View {
     var streamDeckToken = ""
     var onShortcut: (() -> Void)? = nil
     var shortcutLabel: String? = nil
+    /// Set: drawn as a pad of the panel's 3×3 blocks (this width) instead of a row.
+    var padWidth: CGFloat? = nil
+    var padHeight: CGFloat = 66
+    /// Pads per panel page: the key numbers start again at 1 on each page.
+    var pageSize = 9
+    /// With `padWidth` set: a row of the panel's list style (that wide) instead of a pad.
+    var listStyle = false
+    private var isPad: Bool { padWidth != nil && !listStyle }
     private var dropSpot: DropSpot? { drop.marker?.id == entry.id ? drop.marker?.spot : nil }
     @State private var showIcons = false
     @State private var editingValue = false
@@ -47,23 +55,12 @@ struct EntryRow: View {
     @State private var hovered = false
 
     var body: some View {
-        LauncherRow(number: index, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
-                    subtitle: subtitle, active: isSelected || hovered || dropSpot == .into, available: available, color: color) {
-            if entry.isFolder {
-                Text("\(entry.children?.count ?? 0)").font(DS.Font.caption).foregroundColor(.dimText)
-                Button(action: onToggle) {
-                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right").font(.system(size: 11, weight: .semibold))
-                }
-                .buttonStyle(.borderless).foregroundColor(.dimText)
-            }
-            if hovered {
-                Button(action: onRemove) { Image(systemName: "xmark.circle.fill") }
-                    .buttonStyle(.borderless).foregroundColor(.dimText).help(Loc.t("Entfernen", "Remove"))
-            }
-        }
-        .overlay(alignment: .leading) {
+        base
+        .overlay(alignment: isPad ? .top : .leading) {
             // Click target over the icon opens the icon list.
-            Color.clear.frame(width: 34, height: 42).padding(.leading, 30).contentShape(Rectangle())
+            Color.clear.frame(width: listStyle ? 26 : 34, height: isPad ? 26 : (listStyle ? padHeight : 42))
+                .padding(.leading, isPad ? 0 : (listStyle ? 28 : 30)).padding(.top, isPad ? 9 : 0)
+                .contentShape(Rectangle())
                 .onTapGesture { showIcons = true }
                 .popover(isPresented: $showIcons, arrowEdge: .leading) { IconPicker(selected: entry.iconID) { onIcon($0); showIcons = false } }
         }
@@ -73,14 +70,21 @@ struct EntryRow: View {
                 InlineNameField(initial: name,
                                 onCommit: { new in renaming = false; onName(!entry.isFolder && new == entry.name ? nil : new) },
                                 onCancel: { renaming = false })
-                    .padding(.leading, 76).padding(.trailing, 40)
+                    .padding(.leading, isPad ? 4 : (listStyle ? 58 : 76)).padding(.trailing, isPad ? 4 : 40)
+                    .frame(maxHeight: .infinity, alignment: isPad ? .bottom : .center)
+                    .padding(.bottom, isPad ? 6 : 0)
             }
         }
         .onHover { hovered = $0 }
         .simultaneousGesture(TapGesture().onEnded { onSelect() })
-        .overlay(alignment: dropSpot == .after ? .bottom : .top) {
+        .overlay(alignment: dropMarkerAlignment) {
             if dropSpot == .before || dropSpot == .after {
-                Rectangle().fill(Color.accent).frame(height: 3).offset(y: dropSpot == .before ? -3 : 3)
+                if !isPad {
+                    Rectangle().fill(Color.accent).frame(height: 3).offset(y: dropSpot == .before ? -3 : 3)
+                } else {
+                    // Pads sit side by side: the marker is a bar in the gap left or right of the pad.
+                    Rectangle().fill(Color.accent).frame(width: 3).offset(x: dropSpot == .before ? -4.5 : 4.5)
+                }
             }
         }
         .overlay { if dropSpot == .into { RoundedRectangle(cornerRadius: 5).stroke(Color.accent, lineWidth: 2) } }
@@ -96,6 +100,44 @@ struct EntryRow: View {
                     editingValue = false
                 }
             }
+        }
+    }
+
+    private var dropMarkerAlignment: Alignment {
+        if !isPad { return dropSpot == .after ? .bottom : .top }
+        return dropSpot == .after ? .trailing : .leading
+    }
+
+    @ViewBuilder private var base: some View {
+        let active = isSelected || hovered || dropSpot == .into
+        if let padWidth, listStyle {
+            LauncherListRow(number: index % pageSize, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
+                            height: padHeight, active: active, available: available, color: color) { badges }
+                .frame(width: padWidth)
+                .help(subtitle ?? "")
+        } else if let padWidth {
+            LauncherPad(number: index % pageSize, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,   // keys 1–9 per page
+                        height: padHeight, active: active, available: available, color: color) { badges }
+                .frame(width: padWidth)
+                .help(subtitle ?? "")
+        } else {
+            LauncherListRow(number: index % pageSize, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
+                            height: padHeight, active: active, available: available, color: color, subtitle: subtitle) { badges }
+        }
+    }
+
+    @ViewBuilder private var badges: some View {
+        if entry.isFolder {
+            Text("\(entry.children?.count ?? 0)").font(DS.Font.caption).foregroundColor(.dimText)
+            Button(action: onToggle) {
+                Image(systemName: isExpanded ? "chevron.down" : "chevron.right").font(.system(size: 11, weight: .semibold))
+            }
+            .buttonStyle(.borderless).foregroundColor(.dimText)
+            .help(isExpanded ? Loc.t("Inhalt ausblenden", "Hide contents") : Loc.t("Inhalt zeigen", "Show contents"))
+        }
+        if hovered {
+            Button(action: onRemove) { Image(systemName: "xmark.circle.fill") }
+                .buttonStyle(.borderless).foregroundColor(.dimText).help(Loc.t("Entfernen", "Remove"))
         }
     }
 

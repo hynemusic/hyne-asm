@@ -10,8 +10,8 @@ struct BehaviorPage: View {
 
     var body: some View {
         PageContainer(title: Loc.t("Verhalten", "Behavior"),
-                      subtitle: Loc.t("Wie das Panel aussieht, wie HYNE ASM in Live einfügt – und wie andere Geräte es steuern.",
-                                      "How the panel is laid out, how HYNE ASM inserts into Live – and how other devices control it."),
+                      subtitle: Loc.t("Wie das Panel aussieht, wo Plugins in Live landen und was andere Geräte auslösen können.",
+                                      "How the panel looks, where plugins land in Live and what other devices can trigger."),
                       maxWidth: 780) { EmptyView() } content: {
             VStack(alignment: .leading, spacing: DS.Space.xl) {
                 panelCard
@@ -26,36 +26,88 @@ struct BehaviorPage: View {
     // MARK: Panel
 
     private var panelCard: some View {
-        card(Loc.t("Panel", "Panel"), symbol: "rectangle.split.3x1") {
+        card(Loc.t("Panel", "Panel"), symbol: "square.grid.3x3") {
             HStack(alignment: .center, spacing: DS.Space.l) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(Loc.t("Spalten nebeneinander", "Columns side by side")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
-                    Text(Loc.t("Jede Spalte fasst 9 Einträge. Das Panel nimmt nur so viele Spalten, wie die vollste Kategorie braucht; was nicht passt, geht darunter weiter.",
-                               "Each column holds 9 entries. The panel only uses as many columns as the fullest category needs; anything beyond continues below."))
-                        .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+                    Text(Loc.t("Kategorien", "Categories")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                    caption(Loc.t("Als Tabs über den Pads oder als Liste links daneben.", "Tabs above the pads, or a list beside them."))
+                }
+                Spacer(minLength: DS.Space.m)
+                Picker("", selection: $model.config.categoryPlacement) {
+                    Text(Loc.t("Oben", "Top")).tag(CategoryPlacement.top)
+                    Text(Loc.t("Links", "Left")).tag(CategoryPlacement.left)
+                }
+                .pickerStyle(.segmented).labelsHidden().fixedSize()
+            }
+            divider
+            HStack(alignment: .center, spacing: DS.Space.l) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(Loc.t("Darstellung", "Layout")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                    caption(Loc.t("Quadratische Pads im Raster oder Zeilen als Liste.", "Square pads in a grid, or rows in a list."))
+                }
+                Spacer(minLength: DS.Space.m)
+                Picker("", selection: $model.config.panelStyle) {
+                    Text(Loc.t("Raster", "Grid")).tag(PanelStyle.grid)
+                    Text(Loc.t("Liste", "List")).tag(PanelStyle.list)
+                }
+                .pickerStyle(.segmented).labelsHidden().fixedSize()
+            }
+            divider
+            HStack(alignment: .center, spacing: DS.Space.l) {
+                VStack(alignment: .leading, spacing: 2) {
+                    let page = model.config.panelPage
+                    Text(Loc.t("Größe", "Size")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                    caption(model.config.panelStyle == .grid
+                            ? Loc.t("\(page.size) Pads pro Seite. Die Tasten 1–9 wählen aus den ersten neun.",
+                                    "\(page.size) pads per page. Keys 1–9 pick from the first nine.")
+                            : Loc.t("\(page.size) Einträge pro Seite, höchstens 9 pro Spalte. Die Tasten 1–9 laufen die erste Spalte hinunter.",
+                                    "\(page.size) entries per page, at most 9 per column. Keys 1–9 run down the first column."))
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: DS.Space.m)
-                columnPreview
-                Stepper(value: $model.config.panelColumns, in: 1...PanelGrid.maxColumns) {
-                    Text("\(model.config.panelColumns)").font(DS.Font.bodyStrong.monospacedDigit()).foregroundColor(DS.textPrimary)
-                        .frame(minWidth: 16, alignment: .trailing)
+                sizePreview
+                VStack(alignment: .trailing, spacing: DS.Space.xs) {
+                    if model.config.panelStyle == .grid {
+                        sizeStepper(Loc.t("Spalten", "Columns"), value: $model.config.panelGrid.columns, range: PanelGridSize.range)
+                        sizeStepper(Loc.t("Reihen", "Rows"), value: $model.config.panelGrid.rows, range: PanelGridSize.range)
+                    } else {
+                        sizeStepper(Loc.t("Spalten", "Columns"), value: $model.config.panelList.columns, range: PanelListSize.columnRange)
+                        sizeStepper(Loc.t("Zeilen", "Rows"), value: $model.config.panelList.rows, range: PanelListSize.rowRange)
+                    }
                 }
-                .fixedSize()
             }
         }
     }
 
-    /// Tiny picture of the panel with the chosen number of columns.
-    private var columnPreview: some View {
-        HStack(spacing: 2) {
-            ForEach(0..<model.config.panelColumns, id: \.self) { _ in
-                RoundedRectangle(cornerRadius: 1.5).fill(Color.accent.opacity(0.55)).frame(width: 6, height: 22)
+    private func sizeStepper(_ label: String, value: Binding<Int>, range: ClosedRange<Int>) -> some View {
+        Stepper(value: value, in: range) {
+            HStack(spacing: 6) {
+                Text(label).font(DS.Font.secondary).foregroundColor(DS.textSecondary)
+                Text("\(value.wrappedValue)").font(DS.Font.bodyStrong.monospacedDigit()).foregroundColor(DS.textPrimary)
+                    .frame(minWidth: 14, alignment: .trailing)
             }
         }
-        .padding(4)
-        .frame(width: 80, height: 32)
-        .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(DS.raised))
+        .fixedSize()
+    }
+
+    /// Tiny picture of one panel page: pads or list rows, the ones with keys 1–9 lit.
+    private var sizePreview: some View {
+        let page = model.config.panelPage
+        let isGrid = model.config.panelStyle == .grid
+        return VStack(spacing: 2) {
+            ForEach(0..<page.rows, id: \.self) { r in
+                HStack(spacing: 2) {
+                    ForEach(0..<page.columns, id: \.self) { c in
+                        RoundedRectangle(cornerRadius: 1.5)
+                            .fill(page.slot(row: r, column: c) < 9 ? Color.accent.opacity(0.7) : DS.textTertiary.opacity(0.35))
+                            .frame(width: isGrid ? 8 : 22, height: isGrid ? 7 : 4)
+                    }
+                }
+            }
+        }
+        .padding(6)
+        .frame(minWidth: 84, minHeight: 64)
+        .plate(lit: false, radius: DS.Radius.s, filled: true)
         .accessibilityHidden(true)
     }
 
@@ -71,11 +123,11 @@ struct BehaviorPage: View {
                 }
                 .pickerStyle(.segmented).labelsHidden().frame(maxWidth: 420)
                 if scriptOutdated {
-                    warning(Loc.t("Dein Live-Script ist veraltet – Menü → „Live-Script installieren …“, dann Live neu starten. Bis dahin landet alles am Ende und nur auf der ausgewählten Spur.",
-                                  "Your Live script is out of date – menu → “Install Live Script …”, then restart Live. Until then everything goes to the end, on the selected track only."))
+                    warning(Loc.t("Dein Live-Script ist veraltet. Wähl im Menü „Live-Script installieren …“ und starte Live neu. Bis dahin landet alles am Ende und nur auf der ausgewählten Spur.",
+                                  "Your Live script is out of date. Choose “Install Live Script …” in the menu, then restart Live. Until then everything goes to the end, on the selected track only."))
                 } else if model.config.insert.position == .afterSelected, model.capabilities?.moveDevice == false {
-                    warning(Loc.t("Diese Live-Version kann Devices nicht verschieben – es landet am Ende.",
-                                  "This Live version can't move devices – it goes to the end."))
+                    warning(Loc.t("Diese Live-Version kann Devices nicht verschieben, also landet alles am Ende.",
+                                  "This Live version can't move devices, so everything goes to the end."))
                 } else {
                     caption(Loc.t("Ohne ausgewähltes Device landet es am Ende.", "With no device selected it goes to the end."))
                 }
@@ -91,8 +143,8 @@ struct BehaviorPage: View {
             }
             .toggleStyle(.switch)
             if !scriptOutdated, model.config.insert.allSelectedTracks, model.capabilities?.multiSelect == false {
-                warning(Loc.t("Diese Live-Version meldet keine Mehrfachauswahl – es wird nur die ausgewählte Spur verwendet.",
-                              "This Live version doesn't report multi-selection – only the selected track is used."))
+                warning(Loc.t("Diese Live-Version meldet keine Mehrfachauswahl, also nur die ausgewählte Spur.",
+                              "This Live version doesn't report multi-selection, so only the selected track is used."))
             }
         }
     }
@@ -110,7 +162,7 @@ struct BehaviorPage: View {
             Toggle(isOn: $model.config.showRarelyUsed) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(Loc.t("Kaum genutzte Einträge in der Statistik zeigen", "Show rarely used entries on Stats")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
-                    Text(Loc.t("Listet Panel-Einträge, die du fast nie einfügst – zum Aufräumen.", "Lists panel entries you hardly ever insert – to tidy up."))
+                    Text(Loc.t("Listet Panel-Einträge, die du fast nie einfügst, damit du aufräumen kannst.", "Lists panel entries you hardly ever insert, so you can tidy up."))
                         .font(DS.Font.caption).foregroundColor(DS.textTertiary)
                 }
             }
@@ -126,8 +178,8 @@ struct BehaviorPage: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(Loc.t("Stream-Deck-Verbindung", "Stream Deck connection")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
                     Text(statusText).font(DS.Font.caption).foregroundColor(statusColor)
-                    Text(Loc.t("Jeder Link enthält einen geheimen Schlüssel – Webseiten im Browser können die Verbindung nicht benutzen.",
-                               "Every link carries a secret key – web pages in your browser can't use the connection."))
+                    Text(Loc.t("Jeder Link enthält einen geheimen Schlüssel, damit Webseiten im Browser die Verbindung nicht nutzen können.",
+                               "Every link carries a secret key, so web pages in your browser can't use the connection."))
                         .font(DS.Font.caption).foregroundColor(DS.textTertiary)
                 }
             }
@@ -137,8 +189,8 @@ struct BehaviorPage: View {
                 Text(Loc.t("So richtest du eine Taste ein", "Set up a key")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
                 step(1, Loc.t("Zieh in der Stream-Deck-App die Aktion „Website“ (System) auf eine Taste.",
                               "In the Stream Deck app, drag the “Website” action (System) onto a key."))
-                step(2, Loc.t("Füg einen Link ein – Rechtsklick auf einen Eintrag in der Bibliothek → „Stream-Deck-Link kopieren“, oder einen von unten.",
-                              "Paste a link – right-click an entry in the Library → “Copy Stream Deck Link”, or one from below."))
+                step(2, Loc.t("Füg einen Link ein: Rechtsklick auf einen Eintrag in der Bibliothek, dann „Stream-Deck-Link kopieren“. Oder nimm einen von unten.",
+                              "Paste a link. Right-click an entry in the Library and choose “Copy Stream Deck Link”, or use one from below."))
                 step(3, Loc.t("Häkchen bei „Im Hintergrund aufrufen“ setzen, damit sich kein Browser öffnet.",
                               "Tick “Access in background” so no browser opens."))
             }
@@ -158,8 +210,8 @@ struct BehaviorPage: View {
 
     private var statusText: String {
         switch server.state {
-        case .off: return Loc.t("Aus – nur dieser Mac könnte sie erreichen (127.0.0.1).", "Off – only this Mac could reach it (127.0.0.1).")
-        case .listening: return Loc.t("Bereit auf 127.0.0.1:\(RemoteCommand.httpPort) – nur von diesem Mac erreichbar.", "Ready on 127.0.0.1:\(RemoteCommand.httpPort) – reachable from this Mac only.")
+        case .off: return Loc.t("Aus. Eingeschaltet erreicht sie nur dieser Mac (127.0.0.1).", "Off. When on, only this Mac can reach it (127.0.0.1).")
+        case .listening: return Loc.t("Läuft auf 127.0.0.1:\(RemoteCommand.httpPort). Nur dieser Mac erreicht sie.", "Running on 127.0.0.1:\(RemoteCommand.httpPort). Only this Mac can reach it.")
         case .failed(let message): return Loc.t("Konnte nicht starten: ", "Couldn't start: ") + message
         }
     }
@@ -195,8 +247,7 @@ struct BehaviorPage: View {
             VStack(alignment: .leading, spacing: DS.Space.m) { content() }
                 .padding(DS.Space.l)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-                .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+                .plate(lit: false, radius: DS.Radius.l, filled: true)
         }
     }
 
