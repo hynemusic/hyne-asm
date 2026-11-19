@@ -18,6 +18,12 @@ final class AppModel: ObservableObject {
     /// What the running Live script supports (insert after the selected device, all selected tracks).
     @Published private(set) var capabilities: BridgeCapabilities?
     @Published private(set) var scriptVersion: String?
+    /// The panel was opened at least once since launch (welcome window, "Try it").
+    @Published var panelOpened = false
+    /// A config file existed when the app started (new users have none: the welcome window opens).
+    let configExistedAtLaunch: Bool
+    /// Settings should switch to this page (set by the welcome window, read by the Settings view).
+    @Published var settingsPageRequest: Int?
     let catalog: PluginCatalog
     private var catalogWatch: AnyCancellable?
     private var usageWatch: AnyCancellable?
@@ -69,6 +75,7 @@ final class AppModel: ObservableObject {
     init(store: ConfigStore = ConfigStore(url: ConfigStore.defaultURL), client: BridgeClient = BridgeClient()) {
         self.store = store
         self.client = client
+        configExistedAtLaunch = FileManager.default.fileExists(atPath: store.url.path)
         let loaded = store.load()
         Loc.language = Language.resolve(loaded.language)
         config = loaded

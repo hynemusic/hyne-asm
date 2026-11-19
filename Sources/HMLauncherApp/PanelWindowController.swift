@@ -97,6 +97,7 @@ final class PanelWindowController {
         viewModel.favoritesID = model.config.favoritesID
         viewModel.hovered = nil
         viewModel.drag = nil
+        if !model.panelOpened { model.panelOpened = true }
         viewModel.size = model.config.panelSize
         if let dev = Dev.env("HM_PANEL_SIZE")?.split(separator: ",").compactMap({ Double($0) }), dev.count == 2 {
             viewModel.size = PanelSize(columnWidth: dev[0], itemHeight: dev[1]) // developer aid

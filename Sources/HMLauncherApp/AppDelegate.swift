@@ -12,6 +12,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private(set) var panel: PanelWindowController!
     private(set) var settings: SettingsWindowController!
     private(set) var quickSearch: QuickSearchWindowController!
+    private(set) var onboarding: OnboardingWindowController!
     private var tapRetry: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -24,6 +25,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         quickSearch = QuickSearchWindowController(model: model)
         menuBar.onOpenSettings = { [weak self] in self?.settings.show() }
         panel.onOpenSettings = { [weak self] in self?.settings.show() }
+        onboarding = OnboardingWindowController(model: model) { [weak self] page in
+            self?.model.settingsPageRequest = page
+            self?.settings.show()
+        }
+        menuBar.onShowIntroduction = { [weak self] in self?.onboarding.show() }
+        if Onboarding.showOnLaunch(configExisted: model.configExistedAtLaunch, done: model.config.onboardingDone),
+           Dev.env("HM_SNAPSHOT") == nil, Dev.env("HM_SNAPSHOT_PANEL") == nil {
+            onboarding.show()
+        }
         #if DEBUG
         runDevSnapshots()
         #endif

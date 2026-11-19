@@ -9,6 +9,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     private let statusLine = NSMenuItem(title: "", action: nil, keyEquivalent: "")
     private var localized: [(NSMenuItem, () -> String)] = []
     var onOpenSettings: (() -> Void)?
+    var onShowIntroduction: (() -> Void)?
 
     init(model: AppModel) {
         self.model = model
@@ -25,6 +26,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         menu.addItem(item({ Loc.t("Einstellungen …", "Settings …") }, #selector(openSettings), ","))
         menu.addItem(item({ Loc.t("Live-Script installieren …", "Install Live Script …") }, #selector(installScript)))
         menu.addItem(item({ Loc.t("Plugin-Liste neu laden", "Reload Plugin List") }, #selector(reload)))
+        menu.addItem(item({ Loc.t("Einführung zeigen …", "Show Introduction …") }, #selector(showIntroduction)))
         menu.addItem(.separator())
         menu.addItem(item({ Loc.t("HYNE ASM beenden", "Quit HYNE ASM") }, #selector(quit), "q"))
         statusItem.menu = menu
@@ -88,6 +90,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     }
 
     @objc private func openSettings() { onOpenSettings?() }
+    @objc private func showIntroduction() { onShowIntroduction?() }
     @objc private func reload() { model.refreshCatalog() }
     @objc private func quit() { NSApp.terminate(nil) }
 

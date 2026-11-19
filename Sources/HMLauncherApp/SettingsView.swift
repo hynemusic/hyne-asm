@@ -74,6 +74,11 @@ struct SettingsView: View {
         .themedColorScheme()
         .foregroundColor(DS.textPrimary)
         .environment(\.locale, Loc.locale) // "1,455" in English even on a German Mac
+        .onReceive(model.$settingsPageRequest) { request in
+            guard let request else { return }
+            page = request
+            DispatchQueue.main.async { model.settingsPageRequest = nil }
+        }
     }
 
     private var pluginsPage: some View {
