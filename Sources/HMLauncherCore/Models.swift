@@ -157,6 +157,11 @@ public struct LauncherConfig: Codable, Sendable {
     public var panelSize = PanelSize.default
     /// Pads per page of the panel (columns × rows).
     public var panelGrid = PanelGridSize.default
+    /// Pads in a grid or rows of a list, and the list's size.
+    public var panelStyle: PanelStyle = .grid
+    public var panelList = PanelListSize.default
+    /// The page the panel shows, from the style and its size.
+    public var panelPage: PanelPage { PanelPage(style: panelStyle, grid: panelGrid, list: panelList) }
     /// Categories as tabs on top of the panel or as a column on its left.
     public var categoryPlacement: CategoryPlacement = .top
     /// The welcome window was finished or skipped.
@@ -195,6 +200,8 @@ public struct LauncherConfig: Codable, Sendable {
         panelSize = (try? c.decodeIfPresent(PanelSize.self, forKey: .panelSize)) ?? .default
         panelGrid = (try? c.decodeIfPresent(PanelGridSize.self, forKey: .panelGrid)) ?? .default
         categoryPlacement = (try? c.decodeIfPresent(CategoryPlacement.self, forKey: .categoryPlacement)) ?? .top
+        panelStyle = (try? c.decodeIfPresent(PanelStyle.self, forKey: .panelStyle)) ?? .grid
+        panelList = (try? c.decodeIfPresent(PanelListSize.self, forKey: .panelList)) ?? .default
         onboardingDone = try c.decodeIfPresent(Bool.self, forKey: .onboardingDone) ?? false
         streamDeckToken = try c.decodeIfPresent(String.self, forKey: .streamDeckToken) ?? LauncherConfig.newToken()
         profiles = try c.decodeIfPresent([Profile].self, forKey: .profiles) ?? []

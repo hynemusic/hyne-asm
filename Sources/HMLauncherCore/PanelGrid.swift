@@ -151,3 +151,64 @@ public struct PanelGridSize: Codable, Equatable, Sendable {
 public enum CategoryPlacement: String, Codable, CaseIterable, Sendable {
     case top, left
 }
+
+/// How the panel shows a page: square pads in a grid, or rows of a list.
+public enum PanelStyle: String, Codable, CaseIterable, Sendable {
+    case grid, list
+}
+
+/// Size of a list page: columns side by side (1–4), each up to 9 rows (keys 1–9 run down the first column).
+public struct PanelListSize: Codable, Equatable, Sendable {
+    public static let columnRange = 1...4
+    public static let rowRange = 2...9
+    public static let `default` = PanelListSize(columns: 2, rows: 9)
+
+    public var columns: Int { didSet { columns = Self.clamp(columns, Self.columnRange) } }
+    public var rows: Int { didSet { rows = Self.clamp(rows, Self.rowRange) } }
+    public var pageSize: Int { columns * rows }
+
+    public init(columns: Int, rows: Int) {
+        self.columns = Self.clamp(columns, Self.columnRange)
+        self.rows = Self.clamp(rows, Self.rowRange)
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(columns: try c.decode(Int.self, forKey: .columns), rows: try c.decode(Int.self, forKey: .rows))
+    }
+
+    private static func clamp(_ v: Int, _ r: ClosedRange<Int>) -> Int { min(max(v, r.lowerBound), r.upperBound) }
+}
+
+/// One page of the panel: how many entries it holds and where each sits. A grid fills row by row
+/// (like the keys 1–9 on a keypad); a list fills its left column first, then the next.
+public struct PanelPage: Equatable, Sendable {
+    public let columns: Int
+    public let rows: Int
+    public let columnMajor: Bool
+    public var size: Int { columns * rows }
+
+    public init(columns: Int, rows: Int, columnMajor: Bool) {
+        self.columns = max(columns, 1)
+        self.rows = max(rows, 1)
+        self.columnMajor = columnMajor
+    }
+
+    public init(style: PanelStyle, grid: PanelGridSize, list: PanelListSize) {
+        switch style {
+        case .grid: self.init(columns: grid.columns, rows: grid.rows, columnMajor: false)
+        case .list: self.init(columns: list.columns, rows: list.rows, columnMajor: true)
+        }
+    }
+
+    /// Slot (0-based, within the page) at a row and column.
+    public func slot(row: Int, column: Int) -> Int {
+        columnMajor ? column * rows + row : row * columns + column
+    }
+
+    /// Row and column of a slot within the page.
+    public func position(of slot: Int) -> (row: Int, column: Int) {
+        let s = slot % size
+        return columnMajor ? (s % rows, s / rows) : (s / columns, s % columns)
+    }
+}

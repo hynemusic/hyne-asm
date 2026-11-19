@@ -159,30 +159,89 @@ struct LauncherPad<Badges: View>: View {
             }
         }
         .overlay(alignment: .topTrailing) { HStack(spacing: 3) { badges() }.padding(5) }
-        .overlay(alignment: .bottom) { stripe(lit: lit) }
-        .background {
-            if active {
-                shape.fill(lit)
-            } else {
-                shape.fill(LinearGradient(colors: [Palette.current.padTop ?? Color.panelRow.mix(.white, 0.045), Color.panelRow],
-                                          startPoint: .top, endPoint: .bottom))
-            }
-        }
-        // Light catching the top edge, a shade along the bottom: reads as a raised pad.
-        .overlay(shape.strokeBorder(LinearGradient(colors: [.white.opacity(active ? 0.35 : 0.07), .clear, .black.opacity(0.35)],
-                                                   startPoint: .top, endPoint: .bottom), lineWidth: 1))
-        .shadow(color: active ? lit.opacity(0.45) : .clear, radius: 9)
-        .contentShape(shape)
+        .overlay(alignment: .bottom) { PadStripe(active: active, color: color).padding(.horizontal, 10).padding(.bottom, 5) }
+        .modifier(PadSurface(active: active, lit: lit, shape: shape))
     }
+}
 
-    private func stripe(lit: Color) -> some View {
-        let fill: Color = active ? Self.onLit.opacity(0.3) : (color ?? Palette.current.padStripe)
-        return Capsule()
+/// The pads' body, shared by grid pads and list rows: a dark top-lit plate, or filled with `lit` (with a glow)
+/// while active. Light catches the top edge and a shade runs along the bottom, so it reads as raised.
+struct PadSurface<S: InsettableShape>: ViewModifier {
+    let active: Bool
+    let lit: Color
+    let shape: S
+
+    func body(content: Content) -> some View {
+        content
+            .background {
+                if active {
+                    shape.fill(lit)
+                } else {
+                    shape.fill(LinearGradient(colors: [Palette.current.padTop ?? Color.panelRow.mix(.white, 0.045), Color.panelRow],
+                                              startPoint: .top, endPoint: .bottom))
+                }
+            }
+            .overlay(shape.strokeBorder(LinearGradient(colors: [.white.opacity(active ? 0.35 : 0.07), .clear, .black.opacity(0.35)],
+                                                       startPoint: .top, endPoint: .bottom), lineWidth: 1))
+            .shadow(color: active ? lit.opacity(0.45) : .clear, radius: 9)
+            .contentShape(shape)
+    }
+}
+
+/// The color label as a stripe along the bottom: glowing in the label's color, dim when there is none.
+struct PadStripe: View {
+    let active: Bool
+    let color: Color?
+    var height: CGFloat = 3
+
+    var body: some View {
+        let fill: Color = active ? Palette.current.onLitPad.opacity(0.3) : (color ?? Palette.current.padStripe)
+        Capsule()
             .fill(fill)
-            .frame(height: 3)
-            .shadow(color: active || color == nil ? .clear : lit.opacity(0.6), radius: 4)
-            .padding(.horizontal, 10)
-            .padding(.bottom, 5)
+            .frame(height: height)
+            .shadow(color: active || color == nil ? .clear : (color ?? .clear).opacity(0.6), radius: 4)
+    }
+}
+
+/// One entry as a row of the panel's list style: the same plate, stripe and lit state as a pad, laid out
+/// left to right — key number, icon in the label color, name, badges.
+struct LauncherListRow<Badges: View>: View {
+    let number: Int?
+    let symbol: String
+    let title: String
+    var height: CGFloat = 42
+    var active = false
+    var available = true
+    var color: Color? = nil
+    @ViewBuilder var badges: () -> Badges
+
+    private static var onLit: Color { Palette.current.onLitPad }
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: CGFloat(8).themedRadius)
+        HStack(spacing: 9) {
+            Text(number.map { $0 < 9 ? "\($0 + 1)" : "" } ?? "")
+                .font(DS.Font.numeric)
+                .foregroundColor(active ? Self.onLit.opacity(0.65) : DS.textTertiary)
+                .frame(width: 12, alignment: .leading)
+            Image(systemName: symbol)
+                .font(.themed(15, .medium))
+                .foregroundColor(active ? Self.onLit.opacity(0.75) : (color ?? DS.textTertiary))
+                .frame(width: 20)
+            Text(title)
+                .font(DS.Font.padTitle)
+                .foregroundColor(active ? Self.onLit : (available ? DS.textPrimary : DS.textTertiary))
+                .lineLimit(1)
+            Spacer(minLength: 4)
+            HStack(spacing: 4) { badges() }
+        }
+        .padding(.horizontal, 10)
+        .padding(.bottom, 2)
+        .frame(maxWidth: .infinity, minHeight: height, maxHeight: height)
+        .overlay(alignment: .bottom) {
+            PadStripe(active: active, color: color, height: 2).padding(.leading, 41).padding(.trailing, 10).padding(.bottom, 4)
+        }
+        .modifier(PadSurface(active: active, lit: color ?? Color.accent, shape: shape))
     }
 }
 

@@ -42,24 +42,45 @@ struct BehaviorPage: View {
             divider
             HStack(alignment: .center, spacing: DS.Space.l) {
                 VStack(alignment: .leading, spacing: 2) {
-                    let grid = model.config.panelGrid
+                    Text(Loc.t("Darstellung", "Layout")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                    caption(Loc.t("Quadratische Pads im Raster oder Zeilen als Liste.", "Square pads in a grid, or rows in a list."))
+                }
+                Spacer(minLength: DS.Space.m)
+                Picker("", selection: $model.config.panelStyle) {
+                    Text(Loc.t("Raster", "Grid")).tag(PanelStyle.grid)
+                    Text(Loc.t("Liste", "List")).tag(PanelStyle.list)
+                }
+                .pickerStyle(.segmented).labelsHidden().fixedSize()
+            }
+            divider
+            HStack(alignment: .center, spacing: DS.Space.l) {
+                VStack(alignment: .leading, spacing: 2) {
+                    let page = model.config.panelPage
                     Text(Loc.t("Größe", "Size")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
-                    caption(Loc.t("\(grid.columns) × \(grid.rows) – \(grid.pageSize) Pads pro Seite. Mehr Einträge kommen auf weitere Seiten; die Tasten 1–9 gelten für die ersten neun der Seite.",
-                                  "\(grid.columns) × \(grid.rows) – \(grid.pageSize) pads per page. More entries go on further pages; keys 1–9 pick the page's first nine."))
+                    caption(model.config.panelStyle == .grid
+                            ? Loc.t("\(page.size) Pads pro Seite. Die Tasten 1–9 wählen aus den ersten neun.",
+                                    "\(page.size) pads per page. Keys 1–9 pick from the first nine.")
+                            : Loc.t("\(page.size) Einträge pro Seite, höchstens 9 pro Spalte. Die Tasten 1–9 laufen die erste Spalte hinunter.",
+                                    "\(page.size) entries per page, at most 9 per column. Keys 1–9 run down the first column."))
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: DS.Space.m)
-                gridPreview
+                sizePreview
                 VStack(alignment: .trailing, spacing: DS.Space.xs) {
-                    sizeStepper(Loc.t("Spalten", "Columns"), value: $model.config.panelGrid.columns)
-                    sizeStepper(Loc.t("Reihen", "Rows"), value: $model.config.panelGrid.rows)
+                    if model.config.panelStyle == .grid {
+                        sizeStepper(Loc.t("Spalten", "Columns"), value: $model.config.panelGrid.columns, range: PanelGridSize.range)
+                        sizeStepper(Loc.t("Reihen", "Rows"), value: $model.config.panelGrid.rows, range: PanelGridSize.range)
+                    } else {
+                        sizeStepper(Loc.t("Spalten", "Columns"), value: $model.config.panelList.columns, range: PanelListSize.columnRange)
+                        sizeStepper(Loc.t("Zeilen", "Rows"), value: $model.config.panelList.rows, range: PanelListSize.rowRange)
+                    }
                 }
             }
         }
     }
 
-    private func sizeStepper(_ label: String, value: Binding<Int>) -> some View {
-        Stepper(value: value, in: PanelGridSize.range) {
+    private func sizeStepper(_ label: String, value: Binding<Int>, range: ClosedRange<Int>) -> some View {
+        Stepper(value: value, in: range) {
             HStack(spacing: 6) {
                 Text(label).font(DS.Font.secondary).foregroundColor(DS.textSecondary)
                 Text("\(value.wrappedValue)").font(DS.Font.bodyStrong.monospacedDigit()).foregroundColor(DS.textPrimary)
@@ -69,16 +90,17 @@ struct BehaviorPage: View {
         .fixedSize()
     }
 
-    /// Tiny picture of one panel page: the chosen columns × rows, the first nine lit like keyed pads.
-    private var gridPreview: some View {
-        let grid = model.config.panelGrid
+    /// Tiny picture of one panel page: pads or list rows, the ones with keys 1–9 lit.
+    private var sizePreview: some View {
+        let page = model.config.panelPage
+        let isGrid = model.config.panelStyle == .grid
         return VStack(spacing: 2) {
-            ForEach(0..<grid.rows, id: \.self) { r in
+            ForEach(0..<page.rows, id: \.self) { r in
                 HStack(spacing: 2) {
-                    ForEach(0..<grid.columns, id: \.self) { c in
+                    ForEach(0..<page.columns, id: \.self) { c in
                         RoundedRectangle(cornerRadius: 1.5)
-                            .fill(r * grid.columns + c < 9 ? Color.accent.opacity(0.7) : DS.textTertiary.opacity(0.35))
-                            .frame(width: 8, height: 7)
+                            .fill(page.slot(row: r, column: c) < 9 ? Color.accent.opacity(0.7) : DS.textTertiary.opacity(0.35))
+                            .frame(width: isGrid ? 8 : 22, height: isGrid ? 7 : 4)
                     }
                 }
             }

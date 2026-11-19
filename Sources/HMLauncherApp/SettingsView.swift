@@ -565,16 +565,13 @@ struct SettingsView: View {
     /// this column allows, then the contents of every open folder as its own pads below.
     private func entryGrid(_ category: HMLauncherCore.Category) -> some View {
         GeometryReader { geo in
-            let size = model.config.panelSize
-            let grid = model.config.panelGrid
-            // The panel's pad size, narrower only when a page would not fit this column.
-            let fit = (geo.size.width - CGFloat(grid.columns - 1) * PanelView.padSpacing) / CGFloat(grid.columns)
-            let padWidth = max(min(PanelView.padWidth(columnWidth: CGFloat(size.columnWidth)), fit), 40)
-            let pageWidth = CGFloat(grid.columns) * padWidth + CGFloat(grid.columns - 1) * PanelView.padSpacing
-            let layout = PadLayout(grid: grid,
-                                   pagesPerRow: max(1, Int((geo.size.width + PanelView.blockSpacing * 2 + 1) / (pageWidth + PanelView.blockSpacing * 2 + 1))),
-                                   padWidth: padWidth,
-                                   padHeight: PanelView.padHeight(size))
+            // The panel's own page and entry size, narrower only when a page would not fit this column.
+            let full = PageMetrics(style: model.config.panelStyle, page: model.config.panelPage, size: model.config.panelSize)
+            let fit = (geo.size.width - CGFloat(full.page.columns - 1) * full.hSpacing) / CGFloat(full.page.columns)
+            let itemWidth = max(min(full.itemWidth, fit), 40)
+            let pageWidth = CGFloat(full.page.columns) * itemWidth + CGFloat(full.page.columns - 1) * full.hSpacing
+            let layout = PadLayout(metrics: full, itemWidth: itemWidth,
+                                   pagesPerRow: max(1, Int((geo.size.width + PanelView.blockSpacing * 2 + 1) / (pageWidth + PanelView.blockSpacing * 2 + 1))))
             let rows = flatRows(category)
             ScrollView(.vertical) {
                 VStack(alignment: .leading, spacing: DS.Space.l) {
@@ -600,38 +597,52 @@ struct SettingsView: View {
         .focused($entriesFocused)
         .modifier(NoFocusRing())
         .onDeleteCommand { removeSelection() }
-        .onMoveCommand { direction in moveSelectionCursor(direction, rows: flatRows(category), columns: model.config.panelGrid.columns) }
+        .onMoveCommand { direction in moveSelectionCursor(direction, rows: flatRows(category), columns: model.config.panelStyle == .grid ? model.config.panelGrid.columns : 1) }
     }
 
     private struct PadLayout {
-        let grid: PanelGridSize
+        let metrics: PageMetrics
+        let itemWidth: CGFloat
         /// Pages side by side as far as the column allows.
         let pagesPerRow: Int
-        let padWidth: CGFloat
-        let padHeight: CGFloat
+        var isList: Bool { metrics.style == .list }
     }
 
     /// Blocks of 9 side by side (up to `columns`), 3 pads per row inside a block — the panel's order.
-    /// The entries in pages of the panel's size (columns × rows), pages side by side as far as they fit,
-    /// a thin line between pages.
+    /// The entries in pages of the panel's size and style (pads row by row, or list columns top to bottom),
+    /// pages side by side as far as they fit, a thin line between pages.
     private func padBlocks(_ rows: [FlatRow], _ layout: PadLayout, in category: HMLauncherCore.Category) -> some View {
-        let size = layout.grid.pageSize, cols = layout.grid.columns
-        let pages = stride(from: 0, to: max(rows.count, 1), by: size).map { Array($0..<min($0 + size, rows.count)) }
+        let page = layout.metrics.page
+        let pages = stride(from: 0, to: max(rows.count, 1), by: page.size).map { Array($0..<min($0 + page.size, rows.count)) }
         let pageRows = stride(from: 0, to: pages.count, by: layout.pagesPerRow).map { Array(pages[$0..<min($0 + layout.pagesPerRow, pages.count)]) }
         return VStack(alignment: .leading, spacing: PanelView.blockSpacing) {
             ForEach(Array(pageRows.enumerated()), id: \.offset) { r, pageRow in
                 if r > 0 { pageLine.frame(height: 1) }
                 HStack(alignment: .top, spacing: PanelView.blockSpacing) {
-                    ForEach(Array(pageRow.enumerated()), id: \.offset) { c, page in
+                    ForEach(Array(pageRow.enumerated()), id: \.offset) { c, entries in
                         if c > 0 { pageLine.frame(width: 1) }
-                        VStack(alignment: .leading, spacing: PanelView.padSpacing) {
-                            ForEach(Array(stride(from: 0, to: page.count, by: cols)), id: \.self) { start in
-                                HStack(spacing: PanelView.padSpacing) {
-                                    ForEach(page[start..<min(start + cols, page.count)], id: \.self) { i in
-                                        padCell(rows[i], layout, in: category)
-                                    }
-                                }
-                            }
+                        pageView(entries, rows: rows, layout, in: category)
+                    }
+                }
+            }
+        }
+    }
+
+    /// One page: only the rows and columns it fills, gaps kept so pads line up as in the panel.
+    private func pageView(_ entries: [Int], rows: [FlatRow], _ layout: PadLayout, in category: HMLauncherCore.Category) -> some View {
+        let page = layout.metrics.page
+        let n = entries.count
+        let usedRows = page.columnMajor ? min(page.rows, n) : (n + page.columns - 1) / page.columns
+        let usedColumns = page.columnMajor ? (n + page.rows - 1) / page.rows : min(page.columns, n)
+        return VStack(alignment: .leading, spacing: layout.metrics.vSpacing) {
+            ForEach(0..<usedRows, id: \.self) { r in
+                HStack(spacing: layout.metrics.hSpacing) {
+                    ForEach(0..<usedColumns, id: \.self) { c in
+                        let slot = page.slot(row: r, column: c)
+                        if slot < n {
+                            padCell(rows[entries[slot]], layout, in: category)
+                        } else {
+                            Color.clear.frame(width: layout.itemWidth, height: layout.metrics.itemHeight)
                         }
                     }
                 }
@@ -642,7 +653,7 @@ struct SettingsView: View {
     private var pageLine: some View { Rectangle().fill(Palette.current.padStripe) }
 
     private func padCell(_ row: FlatRow, _ layout: PadLayout, in category: HMLauncherCore.Category) -> some View {
-        entryRow(row, in: category, padWidth: layout.padWidth, padHeight: layout.padHeight)
+        entryRow(row, in: category, padWidth: layout.itemWidth, padHeight: layout.metrics.itemHeight, listStyle: layout.isList)
             // Own drag & drop: the payload works for pads and for categories alike.
             .onDrag { dragPayload(for: row.id) } preview: {
                 // Just a count next to the cursor instead of a shrunken copy of the pad.
@@ -651,7 +662,7 @@ struct SettingsView: View {
             .onDrop(of: [browserDragType, entriesDragType, .fileURL, .text], delegate: RowDropDelegate(
                 row: SettingsViewRow(id: row.id, isFolder: row.entry.isFolder), drop: dropState,
                 perform: { spot, providers in dropOnRow(row, spot, providers, in: category) },
-                padWidth: layout.padWidth))
+                padWidth: layout.isList ? nil : layout.itemWidth))
     }
 
     /// An open folder below the category's pads: its name, then its contents as pads (keys 1–9 as in the panel).
@@ -922,7 +933,8 @@ struct SettingsView: View {
 
     @State private var renamingEntry: UUID?
 
-    private func entryRow(_ row: FlatRow, in category: HMLauncherCore.Category, padWidth: CGFloat? = nil, padHeight: CGFloat = 66) -> some View {
+    private func entryRow(_ row: FlatRow, in category: HMLauncherCore.Category, padWidth: CGFloat? = nil, padHeight: CGFloat = 66,
+                          listStyle: Bool = false) -> some View {
         let entry = row.entry
         let folders = category.entries.filter(\.isFolder)
         let multi = selection.contains(entry.id) && selection.count > 1
@@ -965,7 +977,7 @@ struct SettingsView: View {
             onShortcut: entry.isFolder || entry.chain != nil || entry.action != nil ? nil : { requestShortcut(catalog.index.resolve(entry) ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)) },
             shortcutLabel: entry.isFolder ? nil : model.config.itemShortcut(for: catalog.index.resolve(entry)
                 ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)).map { KeyNames.describe($0.combo) },
-            padWidth: padWidth, padHeight: padHeight, pageSize: model.config.panelGrid.pageSize)
+            padWidth: padWidth, padHeight: padHeight, pageSize: model.config.panelPage.size, listStyle: listStyle)
     }
 
     // MARK: Presets from Finder

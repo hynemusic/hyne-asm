@@ -44,6 +44,9 @@ struct EntryRow: View {
     var padHeight: CGFloat = 66
     /// Pads per panel page: the key numbers start again at 1 on each page.
     var pageSize = 9
+    /// With `padWidth` set: a row of the panel's list style (that wide) instead of a pad.
+    var listStyle = false
+    private var isPad: Bool { padWidth != nil && !listStyle }
     private var dropSpot: DropSpot? { drop.marker?.id == entry.id ? drop.marker?.spot : nil }
     @State private var showIcons = false
     @State private var editingValue = false
@@ -53,10 +56,10 @@ struct EntryRow: View {
 
     var body: some View {
         base
-        .overlay(alignment: padWidth == nil ? .leading : .top) {
+        .overlay(alignment: isPad ? .top : .leading) {
             // Click target over the icon opens the icon list.
-            Color.clear.frame(width: 34, height: padWidth == nil ? 42 : 26)
-                .padding(.leading, padWidth == nil ? 30 : 0).padding(.top, padWidth == nil ? 0 : 9)
+            Color.clear.frame(width: listStyle ? 26 : 34, height: isPad ? 26 : (listStyle ? padHeight : 42))
+                .padding(.leading, isPad ? 0 : (listStyle ? 28 : 30)).padding(.top, isPad ? 9 : 0)
                 .contentShape(Rectangle())
                 .onTapGesture { showIcons = true }
                 .popover(isPresented: $showIcons, arrowEdge: .leading) { IconPicker(selected: entry.iconID) { onIcon($0); showIcons = false } }
@@ -67,16 +70,16 @@ struct EntryRow: View {
                 InlineNameField(initial: name,
                                 onCommit: { new in renaming = false; onName(!entry.isFolder && new == entry.name ? nil : new) },
                                 onCancel: { renaming = false })
-                    .padding(.leading, padWidth == nil ? 76 : 4).padding(.trailing, padWidth == nil ? 40 : 4)
-                    .frame(maxHeight: .infinity, alignment: padWidth == nil ? .center : .bottom)
-                    .padding(.bottom, padWidth == nil ? 0 : 6)
+                    .padding(.leading, isPad ? 4 : (listStyle ? 58 : 76)).padding(.trailing, isPad ? 4 : 40)
+                    .frame(maxHeight: .infinity, alignment: isPad ? .bottom : .center)
+                    .padding(.bottom, isPad ? 6 : 0)
             }
         }
         .onHover { hovered = $0 }
         .simultaneousGesture(TapGesture().onEnded { onSelect() })
         .overlay(alignment: dropMarkerAlignment) {
             if dropSpot == .before || dropSpot == .after {
-                if padWidth == nil {
+                if !isPad {
                     Rectangle().fill(Color.accent).frame(height: 3).offset(y: dropSpot == .before ? -3 : 3)
                 } else {
                     // Pads sit side by side: the marker is a bar in the gap left or right of the pad.
@@ -101,13 +104,18 @@ struct EntryRow: View {
     }
 
     private var dropMarkerAlignment: Alignment {
-        if padWidth == nil { return dropSpot == .after ? .bottom : .top }
+        if !isPad { return dropSpot == .after ? .bottom : .top }
         return dropSpot == .after ? .trailing : .leading
     }
 
     @ViewBuilder private var base: some View {
         let active = isSelected || hovered || dropSpot == .into
-        if let padWidth {
+        if let padWidth, listStyle {
+            LauncherListRow(number: index % pageSize, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
+                            height: padHeight, active: active, available: available, color: color) { badges }
+                .frame(width: padWidth)
+                .help(subtitle ?? "")
+        } else if let padWidth {
             LauncherPad(number: index % pageSize, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,   // keys 1–9 per page
                         height: padHeight, active: active, available: available, color: color) { badges }
                 .frame(width: padWidth)

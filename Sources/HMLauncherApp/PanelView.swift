@@ -42,13 +42,6 @@ struct PanelView: View {
         return CGFloat(rows) * padHeight + CGFloat(rows - 1) * padSpacing + CGFloat(blockRows - 1) * (blockSpacing - padSpacing)
     }
 
-    /// Width and height of one page of pads.
-    static func pageWidth(_ grid: PanelGridSize, _ size: PanelSize) -> CGFloat {
-        CGFloat(grid.columns) * padWidth(columnWidth: CGFloat(size.columnWidth)) + CGFloat(grid.columns - 1) * padSpacing
-    }
-    static func pageHeight(_ grid: PanelGridSize, _ size: PanelSize) -> CGFloat {
-        CGFloat(grid.rows) * padHeight(size) + CGFloat(grid.rows - 1) * padSpacing
-    }
 
     /// Left edge of the pads inside the panel content (after the padding) and inside the window.
     static func gridStart(_ placement: CategoryPlacement) -> CGFloat {
@@ -61,12 +54,14 @@ struct PanelView: View {
     }
 
     /// The panel is always one page, whatever the category holds.
-    static func size(_ panelSize: PanelSize, grid: PanelGridSize, placement: CategoryPlacement) -> CGSize {
-        let width = gridMinX(placement) + pageWidth(grid, panelSize) + edgeWidth + padding
-        let height = gridTopInset(placement) + pageHeight(grid, panelSize) + 6 + footerHeight + padding
+    static func size(_ metrics: PageMetrics, placement: CategoryPlacement) -> CGSize {
+        let width = gridMinX(placement) + metrics.width + edgeWidth + padding
+        let height = gridTopInset(placement) + metrics.height + 6 + footerHeight + padding
         return CGSize(width: width, height: height)
     }
-    static var width: CGFloat { size(.default, grid: .default, placement: .top).width }
+    static var width: CGFloat {
+        size(PageMetrics(style: .grid, page: PanelPage(columns: 3, rows: 3, columnMajor: false), size: .default), placement: .top).width
+    }
 
     @ObservedObject var viewModel: PanelViewModel
     let onInsert: (PanelRow) -> Void
@@ -95,7 +90,7 @@ struct PanelView: View {
     private func edgeZone(_ x: CGFloat) -> Int? {
         let gridStart = Self.gridStart(viewModel.placement)
         let leftStart = gridStart - Self.sidebarGap + (viewModel.placement == .left ? 1 : 0)
-        let gridEnd = gridStart + viewModel.pageWidth
+        let gridEnd = gridStart + viewModel.metrics.width
         if x >= gridEnd { return 1 }
         if x >= leftStart && x < gridStart { return -1 }
         return nil
@@ -157,7 +152,7 @@ struct PanelView: View {
                     Spacer(minLength: 0)
                     footer
                 }
-                .frame(width: viewModel.pageWidth)
+                .frame(width: viewModel.metrics.width)
                 edgeStrip(1).frame(width: Self.edgeWidth)
             }
             .onContinuousHover(coordinateSpace: .local) { edgeTracking($0) }
@@ -171,7 +166,7 @@ struct PanelView: View {
         .onChange(of: viewModel.state.openFolderID) { _ in viewModel.page = 0 }
         .onChange(of: viewModel.state.highlighted) { h in
             // The keyboard highlight brings its page into view.
-            let size = viewModel.grid.pageSize
+            let size = viewModel.metrics.page.size
             if let h, h / size != viewModel.page { turn(to: h / size) }
         }
     }
@@ -475,33 +470,32 @@ struct PanelView: View {
                         removal: .move(edge: viewModel.forward ? .leading : .trailing).combined(with: .opacity)))
             }
         }
-        .frame(width: viewModel.pageWidth, height: Self.pageHeight(viewModel.grid, viewModel.size), alignment: .topLeading)
+        .frame(width: viewModel.metrics.width, height: viewModel.metrics.height, alignment: .topLeading)
         .clipped()
     }
 
     /// One page of pads; while an entry is dragged, the others on the page make room for it.
     private func page(_ page: Int, rows: [PanelRow]) -> some View {
-        let grid = viewModel.grid
-        let start = page * grid.pageSize
+        let m = viewModel.metrics
+        let start = page * m.page.size
         let reorderable = viewModel.state.filter.isEmpty
         let order: [Int] = {
             guard reorderable, let d = viewModel.drag else { return Array(0..<rows.count) }
             return PanelGrid.order(count: rows.count, moving: d.from, to: d.to)
         }()
-        let padWidth = Self.padWidth(columnWidth: viewModel.columnWidth)
-        return VStack(alignment: .leading, spacing: Self.padSpacing) {
-            ForEach(0..<grid.rows, id: \.self) { r in
-                HStack(spacing: Self.padSpacing) {
-                    ForEach(0..<grid.columns, id: \.self) { c in
-                        let slot = start + r * grid.columns + c
+        return VStack(alignment: .leading, spacing: m.vSpacing) {
+            ForEach(0..<m.page.rows, id: \.self) { r in
+                HStack(spacing: m.hSpacing) {
+                    ForEach(0..<m.page.columns, id: \.self) { c in
+                        let slot = start + m.page.slot(row: r, column: c)
                         if slot < rows.count {
                             let source = order[slot]
                             padView(rows[source], index: slot, source: source, reorderable: reorderable)
-                                .frame(width: padWidth)
+                                .frame(width: m.itemWidth)
                         } else {
                             RoundedRectangle(cornerRadius: CGFloat(8).themedRadius)
                                 .strokeBorder(Color.ink.opacity(0.05))
-                                .frame(width: padWidth, height: viewModel.padHeight)
+                                .frame(width: m.itemWidth, height: m.itemHeight)
                         }
                     }
                 }
@@ -518,11 +512,11 @@ struct PanelView: View {
         DragGesture(minimumDistance: 6, coordinateSpace: .named(Self.reorderSpace))
             .onChanged { value in
                 // Slots of the current page; the page's first entry is the offset.
-                let grid = viewModel.grid
-                let start = viewModel.page * grid.pageSize
-                let col = min(max(Int(value.location.x / (Self.padWidth(columnWidth: viewModel.columnWidth) + Self.padSpacing)), 0), grid.columns - 1)
-                let row = min(max(Int(value.location.y / (viewModel.padHeight + Self.padSpacing)), 0), grid.rows - 1)
-                let to = min(start + row * grid.columns + col, max(count - 1, 0))
+                let m = viewModel.metrics
+                let start = viewModel.page * m.page.size
+                let col = min(max(Int(value.location.x / (m.itemWidth + m.hSpacing)), 0), m.page.columns - 1)
+                let row = min(max(Int(value.location.y / (m.itemHeight + m.vSpacing)), 0), m.page.rows - 1)
+                let to = min(start + m.page.slot(row: row, column: col), max(count - 1, 0))
                 let from = viewModel.drag?.from ?? source
                 if viewModel.drag?.from != from || viewModel.drag?.to != to { viewModel.drag = (from, to) }
             }
@@ -564,19 +558,30 @@ struct PanelView: View {
         return ""
     }
 
+    @ViewBuilder private func badges(_ row: PanelRow) -> some View {
+        if row.isNew { NewBadge() }
+        if row.folderID != nil {
+            Text("\(row.childCount)")
+                .font(DS.Font.badge.monospacedDigit()).foregroundColor(DS.textSecondary)
+                .padding(.horizontal, 5).padding(.vertical, 2)
+                .background(Capsule().fill(Color.ink.opacity(0.09)))
+        }
+    }
+
     private func padView(_ row: PanelRow, index: Int, source: Int, reorderable: Bool) -> some View {
         let dragged = reorderable && viewModel.drag?.from == source
         let active = dragged || (viewModel.drag == nil && (viewModel.state.highlighted == index || viewModel.hovered == index))
+        let number = index % viewModel.metrics.page.size   // keys 1–9 on every page
+        let color = Color(label: row.colorID)
+        let symbol = IconCatalog.symbolName(for: row.iconID)
         return Button { onInsert(row) } label: {
-            LauncherPad(number: index % viewModel.grid.pageSize, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,   // keys 1–9 on every page
-                        height: viewModel.padHeight,
-                        active: active, available: row.isAvailable, color: Color(label: row.colorID)) {
-                if row.isNew { NewBadge() }
-                if row.folderID != nil {
-                    Text("\(row.childCount)")
-                        .font(DS.Font.badge.monospacedDigit()).foregroundColor(DS.textSecondary)
-                        .padding(.horizontal, 5).padding(.vertical, 2)
-                        .background(Capsule().fill(Color.ink.opacity(0.09)))
+            Group {
+                if viewModel.style == .grid {
+                    LauncherPad(number: number, symbol: symbol, title: row.title, height: viewModel.metrics.itemHeight,
+                                active: active, available: row.isAvailable, color: color) { badges(row) }
+                } else {
+                    LauncherListRow(number: number, symbol: symbol, title: row.title, height: viewModel.metrics.itemHeight,
+                                    active: active, available: row.isAvailable, color: color) { badges(row) }
                 }
             }
             .opacity(row.isAvailable ? 1 : 0.5)
@@ -603,5 +608,29 @@ struct PanelView: View {
             }
         }
         .help(row.isAvailable ? row.path.joined(separator: " / ") : Loc.t("Nicht mehr in Live gefunden", "No longer found in Live"))
+    }
+}
+
+/// Sizes of one page of the panel for its style: square pads in a grid, or rows of a list.
+/// `PanelSize.columnWidth` is three pads wide in the grid and one row wide in the list.
+struct PageMetrics {
+    let style: PanelStyle
+    let page: PanelPage
+    let size: PanelSize
+
+    var itemWidth: CGFloat {
+        style == .grid ? PanelView.padWidth(columnWidth: CGFloat(size.columnWidth)) : CGFloat(size.columnWidth)
+    }
+    var itemHeight: CGFloat { style == .grid ? PanelView.padHeight(size) : CGFloat(size.itemHeight) }
+    var hSpacing: CGFloat { PanelView.padSpacing }
+    var vSpacing: CGFloat { style == .grid ? PanelView.padSpacing : 4 }
+    var width: CGFloat { CGFloat(page.columns) * itemWidth + CGFloat(page.columns - 1) * hSpacing }
+    var height: CGFloat { CGFloat(page.rows) * itemHeight + CGFloat(page.rows - 1) * vSpacing }
+
+    /// An entry's frame inside the page (origin top left).
+    func frame(ofSlot slot: Int) -> CGRect {
+        let p = page.position(of: slot)
+        return CGRect(x: CGFloat(p.column) * (itemWidth + hSpacing), y: CGFloat(p.row) * (itemHeight + vSpacing),
+                      width: itemWidth, height: itemHeight)
     }
 }
