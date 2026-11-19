@@ -572,7 +572,8 @@ struct PanelView: View {
         let dragged = reorderable && viewModel.drag?.from == source
         let active = dragged || (viewModel.drag == nil && (viewModel.state.highlighted == index || viewModel.hovered == index))
         let number = index % viewModel.metrics.page.size   // keys 1–9 on every page
-        let color = Color(label: row.colorID)
+        // Folders stand out in the accent (orange) unless they have their own color label.
+        let color = Color(label: row.colorID) ?? (row.folderID != nil ? Color.accent : nil)
         let symbol = IconCatalog.symbolName(for: row.iconID)
         return Button { onInsert(row) } label: {
             Group {

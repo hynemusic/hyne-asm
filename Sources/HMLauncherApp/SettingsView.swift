@@ -962,7 +962,7 @@ struct SettingsView: View {
             onMoveToCategory: { target in
                 if multi { moveSelection(toCategory: target) } else { model.config.moveEntries([entry.id], toCategory: target, from: category.id) }
             },
-            color: Color(label: model.config.colorID(for: entry)),
+            color: Color(label: model.config.colorID(for: entry)) ?? (entry.isFolder ? Color.accent : nil),   // folders: accent unless labeled
             ownColor: entry.colorID,
             rules: entry.isFolder ? [] : ColorRule.forItem(catalog.index.resolve(entry)
                 ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)),
