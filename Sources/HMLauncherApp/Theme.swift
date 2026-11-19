@@ -193,15 +193,15 @@ struct PadSurface<S: InsettableShape>: ViewModifier {
 struct PadStripe: View {
     let active: Bool
     let color: Color?
-    var width: CGFloat = 28
-    var height: CGFloat = 2
+    var width: CGFloat = 56
+    var height: CGFloat = 3
 
     var body: some View {
         let fill: Color = active ? Palette.current.onLitPad.opacity(0.3) : (color ?? Palette.current.padStripe)
         Capsule()
             .fill(fill)
             .frame(width: width, height: height)
-            .shadow(color: active || color == nil ? .clear : (color ?? .clear).opacity(0.45), radius: 3)
+            .shadow(color: active || color == nil ? .clear : (color ?? .clear).opacity(0.55), radius: 4)
     }
 }
 
@@ -254,7 +254,7 @@ struct LauncherListRow<Badges: View>: View {
         .padding(.horizontal, 10)
         .padding(.bottom, 2)
         .frame(maxWidth: .infinity, minHeight: height, maxHeight: height)
-        .overlay(alignment: .bottom) { PadStripe(active: active, color: color, width: 24).padding(.bottom, 4) }
+        .overlay(alignment: .bottom) { PadStripe(active: active, color: color, width: 48, height: 2.5).padding(.bottom, 4) }
         .modifier(PadSurface(active: active, lit: color ?? Color.accent, shape: shape))
     }
 }
