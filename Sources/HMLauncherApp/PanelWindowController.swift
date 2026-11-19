@@ -6,8 +6,6 @@ import HMLauncherCore
 final class PanelViewModel: ObservableObject {
     @Published var state: PanelState
     @Published var hovered: Int?
-    /// One block: the panel shows one page at a time.
-    let columns = 1
     /// Grid or list, its page size and where the categories sit (Settings → Behavior).
     @Published var style = PanelStyle.grid
     @Published var pageLayout = PanelPage(columns: 3, rows: 3, columnMajor: false)
@@ -22,7 +20,6 @@ final class PanelViewModel: ObservableObject {
     @Published var pinned = false
     /// An entry being dragged to a new place: its index and the slot it would land in.
     @Published var drag: (from: Int, to: Int)?
-    var columnWidth: CGFloat { CGFloat(size.columnWidth) }
     /// Favorites gets a star in the tab bar.
     var favoritesID: UUID?
     init(state: PanelState) { self.state = state }
@@ -173,7 +170,6 @@ final class PanelWindowController {
             viewModel.size = PanelSize(columnWidth: dev[0], itemHeight: dev[1]) // developer aid
         }
         topLeft = point
-        resetFloors()
         layout()
         panel.orderFrontRegardless()
         outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
@@ -204,9 +200,6 @@ final class PanelWindowController {
     /// The gear in the panel's top-right corner.
     var onOpenSettings: (() -> Void)?
 
-    /// The panel is one 3×3 page at its saved pad size; nothing to work out per category any more.
-    private func resetFloors() {}
-
     // MARK: Resize grip
 
     private var resizeStart: (mouse: CGPoint, size: PanelSize, columns: Int, rows: Int)?
@@ -229,7 +222,6 @@ final class PanelWindowController {
         let widthFactor = viewModel.style == .grid ? 3.0 : 1.0
         viewModel.size = PanelSize(columnWidth: start.size.columnWidth + widthFactor * Double(dx) / Double(start.columns),
                                    itemHeight: start.size.itemHeight + Double(dy) / Double(start.rows))
-        resetFloors()
         layout(animated: false)
     }
 
@@ -479,8 +471,9 @@ private struct FlyoutView: View {
                 }
                 ForEach(Array(model.rows.enumerated()), id: \.offset) { index, row in
                     Button { model.onInsert(row) } label: {
-                        LauncherRow(number: nil, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,
-                                    active: model.hovered == index, available: row.isAvailable, color: Color(label: row.colorID))
+                        LauncherListRow(number: nil, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,
+                                        height: PanelView.rowHeight - 4, active: model.hovered == index,
+                                        available: row.isAvailable, color: Color(label: row.colorID), showsNumber: false) {}
                             .opacity(row.isAvailable ? 1 : 0.5)
                     }
                     .buttonStyle(.plain)

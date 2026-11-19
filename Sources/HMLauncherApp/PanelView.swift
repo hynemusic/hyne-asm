@@ -4,10 +4,9 @@ import HMLauncherCore
 struct PanelView: View {
     /// Row height of the list windows beside the panel (quick search, folder side list).
     static let rowHeight: CGFloat = 46
-    static let filterHeight: CGFloat = 28
     static let padding: CGFloat = 8
     /// Rows of the list windows; more scroll.
-    static let maxVisibleRows = PanelGrid.rowsPerColumn
+    static let maxVisibleRows = 9
     static let footerHeight: CGFloat = 22
 
     // Pads: one page (columns × rows, set in Settings) at a time; more entries go on further pages.
@@ -34,14 +33,6 @@ struct PanelView: View {
     static func padHeight(_ size: PanelSize) -> CGFloat { CGFloat(size.itemHeight) + 38 }
     /// `columnWidth` of the resize grip is the width of three pads.
     static func padWidth(columnWidth: CGFloat) -> CGFloat { (columnWidth - padSpacing * 2) / 3 }
-
-    /// Height of `padRows` pad rows, with the wider gap after every third row (Settings editor blocks).
-    static func gridHeight(padRows: Int, padHeight: CGFloat) -> CGFloat {
-        let rows = max(padRows, 1)
-        let blockRows = (rows + 2) / 3
-        return CGFloat(rows) * padHeight + CGFloat(rows - 1) * padSpacing + CGFloat(blockRows - 1) * (blockSpacing - padSpacing)
-    }
-
 
     /// Left edge of the pads inside the panel content (after the padding) and inside the window.
     static func gridStart(_ placement: CategoryPlacement) -> CGFloat {
@@ -82,7 +73,9 @@ struct PanelView: View {
 
     @State private var edgeTask: Task<Void, Never>?
     @State private var edgeHover: Int? = nil   // -1 left strip, 1 right strip
-    @State private var lastPointer: (x: CGFloat, time: TimeInterval)?
+    /// Last pointer sample for the swipe speed. A plain reference: writing it on every mouse move must not
+    /// redraw the panel (only `edgeHover` does, when the pointer enters or leaves a strip).
+    @State private var pointer = PointerSample()
     /// Pointer speed into the right strip that counts as a swipe (points per second).
     static let swipeSpeed: CGFloat = 350
 
@@ -103,13 +96,14 @@ struct PanelView: View {
         case .active(let point):
             let now = ProcessInfo.processInfo.systemUptime
             let zone = edgeZone(point.x)
-            let previous = lastPointer.flatMap { edgeZone($0.x) }
+            let last = pointer.value
+            let previous = last.flatMap { edgeZone($0.x) }
             if zone != previous {
                 edgeTask?.cancel()
-                edgeHover = zone
+                if edgeHover != zone { edgeHover = zone }
                 if let zone {
                     var swiped = false
-                    if zone == 1, let last = lastPointer, now - last.time < 0.2,
+                    if zone == 1, let last, now - last.time < 0.2,
                        (point.x - last.x) / CGFloat(max(now - last.time, 0.001)) > Self.swipeSpeed {
                         turn(to: viewModel.page + 1)
                         swiped = true
@@ -117,11 +111,11 @@ struct PanelView: View {
                     dwell(zone, first: swiped ? Self.edgeRepeat : Self.edgeDelay)
                 }
             }
-            lastPointer = (point.x, now)
+            pointer.value = (point.x, now)
         case .ended:
             edgeTask?.cancel()
-            edgeHover = nil
-            lastPointer = nil
+            if edgeHover != nil { edgeHover = nil }
+            pointer.value = nil
         }
     }
 
@@ -526,7 +520,7 @@ struct PanelView: View {
             }
     }
 
-    /// What has been typed so far, drawn like a search field. Height = `filterHeight`.
+    /// What has been typed so far, drawn like a search field.
     private var filterField: some View {
         HStack(spacing: 7) {
             Image(systemName: "magnifyingglass").font(.themed(11, .semibold)).foregroundColor(.accent)
@@ -634,4 +628,9 @@ struct PageMetrics {
         return CGRect(x: CGFloat(p.column) * (itemWidth + hSpacing), y: CGFloat(p.row) * (itemHeight + vSpacing),
                       width: itemWidth, height: itemHeight)
     }
+}
+
+/// Mutable pointer sample kept outside SwiftUI's change tracking (see `PanelView.pointer`).
+final class PointerSample {
+    var value: (x: CGFloat, time: TimeInterval)?
 }

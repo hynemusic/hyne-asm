@@ -66,14 +66,17 @@ public struct PanelState {
     private let search: SearchIndex
     private let usage: [String: Int]
     public private(set) var tabs: [PanelTab]
-    public private(set) var selectedTab: Int
-    private var input = TextInput()
+    public private(set) var selectedTab: Int { didSet { if selectedTab != oldValue { refreshRows() } } }
+    private var input = TextInput() { didSet { if input.text != oldValue.text { refreshRows() } } }
     public var filter: String { input.text }
     /// ⌘A selected the whole filter (drawn highlighted; the next key replaces it).
     public var isFilterSelected: Bool { input.isAllSelected }
     public private(set) var highlighted: Int?
     /// The folder shown instead of the category's top level.
-    public private(set) var openFolderID: UUID?
+    public private(set) var openFolderID: UUID? { didSet { if openFolderID != oldValue { refreshRows() } } }
+    /// What the panel shows (see `computeRows`). Kept, not recomputed on every read: the panel reads it many
+    /// times per redraw, and with a search each computation ranks the whole plugin list.
+    public private(set) var rows: [PanelRow] = []
 
     public init(config: LauncherConfig, index: SearchIndex, selectedTab: Int = 0, usage: [String: Int] = [:]) {
         self.usage = usage
@@ -81,7 +84,10 @@ public struct PanelState {
         search = index
         tabs = config.categories.map { .category($0.id, $0.name) }
         self.selectedTab = min(max(selectedTab, 0), tabs.count - 1)
+        rows = computeRows()
     }
+
+    private mutating func refreshRows() { rows = computeRows() }
 
     /// Builds the index on the spot (tests, one-off use).
     public init(config: LauncherConfig, items: [PluginItem], selectedTab: Int = 0, usage: [String: Int] = [:]) {
@@ -91,7 +97,7 @@ public struct PanelState {
     /// Without a filter: the category's top level (plugins and folders) or the open folder's plugins, in the
     /// user's order. With a filter: the category's hits (reaching into folders), then hits from all plugins —
     /// each ranked by match quality, then by how often the plugin was inserted.
-    public var rows: [PanelRow] {
+    private func computeRows() -> [PanelRow] {
         let entries = categoryEntries
         let candidates: [PanelRow]
         if let openFolderID {
@@ -124,10 +130,6 @@ public struct PanelState {
     }
 
     public static let maxGlobalResults = 50
-
-    /// Top-level entries of the fullest category: the panel takes that size when it opens, so hovering the
-    /// tabs never resizes it.
-    public var largestTabCount: Int { config.categories.map(\.entries.count).max() ?? 0 }
 
     private func uses(_ row: PanelRow) -> Int { usage[row.usageKey] ?? 0 }
 

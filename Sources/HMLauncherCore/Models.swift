@@ -147,12 +147,6 @@ public struct LauncherConfig: Codable, Sendable {
     public var keptEntries: [UUID] = []
     /// Local HTTP endpoint for Stream Deck & co. (127.0.0.1 only); off unless switched on.
     public var streamDeckEnabled = false
-    /// Columns of 9 entries the panel may put side by side (1–9).
-    public var panelColumns: Int {
-        get { storedPanelColumns }
-        set { storedPanelColumns = min(max(newValue, 1), PanelGrid.maxColumns) }
-    }
-    private var storedPanelColumns = PanelGrid.columns
     /// Width of a panel column and height of an entry (resize grip in the panel).
     public var panelSize = PanelSize.default
     /// Pads per page of the panel (columns × rows).
@@ -196,7 +190,6 @@ public struct LauncherConfig: Codable, Sendable {
         showRarelyUsed = try c.decodeIfPresent(Bool.self, forKey: .showRarelyUsed) ?? true
         keptEntries = try c.decodeIfPresent([UUID].self, forKey: .keptEntries) ?? []
         streamDeckEnabled = try c.decodeIfPresent(Bool.self, forKey: .streamDeckEnabled) ?? false
-        panelColumns = try c.decodeIfPresent(Int.self, forKey: .storedPanelColumns) ?? PanelGrid.columns
         panelSize = (try? c.decodeIfPresent(PanelSize.self, forKey: .panelSize)) ?? .default
         panelGrid = (try? c.decodeIfPresent(PanelGridSize.self, forKey: .panelGrid)) ?? .default
         categoryPlacement = (try? c.decodeIfPresent(CategoryPlacement.self, forKey: .categoryPlacement)) ?? .top

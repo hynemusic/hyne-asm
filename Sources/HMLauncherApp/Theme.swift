@@ -43,76 +43,6 @@ struct PanelChrome: ViewModifier {
     }
 }
 
-/// One row as it appears in the panel: shortcut key, icon tile, title.
-/// Height 42 (+ 4 spacing = `PanelView.rowHeight`); the window layout relies on it.
-struct LauncherRow<Trailing: View>: View {
-    let number: Int?
-    let symbol: String
-    let title: String
-    /// The panel's resize grip changes it; everywhere else 42.
-    var height: CGFloat = 42
-    var subtitle: String? = nil
-    var active = false
-    var available = true
-    /// Color label: tints the icon tile.
-    var color: Color? = nil
-    @ViewBuilder var trailing: () -> Trailing
-
-    var body: some View {
-        HStack(spacing: 10) {
-            if let number { keyCap(number) }
-            iconTile
-            VStack(alignment: .leading, spacing: 1) {
-                Text(title).font(DS.Font.rowTitle).lineLimit(1)
-                if let subtitle {
-                    Text(subtitle).font(DS.Font.caption)
-                        .foregroundColor(available ? DS.textTertiary : DS.warning).lineLimit(1)
-                }
-            }
-            Spacer(minLength: 4)
-            trailing()
-        }
-        .foregroundColor(available ? DS.textPrimary : DS.textTertiary)
-        .padding(.leading, number == nil ? 7 : 6)
-        .padding(.trailing, 10)
-        .frame(height: height)
-        .background(RoundedRectangle(cornerRadius: CGFloat(8).themedRadius).fill(active ? Color.brandBlue.opacity(0.32) : Color.panelRow))
-        .overlay(RoundedRectangle(cornerRadius: CGFloat(8).themedRadius).strokeBorder(active ? Color.brandBlue.opacity(0.75) : Color.ink.opacity(0.04)))
-        .contentShape(Rectangle())
-    }
-
-    private func keyCap(_ index: Int) -> some View { EntryKeyCap(index: index, active: active) }
-
-    private var iconTile: some View {
-        Image(systemName: symbol)
-            .font(.themed(13.5, .medium))
-            .foregroundColor(color ?? (active ? DS.textPrimary : DS.textSecondary))
-            .frame(width: 30, height: 30)
-            .background(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).fill((color ?? .ink).opacity(color == nil ? 0.06 : 0.18)))
-            .overlay(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).strokeBorder((color ?? .clear).opacity(0.35)))
-    }
-}
-
-/// 1–9 as a small key cap; entries from 10 on keep the slot empty so icons stay aligned.
-/// Retro: the key caps cycle through the PlayStation logo colours (dark text on the yellow one).
-struct EntryKeyCap: View {
-    let index: Int
-    var active = false
-
-    var body: some View {
-        let logo = Palette.current.logoColors
-        let fill: Color = index >= 9 ? .clear
-            : !logo.isEmpty ? logo[index % logo.count].opacity(active ? 1 : 0.85)
-            : active ? .accent : .ink.opacity(0.07)
-        let text: Color = !logo.isEmpty ? (index % logo.count == 1 ? .black : .white) : (active ? .onAccent : DS.textSecondary)
-        return Text(index < 9 ? "\(index + 1)" : "")
-            .font(DS.Font.keycap)
-            .foregroundColor(text)
-            .frame(width: 18, height: 18)
-            .background(RoundedRectangle(cornerRadius: CGFloat(5).themedRadius).fill(fill))
-    }
-}
-
 /// One entry as a pad of the panel's 3×3 blocks, styled like a lit hardware pad: a dark pad with a soft top
 /// highlight, key number top left, badges top right, icon and name centred, and a stripe along the bottom.
 /// The color label colors only the icon and the stripe (which glows); unlabeled pads get a dim stripe.
@@ -175,7 +105,8 @@ struct PadSurface<S: InsettableShape>: ViewModifier {
         content
             .background {
                 if active {
-                    shape.fill(lit)
+                    // The glow is drawn only behind a lit pad; unlit pads carry no shadow pass at all.
+                    shape.fill(lit).shadow(color: lit.opacity(0.45), radius: 9)
                 } else {
                     shape.fill(LinearGradient(colors: [Palette.current.padTop ?? Color.panelRow.mix(.white, 0.045), Color.panelRow],
                                               startPoint: .top, endPoint: .bottom))
@@ -183,7 +114,6 @@ struct PadSurface<S: InsettableShape>: ViewModifier {
             }
             .overlay(shape.strokeBorder(LinearGradient(colors: [.white.opacity(active ? 0.35 : 0.07), .clear, .black.opacity(0.35)],
                                                        startPoint: .top, endPoint: .bottom), lineWidth: 1))
-            .shadow(color: active ? lit.opacity(0.45) : .clear, radius: 9)
             .contentShape(shape)
     }
 }
@@ -201,10 +131,12 @@ struct PadStripe: View {
         // touch brighter so it stays visible. Unlabeled stripes stay dim.
         let fill: Color = color.map { active ? $0.mix(.white, 0.45) : $0 }
             ?? (active ? Palette.current.onLitPad.opacity(0.3) : Palette.current.padStripe)
-        Capsule()
-            .fill(fill)
-            .frame(width: width, height: height)
-            .shadow(color: (color ?? .clear).opacity(active ? 0.9 : 0.55), radius: active ? 5 : 4)
+        let capsule = Capsule().fill(fill).frame(width: width, height: height)
+        if let color {
+            capsule.shadow(color: color.opacity(active ? 0.9 : 0.55), radius: active ? 5 : 4)
+        } else {
+            capsule   // dim stripe: no glow, no shadow pass
+        }
     }
 }
 
@@ -270,12 +202,6 @@ extension Color {
         return Color(red: a.redComponent + (b.redComponent - a.redComponent) * amount,
                      green: a.greenComponent + (b.greenComponent - a.greenComponent) * amount,
                      blue: a.blueComponent + (b.blueComponent - a.blueComponent) * amount)
-    }
-}
-
-extension LauncherRow where Trailing == EmptyView {
-    init(number: Int?, symbol: String, title: String, subtitle: String? = nil, active: Bool = false, available: Bool = true, color: Color? = nil) {
-        self.init(number: number, symbol: symbol, title: title, subtitle: subtitle, active: active, available: available, color: color) { EmptyView() }
     }
 }
 

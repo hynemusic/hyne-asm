@@ -121,8 +121,8 @@ struct EntryRow: View {
                 .frame(width: padWidth)
                 .help(subtitle ?? "")
         } else {
-            LauncherRow(number: index, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
-                        subtitle: subtitle, active: active, available: available, color: color) { badges }
+            LauncherListRow(number: index % pageSize, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
+                            height: padHeight, active: active, available: available, color: color, subtitle: subtitle) { badges }
         }
     }
 

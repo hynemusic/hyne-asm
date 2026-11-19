@@ -305,12 +305,12 @@ private struct ImportRowView: View {
 
     var body: some View {
         let item = row.match.item
-        LauncherRow(number: index,
-                    symbol: IconCatalog.symbolName(for: item.map(IconGuesser.guess) ?? IconCatalog.defaultID),
-                    title: row.display,
-                    subtitle: subtitle,
-                    active: hovered,
-                    available: row.match.status != .notFound) {
+        LauncherListRow(number: index,
+                        symbol: IconCatalog.symbolName(for: item.map(IconGuesser.guess) ?? IconCatalog.defaultID),
+                        title: row.display,
+                        active: hovered,
+                        available: row.match.status != .notFound,
+                        subtitle: subtitle) {
             if hovered {
                 Button(action: onRemove) { Image(systemName: "xmark.circle.fill") }
                     .buttonStyle(.borderless).foregroundColor(.dimText)
