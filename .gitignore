@@ -7,3 +7,7 @@ __pycache__/
 *.pyc
 .superpowers/
 build/
+PRODUCT.md
+*.p12
+release-secrets/
+.impeccable/

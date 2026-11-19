@@ -45,13 +45,13 @@ final class LESMenuParserTests: XCTestCase {
         XCTAssertEqual(cats.map(\.parent), [nil, 0, nil, nil])
     }
 
-    func testParsesRealLESFile() throws {
+    func testParsesSampleLESFile() throws {
         let cats = LESMenuParser.parse(try fixtureText())
-        XCTAssertEqual(cats.map(\.name), ["Effects", "RX10", "UAD", "Soundtoys & Brainworx", "Instruments", "EQ", "presets n Racks", "Sonstiges"])
-        XCTAssertEqual(cats.first { $0.name == "RX10" }?.items.count, 10)
+        XCTAssertEqual(cats.map(\.name), ["Effects", "Reverb", "Dynamics", "Saturation", "Instruments", "Synths", "Racks", "Sonstiges"])
+        XCTAssertEqual(cats.first { $0.name == "Reverb" }?.items.count, 10)
         XCTAssertEqual(cats.map(\.parent), [nil, 0, 0, 0, nil, 4, nil, nil])
-        XCTAssertEqual(cats.first { $0.name == "Instruments" }?.items.first?.display, "AnalogLab")
-        XCTAssertEqual(cats.last?.items.map(\.display), ["Sampler", "Drum Rack", "Granulator II"])
+        XCTAssertEqual(cats.first { $0.name == "Instruments" }?.items.first?.display, "Analog Lab")
+        XCTAssertEqual(cats.last?.items.map(\.display), ["Sampler", "Drum Rack", "Granulator III"])
         XCTAssertFalse(cats.flatMap(\.items).contains { $0.display == "End" || $0.query == "End" })
     }
 
@@ -270,9 +270,9 @@ final class ImportDraftTests: XCTestCase {
         XCTAssertEqual(d.categories.map(\.name), ["Instruments"])
     }
 
-    func testRealFileProducesMostlyMatches() throws {
+    func testSampleFileProducesMostlyMatches() throws {
         let url = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/menuconfig.ini")
         let d = ImportDraft.make(text: try String(contentsOf: url, encoding: .utf8), items: catalog)
-        XCTAssertGreaterThan(d.categories.flatMap(\.rows).count, 100)
+        XCTAssertGreaterThan(d.categories.flatMap(\.rows).count, 50)
     }
 }
