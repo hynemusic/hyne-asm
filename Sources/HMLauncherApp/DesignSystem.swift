@@ -50,6 +50,7 @@ enum DS {
         static var sectionTitle: SwiftUI.Font { d(15, .semibold) }
         static var columnTitle: SwiftUI.Font { d(13, .semibold) }
         static var rowTitle: SwiftUI.Font { d(14, .medium) }          // plugin names in panel-like rows
+        static var padTitle: SwiftUI.Font { d(12, .semibold) }        // plugin names on the panel's pads
         static var sectionLabel: SwiftUI.Font { d(11, .semibold) }    // uppercase group labels
         static var badge: SwiftUI.Font { d(10, .semibold) }           // single-word badges, count chips
         static var field: SwiftUI.Font { d(22, .regular) }            // the quick search input

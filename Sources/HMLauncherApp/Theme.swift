@@ -80,9 +80,25 @@ struct LauncherRow<Trailing: View>: View {
         .contentShape(Rectangle())
     }
 
-    /// 1–9 as a small key cap; rows from 10 on keep the slot empty so the icons stay aligned.
-    /// Retro: the key caps cycle through the PlayStation logo colours (dark text on the yellow one).
-    private func keyCap(_ index: Int) -> some View {
+    private func keyCap(_ index: Int) -> some View { EntryKeyCap(index: index, active: active) }
+
+    private var iconTile: some View {
+        Image(systemName: symbol)
+            .font(.themed(13.5, .medium))
+            .foregroundColor(color ?? (active ? DS.textPrimary : DS.textSecondary))
+            .frame(width: 30, height: 30)
+            .background(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).fill((color ?? .ink).opacity(color == nil ? 0.06 : 0.18)))
+            .overlay(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).strokeBorder((color ?? .clear).opacity(0.35)))
+    }
+}
+
+/// 1–9 as a small key cap; entries from 10 on keep the slot empty so icons stay aligned.
+/// Retro: the key caps cycle through the PlayStation logo colours (dark text on the yellow one).
+struct EntryKeyCap: View {
+    let index: Int
+    var active = false
+
+    var body: some View {
         let logo = Palette.current.logoColors
         let fill: Color = index >= 9 ? .clear
             : !logo.isEmpty ? logo[index % logo.count].opacity(active ? 1 : 0.85)
@@ -94,14 +110,47 @@ struct LauncherRow<Trailing: View>: View {
             .frame(width: 18, height: 18)
             .background(RoundedRectangle(cornerRadius: CGFloat(5).themedRadius).fill(fill))
     }
+}
 
-    private var iconTile: some View {
-        Image(systemName: symbol)
-            .font(.themed(13.5, .medium))
-            .foregroundColor(color ?? (active ? DS.textPrimary : DS.textSecondary))
-            .frame(width: 30, height: 30)
-            .background(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).fill((color ?? .ink).opacity(color == nil ? 0.06 : 0.18)))
-            .overlay(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).strokeBorder((color ?? .clear).opacity(0.35)))
+/// One entry as a pad of the panel's 3×3 blocks: key cap top left, badges top right, icon and name centred.
+/// The color label tints the pad and its icon; hover or the keyboard highlight marks it like a selected row.
+struct LauncherPad<Badges: View>: View {
+    let number: Int?
+    let symbol: String
+    let title: String
+    var height: CGFloat = 66
+    var active = false
+    var available = true
+    var color: Color? = nil
+    @ViewBuilder var badges: () -> Badges
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: CGFloat(9).themedRadius)
+        VStack(spacing: 5) {
+            Image(systemName: symbol)
+                .font(.themed(16, .medium))
+                .foregroundColor(color ?? (active ? DS.textPrimary : DS.textSecondary))
+                .frame(height: 19)
+            Text(title)
+                .font(DS.Font.padTitle)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.9)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .foregroundColor(available ? DS.textPrimary : DS.textTertiary)
+        .padding(.horizontal, 6)
+        .padding(.top, 12)
+        .padding(.bottom, 6)
+        .frame(maxWidth: .infinity, minHeight: height, maxHeight: height)
+        .overlay(alignment: .topLeading) { if let number { EntryKeyCap(index: number, active: active).padding(5) } }
+        .overlay(alignment: .topTrailing) { HStack(spacing: 3) { badges() }.padding(5) }
+        .background(ZStack {
+            shape.fill(Color.panelRow)
+            shape.fill(active ? Color.brandBlue.opacity(0.32) : (color ?? .clear).opacity(0.10))
+        })
+        .overlay(shape.strokeBorder(active ? Color.brandBlue.opacity(0.75) : (color ?? .ink).opacity(color == nil ? 0.04 : 0.22)))
+        .contentShape(shape)
     }
 }
 

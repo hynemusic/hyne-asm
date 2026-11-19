@@ -77,3 +77,50 @@ public extension PanelGrid {
         return order
     }
 }
+
+/// Pads: each column of 9 is drawn as a 3×3 block of pads, row by row, so entries 1–9 sit like the keys 1–9.
+/// Blocks keep the column order of `blocks`: side by side up to the column setting, then the next block row below.
+public extension PanelGrid {
+    static let padsPerRow = 3
+
+    /// Pad rows one block of `count` entries needs (1–3).
+    static func padRows(inBlock count: Int) -> Int {
+        (min(max(count, 0), rowsPerColumn) + padsPerRow - 1) / padsPerRow
+    }
+
+    /// Visual pad rows of `count` entries: full block rows take 3, the last block row as many as its fullest block.
+    static func padRows(_ count: Int, columns: Int = columns) -> Int {
+        let blockSize = max(columns, 1) * rowsPerColumn
+        let full = count / blockSize
+        return full * (rowsPerColumn / padsPerRow) + padRows(inBlock: count % blockSize)
+    }
+
+    /// Block rows of `count` entries (a block row is up to `columns` blocks side by side).
+    static func blockRows(_ count: Int, columns: Int = columns) -> Int {
+        let blockSize = max(columns, 1) * rowsPerColumn
+        return (count + blockSize - 1) / blockSize
+    }
+
+    /// The slot under a point of a pad grid (dragging to reorder), clamped to the existing entries.
+    /// Strides include the spacing after a pad / block.
+    static func padIndex(atX x: Double, y: Double, columns: Int, blockStride: Double, padStride: Double,
+                         blockRowStride: Double, padRowStride: Double, count: Int) -> Int {
+        guard count > 0 else { return 0 }
+        let columns = max(columns, 1)
+        let blockRow = max(Int(y / blockRowStride), 0)
+        let blockColumn = min(max(Int(x / blockStride), 0), columns - 1)
+        let inY = y - Double(blockRow) * blockRowStride
+        let inX = x - Double(blockColumn) * blockStride
+        let row = min(max(Int(inY / padRowStride), 0), rowsPerColumn / padsPerRow - 1)
+        let col = min(max(Int(inX / padStride), 0), padsPerRow - 1)
+        let index = (blockRow * columns + blockColumn) * rowsPerColumn + row * padsPerRow + col
+        return min(max(index, 0), count - 1)
+    }
+
+    /// Block column (0-based, left to right) and position inside the block of entry `index`.
+    static func padPosition(of index: Int, columns: Int) -> (blockColumn: Int, row: Int, column: Int) {
+        let inBlockRow = index % (max(columns, 1) * rowsPerColumn)
+        let inBlock = inBlockRow % rowsPerColumn
+        return (inBlockRow / rowsPerColumn, inBlock / padsPerRow, inBlock % padsPerRow)
+    }
+}

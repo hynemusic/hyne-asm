@@ -29,9 +29,9 @@ struct BehaviorPage: View {
         card(Loc.t("Panel", "Panel"), symbol: "rectangle.split.3x1") {
             HStack(alignment: .center, spacing: DS.Space.l) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(Loc.t("Spalten nebeneinander", "Columns side by side")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
-                    Text(Loc.t("Jede Spalte fasst 9 Einträge. Das Panel nimmt nur so viele Spalten, wie die vollste Kategorie braucht; was nicht passt, geht darunter weiter.",
-                               "Each column holds 9 entries. The panel only uses as many columns as the fullest category needs; anything beyond continues below."))
+                    Text(Loc.t("Blöcke nebeneinander", "Blocks side by side")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                    Text(Loc.t("Jeder Block fasst 9 Pads (3 × 3, wie die Tasten 1–9). Das Panel nimmt nur so viele Blöcke, wie die vollste Kategorie braucht; was nicht passt, geht darunter weiter.",
+                               "Each block holds 9 pads (3 × 3, like keys 1–9). The panel only uses as many blocks as the fullest category needs; anything beyond continues below."))
                         .font(DS.Font.caption).foregroundColor(DS.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -46,11 +46,18 @@ struct BehaviorPage: View {
         }
     }
 
-    /// Tiny picture of the panel with the chosen number of columns.
+    /// Tiny picture of the panel with the chosen number of blocks.
     private var columnPreview: some View {
         HStack(spacing: 2) {
             ForEach(0..<model.config.panelColumns, id: \.self) { _ in
-                RoundedRectangle(cornerRadius: 1.5).fill(Color.accent.opacity(0.55)).frame(width: 6, height: 22)
+                // One block: 3 × 3 tiny pads.
+                VStack(spacing: 1) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        HStack(spacing: 1) {
+                            ForEach(0..<3, id: \.self) { _ in RoundedRectangle(cornerRadius: 1).fill(Color.accent.opacity(0.55)).frame(width: 5, height: 6) }
+                        }
+                    }
+                }
             }
         }
         .padding(4)

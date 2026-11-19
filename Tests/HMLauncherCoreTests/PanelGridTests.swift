@@ -114,3 +114,42 @@ final class PanelGridDragTests: XCTestCase {
         XCTAssertEqual(PanelGrid.order(count: 3, moving: 1, to: 1), [0, 1, 2])
     }
 }
+
+final class PanelPadTests: XCTestCase {
+    func testPadRowsPerBlock() {
+        XCTAssertEqual(PanelGrid.padRows(inBlock: 0), 0)
+        XCTAssertEqual(PanelGrid.padRows(inBlock: 1), 1)
+        XCTAssertEqual(PanelGrid.padRows(inBlock: 4), 2)
+        XCTAssertEqual(PanelGrid.padRows(inBlock: 9), 3)
+    }
+
+    func testPadRowsFollowBlocks() {
+        XCTAssertEqual(PanelGrid.padRows(4, columns: 2), 2)
+        XCTAssertEqual(PanelGrid.padRows(12, columns: 2), 3)     // 9 + 3 side by side
+        XCTAssertEqual(PanelGrid.padRows(23, columns: 2), 5)     // one full block row + 5 below
+        XCTAssertEqual(PanelGrid.padRows(25, columns: 1), 9)     // 9 + 9 + 7 stacked
+        XCTAssertEqual(PanelGrid.blockRows(23, columns: 2), 2)
+        XCTAssertEqual(PanelGrid.blockRows(0, columns: 2), 0)
+    }
+
+    func testPadIndexUnderPoint() {
+        // pads 100 + 6 wide, 66 + 6 tall, blocks 318 + 12 wide, 3 rows + 12 tall
+        func idx(_ x: Double, _ y: Double, count: Int = 30) -> Int {
+            PanelGrid.padIndex(atX: x, y: y, columns: 2, blockStride: 330, padStride: 106,
+                               blockRowStride: 228, padRowStride: 72, count: count)
+        }
+        XCTAssertEqual(idx(10, 10), 0)
+        XCTAssertEqual(idx(220, 10), 2)
+        XCTAssertEqual(idx(10, 80), 3)
+        XCTAssertEqual(idx(220, 150), 8)
+        XCTAssertEqual(idx(340, 10), 9)
+        XCTAssertEqual(idx(10, 240), 18)
+        XCTAssertEqual(idx(900, 900, count: 12), 11)            // clamped
+    }
+
+    func testPadPosition() {
+        XCTAssertTrue(PanelGrid.padPosition(of: 4, columns: 2) == (0, 1, 1))
+        XCTAssertTrue(PanelGrid.padPosition(of: 11, columns: 2) == (1, 0, 2))
+        XCTAssertTrue(PanelGrid.padPosition(of: 19, columns: 2) == (0, 0, 1))
+    }
+}
