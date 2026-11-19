@@ -607,13 +607,14 @@ struct SettingsView: View {
 
     /// Blocks of 9 side by side (up to `columns`), 3 pads per row inside a block — the panel's order.
     private func padBlocks(_ rows: [FlatRow], _ layout: PadLayout, in category: HMLauncherCore.Category) -> some View {
+        // Each block of 9 is one page of the panel; a thin line runs between pages.
         VStack(alignment: .leading, spacing: PanelView.blockSpacing) {
-            ForEach(Array(PanelGrid.blocks(0..<rows.count, columns: layout.columns).enumerated()), id: \.offset) { _, blockRow in
+            ForEach(Array(PanelGrid.blocks(0..<rows.count, columns: layout.columns).enumerated()), id: \.offset) { r, blockRow in
+                if r > 0 { pageLine.frame(height: 1) }
                 HStack(alignment: .top, spacing: PanelView.blockSpacing) {
-                    ForEach(Array(blockRow.filter { !$0.isEmpty }.enumerated()), id: \.offset) { _, block in
+                    ForEach(Array(blockRow.filter { !$0.isEmpty }.enumerated()), id: \.offset) { c, block in
+                        if c > 0 { pageLine.frame(width: 1) }
                         VStack(alignment: .leading, spacing: PanelView.padSpacing) {
-                            // Each block is one page of the panel; the bracket marks where it starts and ends.
-                            if rows.count > 9 { PageBracket(page: (block.first ?? 0) / 9 + 1).padding(.bottom, 2) }
                             ForEach(Array(stride(from: 0, to: block.count, by: PanelGrid.padsPerRow)), id: \.self) { start in
                                 HStack(spacing: PanelView.padSpacing) {
                                     ForEach(block[start..<min(start + PanelGrid.padsPerRow, block.count)], id: \.self) { i in
@@ -627,6 +628,8 @@ struct SettingsView: View {
             }
         }
     }
+
+    private var pageLine: some View { Rectangle().fill(Palette.current.padStripe) }
 
     private func padCell(_ row: FlatRow, _ layout: PadLayout, in category: HMLauncherCore.Category) -> some View {
         entryRow(row, in: category, padWidth: layout.padWidth, padHeight: layout.padHeight)

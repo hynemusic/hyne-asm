@@ -50,14 +50,6 @@ struct Palette {
     static func make(_ theme: AppTheme) -> Palette {
         switch theme {
         case .original:
-            return Palette(isDark: true,
-                           canvas: Color(white: 0.105), sidebar: Color(white: 0.135), surface: Color(white: 0.145),
-                           raised: Color(white: 0.195), hover: Color(white: 0.235), hairline: Color.white.opacity(0.07),
-                           textPrimary: Color(white: 0.94), textSecondary: Color(white: 0.68), textTertiary: Color(white: 0.56),
-                           accent: hex(0xFF6B57), accentStrong: hex(0x3D5AFE),
-                           panelSurface: Color(white: 0.115), panelRow: Color(white: 0.17), panelStroke: Color.white.opacity(0.09),
-                           ink: .white, keyboardBase: Color(white: 0.075), keyFill: Color(white: 0.2))
-        case .pads:
             // Warm black like a pad controller's housing, Ableton orange for the lit pad and the active category.
             return Palette(isDark: true,
                            canvas: hex(0x0C0B0A), sidebar: hex(0x141311), surface: hex(0x121110),
@@ -115,8 +107,8 @@ struct Palette {
     }
 
     /// Read from every view's body (main thread); written only by `apply`.
-    nonisolated(unsafe) static private(set) var current = Palette.make(.pads)
-    nonisolated(unsafe) static private(set) var theme: AppTheme = .pads
+    nonisolated(unsafe) static private(set) var current = Palette.make(.original)
+    nonisolated(unsafe) static private(set) var theme: AppTheme = .original
 
     /// Switches the palette and the window appearance (menus, alerts, text fields follow light/dark).
     @MainActor static func apply(_ theme: AppTheme) {

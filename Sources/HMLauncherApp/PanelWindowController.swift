@@ -23,6 +23,60 @@ final class PanelViewModel: ObservableObject {
     var favoritesID: UUID?
     init(state: PanelState) { self.state = state }
     func isFavorites(_ id: UUID) -> Bool { id == favoritesID }
+
+    var pageCount: Int { max(1, (state.rows.count + 8) / 9) }
+
+    /// Slides to `page` (in from the right when moving forward); no slide with Reduce Motion.
+    func turn(to page: Int) {
+        let target = min(max(page, 0), pageCount - 1)
+        guard target != self.page else { return }
+        forward = target > self.page
+        hovered = nil
+        withAnimation(NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? nil : .easeOut(duration: 0.14)) {
+            self.page = target
+        }
+    }
+
+    // Scroll wheel and two-finger trackpad swipes over the panel turn pages: one page per gesture (trackpad)
+    // or per few wheel notches, whichever axis moves more.
+    private var scrollSum: CGFloat = 0
+    private var scrollTurned = false
+    private var lastWheelTurn = Date.distantPast
+
+    func scroll(_ event: ScrollSample) {
+        let trackpad = event.precise
+        if trackpad && event.began { scrollSum = 0; scrollTurned = false }
+        if trackpad && event.ended { scrollSum = 0; scrollTurned = false; return }
+        if event.momentum { return }   // the coast after a swipe is not a second swipe
+        let dx = -event.dx, dy = -event.dy
+        scrollSum += abs(dx) > abs(dy) ? dx : dy
+        let threshold: CGFloat = trackpad ? 40 : 3
+        guard abs(scrollSum) >= threshold else { return }
+        if trackpad {
+            guard !scrollTurned else { return }
+            scrollTurned = true
+        } else {
+            guard Date().timeIntervalSince(lastWheelTurn) > 0.12 else { return }
+            lastWheelTurn = Date()
+        }
+        turn(to: page + (scrollSum > 0 ? 1 : -1))
+        scrollSum = 0
+    }
+}
+
+/// What the page turning needs from a scroll event (plain values, safe to hand across isolation).
+struct ScrollSample: Sendable {
+    let dx: CGFloat, dy: CGFloat
+    let precise: Bool
+    let began: Bool, ended: Bool, momentum: Bool
+
+    init(_ e: NSEvent) {
+        dx = e.scrollingDeltaX; dy = e.scrollingDeltaY
+        precise = e.hasPreciseScrollingDeltas
+        began = e.phase == .began || e.phase == .mayBegin
+        ended = e.phase == .ended || e.phase == .cancelled
+        momentum = !e.momentumPhase.isEmpty
+    }
 }
 
 private final class LauncherPanel: NSPanel {
@@ -117,7 +171,17 @@ final class PanelWindowController {
             MainActor.assumeIsolated { self?.viewModel.pinned = event.modifierFlags.contains(.shift) }
         }
         flagsMonitors = [NSEvent.addGlobalMonitorForEvents(matching: .flagsChanged, handler: flags),
-                         NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) { flags($0); return $0 }].compactMap { $0 }
+                         NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) { flags($0); return $0 },
+                         NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
+                             let sample = ScrollSample(event)
+                             let windowNumber = event.windowNumber
+                             let handled = MainActor.assumeIsolated { () -> Bool in
+                                 guard let self, windowNumber == self.panel.windowNumber else { return false }
+                                 self.viewModel.scroll(sample)
+                                 return true
+                             }
+                             return handled ? nil : event
+                         }].compactMap { $0 }
     }
 
     /// The gear in the panel's top-right corner.
@@ -224,13 +288,16 @@ final class PanelWindowController {
         guard flyoutFolder != folder || !flyout.isVisible else { return }
         flyoutFolder = folder
         let index = viewModel.state.rows.firstIndex { $0.folderID == folder } ?? 0
-        // Beside the folder's whole block, so the list doesn't cover the pads next to the folder.
-        _ = index
-        let blockMinX = panel.frame.minX + PanelView.gridMinX
-        let blockFrame = NSRect(x: blockMinX, y: panel.frame.minY, width: viewModel.columnWidth, height: panel.frame.height)
-        let mouse = NSEvent.mouseLocation
+        // Right beside the folder pad, its first row level with the pad's top: the list covers the pads to the
+        // folder's right, so no other folder sits between the pointer and the list.
+        let slot = index % 9
+        let padWidth = PanelView.padWidth(columnWidth: viewModel.columnWidth)
+        let padX = panel.frame.minX + PanelView.gridMinX + CGFloat(slot % 3) * (padWidth + PanelView.padSpacing)
+        let padTop = panel.frame.maxY - PanelView.padding - PanelView.headerHeight
+            - CGFloat(slot / 3) * (viewModel.padHeight + PanelView.padSpacing)
+        let padFrame = NSRect(x: padX, y: padTop - viewModel.padHeight, width: padWidth, height: viewModel.padHeight)
         flyout.show(rows: viewModel.state.folderRows(folder),
-                    besides: blockFrame, top: mouse.y + PanelView.rowHeight / 2 + PanelView.padding,
+                    besides: padFrame, top: padTop + PanelView.padding,
                     onInsert: { [weak self] in self?.insert($0) })
     }
 

@@ -138,7 +138,7 @@ public struct LauncherConfig: Codable, Sendable {
     /// Key combinations that insert a single plugin, rack or preset.
     public var itemShortcuts: [ItemShortcut] = []
     /// Look of the app's windows.
-    public var theme: AppTheme = .pads
+    public var theme: AppTheme = .original
     /// Where inserted items land and on which tracks.
     public var insert: InsertOptions = .default
     /// Stats page: list panel entries that are hardly used (can be switched off).
@@ -182,7 +182,7 @@ public struct LauncherConfig: Codable, Sendable {
         colorRules = try c.decodeIfPresent([String: String].self, forKey: .colorRules) ?? [:]
         searchRules = try c.decodeIfPresent([SearchRule].self, forKey: .searchRules) ?? []
         itemShortcuts = try c.decodeIfPresent([ItemShortcut].self, forKey: .itemShortcuts) ?? []
-        theme = (try? c.decodeIfPresent(AppTheme.self, forKey: .theme)) ?? .pads
+        theme = (try? c.decodeIfPresent(AppTheme.self, forKey: .theme)) ?? .original
         insert = (try? c.decodeIfPresent(InsertOptions.self, forKey: .insert)) ?? .default
         showRarelyUsed = try c.decodeIfPresent(Bool.self, forKey: .showRarelyUsed) ?? true
         keptEntries = try c.decodeIfPresent([UUID].self, forKey: .keptEntries) ?? []

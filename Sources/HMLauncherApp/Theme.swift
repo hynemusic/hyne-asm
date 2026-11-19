@@ -3,7 +3,7 @@ import SwiftUI
 import HMLauncherCore
 
 /// Colours of the panel and the settings, taken from the current theme (`Palette`).
-/// Original theme = brand palette "Signal" from the ASM Double Key logo: blue #3D5AFE + coral #FF6B57.
+/// Original theme = the pad look: warm black #121110, pads #262421→#1D1C1A, Ableton orange #FF8C1A.
 extension Color {
     /// Prominent buttons, selection (brand blue in the original theme).
     static var brandBlue: Color { Palette.current.accentStrong }
@@ -280,44 +280,3 @@ struct ColorMenu: View {
     }
 }
 
-/// "⌐── PAGE 2 ──¬" over a block of 9 in the Settings editor: where a page of the panel starts and ends.
-struct PageBracket: View {
-    let page: Int
-
-    var body: some View {
-        HStack(spacing: 6) {
-            BracketArm(leading: true)
-            Text(Loc.t("Seite \(page)", "Page \(page)"))
-                .font(.system(size: 11, weight: .medium, design: .monospaced))
-                .textCase(.uppercase)
-                .foregroundColor(DS.textTertiary)
-                .fixedSize()
-            BracketArm(leading: false)
-        }
-        .frame(height: 12)
-        .accessibilityElement(children: .combine)
-    }
-}
-
-/// One half of the bracket: a short tick down at the outer end, then a line toward the label.
-private struct BracketArm: View {
-    let leading: Bool
-
-    var body: some View {
-        BracketShape(leading: leading)
-            .stroke(DS.textTertiary.opacity(0.55), style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
-            .frame(maxWidth: .infinity)
-    }
-}
-
-private struct BracketShape: Shape {
-    let leading: Bool
-    func path(in rect: CGRect) -> Path {
-        var p = Path()
-        let x = leading ? rect.minX + 1 : rect.maxX - 1
-        p.move(to: CGPoint(x: x, y: rect.maxY))
-        p.addLine(to: CGPoint(x: x, y: rect.midY))
-        p.addLine(to: CGPoint(x: leading ? rect.maxX : rect.minX, y: rect.midY))
-        return p
-    }
-}

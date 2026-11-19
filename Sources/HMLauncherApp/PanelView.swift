@@ -68,6 +68,60 @@ struct PanelView: View {
 
     @State private var edgeTask: Task<Void, Never>?
     @State private var edgeHover: Int? = nil   // -1 left strip, 1 right strip
+    @State private var lastPointer: (x: CGFloat, time: TimeInterval)?
+    /// Pointer speed into the right strip that counts as a swipe (points per second).
+    static let swipeSpeed: CGFloat = 350
+
+    /// Which page strip a point of the panel's content (inside the padding) is in.
+    private func edgeZone(_ x: CGFloat) -> Int? {
+        let leftStart = Self.categoryWidth + 6
+        let gridStart = leftStart + Self.sidebarGap
+        let gridEnd = gridStart + viewModel.columnWidth
+        if x >= gridEnd { return 1 }
+        if x >= leftStart + 1 && x < gridStart { return -1 }
+        return nil
+    }
+
+    /// Swiping the pointer into the right strip turns the page at once; resting on a strip turns it after a
+    /// moment and keeps turning while the pointer stays.
+    private func edgeTracking(_ phase: HoverPhase) {
+        switch phase {
+        case .active(let point):
+            let now = ProcessInfo.processInfo.systemUptime
+            let zone = edgeZone(point.x)
+            let previous = lastPointer.flatMap { edgeZone($0.x) }
+            if zone != previous {
+                edgeTask?.cancel()
+                edgeHover = zone
+                if let zone {
+                    var swiped = false
+                    if zone == 1, let last = lastPointer, now - last.time < 0.2,
+                       (point.x - last.x) / CGFloat(max(now - last.time, 0.001)) > Self.swipeSpeed {
+                        turn(to: viewModel.page + 1)
+                        swiped = true
+                    }
+                    dwell(zone, first: swiped ? Self.edgeRepeat : Self.edgeDelay)
+                }
+            }
+            lastPointer = (point.x, now)
+        case .ended:
+            edgeTask?.cancel()
+            edgeHover = nil
+            lastPointer = nil
+        }
+    }
+
+    private func dwell(_ direction: Int, first: UInt64) {
+        edgeTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: first)
+            while !Task.isCancelled {
+                let next = viewModel.page + direction
+                guard next >= 0, next < pageCount else { return }
+                turn(to: next)
+                try? await Task.sleep(nanoseconds: Self.edgeRepeat)
+            }
+        }
+    }
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -83,6 +137,7 @@ struct PanelView: View {
             .frame(width: viewModel.columnWidth)
             edgeStrip(1).frame(width: Self.edgeWidth)
         }
+        .onContinuousHover(coordinateSpace: .local) { edgeTracking($0) }
         .overlay(alignment: .bottomTrailing) { resizeGrip }
         .padding(Self.padding)
         .modifier(PanelChrome(radius: 14 * Palette.current.radiusScale))
@@ -96,21 +151,11 @@ struct PanelView: View {
         }
     }
 
-    private var pageCount: Int { max(1, (viewModel.state.rows.count + 8) / 9) }
+    private var pageCount: Int { viewModel.pageCount }
+    private func turn(to page: Int) { viewModel.turn(to: page) }
 
-    /// Slides to `page` (from the right when moving forward).
-    private func turn(to page: Int) {
-        let target = min(max(page, 0), pageCount - 1)
-        guard target != viewModel.page else { return }
-        viewModel.forward = target > viewModel.page
-        viewModel.hovered = nil
-        withAnimation(NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? nil : .easeOut(duration: 0.14)) {
-            viewModel.page = target
-        }
-    }
-
-    /// Resting the mouse on the strip right of the pads (or left of them) turns the page, again and again
-    /// while it stays there. A chevron shows when there is a page that way.
+    /// Strips right and left of the pads; a chevron shows when there is a page that way. What the pointer does
+    /// there is handled by `edgeTracking` on the whole panel.
     private func edgeStrip(_ direction: Int) -> some View {
         let possible = direction > 0 ? viewModel.page < pageCount - 1 : viewModel.page > 0
         return ZStack {
@@ -123,20 +168,6 @@ struct PanelView: View {
         }
         .frame(maxHeight: .infinity)
         .contentShape(Rectangle())
-        .onHover { inside in
-            edgeTask?.cancel()
-            edgeHover = inside ? direction : nil
-            guard inside else { return }
-            edgeTask = Task { @MainActor in
-                try? await Task.sleep(nanoseconds: Self.edgeDelay)
-                while !Task.isCancelled {
-                    let next = viewModel.page + direction
-                    guard next >= 0, next < pageCount else { return }
-                    turn(to: next)
-                    try? await Task.sleep(nanoseconds: Self.edgeRepeat)
-                }
-            }
-        }
         .onTapGesture { turn(to: viewModel.page + direction) }
     }
 
