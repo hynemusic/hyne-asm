@@ -53,6 +53,15 @@ struct Palette {
                            accent: hex(0xFF6B57), accentStrong: hex(0x3D5AFE),
                            panelSurface: Color(white: 0.115), panelRow: Color(white: 0.17), panelStroke: Color.white.opacity(0.09),
                            ink: .white, keyboardBase: Color(white: 0.075), keyFill: Color(white: 0.2))
+        case .pads:
+            // Warm black like a pad controller's housing, Ableton orange for the lit pad and the active category.
+            return Palette(isDark: true,
+                           canvas: hex(0x0C0B0A), sidebar: hex(0x141311), surface: hex(0x121110),
+                           raised: hex(0x1D1C1A), hover: hex(0x262421), hairline: Color.white.opacity(0.07),
+                           textPrimary: hex(0xEEEAE4), textSecondary: hex(0xB5AFA6), textTertiary: hex(0x8D877E),
+                           accent: hex(0xFF8C1A), accentStrong: hex(0xFF8C1A), onAccentStrong: hex(0x15120E), onAccent: hex(0x15120E),
+                           panelSurface: hex(0x121110), panelRow: hex(0x1D1C1A), panelStroke: Color.white.opacity(0.08),
+                           ink: .white, keyboardBase: hex(0x0C0B0A), keyFill: hex(0x262421))
         case .ableton:
             // Live 12's neutral dark greys with its orange highlight and light-blue selection.
             return Palette(isDark: true,

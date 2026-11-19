@@ -23,8 +23,8 @@ struct PanelView: View {
     /// Category column + the hairline and gap before the pads.
     static let sidebarGap: CGFloat = 9
 
-    /// Pad height for the entry height of the resize grip (34–64 → 58–88).
-    static func padHeight(_ size: PanelSize) -> CGFloat { CGFloat(size.itemHeight) + 24 }
+    /// Pad height for the entry height of the resize grip (34–64 → 72–102).
+    static func padHeight(_ size: PanelSize) -> CGFloat { CGFloat(size.itemHeight) + 38 }
     static func padWidth(columnWidth: CGFloat) -> CGFloat { (columnWidth - padSpacing * 2) / 3 }
 
     /// Height of `padRows` pad rows, with the wider gap after every third row (a new block row).
@@ -100,15 +100,19 @@ struct PanelView: View {
                 Image(systemName: "pin.fill").font(.themed(10, .semibold))
                 Text(Loc.t("Angeheftet – ⇧ loslassen, dann schließt der nächste Klick", "Pinned – release ⇧ and the next insert closes"))
             } else if state.filter.isEmpty {
-                Image(systemName: "magnifyingglass").font(.themed(10.5, .semibold))
-                Text(Loc.t("Tippen zum Suchen", "Type to search"))
+                Text(Loc.t("Tippen zum Suchen · ⇧ heftet an", "Type to search · ⇧ pins"))
             } else {
                 let n = state.rows.count
                 Text(n == 1 ? Loc.t("1 Treffer", "1 result") : Loc.t("\(n) Treffer", "\(n) results"))
             }
+            Spacer(minLength: 0)
         }
-        .font(DS.Font.caption)
-        .foregroundColor(viewModel.pinned ? .accent : DS.textTertiary.opacity(0.75))
+        // Small print of a hardware panel: monospaced capitals.
+        .font(.system(size: 11, weight: .medium, design: .monospaced))
+        .textCase(.uppercase)
+        .lineLimit(1)
+        .foregroundColor(viewModel.pinned ? .accent : DS.textTertiary.opacity(0.8))
+        .padding(.leading, 2).padding(.trailing, 24)
         .frame(maxWidth: .infinity, minHeight: Self.footerHeight, maxHeight: Self.footerHeight)
         .allowsHitTesting(false)
     }
@@ -165,7 +169,12 @@ struct PanelView: View {
     private func categoryButton(_ index: Int) -> some View {
         let selected = index == viewModel.state.selectedTab
         return Button { onSelectTab(index) } label: {
-            HStack(spacing: 6) {
+            HStack(spacing: 8) {
+                // LED: lit (with a glow) on the open category, dark on the others.
+                Circle()
+                    .fill(selected ? Color.accent : Color.ink.opacity(0.16))
+                    .frame(width: 6, height: 6)
+                    .shadow(color: selected ? Color.accent.opacity(0.9) : .clear, radius: 4)
                 if case .category(let id, _) = viewModel.state.tabs[index], viewModel.isFavorites(id) {
                     Image(systemName: "star.fill").font(.themed(9.5)).foregroundColor(selected ? .accent : DS.textTertiary)
                 }
@@ -178,7 +187,7 @@ struct PanelView: View {
             }
             .padding(.horizontal, 8)
             .frame(height: Self.categoryRowHeight)
-            .background(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).fill(selected ? Color.ink.opacity(0.09) : .clear))
+            .background(RoundedRectangle(cornerRadius: CGFloat(6).themedRadius).fill(selected ? Color.ink.opacity(0.06) : .clear))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

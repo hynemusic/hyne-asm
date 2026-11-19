@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 import HMLauncherCore
 
@@ -112,8 +113,10 @@ struct EntryKeyCap: View {
     }
 }
 
-/// One entry as a pad of the panel's 3×3 blocks: key cap top left, badges top right, icon and name centred.
-/// The color label tints the pad and its icon; hover or the keyboard highlight marks it like a selected row.
+/// One entry as a pad of the panel's 3×3 blocks, styled like a lit hardware pad: a dark pad with a soft top
+/// highlight, key number top left, badges top right, icon and name centred, and a stripe along the bottom.
+/// The color label colors only the icon and the stripe (which glows); unlabeled pads get a dim stripe.
+/// Hover or the keyboard highlight lights the whole pad in its label color (the accent when it has none).
 struct LauncherPad<Badges: View>: View {
     let number: Int?
     let symbol: String
@@ -124,33 +127,73 @@ struct LauncherPad<Badges: View>: View {
     var color: Color? = nil
     @ViewBuilder var badges: () -> Badges
 
+    /// Text and marks on a lit pad.
+    private static var onLit: Color { Color(white: 0.08) }
+
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: CGFloat(9).themedRadius)
-        VStack(spacing: 5) {
+        let shape = RoundedRectangle(cornerRadius: CGFloat(8).themedRadius)
+        let lit = color ?? Color.accent
+        VStack(spacing: 6) {
             Image(systemName: symbol)
-                .font(.themed(16, .medium))
-                .foregroundColor(color ?? (active ? DS.textPrimary : DS.textSecondary))
-                .frame(height: 19)
+                .font(.themed(17, .medium))
+                .foregroundColor(active ? Self.onLit.opacity(0.75) : (color ?? DS.textTertiary))
+                .frame(height: 20)
             Text(title)
                 .font(DS.Font.padTitle)
+                .foregroundColor(active ? Self.onLit : (available ? DS.textPrimary : DS.textTertiary))
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .minimumScaleFactor(0.9)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .foregroundColor(available ? DS.textPrimary : DS.textTertiary)
         .padding(.horizontal, 6)
-        .padding(.top, 12)
-        .padding(.bottom, 6)
+        .padding(.top, 10)
+        .padding(.bottom, 10)
         .frame(maxWidth: .infinity, minHeight: height, maxHeight: height)
-        .overlay(alignment: .topLeading) { if let number { EntryKeyCap(index: number, active: active).padding(5) } }
+        .overlay(alignment: .topLeading) {
+            if let number, number < 9 {
+                Text("\(number + 1)")
+                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .foregroundColor(active ? Self.onLit.opacity(0.65) : DS.textTertiary)
+                    .padding(.top, 5).padding(.leading, 7)
+            }
+        }
         .overlay(alignment: .topTrailing) { HStack(spacing: 3) { badges() }.padding(5) }
-        .background(ZStack {
-            shape.fill(Color.panelRow)
-            shape.fill(active ? Color.brandBlue.opacity(0.32) : (color ?? .clear).opacity(0.10))
-        })
-        .overlay(shape.strokeBorder(active ? Color.brandBlue.opacity(0.75) : (color ?? .ink).opacity(color == nil ? 0.04 : 0.22)))
+        .overlay(alignment: .bottom) { stripe(lit: lit) }
+        .background {
+            if active {
+                shape.fill(lit)
+            } else {
+                shape.fill(LinearGradient(colors: [Color.panelRow.mix(.white, 0.045), Color.panelRow],
+                                          startPoint: .top, endPoint: .bottom))
+            }
+        }
+        // Light catching the top edge, a shade along the bottom: reads as a raised pad.
+        .overlay(shape.strokeBorder(LinearGradient(colors: [.white.opacity(active ? 0.35 : 0.07), .clear, .black.opacity(0.35)],
+                                                   startPoint: .top, endPoint: .bottom), lineWidth: 1))
+        .shadow(color: active ? lit.opacity(0.45) : .clear, radius: 9)
         .contentShape(shape)
+    }
+
+    private func stripe(lit: Color) -> some View {
+        let fill: Color = active ? Self.onLit.opacity(0.3) : (color ?? Color.ink.opacity(0.12))
+        return Capsule()
+            .fill(fill)
+            .frame(height: 3)
+            .shadow(color: active || color == nil ? .clear : lit.opacity(0.6), radius: 4)
+            .padding(.horizontal, 10)
+            .padding(.bottom, 5)
+    }
+}
+
+extension Color {
+    /// This color blended toward `other` by `amount` (0–1).
+    func mix(_ other: Color, _ amount: Double) -> Color {
+        let a = NSColor(self).usingColorSpace(.sRGB) ?? .gray
+        let b = NSColor(other).usingColorSpace(.sRGB) ?? .gray
+        return Color(red: a.redComponent + (b.redComponent - a.redComponent) * amount,
+                     green: a.greenComponent + (b.greenComponent - a.greenComponent) * amount,
+                     blue: a.blueComponent + (b.blueComponent - a.blueComponent) * amount)
     }
 }
 

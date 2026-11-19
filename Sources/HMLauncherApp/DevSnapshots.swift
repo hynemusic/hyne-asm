@@ -73,6 +73,7 @@ extension AppDelegate {
                     self.panel.snapshot(to: out.appendingPathComponent("panel-short-fresh.png"))
                     _ = self.panel.handle(.right); _ = self.panel.handle(.right) // back towards Favorites
                     for ch in "re" { _ = self.panel.handle(.character(ch)) }
+                    _ = self.panel.handle(.down); _ = self.panel.handle(.down) // a highlighted (lit) entry
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                         self.panel.snapshot(to: out.appendingPathComponent("panel-filter.png"))
                         self.panel.hide()
