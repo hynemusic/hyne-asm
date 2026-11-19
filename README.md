@@ -15,7 +15,9 @@ Insert plugins, presets and Live commands in seconds: a double right-click in Ab
 
 <img width="2000" height="500" alt="Untitled-5" src="https://github.com/user-attachments/assets/e9fa819a-34e4-44cc-87e1-5de22c9f9f05" />
 
+## Bridge Setup
 
+<img width="2000" height="400" alt="Untitled-6" src="https://github.com/user-attachments/assets/cc9a51f0-1898-481a-88d7-b1cc7ff7cd3c" />
 
 
 
