@@ -42,6 +42,8 @@ struct EntryRow: View {
     /// Set: drawn as a pad of the panel's 3×3 blocks (this width) instead of a row.
     var padWidth: CGFloat? = nil
     var padHeight: CGFloat = 66
+    /// Pads per panel page: the key numbers start again at 1 on each page.
+    var pageSize = 9
     private var dropSpot: DropSpot? { drop.marker?.id == entry.id ? drop.marker?.spot : nil }
     @State private var showIcons = false
     @State private var editingValue = false
@@ -106,7 +108,7 @@ struct EntryRow: View {
     @ViewBuilder private var base: some View {
         let active = isSelected || hovered || dropSpot == .into
         if let padWidth {
-            LauncherPad(number: index % 9, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,   // keys 1–9 per page
+            LauncherPad(number: index % pageSize, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,   // keys 1–9 per page
                         height: padHeight, active: active, available: available, color: color) { badges }
                 .frame(width: padWidth)
                 .help(subtitle ?? "")

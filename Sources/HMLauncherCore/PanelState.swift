@@ -197,14 +197,15 @@ public struct PanelState {
         highlighted = nil
     }
 
-    /// The panel's page of 9 on show: digit keys 1–9 pick from it.
+    /// The panel's page on show and how many pads a page has: digit keys 1–9 pick from its first nine.
     public var page = 0
+    public var pageSize = 9
 
     public mutating func handle(_ key: PanelKey) -> PanelAction {
         switch key {
         case .digit(let d) where filter.isEmpty:
-            guard (1...9).contains(d) else { return .none }
-            return insert(at: page * 9 + d - 1)
+            guard (1...9).contains(d), d <= pageSize else { return .none }
+            return insert(at: page * pageSize + d - 1)
         case .backspace where filter.isEmpty && openFolderID != nil:
             closeFolder()
             return .none

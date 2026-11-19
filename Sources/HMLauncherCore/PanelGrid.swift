@@ -124,3 +124,30 @@ public extension PanelGrid {
         return (inBlockRow / rowsPerColumn, inBlock / padsPerRow, inBlock % padsPerRow)
     }
 }
+
+/// How many pads one page of the panel shows: columns × rows (each 2–8, default 3 × 3).
+public struct PanelGridSize: Codable, Equatable, Sendable {
+    public static let range = 2...8
+    public static let `default` = PanelGridSize(columns: 3, rows: 3)
+
+    public var columns: Int { didSet { columns = Self.clamp(columns) } }
+    public var rows: Int { didSet { rows = Self.clamp(rows) } }
+    public var pageSize: Int { columns * rows }
+
+    public init(columns: Int, rows: Int) {
+        self.columns = Self.clamp(columns)
+        self.rows = Self.clamp(rows)
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(columns: try c.decode(Int.self, forKey: .columns), rows: try c.decode(Int.self, forKey: .rows))
+    }
+
+    private static func clamp(_ v: Int) -> Int { min(max(v, range.lowerBound), range.upperBound) }
+}
+
+/// Where the panel lists the categories: a tab bar on top, or a column on the left.
+public enum CategoryPlacement: String, Codable, CaseIterable, Sendable {
+    case top, left
+}

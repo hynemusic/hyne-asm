@@ -10,16 +10,83 @@ struct BehaviorPage: View {
 
     var body: some View {
         PageContainer(title: Loc.t("Verhalten", "Behavior"),
-                      subtitle: Loc.t("Wie HYNE ASM in Live einfügt – und wie andere Geräte es steuern.",
-                                      "How HYNE ASM inserts into Live – and how other devices control it."),
+                      subtitle: Loc.t("Wie das Panel aussieht, wie HYNE ASM in Live einfügt – und wie andere Geräte es steuern.",
+                                      "How the panel is laid out, how HYNE ASM inserts into Live – and how other devices control it."),
                       maxWidth: 780) { EmptyView() } content: {
             VStack(alignment: .leading, spacing: DS.Space.xl) {
+                panelCard
                 insertCard
                 hintsCard
                 streamDeckCard
             }
             .padding(.bottom, DS.Space.l)
         }
+    }
+
+    // MARK: Panel
+
+    private var panelCard: some View {
+        card(Loc.t("Panel", "Panel"), symbol: "square.grid.3x3") {
+            HStack(alignment: .center, spacing: DS.Space.l) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(Loc.t("Kategorien", "Categories")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                    caption(Loc.t("Als Tabs oben im Panel oder als Liste links daneben.", "As tabs on top of the panel or as a list on its left."))
+                }
+                Spacer(minLength: DS.Space.m)
+                Picker("", selection: $model.config.categoryPlacement) {
+                    Text(Loc.t("Oben", "Top")).tag(CategoryPlacement.top)
+                    Text(Loc.t("Links", "Left")).tag(CategoryPlacement.left)
+                }
+                .pickerStyle(.segmented).labelsHidden().fixedSize()
+            }
+            divider
+            HStack(alignment: .center, spacing: DS.Space.l) {
+                VStack(alignment: .leading, spacing: 2) {
+                    let grid = model.config.panelGrid
+                    Text(Loc.t("Größe", "Size")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                    caption(Loc.t("\(grid.columns) × \(grid.rows) – \(grid.pageSize) Pads pro Seite. Mehr Einträge kommen auf weitere Seiten; die Tasten 1–9 gelten für die ersten neun der Seite.",
+                                  "\(grid.columns) × \(grid.rows) – \(grid.pageSize) pads per page. More entries go on further pages; keys 1–9 pick the page's first nine."))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: DS.Space.m)
+                gridPreview
+                VStack(alignment: .trailing, spacing: DS.Space.xs) {
+                    sizeStepper(Loc.t("Spalten", "Columns"), value: $model.config.panelGrid.columns)
+                    sizeStepper(Loc.t("Reihen", "Rows"), value: $model.config.panelGrid.rows)
+                }
+            }
+        }
+    }
+
+    private func sizeStepper(_ label: String, value: Binding<Int>) -> some View {
+        Stepper(value: value, in: PanelGridSize.range) {
+            HStack(spacing: 6) {
+                Text(label).font(DS.Font.secondary).foregroundColor(DS.textSecondary)
+                Text("\(value.wrappedValue)").font(DS.Font.bodyStrong.monospacedDigit()).foregroundColor(DS.textPrimary)
+                    .frame(minWidth: 14, alignment: .trailing)
+            }
+        }
+        .fixedSize()
+    }
+
+    /// Tiny picture of one panel page: the chosen columns × rows, the first nine lit like keyed pads.
+    private var gridPreview: some View {
+        let grid = model.config.panelGrid
+        return VStack(spacing: 2) {
+            ForEach(0..<grid.rows, id: \.self) { r in
+                HStack(spacing: 2) {
+                    ForEach(0..<grid.columns, id: \.self) { c in
+                        RoundedRectangle(cornerRadius: 1.5)
+                            .fill(r * grid.columns + c < 9 ? Color.accent.opacity(0.7) : DS.textTertiary.opacity(0.35))
+                            .frame(width: 8, height: 7)
+                    }
+                }
+            }
+        }
+        .padding(6)
+        .frame(minWidth: 84, minHeight: 64)
+        .plate(lit: false, radius: DS.Radius.s, filled: true)
+        .accessibilityHidden(true)
     }
 
     // MARK: Inserting
@@ -158,8 +225,7 @@ struct BehaviorPage: View {
             VStack(alignment: .leading, spacing: DS.Space.m) { content() }
                 .padding(DS.Space.l)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-                .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+                .plate(lit: false, radius: DS.Radius.l, filled: true)
         }
     }
 

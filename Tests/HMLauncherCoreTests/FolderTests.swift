@@ -209,5 +209,23 @@ final class PanelPageKeysTests: XCTestCase {
         s.page = 1
         XCTAssertEqual(s.handle(.digit(2)), .insert(s.rows[10]))
         XCTAssertEqual(s.handle(.digit(5)), PanelAction.none)   // page 2 only has 3 entries
+        s.page = 0; s.pageSize = 4                                   // 2 × 2 pages
+        XCTAssertEqual(s.handle(.digit(5)), PanelAction.none)
+        s.page = 2
+        XCTAssertEqual(s.handle(.digit(1)), .insert(s.rows[8]))
+    }
+
+    func testGridSizeAndPlacementDecodeWithDefaultsAndClamp() throws {
+        var c = LauncherConfig.makeDefault()
+        XCTAssertEqual(c.panelGrid, PanelGridSize(columns: 3, rows: 3))
+        XCTAssertEqual(c.categoryPlacement, .top)
+        c.panelGrid.rows = 20
+        XCTAssertEqual(c.panelGrid.rows, 8)
+        c.panelGrid = PanelGridSize(columns: 1, rows: 6)
+        XCTAssertEqual(c.panelGrid.columns, 2)
+        c.categoryPlacement = .left
+        let back = try JSONDecoder().decode(LauncherConfig.self, from: JSONEncoder().encode(c))
+        XCTAssertEqual(back.panelGrid, PanelGridSize(columns: 2, rows: 6))
+        XCTAssertEqual(back.categoryPlacement, .left)
     }
 }

@@ -6,8 +6,12 @@ import HMLauncherCore
 final class PanelViewModel: ObservableObject {
     @Published var state: PanelState
     @Published var hovered: Int?
-    /// One 3×3 block: the panel shows a page of 9 at a time.
+    /// One block: the panel shows one page at a time.
     let columns = 1
+    /// Pads per page and where the categories sit (Settings → Behavior).
+    @Published var grid = PanelGridSize.default
+    @Published var placement = CategoryPlacement.top
+    var pageWidth: CGFloat { PanelView.pageWidth(grid, size) }
     /// The page of 9 on show, and which way the last turn went (for the slide).
     @Published var page = 0
     var forward = true
@@ -24,7 +28,7 @@ final class PanelViewModel: ObservableObject {
     init(state: PanelState) { self.state = state }
     func isFavorites(_ id: UUID) -> Bool { id == favoritesID }
 
-    var pageCount: Int { max(1, (state.rows.count + 8) / 9) }
+    var pageCount: Int { max(1, (state.rows.count + grid.pageSize - 1) / grid.pageSize) }
 
     /// Slides to `page` (in from the right when moving forward); no slide with Reduce Motion.
     func turn(to page: Int) {
@@ -150,6 +154,13 @@ final class PanelWindowController {
         viewModel.hovered = nil
         viewModel.drag = nil
         viewModel.page = 0
+        viewModel.grid = model.config.panelGrid
+        viewModel.placement = model.config.categoryPlacement
+        // Developer aids: HM_PANEL_GRID=4x2, HM_PANEL_PLACEMENT=left preview without changing the config.
+        if let g = Dev.env("HM_PANEL_GRID")?.split(separator: "x").compactMap({ Int($0) }), g.count == 2 {
+            viewModel.grid = PanelGridSize(columns: g[0], rows: g[1])
+        }
+        if let p = Dev.env("HM_PANEL_PLACEMENT").flatMap(CategoryPlacement.init(rawValue:)) { viewModel.placement = p }
         if !model.panelOpened { model.panelOpened = true }
         viewModel.size = model.config.panelSize
         if let dev = Dev.env("HM_PANEL_SIZE")?.split(separator: ",").compactMap({ Double($0) }), dev.count == 2 {
@@ -203,12 +214,13 @@ final class PanelWindowController {
         }
         let mouse = NSEvent.mouseLocation
         if resizeStart == nil {
-            resizeStart = (mouse, viewModel.size, 1, 3)
+            resizeStart = (mouse, viewModel.size, viewModel.grid.columns, viewModel.grid.rows)
         }
         guard let start = resizeStart else { return }
         let dx = mouse.x - start.mouse.x
         let dy = start.mouse.y - mouse.y   // dragging down makes entries taller
-        viewModel.size = PanelSize(columnWidth: start.size.columnWidth + Double(dx) / Double(start.columns),
+        // `columnWidth` is three pads wide: a pad grows by dx / columns.
+        viewModel.size = PanelSize(columnWidth: start.size.columnWidth + 3 * Double(dx) / Double(start.columns),
                                    itemHeight: start.size.itemHeight + Double(dy) / Double(start.rows))
         resetFloors()
         layout(animated: false)
@@ -244,6 +256,7 @@ final class PanelWindowController {
     func handle(_ key: PanelKey) -> Bool {
         var state = viewModel.state
         state.page = viewModel.page
+        state.pageSize = viewModel.grid.pageSize
         let action = state.handle(key)
         viewModel.state = state
         lastTab = state.selectedTab
@@ -290,11 +303,12 @@ final class PanelWindowController {
         let index = viewModel.state.rows.firstIndex { $0.folderID == folder } ?? 0
         // Right beside the folder pad, its first row level with the pad's top: the list covers the pads to the
         // folder's right, so no other folder sits between the pointer and the list.
-        let slot = index % 9
+        let grid = viewModel.grid
+        let slot = index % grid.pageSize
         let padWidth = PanelView.padWidth(columnWidth: viewModel.columnWidth)
-        let padX = panel.frame.minX + PanelView.gridMinX + CGFloat(slot % 3) * (padWidth + PanelView.padSpacing)
-        let padTop = panel.frame.maxY - PanelView.padding - PanelView.headerHeight
-            - CGFloat(slot / 3) * (viewModel.padHeight + PanelView.padSpacing)
+        let padX = panel.frame.minX + PanelView.gridMinX(viewModel.placement) + CGFloat(slot % grid.columns) * (padWidth + PanelView.padSpacing)
+        let padTop = panel.frame.maxY - PanelView.gridTopInset(viewModel.placement)
+            - CGFloat(slot / grid.columns) * (viewModel.padHeight + PanelView.padSpacing)
         let padFrame = NSRect(x: padX, y: padTop - viewModel.padHeight, width: padWidth, height: viewModel.padHeight)
         flyout.show(rows: viewModel.state.folderRows(folder),
                     besides: padFrame, top: padTop + PanelView.padding,
@@ -343,7 +357,7 @@ final class PanelWindowController {
 
     /// Always one page of 3×3 pads; the top-left corner stays at the click, clamped to the screen.
     private func layout(animated: Bool = true) {
-        let size = PanelView.size(viewModel.size)
+        let size = PanelView.size(viewModel.size, grid: viewModel.grid, placement: viewModel.placement)
         let height = size.height
         let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
         var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: size.width, height: height)

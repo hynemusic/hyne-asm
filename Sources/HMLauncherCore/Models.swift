@@ -155,6 +155,10 @@ public struct LauncherConfig: Codable, Sendable {
     private var storedPanelColumns = PanelGrid.columns
     /// Width of a panel column and height of an entry (resize grip in the panel).
     public var panelSize = PanelSize.default
+    /// Pads per page of the panel (columns × rows).
+    public var panelGrid = PanelGridSize.default
+    /// Categories as tabs on top of the panel or as a column on its left.
+    public var categoryPlacement: CategoryPlacement = .top
     /// The welcome window was finished or skipped.
     public var onboardingDone = false
     /// Secret part of every Stream Deck link, so a web page can't trigger commands on the local endpoint.
@@ -189,6 +193,8 @@ public struct LauncherConfig: Codable, Sendable {
         streamDeckEnabled = try c.decodeIfPresent(Bool.self, forKey: .streamDeckEnabled) ?? false
         panelColumns = try c.decodeIfPresent(Int.self, forKey: .storedPanelColumns) ?? PanelGrid.columns
         panelSize = (try? c.decodeIfPresent(PanelSize.self, forKey: .panelSize)) ?? .default
+        panelGrid = (try? c.decodeIfPresent(PanelGridSize.self, forKey: .panelGrid)) ?? .default
+        categoryPlacement = (try? c.decodeIfPresent(CategoryPlacement.self, forKey: .categoryPlacement)) ?? .top
         onboardingDone = try c.decodeIfPresent(Bool.self, forKey: .onboardingDone) ?? false
         streamDeckToken = try c.decodeIfPresent(String.self, forKey: .streamDeckToken) ?? LauncherConfig.newToken()
         profiles = try c.decodeIfPresent([Profile].self, forKey: .profiles) ?? []
