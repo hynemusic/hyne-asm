@@ -45,7 +45,7 @@ public extension LauncherConfig {
     /// returns how many were new.
     @discardableResult
     mutating func addStarterSet(from items: [PluginItem]) -> Int {
-        let effectsID = (categories.first { $0.name == "Effects" } ?? categories.last)?.id
+        let effectsID = (categories.first { $0.name == "Effects" } ?? categories.last { !$0.isFavorites })?.id
         let instrumentsID = (categories.first { $0.name == "Instruments" } ?? categories.first { !$0.isFavorites })?.id
         var added = 0
         func add(_ names: [String], source: ItemSource, to id: UUID?) {

@@ -179,6 +179,7 @@ final class PanelWindowController {
     private var flagsMonitors: [Any] = []
 
     func hide() {
+        TooltipWindow.shared.cancel()
         flagsMonitors.forEach(NSEvent.removeMonitor)
         flagsMonitors = []
         viewModel.pinned = false

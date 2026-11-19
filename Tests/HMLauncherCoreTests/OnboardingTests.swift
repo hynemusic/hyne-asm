@@ -43,4 +43,12 @@ final class OnboardingTests: XCTestCase {
         c.onboardingDone = true
         XCTAssertTrue(try JSONDecoder().decode(LauncherConfig.self, from: JSONEncoder().encode(c)).onboardingDone)
     }
+
+    func testStarterSetNeverFillsFavorites() {
+        var c = LauncherConfig.makeDefault()
+        c.categories = [c.categories[0]]   // only Favorites left
+        let items = [item("EQ Eight", uri: "eq", source: .audioEffects), item("Drift", uri: "dr", source: .instruments)]
+        XCTAssertEqual(c.addStarterSet(from: items), 0)
+        XCTAssertTrue(c.categories[0].entries.isEmpty)
+    }
 }

@@ -61,12 +61,13 @@ struct OnboardingView: View {
     @State private var menuNote: String?
     @State private var finished = false
     @State private var installError: String?
+    @State private var scriptInstalled = FileManager.default.fileExists(atPath: ScriptInstaller.targetURL.path)
     private let poll = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     private var status: OnboardingStatus {
         var s = OnboardingStatus()
         s.permission = permission
-        s.scriptInstalled = FileManager.default.fileExists(atPath: ScriptInstaller.targetURL.path)
+        s.scriptInstalled = scriptInstalled
         s.connected = model.isConnected
         s.panelOpened = model.panelOpened
         s.menuChosen = menuChosen || model.config.categories.contains { !$0.entries.isEmpty }
@@ -95,7 +96,10 @@ struct OnboardingView: View {
         .background(DS.canvas)
         .themedColorScheme()
         .foregroundColor(DS.textPrimary)
-        .onReceive(poll) { _ in if step == .permission { permission = Permissions.isTrusted } }
+        .onReceive(poll) { _ in
+            if step == .permission { permission = Permissions.isTrusted }
+            if step == .connect { scriptInstalled = FileManager.default.fileExists(atPath: ScriptInstaller.targetURL.path) }
+        }
     }
 
     // MARK: Frame
@@ -252,6 +256,7 @@ struct OnboardingView: View {
         do {
             try ScriptInstaller.install()
             installError = nil
+            scriptInstalled = true
         } catch {
             installError = Loc.t("Installation fehlgeschlagen: \(error.localizedDescription)", "Installation failed: \(error.localizedDescription)")
         }
@@ -372,16 +377,31 @@ struct ConnectionLine: View {
         }
         .onAppear {
             if connected { fill = 1 }
-            guard !reduceMotion else { return }
-            withAnimation(.linear(duration: 1.6).repeatForever(autoreverses: false)) { shimmer = 1 }
+            startShimmer()
         }
         .onChange(of: connected) { now in
-            guard now else { fill = 0; return }
+            guard now else {
+                // Live dropped (e.g. restarted): back to waiting, ready to pulse again.
+                fill = 0
+                pulse = false
+                startShimmer()
+                return
+            }
             if reduceMotion { fill = 1; return }
             withAnimation(.easeOut(duration: 0.6)) { fill = 1 }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                 withAnimation(.easeOut(duration: 0.7)) { pulse = true }
             }
+        }
+    }
+
+    private func startShimmer() {
+        guard !reduceMotion else { return }
+        var reset = Transaction()
+        reset.disablesAnimations = true
+        withTransaction(reset) { shimmer = 0 }
+        DispatchQueue.main.async {
+            withAnimation(.linear(duration: 1.6).repeatForever(autoreverses: false)) { shimmer = 1 }
         }
     }
 

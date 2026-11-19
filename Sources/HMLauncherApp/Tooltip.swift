@@ -11,6 +11,14 @@ final class TooltipWindow {
 
     private var panel: NSPanel?
     private var pending: Task<Void, Never>?
+    private var menuObserver: NSObjectProtocol?
+
+    /// A menu opening (e.g. the panel's "⋯") hides any tooltip, so it never covers the menu.
+    private init() {
+        menuObserver = NotificationCenter.default.addObserver(forName: NSMenu.didBeginTrackingNotification, object: nil, queue: .main) { _ in
+            MainActor.assumeIsolated { TooltipWindow.shared.cancel() }
+        }
+    }
 
     /// Shows `text` below `rect` (screen coordinates) after the delay, unless cancelled first.
     func schedule(_ text: String, below rect: NSRect) {
