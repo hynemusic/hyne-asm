@@ -159,7 +159,7 @@ struct LauncherPad<Badges: View>: View {
             }
         }
         .overlay(alignment: .topTrailing) { HStack(spacing: 3) { badges() }.padding(5) }
-        .overlay(alignment: .bottom) { PadStripe(active: active, color: color).padding(.horizontal, 10).padding(.bottom, 5) }
+        .overlay(alignment: .bottom) { PadStripe(active: active, color: color).padding(.bottom, 6) }
         .modifier(PadSurface(active: active, lit: lit, shape: shape))
     }
 }
@@ -188,18 +188,20 @@ struct PadSurface<S: InsettableShape>: ViewModifier {
     }
 }
 
-/// The color label as a stripe along the bottom: glowing in the label's color, dim when there is none.
+/// The color label as a short stripe centred at the bottom: a soft glow in the label's color, dim when
+/// there is none.
 struct PadStripe: View {
     let active: Bool
     let color: Color?
-    var height: CGFloat = 3
+    var width: CGFloat = 28
+    var height: CGFloat = 2
 
     var body: some View {
         let fill: Color = active ? Palette.current.onLitPad.opacity(0.3) : (color ?? Palette.current.padStripe)
         Capsule()
             .fill(fill)
-            .frame(height: height)
-            .shadow(color: active || color == nil ? .clear : (color ?? .clear).opacity(0.6), radius: 4)
+            .frame(width: width, height: height)
+            .shadow(color: active || color == nil ? .clear : (color ?? .clear).opacity(0.45), radius: 3)
     }
 }
 
@@ -213,6 +215,10 @@ struct LauncherListRow<Badges: View>: View {
     var active = false
     var available = true
     var color: Color? = nil
+    /// Second line under the name (quick search: where the result comes from).
+    var subtitle: String? = nil
+    /// The list has a key column (panel); without one (quick search) the icon starts the row.
+    var showsNumber = true
     @ViewBuilder var badges: () -> Badges
 
     private static var onLit: Color { Palette.current.onLitPad }
@@ -220,27 +226,35 @@ struct LauncherListRow<Badges: View>: View {
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: CGFloat(8).themedRadius)
         HStack(spacing: 9) {
-            Text(number.map { $0 < 9 ? "\($0 + 1)" : "" } ?? "")
-                .font(DS.Font.numeric)
-                .foregroundColor(active ? Self.onLit.opacity(0.65) : DS.textTertiary)
-                .frame(width: 12, alignment: .leading)
+            if showsNumber {
+                Text(number.map { $0 < 9 ? "\($0 + 1)" : "" } ?? "")
+                    .font(DS.Font.numeric)
+                    .foregroundColor(active ? Self.onLit.opacity(0.65) : DS.textTertiary)
+                    .frame(width: 12, alignment: .leading)
+            }
             Image(systemName: symbol)
                 .font(.themed(15, .medium))
                 .foregroundColor(active ? Self.onLit.opacity(0.75) : (color ?? DS.textTertiary))
                 .frame(width: 20)
-            Text(title)
-                .font(DS.Font.padTitle)
-                .foregroundColor(active ? Self.onLit : (available ? DS.textPrimary : DS.textTertiary))
-                .lineLimit(1)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(DS.Font.padTitle)
+                    .foregroundColor(active ? Self.onLit : (available ? DS.textPrimary : DS.textTertiary))
+                    .lineLimit(1)
+                if let subtitle {
+                    Text(subtitle)
+                        .font(DS.Font.caption)
+                        .foregroundColor(active ? Self.onLit.opacity(0.7) : (available ? DS.textTertiary : DS.warning))
+                        .lineLimit(1)
+                }
+            }
             Spacer(minLength: 4)
             HStack(spacing: 4) { badges() }
         }
         .padding(.horizontal, 10)
         .padding(.bottom, 2)
         .frame(maxWidth: .infinity, minHeight: height, maxHeight: height)
-        .overlay(alignment: .bottom) {
-            PadStripe(active: active, color: color, height: 2).padding(.leading, 41).padding(.trailing, 10).padding(.bottom, 4)
-        }
+        .overlay(alignment: .bottom) { PadStripe(active: active, color: color, width: 24).padding(.bottom, 4) }
         .modifier(PadSurface(active: active, lit: color ?? Color.accent, shape: shape))
     }
 }
