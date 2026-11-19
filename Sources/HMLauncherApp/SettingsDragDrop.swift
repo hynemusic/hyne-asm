@@ -22,8 +22,15 @@ struct RowDropDelegate: DropDelegate {
     let row: SettingsViewRow
     let drop: DropState
     let perform: (DropSpot, [NSItemProvider]) -> Bool
+    /// Set for pads: before / after by the horizontal half, a folder's left edge is "before".
+    var padWidth: CGFloat? = nil
 
     private func spot(_ info: DropInfo) -> DropSpot {
+        if let padWidth {
+            let x = info.location.x
+            if row.isFolder { return x < 12 ? .before : .into }
+            return x < padWidth / 2 ? .before : .after
+        }
         let y = info.location.y
         if row.isFolder { return y < 10 ? .before : .into }
         return y < 21 ? .before : .after

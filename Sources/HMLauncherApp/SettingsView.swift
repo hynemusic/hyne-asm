@@ -547,36 +547,7 @@ struct SettingsView: View {
                 // Always occupies its slot: a bar that appears on the first click would shift the list under
                 // the mouse and cancel the drag that click starts.
                 selectionBar(category)
-                List(selection: $selection) {
-                    let rows = flatRows(category)
-                    ForEach(rows) { row in
-                        entryRow(row, in: category)
-                            .tag(row.id)
-                            // Own drag & drop instead of List.onMove: onMove keeps its drag data private, so entries
-                            // could never be dropped onto a category. This payload works for rows and categories alike.
-                            .onDrag { dragPayload(for: row.id) } preview: {
-                                // Just a count next to the cursor instead of a shrunken copy of the row.
-                                DragCountBadge(count: selection.contains(row.id) ? selection.count : 1)
-                            }
-                            .onDrop(of: [browserDragType, entriesDragType, .fileURL, .text], delegate: RowDropDelegate(
-                                row: SettingsViewRow(id: row.id, isFolder: row.entry.isFolder), drop: dropState,
-                                perform: { spot, providers in dropOnRow(row, spot, providers, in: category) }))
-                            .listRowBackground(Color.clear)
-                            .listRowInsets(EdgeInsets(top: 2, leading: row.folderID == nil ? 0 : 28, bottom: 2, trailing: 0))
-                            .listRowSeparator(.hidden)
-                    }
-                }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
-                .onDrop(of: [browserDragType, entriesDragType, .fileURL, .text], isTargeted: nil) { providers in
-                    // Empty area below the rows: entries move to the end, browser plugins are added.
-                    if let p = providers.first(where: { $0.hasItemConformingToTypeIdentifier(entriesDragType.identifier) }) {
-                        loadEntryIDs(p) { model.config.moveEntries($0, toFolder: nil, before: nil, in: category.id) }
-                        return true
-                    }
-                    return drop(providers, into: category.id)
-                }
-                .onDeleteCommand { removeSelection() }
+                entryGrid(category)
                 .onChange(of: categoryID) { _ in selection = []; selectionAnchor = nil }
                 HintText(text: Loc.t("Ziehen sortiert · Rechtsklick für Icon, Name, Farbe", "Drag to reorder · right-click for icon, name, color"))
             }
@@ -584,6 +555,137 @@ struct SettingsView: View {
         .padding(.horizontal, DS.Space.l)
         .padding(.top, DS.Space.l)
         .padding(.bottom, DS.Space.l)
+    }
+
+    // MARK: Pads (like the panel)
+
+    @FocusState private var entriesFocused: Bool
+
+    /// The category as the panel shows it: blocks of 3×3 pads at the panel's size and block count (as many as fit
+    /// this column), then the contents of every open folder as its own pads below.
+    private func entryGrid(_ category: HMLauncherCore.Category) -> some View {
+        GeometryReader { geo in
+            let size = model.config.panelSize
+            let blockWidth = min(CGFloat(size.columnWidth), geo.size.width)
+            let fitting = Int((geo.size.width + PanelView.blockSpacing) / (blockWidth + PanelView.blockSpacing))
+            let layout = PadLayout(columns: max(1, min(model.config.panelColumns, fitting)),
+                                   padWidth: PanelView.padWidth(columnWidth: blockWidth),
+                                   padHeight: PanelView.padHeight(size))
+            let rows = flatRows(category)
+            ScrollView(.vertical) {
+                VStack(alignment: .leading, spacing: DS.Space.l) {
+                    padBlocks(rows.filter { $0.folderID == nil }, layout, in: category)
+                    ForEach(category.entries.filter { $0.isFolder && !collapsed.contains($0.id) }) { folder in
+                        openFolder(folder, rows: rows.filter { $0.folderID == folder.id }, layout, in: category)
+                    }
+                }
+                .padding(.vertical, 4)
+                .frame(maxWidth: .infinity, minHeight: geo.size.height, alignment: .topLeading)
+                .contentShape(Rectangle())
+            }
+            .onDrop(of: [browserDragType, entriesDragType, .fileURL, .text], isTargeted: nil) { providers in
+                // Empty area around the pads: entries move to the end, browser plugins are added.
+                if let p = providers.first(where: { $0.hasItemConformingToTypeIdentifier(entriesDragType.identifier) }) {
+                    loadEntryIDs(p) { model.config.moveEntries($0, toFolder: nil, before: nil, in: category.id) }
+                    return true
+                }
+                return drop(providers, into: category.id)
+            }
+        }
+        .focusable()
+        .focused($entriesFocused)
+        .modifier(NoFocusRing())
+        .onDeleteCommand { removeSelection() }
+        .onMoveCommand { direction in moveSelectionCursor(direction, rows: flatRows(category), columns: PanelGrid.padsPerRow) }
+    }
+
+    private struct PadLayout {
+        let columns: Int
+        let padWidth: CGFloat
+        let padHeight: CGFloat
+    }
+
+    /// Blocks of 9 side by side (up to `columns`), 3 pads per row inside a block — the panel's order.
+    private func padBlocks(_ rows: [FlatRow], _ layout: PadLayout, in category: HMLauncherCore.Category) -> some View {
+        VStack(alignment: .leading, spacing: PanelView.blockSpacing) {
+            ForEach(Array(PanelGrid.blocks(0..<rows.count, columns: layout.columns).enumerated()), id: \.offset) { _, blockRow in
+                HStack(alignment: .top, spacing: PanelView.blockSpacing) {
+                    ForEach(Array(blockRow.filter { !$0.isEmpty }.enumerated()), id: \.offset) { _, block in
+                        VStack(alignment: .leading, spacing: PanelView.padSpacing) {
+                            ForEach(Array(stride(from: 0, to: block.count, by: PanelGrid.padsPerRow)), id: \.self) { start in
+                                HStack(spacing: PanelView.padSpacing) {
+                                    ForEach(block[start..<min(start + PanelGrid.padsPerRow, block.count)], id: \.self) { i in
+                                        padCell(rows[i], layout, in: category)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func padCell(_ row: FlatRow, _ layout: PadLayout, in category: HMLauncherCore.Category) -> some View {
+        entryRow(row, in: category, padWidth: layout.padWidth, padHeight: layout.padHeight)
+            // Own drag & drop: the payload works for pads and for categories alike.
+            .onDrag { dragPayload(for: row.id) } preview: {
+                // Just a count next to the cursor instead of a shrunken copy of the pad.
+                DragCountBadge(count: selection.contains(row.id) ? selection.count : 1)
+            }
+            .onDrop(of: [browserDragType, entriesDragType, .fileURL, .text], delegate: RowDropDelegate(
+                row: SettingsViewRow(id: row.id, isFolder: row.entry.isFolder), drop: dropState,
+                perform: { spot, providers in dropOnRow(row, spot, providers, in: category) },
+                padWidth: layout.padWidth))
+    }
+
+    /// An open folder below the category's pads: its name, then its contents as pads (keys 1–9 as in the panel).
+    private func openFolder(_ folder: Entry, rows: [FlatRow], _ layout: PadLayout, in category: HMLauncherCore.Category) -> some View {
+        VStack(alignment: .leading, spacing: DS.Space.s) {
+            HStack(spacing: 6) {
+                Image(systemName: "folder.fill").foregroundColor(.accent)
+                Text(folder.title).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                Text("\(rows.count)").font(DS.Font.caption.monospacedDigit()).foregroundColor(DS.textTertiary)
+                Rectangle().fill(DS.hairline).frame(height: 1)
+                Button { collapsed.insert(folder.id) } label: {
+                    Image(systemName: "chevron.up").font(.system(size: 11, weight: .semibold))
+                }
+                .buttonStyle(.borderless).foregroundColor(.dimText)
+                .help(Loc.t("Inhalt ausblenden", "Hide contents"))
+            }
+            if rows.isEmpty {
+                Text(Loc.t("Leer – Einträge hierher ziehen", "Empty – drag entries here"))
+                    .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+                    .frame(maxWidth: .infinity, minHeight: 40)
+                    .background(RoundedRectangle(cornerRadius: DS.Radius.m).strokeBorder(DS.hairline, style: StrokeStyle(lineWidth: 1, dash: [4])))
+                    .onDrop(of: [browserDragType, entriesDragType, .fileURL, .text], isTargeted: nil) { providers in
+                        dropIntoFolder(folder, providers, in: category)
+                    }
+            } else {
+                padBlocks(rows, layout, in: category)
+            }
+        }
+    }
+
+    private func dropIntoFolder(_ folder: Entry, _ providers: [NSItemProvider], in category: HMLauncherCore.Category) -> Bool {
+        dropOnRow(FlatRow(entry: folder, index: 0, folderID: nil), .into, providers, in: category)
+    }
+
+    /// Arrow keys move the selection: ← → by one pad, ↑ ↓ by a pad row.
+    private func moveSelectionCursor(_ direction: MoveCommandDirection, rows: [FlatRow], columns: Int) {
+        guard !rows.isEmpty else { return }
+        let current = selectionAnchor.flatMap { id in rows.firstIndex { $0.id == id } }
+        let step: Int
+        switch direction {
+        case .left: step = -1
+        case .right: step = 1
+        case .up: step = -columns
+        case .down: step = columns
+        @unknown default: step = 0
+        }
+        let next = current.map { min(max($0 + step, 0), rows.count - 1) } ?? 0
+        selection = [rows[next].id]
+        selectionAnchor = rows[next].id
     }
 
     // MARK: Folders
@@ -595,12 +697,13 @@ struct SettingsView: View {
         var id: UUID { entry.id }
     }
 
+    /// Top-level entries first, then the contents of each open folder — the order the pads are drawn in.
     private func flatRows(_ category: HMLauncherCore.Category) -> [FlatRow] {
-        category.entries.enumerated().flatMap { i, e -> [FlatRow] in
-            let top = FlatRow(entry: e, index: i, folderID: nil)
-            guard e.isFolder, !collapsed.contains(e.id) else { return [top] }
-            return [top] + (e.children ?? []).enumerated().map { FlatRow(entry: $1, index: $0, folderID: e.id) }
+        let top = category.entries.enumerated().map { FlatRow(entry: $1, index: $0, folderID: nil) }
+        let inside = category.entries.filter { $0.isFolder && !collapsed.contains($0.id) }.flatMap { folder in
+            (folder.children ?? []).enumerated().map { FlatRow(entry: $1, index: $0, folderID: folder.id) }
         }
+        return top + inside
     }
 
     // MARK: Selection (⇧ range, ⌘ toggle)
@@ -804,7 +907,7 @@ struct SettingsView: View {
 
     @State private var renamingEntry: UUID?
 
-    private func entryRow(_ row: FlatRow, in category: HMLauncherCore.Category) -> some View {
+    private func entryRow(_ row: FlatRow, in category: HMLauncherCore.Category, padWidth: CGFloat? = nil, padHeight: CGFloat = 66) -> some View {
         let entry = row.entry
         let folders = category.entries.filter(\.isFolder)
         let multi = selection.contains(entry.id) && selection.count > 1
@@ -812,7 +915,7 @@ struct SettingsView: View {
             index: row.index, entry: entry,
             isSelected: selection.contains(entry.id),
             selectionCount: multi ? selection.count : 1,
-            onSelect: { select(entry.id, rows: flatRows(category)) },
+            onSelect: { select(entry.id, rows: flatRows(category)); entriesFocused = true },
             onGroup: groupSelection,
             available: entry.isFolder || entry.action != nil || catalog.items.isEmpty
                 || (entry.chain.map { $0.allSatisfy { catalog.index.resolve(Entry(item: $0)) != nil } } ?? (catalog.index.resolve(entry) != nil)),
@@ -846,7 +949,8 @@ struct SettingsView: View {
             streamDeckToken: model.config.streamDeckToken,
             onShortcut: entry.isFolder || entry.chain != nil || entry.action != nil ? nil : { requestShortcut(catalog.index.resolve(entry) ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)) },
             shortcutLabel: entry.isFolder ? nil : model.config.itemShortcut(for: catalog.index.resolve(entry)
-                ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)).map { KeyNames.describe($0.combo) })
+                ?? PluginItem(uri: entry.uri, name: entry.name, source: entry.source, path: entry.path)).map { KeyNames.describe($0.combo) },
+            padWidth: padWidth, padHeight: padHeight)
     }
 
     // MARK: Presets from Finder
@@ -1008,4 +1112,11 @@ private enum BrowserSection: Equatable {
 struct ChainEditTarget: Identifiable {
     let id = UUID()
     let entryID: UUID?
+}
+
+/// Keyboard focus on the pad area (for ⌫ and the arrow keys) without the blue ring around the whole column.
+private struct NoFocusRing: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 14.0, *) { content.focusEffectDisabled() } else { content }
+    }
 }
