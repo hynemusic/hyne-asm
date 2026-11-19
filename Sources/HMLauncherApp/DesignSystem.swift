@@ -73,7 +73,10 @@ enum DS {
 extension View {
     /// Light or dark controls (text fields, pickers, menus) to match the theme.
     func themedColorScheme() -> some View {
+        // Switches, checkboxes and prominent buttons take the theme's accent (orange in Pads), not system blue.
         preferredColorScheme(Palette.current.isDark ? .dark : .light)
+            .tint(Color.brandBlue)
+            .accentColor(Color.brandBlue)
     }
 }
 
@@ -81,10 +84,48 @@ extension View {
 struct SectionLabel: View {
     let text: String
     var body: some View {
+        // Small print of a hardware panel, like the panel's footer: monospaced capitals.
         Text(text.uppercased())
-            .font(DS.Font.sectionLabel)
-            .tracking(0.7)
+            .font(.system(size: 11, weight: .medium, design: .monospaced))
+            .tracking(0.6)
             .foregroundColor(DS.textTertiary)
+    }
+}
+
+/// The pads' surface for settings: a dark plate lit from the top edge. `lit` (a selected row, the chosen
+/// category) adds the accent edge and a soft accent glow, like a lit pad; unlit and `filled: false` draws nothing.
+struct Plate: ViewModifier {
+    var lit: Bool
+    var radius: CGFloat = DS.Radius.m
+    var filled = false
+
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: radius)
+        let show = lit || filled
+        return content
+            .background {
+                if show {
+                    shape.fill(LinearGradient(colors: [Palette.current.padTop ?? Color.panelRow.mix(.white, 0.045), Color.panelRow],
+                                              startPoint: .top, endPoint: .bottom))
+                        .shadow(color: lit ? Color.accent.opacity(0.28) : .clear, radius: 8)
+                }
+            }
+            .overlay {
+                if show {
+                    shape.strokeBorder(lit ? AnyShapeStyle(Color.accent.opacity(0.55))
+                                           : AnyShapeStyle(LinearGradient(colors: [.white.opacity(0.07), .clear, .black.opacity(0.3)],
+                                                                          startPoint: .top, endPoint: .bottom)),
+                                       lineWidth: 1)
+                        .allowsHitTesting(false)
+                }
+            }
+    }
+}
+
+extension View {
+    /// Selected rows and plates across the settings: see `Plate`.
+    func plate(lit: Bool, radius: CGFloat = DS.Radius.m, filled: Bool = false) -> some View {
+        modifier(Plate(lit: lit, radius: radius, filled: filled))
     }
 }
 
@@ -136,10 +177,9 @@ struct CountChip: View {
     let count: Int
     var body: some View {
         Text("\(count)")
-            .font(DS.Font.badge.monospacedDigit())
-            .foregroundColor(DS.textSecondary)
-            .padding(.horizontal, 6).padding(.vertical, 2)
-            .background(Capsule().fill(DS.raised))
+            .font(.system(size: 11, weight: .medium, design: .monospaced))
+            .foregroundColor(DS.textTertiary)
+            .padding(.horizontal, 2)
     }
 }
 
@@ -209,9 +249,7 @@ struct SearchField: View {
 extension View {
     /// A card: surface colour, rounded corners, hairline border.
     func dsCard(padding: CGFloat = DS.Space.l) -> some View {
-        self.padding(padding)
-            .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-            .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+        self.padding(padding).plate(lit: false, radius: DS.Radius.l, filled: true)
     }
 
     /// Hairline on one edge (column separators, header underlines).

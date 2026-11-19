@@ -106,7 +106,7 @@ struct EntryRow: View {
     @ViewBuilder private var base: some View {
         let active = isSelected || hovered || dropSpot == .into
         if let padWidth {
-            LauncherPad(number: index, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,
+            LauncherPad(number: index % 9, symbol: IconCatalog.symbolName(for: entry.iconID), title: entry.title,   // keys 1–9 per page
                         height: padHeight, active: active, available: available, color: color) { badges }
                 .frame(width: padWidth)
                 .help(subtitle ?? "")

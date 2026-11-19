@@ -17,7 +17,7 @@ struct PanelView: View {
     /// Category name and page dots above the pads.
     static let headerHeight: CGFloat = 30
     /// Strip right of the pads: resting the mouse there turns to the next page.
-    static let edgeWidth: CGFloat = 16
+    static let edgeWidth: CGFloat = 30
     /// Categories down the left side.
     static let categoryWidth: CGFloat = 132
     static let categoryRowHeight: CGFloat = 28
@@ -25,8 +25,8 @@ struct PanelView: View {
     /// Category column + the hairline and gap before the pads (also the "previous page" strip).
     static let sidebarGap: CGFloat = 12
     /// How long the mouse rests on a page edge before the page turns, and again for each further page.
-    static let edgeDelay: UInt64 = 380_000_000
-    static let edgeRepeat: UInt64 = 650_000_000
+    static let edgeDelay: UInt64 = 150_000_000
+    static let edgeRepeat: UInt64 = 380_000_000
 
     /// Pad height for the entry height of the resize grip (34–64 → 72–102).
     static func padHeight(_ size: PanelSize) -> CGFloat { CGFloat(size.itemHeight) + 38 }
@@ -104,7 +104,7 @@ struct PanelView: View {
         guard target != viewModel.page else { return }
         viewModel.forward = target > viewModel.page
         viewModel.hovered = nil
-        withAnimation(NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? nil : .easeOut(duration: 0.22)) {
+        withAnimation(NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? nil : .easeOut(duration: 0.14)) {
             viewModel.page = target
         }
     }
@@ -419,7 +419,7 @@ struct PanelView: View {
         let dragged = reorderable && viewModel.drag?.from == source
         let active = dragged || (viewModel.drag == nil && (viewModel.state.highlighted == index || viewModel.hovered == index))
         return Button { onInsert(row) } label: {
-            LauncherPad(number: index, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,
+            LauncherPad(number: index % 9, symbol: IconCatalog.symbolName(for: row.iconID), title: row.title,   // keys 1–9 on every page
                         height: viewModel.padHeight,
                         active: active, available: row.isAvailable, color: Color(label: row.colorID)) {
                 if row.isNew { NewBadge() }

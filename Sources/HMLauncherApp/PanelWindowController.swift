@@ -179,6 +179,7 @@ final class PanelWindowController {
     /// Returns true: while the panel is open every key belongs to it.
     func handle(_ key: PanelKey) -> Bool {
         var state = viewModel.state
+        state.page = viewModel.page
         let action = state.handle(key)
         viewModel.state = state
         lastTab = state.selectedTab

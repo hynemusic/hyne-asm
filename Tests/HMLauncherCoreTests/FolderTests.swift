@@ -198,3 +198,16 @@ final class FolderFlyoutTests: XCTestCase {
         XCTAssertTrue(s.folderRows(UUID()).isEmpty)
     }
 }
+
+final class PanelPageKeysTests: XCTestCase {
+    func testDigitsPickFromTheCurrentPage() {
+        var c = LauncherConfig.makeDefault()
+        let items = (1...12).map { item("Plugin \($0)", uri: "p\($0)", path: ["VST3", "X"]) }
+        for i in items { c.addEntry(i, to: c.favoritesID) }
+        var s = PanelState(config: c, items: items)
+        XCTAssertEqual(s.handle(.digit(2)), .insert(s.rows[1]))
+        s.page = 1
+        XCTAssertEqual(s.handle(.digit(2)), .insert(s.rows[10]))
+        XCTAssertEqual(s.handle(.digit(5)), PanelAction.none)   // page 2 only has 3 entries
+    }
+}

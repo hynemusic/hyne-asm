@@ -226,7 +226,7 @@ struct LiveActionsGroup: View {
         }
         .padding(.leading, 26).padding(.trailing, DS.Space.s)
         .frame(height: 26)
-        .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(isSelected ? DS.selection : .clear))
+        .plate(lit: isSelected, radius: DS.Radius.s)
         .contentShape(Rectangle())
         .modifier(HoverHighlight())
         .onTapGesture(count: 2) { add(kind) }

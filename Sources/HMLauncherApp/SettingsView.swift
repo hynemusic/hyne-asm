@@ -222,7 +222,7 @@ struct SettingsView: View {
             }
             .padding(.horizontal, DS.Space.s)
             .frame(height: 28)
-            .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(selected ? DS.selection : .clear))
+            .plate(lit: selected, radius: DS.Radius.s)
             .contentShape(Rectangle())
             .modifier(HoverHighlight())
         }
@@ -275,7 +275,7 @@ struct SettingsView: View {
         }
         .padding(.leading, 26).padding(.trailing, DS.Space.s)
         .frame(height: 26)
-        .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(selected ? DS.selection : .clear))
+        .plate(lit: selected, radius: DS.Radius.s)
         .contentShape(Rectangle())
         .modifier(HoverHighlight())
         .onTapGesture(count: 2) { add(item, to: categoryID) }
@@ -420,7 +420,7 @@ struct SettingsView: View {
         }
         .padding(.horizontal, DS.Space.m)
         .frame(height: 46)
-        .background(RoundedRectangle(cornerRadius: DS.Radius.m).fill(DS.selection))
+        .plate(lit: true, radius: DS.Radius.m)
         .overlay(RoundedRectangle(cornerRadius: DS.Radius.m).stroke(Color.brandBlue.opacity(0.5)))
     }
 
@@ -472,7 +472,7 @@ struct SettingsView: View {
         }
         .padding(.horizontal, DS.Space.s)
         .frame(height: 30)
-        .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(selected ? DS.selection : .clear))
+        .plate(lit: selected, radius: DS.Radius.s)
         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.s))
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { if !c.isFavorites { startRenaming(c.id) } }
@@ -612,6 +612,8 @@ struct SettingsView: View {
                 HStack(alignment: .top, spacing: PanelView.blockSpacing) {
                     ForEach(Array(blockRow.filter { !$0.isEmpty }.enumerated()), id: \.offset) { _, block in
                         VStack(alignment: .leading, spacing: PanelView.padSpacing) {
+                            // Each block is one page of the panel; the bracket marks where it starts and ends.
+                            if rows.count > 9 { PageBracket(page: (block.first ?? 0) / 9 + 1).padding(.bottom, 2) }
                             ForEach(Array(stride(from: 0, to: block.count, by: PanelGrid.padsPerRow)), id: \.self) { start in
                                 HStack(spacing: PanelView.padSpacing) {
                                     ForEach(block[start..<min(start + PanelGrid.padsPerRow, block.count)], id: \.self) { i in
@@ -894,7 +896,7 @@ struct SettingsView: View {
         .foregroundColor(DS.textPrimary)
         .padding(.horizontal, DS.Space.m)
         .frame(height: 34)
-        .background(RoundedRectangle(cornerRadius: DS.Radius.m).fill(DS.selection))
+        .plate(lit: true, radius: DS.Radius.m)
         .overlay(RoundedRectangle(cornerRadius: DS.Radius.m).stroke(Color.brandBlue.opacity(0.5)))
     }
 

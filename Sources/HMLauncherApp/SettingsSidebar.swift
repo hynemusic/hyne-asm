@@ -101,9 +101,11 @@ struct SettingsSidebar: View {
             HStack(spacing: 10) {
                 Image(systemName: item.symbol)
                     .font(.themed(13, .medium))
-                    .foregroundColor(selected ? .onBrandBlue : DS.textSecondary)
+                    // Lit like a pad's icon: accent with a glow on the open page.
+                    .foregroundColor(selected ? .accent : DS.textSecondary)
+                    .shadow(color: selected ? Color.accent.opacity(0.7) : .clear, radius: 4)
                     .frame(width: 26, height: 26)
-                    .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(selected ? Color.brandBlue : DS.raised))
+                    .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(DS.raised))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(item.title).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
                     Text(item.subtitle).font(DS.Font.caption).foregroundColor(DS.textTertiary).lineLimit(1)
@@ -112,7 +114,7 @@ struct SettingsSidebar: View {
             }
             .padding(.horizontal, DS.Space.s)
             .padding(.vertical, 6)
-            .background(RoundedRectangle(cornerRadius: DS.Radius.m).fill(selected ? DS.selection : .clear))
+            .plate(lit: selected, radius: DS.Radius.m)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -196,7 +198,7 @@ struct ThemeButton: View {
             if chosen { Image(systemName: "checkmark.circle.fill").foregroundColor(.brandBlue) }
         }
         .padding(DS.Space.s)
-        .background(RoundedRectangle(cornerRadius: DS.Radius.m).fill(chosen ? DS.selection : DS.raised.opacity(0.5)))
+        .plate(lit: chosen, radius: DS.Radius.m, filled: true)
         .overlay(RoundedRectangle(cornerRadius: DS.Radius.m).stroke(chosen ? Color.brandBlue.opacity(0.6) : DS.hairline))
         .contentShape(Rectangle())
     }
