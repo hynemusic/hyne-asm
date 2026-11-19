@@ -19,6 +19,10 @@ Insert plugins, presets and Live commands in seconds: a double right-click in Ab
 
 <img width="2000" height="400" alt="Untitled-6" src="https://github.com/user-attachments/assets/cc9a51f0-1898-481a-88d7-b1cc7ff7cd3c" />
 
+## Feedback
+Please leave feedback as a reddit comment here. I wanna shape the App further and implement new features / fix bugs <3
+https://www.reddit.com/r/ableton/comments/1y0o0ar/i_built_an_opensource_ableton_shortcut_manager/
+
 
 
 **[⬇ Download (neueste Version / latest release)](https://github.com/hynemusic/hyne-asm/releases/latest)**
