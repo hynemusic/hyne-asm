@@ -1,18 +1,23 @@
 # HYNE Ableton Shortcuts Manager (HYNE ASM)
 
-Plugins, Presets und Live-Befehle in Sekunden einfügen: ein doppelter Rechtsklick in Ableton Live öffnet dein eigenes
-Menü, ⌃Leertaste öffnet die Schnellsuche. Kostenlos und Open Source.
+Insert plugins, presets and Live commands in seconds: a double right-click in Ableton Live opens your own menu,
+⌃Space opens the quick search. Free and open source.
+
+## Right Click Panel
 
 <img width="2000" height="400" alt="Untitled-3" src="https://github.com/user-attachments/assets/be17d8a1-90be-4a65-bc95-2fe0d95668f9" />
 
+## CTRL + SPACE panel
+
 <img width="2000" height="400" alt="Untitled-4" src="https://github.com/user-attachments/assets/6a139f21-c309-42a2-b1af-ecd53e8674f6" />
 
+## Settings
+
+<img width="2000" height="500" alt="Untitled-5" src="https://github.com/user-attachments/assets/e9fa819a-34e4-44cc-87e1-5de22c9f9f05" />
 
 
 
 
-Insert plugins, presets and Live commands in seconds: a double right-click in Ableton Live opens your own menu,
-⌃Space opens the quick search. Free and open source.
 
 **[⬇ Download (neueste Version / latest release)](https://github.com/hynemusic/hyne-asm/releases/latest)**
 
