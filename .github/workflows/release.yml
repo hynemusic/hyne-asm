@@ -1,0 +1,85 @@
+# Builds, signs and publishes a release from the tagged commit, on GitHub's own machine.
+# Push a tag like v1.2.3 (or run it by hand from the Actions tab with a tag that already exists).
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to build, e.g. v1.0.0'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Use the newest Xcode
+        run: |
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)"
+          swift --version
+
+      - name: Test
+        run: |
+          swift test
+          python3 -m unittest discover -s bridge/tests
+
+      - name: Import the HYNE ASM signing certificate
+        env:
+          P12_BASE64: ${{ secrets.SIGNING_P12_BASE64 }}
+          P12_PASSWORD: ${{ secrets.SIGNING_P12_PASSWORD }}
+        run: |
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(openssl rand -hex 16)"
+          echo "$P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" -P "$P12_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" >/dev/null
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          rm "$RUNNER_TEMP/cert.p12"
+
+      - name: Build and sign
+        run: |
+          VERSION="${TAG#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          HM_SIGN_IDENTITY="HYNE ASM" HM_VERSION="$VERSION" scripts/build-app.sh
+          APP="build/HYNE Ableton Shortcuts Manager.app"
+          codesign -dvvv "$APP" 2>&1 | grep -q "^Authority=HYNE ASM$" || { echo "Not signed with HYNE ASM"; exit 1; }
+          PLIST_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Contents/Info.plist")"
+          [ "$PLIST_VERSION" = "$VERSION" ] || { echo "Version mismatch: $PLIST_VERSION vs $VERSION"; exit 1; }
+          lipo -archs "$APP/Contents/MacOS/HYNE ASM"
+
+      - name: Package
+        run: scripts/make-dmg.sh "build/HYNE Ableton Shortcuts Manager.app" "$VERSION"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > "$RUNNER_TEMP/notes.md" <<NOTES
+          **Download:** \`HYNE-ASM-$VERSION.dmg\` below. Open it and drag the app into Applications.
+
+          First launch: macOS asks you to allow the app once ("Open Anyway"). Step by step, in German and English:
+          https://github.com/${{ github.repository }}#installieren-deutsch
+
+          Built and signed by GitHub Actions from this exact commit (${{ github.sha }}):
+          ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          NOTES
+          gh release create "$TAG" build/HYNE-ASM-$VERSION.dmg build/HYNE-ASM-$VERSION.dmg.sha256 \
+            --title "HYNE ASM $VERSION" --notes-file "$RUNNER_TEMP/notes.md" --verify-tag
+
+      - name: Remove the temporary keychain
+        if: always()
+        run: security delete-keychain "$RUNNER_TEMP/signing.keychain-db" || true
