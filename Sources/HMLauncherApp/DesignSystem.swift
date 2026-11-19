@@ -84,10 +84,8 @@ extension View {
 struct SectionLabel: View {
     let text: String
     var body: some View {
-        // Small print of a hardware panel, like the panel's footer: monospaced capitals.
-        Text(text.uppercased())
-            .font(.system(size: 11, weight: .medium, design: .monospaced))
-            .tracking(0.6)
+        Text(text)
+            .font(DS.Font.sectionLabel)
             .foregroundColor(DS.textTertiary)
     }
 }
@@ -177,7 +175,7 @@ struct CountChip: View {
     let count: Int
     var body: some View {
         Text("\(count)")
-            .font(.system(size: 11, weight: .medium, design: .monospaced))
+            .font(DS.Font.numeric)
             .foregroundColor(DS.textTertiary)
             .padding(.horizontal, 2)
     }
@@ -367,7 +365,6 @@ struct NewBadge: View {
     var body: some View {
         Text(Loc.t("NEU", "NEW"))
             .font(DS.Font.badge)
-            .tracking(0.5)
             .foregroundColor(.onAccent)
             .padding(.horizontal, 5).padding(.vertical, 2)
             .background(RoundedRectangle(cornerRadius: 4).fill(Color.accent))

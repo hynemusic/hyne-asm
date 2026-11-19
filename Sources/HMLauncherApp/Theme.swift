@@ -153,7 +153,7 @@ struct LauncherPad<Badges: View>: View {
         .overlay(alignment: .topLeading) {
             if let number, number < 9 {
                 Text("\(number + 1)")
-                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .font(DS.Font.numeric)
                     .foregroundColor(active ? Self.onLit.opacity(0.65) : DS.textTertiary)
                     .padding(.top, 5).padding(.leading, 7)
             }

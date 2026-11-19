@@ -63,13 +63,6 @@ struct SettingsSidebar: View {
             VStack(alignment: .leading, spacing: DS.Space.l) {
                 ForEach(groups) { group in
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(group.title.uppercased())
-                            .font(DS.Font.caption.weight(.semibold))
-                            .tracking(0.6)
-                            .foregroundColor(DS.textTertiary)
-                            .padding(.horizontal, DS.Space.s)
-                            .padding(.bottom, 4)
-                            .accessibilityAddTraits(.isHeader)
                         ForEach(group.items) { item in navRow(item) }
                     }
                 }
@@ -106,10 +99,7 @@ struct SettingsSidebar: View {
                     .shadow(color: selected ? Color.accent.opacity(0.7) : .clear, radius: 4)
                     .frame(width: 26, height: 26)
                     .background(RoundedRectangle(cornerRadius: DS.Radius.s).fill(DS.raised))
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(item.title).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
-                    Text(item.subtitle).font(DS.Font.caption).foregroundColor(DS.textTertiary).lineLimit(1)
-                }
+                Text(item.title).font(DS.Font.bodyStrong).foregroundColor(selected ? DS.textPrimary : DS.textSecondary)
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, DS.Space.s)

@@ -190,8 +190,7 @@ struct OnboardingView: View {
     private func feature<P: View>(_ picture: P, _ name: String, _ text: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             picture.frame(height: 120).frame(maxWidth: .infinity)
-                .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-                .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+                .plate(lit: false, radius: DS.Radius.l, filled: true)
             Text(name).font(DS.Font.bodyStrong)
             Text(text).font(DS.Font.caption).foregroundColor(DS.textTertiary).fixedSize(horizontal: false, vertical: true)
         }
@@ -305,8 +304,7 @@ struct OnboardingView: View {
             }
             .padding(.horizontal, DS.Space.m)
             .frame(height: 52)
-            .background(RoundedRectangle(cornerRadius: DS.Radius.m).fill(DS.surface))
-            .overlay(RoundedRectangle(cornerRadius: DS.Radius.m).stroke(DS.hairline))
+            .plate(lit: false, radius: DS.Radius.m, filled: true)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -410,7 +408,7 @@ struct ConnectionLine: View {
             Image(systemName: symbol).font(.system(size: 16, weight: .semibold))
                 .foregroundColor(lit ? (name == "Live" ? DS.success : .accent) : DS.textTertiary)
                 .frame(width: 44, height: 36)
-                .background(RoundedRectangle(cornerRadius: DS.Radius.m).fill(DS.surface))
+                .plate(lit: false, radius: DS.Radius.m, filled: true)
                 .overlay(RoundedRectangle(cornerRadius: DS.Radius.m).stroke(lit && name == "Live" ? DS.success : DS.hairline))
             Text(name).font(DS.Font.caption).foregroundColor(DS.textTertiary)
         }

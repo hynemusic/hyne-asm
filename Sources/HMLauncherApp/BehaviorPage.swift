@@ -10,8 +10,8 @@ struct BehaviorPage: View {
 
     var body: some View {
         PageContainer(title: Loc.t("Verhalten", "Behavior"),
-                      subtitle: Loc.t("Wie das Panel aussieht, wie HYNE ASM in Live einfügt – und wie andere Geräte es steuern.",
-                                      "How the panel is laid out, how HYNE ASM inserts into Live – and how other devices control it."),
+                      subtitle: Loc.t("Wie das Panel aussieht, wo Plugins in Live landen und was andere Geräte auslösen können.",
+                                      "How the panel looks, where plugins land in Live and what other devices can trigger."),
                       maxWidth: 780) { EmptyView() } content: {
             VStack(alignment: .leading, spacing: DS.Space.xl) {
                 panelCard
@@ -30,7 +30,7 @@ struct BehaviorPage: View {
             HStack(alignment: .center, spacing: DS.Space.l) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(Loc.t("Kategorien", "Categories")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
-                    caption(Loc.t("Als Tabs oben im Panel oder als Liste links daneben.", "As tabs on top of the panel or as a list on its left."))
+                    caption(Loc.t("Als Tabs über den Pads oder als Liste links daneben.", "Tabs above the pads, or a list beside them."))
                 }
                 Spacer(minLength: DS.Space.m)
                 Picker("", selection: $model.config.categoryPlacement) {
@@ -101,11 +101,11 @@ struct BehaviorPage: View {
                 }
                 .pickerStyle(.segmented).labelsHidden().frame(maxWidth: 420)
                 if scriptOutdated {
-                    warning(Loc.t("Dein Live-Script ist veraltet – Menü → „Live-Script installieren …“, dann Live neu starten. Bis dahin landet alles am Ende und nur auf der ausgewählten Spur.",
-                                  "Your Live script is out of date – menu → “Install Live Script …”, then restart Live. Until then everything goes to the end, on the selected track only."))
+                    warning(Loc.t("Dein Live-Script ist veraltet. Wähl im Menü „Live-Script installieren …“ und starte Live neu. Bis dahin landet alles am Ende und nur auf der ausgewählten Spur.",
+                                  "Your Live script is out of date. Choose “Install Live Script …” in the menu, then restart Live. Until then everything goes to the end, on the selected track only."))
                 } else if model.config.insert.position == .afterSelected, model.capabilities?.moveDevice == false {
-                    warning(Loc.t("Diese Live-Version kann Devices nicht verschieben – es landet am Ende.",
-                                  "This Live version can't move devices – it goes to the end."))
+                    warning(Loc.t("Diese Live-Version kann Devices nicht verschieben, also landet alles am Ende.",
+                                  "This Live version can't move devices, so everything goes to the end."))
                 } else {
                     caption(Loc.t("Ohne ausgewähltes Device landet es am Ende.", "With no device selected it goes to the end."))
                 }
@@ -121,8 +121,8 @@ struct BehaviorPage: View {
             }
             .toggleStyle(.switch)
             if !scriptOutdated, model.config.insert.allSelectedTracks, model.capabilities?.multiSelect == false {
-                warning(Loc.t("Diese Live-Version meldet keine Mehrfachauswahl – es wird nur die ausgewählte Spur verwendet.",
-                              "This Live version doesn't report multi-selection – only the selected track is used."))
+                warning(Loc.t("Diese Live-Version meldet keine Mehrfachauswahl, also nur die ausgewählte Spur.",
+                              "This Live version doesn't report multi-selection, so only the selected track is used."))
             }
         }
     }
@@ -140,7 +140,7 @@ struct BehaviorPage: View {
             Toggle(isOn: $model.config.showRarelyUsed) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(Loc.t("Kaum genutzte Einträge in der Statistik zeigen", "Show rarely used entries on Stats")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
-                    Text(Loc.t("Listet Panel-Einträge, die du fast nie einfügst – zum Aufräumen.", "Lists panel entries you hardly ever insert – to tidy up."))
+                    Text(Loc.t("Listet Panel-Einträge, die du fast nie einfügst, damit du aufräumen kannst.", "Lists panel entries you hardly ever insert, so you can tidy up."))
                         .font(DS.Font.caption).foregroundColor(DS.textTertiary)
                 }
             }
@@ -156,8 +156,8 @@ struct BehaviorPage: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(Loc.t("Stream-Deck-Verbindung", "Stream Deck connection")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
                     Text(statusText).font(DS.Font.caption).foregroundColor(statusColor)
-                    Text(Loc.t("Jeder Link enthält einen geheimen Schlüssel – Webseiten im Browser können die Verbindung nicht benutzen.",
-                               "Every link carries a secret key – web pages in your browser can't use the connection."))
+                    Text(Loc.t("Jeder Link enthält einen geheimen Schlüssel, damit Webseiten im Browser die Verbindung nicht nutzen können.",
+                               "Every link carries a secret key, so web pages in your browser can't use the connection."))
                         .font(DS.Font.caption).foregroundColor(DS.textTertiary)
                 }
             }
@@ -167,8 +167,8 @@ struct BehaviorPage: View {
                 Text(Loc.t("So richtest du eine Taste ein", "Set up a key")).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
                 step(1, Loc.t("Zieh in der Stream-Deck-App die Aktion „Website“ (System) auf eine Taste.",
                               "In the Stream Deck app, drag the “Website” action (System) onto a key."))
-                step(2, Loc.t("Füg einen Link ein – Rechtsklick auf einen Eintrag in der Bibliothek → „Stream-Deck-Link kopieren“, oder einen von unten.",
-                              "Paste a link – right-click an entry in the Library → “Copy Stream Deck Link”, or one from below."))
+                step(2, Loc.t("Füg einen Link ein: Rechtsklick auf einen Eintrag in der Bibliothek, dann „Stream-Deck-Link kopieren“. Oder nimm einen von unten.",
+                              "Paste a link. Right-click an entry in the Library and choose “Copy Stream Deck Link”, or use one from below."))
                 step(3, Loc.t("Häkchen bei „Im Hintergrund aufrufen“ setzen, damit sich kein Browser öffnet.",
                               "Tick “Access in background” so no browser opens."))
             }
@@ -188,8 +188,8 @@ struct BehaviorPage: View {
 
     private var statusText: String {
         switch server.state {
-        case .off: return Loc.t("Aus – nur dieser Mac könnte sie erreichen (127.0.0.1).", "Off – only this Mac could reach it (127.0.0.1).")
-        case .listening: return Loc.t("Bereit auf 127.0.0.1:\(RemoteCommand.httpPort) – nur von diesem Mac erreichbar.", "Ready on 127.0.0.1:\(RemoteCommand.httpPort) – reachable from this Mac only.")
+        case .off: return Loc.t("Aus. Eingeschaltet erreicht sie nur dieser Mac (127.0.0.1).", "Off. When on, only this Mac can reach it (127.0.0.1).")
+        case .listening: return Loc.t("Läuft auf 127.0.0.1:\(RemoteCommand.httpPort). Nur dieser Mac erreicht sie.", "Running on 127.0.0.1:\(RemoteCommand.httpPort). Only this Mac can reach it.")
         case .failed(let message): return Loc.t("Konnte nicht starten: ", "Couldn't start: ") + message
         }
     }

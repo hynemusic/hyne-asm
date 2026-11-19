@@ -121,7 +121,7 @@ struct SettingsView: View {
             }
             SearchField(placeholder: Loc.t("Plugins und Presets suchen", "Search plugins and presets"), text: $search)
             if catalog.items.isEmpty {
-                Text(model.isConnected ? Loc.t("Lade Plugin-Liste …", "Loading plugin list …") : Loc.t("Nicht mit Live verbunden – Live öffnen und ASMbridge als Control Surface wählen.", "Not connected to Live – open Live and choose ASMbridge as a control surface."))
+                Text(model.isConnected ? Loc.t("Lade Plugin-Liste …", "Loading plugin list …") : Loc.t("Nicht mit Live verbunden. Öffne Live und wähl ASMbridge als Control Surface.", "Not connected to Live. Open Live and choose ASMbridge as a control surface."))
                     .font(DS.Font.body).foregroundColor(DS.textTertiary)
             }
             ScrollView {
@@ -164,8 +164,8 @@ struct SettingsView: View {
             .onChange(of: search) { _ in regroup(catalog.items) }
             .onReceive(catalog.$items.dropFirst()) { regroup($0) }
             if browserSel.isEmpty {
-                HintText(text: Loc.t("Doppelklick oder ziehen fügt hinzu · ⇧/⌘ wählt mehrere · Presets auch aus dem Finder",
-                                     "Double-click or drag to add · ⇧/⌘ selects several · presets also from Finder"))
+                HintText(text: Loc.t("Doppelklick oder ziehen zum Hinzufügen. Mit ⇧ oder ⌘ mehrere wählen, Presets gehen auch aus dem Finder.",
+                                     "Double-click or drag to add. Hold ⇧ or ⌘ to pick several. Presets also come from Finder."))
             } else {
                 browserSelectionBar
             }
@@ -435,7 +435,7 @@ struct SettingsView: View {
                     startRenaming(id)
                 }
             }
-            .help(Loc.t("Ziehen sortiert · Doppelklick benennt um", "Drag to reorder · double-click to rename"))
+            .help(Loc.t("Ziehen sortiert · Doppelklick benennt um", "Drag to reorder, double-click to rename"))
             List {
                 ForEach(model.config.categories) { c in
                     categoryRow(c)
@@ -549,7 +549,7 @@ struct SettingsView: View {
                 selectionBar(category)
                 entryGrid(category)
                 .onChange(of: categoryID) { _ in selection = []; selectionAnchor = nil }
-                HintText(text: Loc.t("Ziehen sortiert · Rechtsklick für Icon, Name, Farbe", "Drag to reorder · right-click for icon, name, color"))
+                HintText(text: Loc.t("Ziehen sortiert · Rechtsklick für Icon, Name, Farbe", "Drag to reorder. Right-click for icon, name and color."))
             }
         }
         .padding(.horizontal, DS.Space.l)
@@ -669,7 +669,7 @@ struct SettingsView: View {
                 .help(Loc.t("Inhalt ausblenden", "Hide contents"))
             }
             if rows.isEmpty {
-                Text(Loc.t("Leer – Einträge hierher ziehen", "Empty – drag entries here"))
+                Text(Loc.t("Leer – Einträge hierher ziehen", "Empty. Drag entries here."))
                     .font(DS.Font.caption).foregroundColor(DS.textTertiary)
                     .frame(maxWidth: .infinity, minHeight: 40)
                     .background(RoundedRectangle(cornerRadius: DS.Radius.m).strokeBorder(DS.hairline, style: StrokeStyle(lineWidth: 1, dash: [4])))
@@ -1033,8 +1033,8 @@ struct SettingsView: View {
             }
             if !copies.isEmpty {
                 alert(Loc.t("Noch nicht in Live", "Not in Live yet"),
-                      Loc.t("Live hat \(copies.map(\.lastPathComponent).joined(separator: ", ")) noch nicht eingelesen. Die Datei liegt in „User Library/Presets/HYNE ASM“ – lade die Liste gleich mit ↻ neu und füg sie dann hinzu.",
-                            "Live hasn't picked up \(copies.map(\.lastPathComponent).joined(separator: ", ")) yet. The file is in “User Library/Presets/HYNE ASM” – reload the list with ↻ in a moment and add it then."))
+                      Loc.t("Live hat \(copies.map(\.lastPathComponent).joined(separator: ", ")) noch nicht eingelesen. Die Datei liegt in „User Library/Presets/HYNE ASM“. Lade die Liste gleich mit ↻ neu und füg sie dann hinzu.",
+                            "Live hasn't picked up \(copies.map(\.lastPathComponent).joined(separator: ", ")) yet. The file is in “User Library/Presets/HYNE ASM”. Reload the list with ↻ in a moment, then add it."))
             }
         }
     }

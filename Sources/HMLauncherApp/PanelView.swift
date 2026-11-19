@@ -57,7 +57,7 @@ struct PanelView: View {
     static func gridMinX(_ placement: CategoryPlacement) -> CGFloat { padding + gridStart(placement) }
     /// From the window's top edge to the first pad row.
     static func gridTopInset(_ placement: CategoryPlacement) -> CGFloat {
-        padding + (placement == .top ? tabBarHeight : 0) + headerHeight
+        padding + (placement == .top ? tabBarHeight : headerHeight)
     }
 
     /// The panel is always one page, whatever the category holds.
@@ -144,7 +144,7 @@ struct PanelView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if viewModel.placement == .top { tabBar }
+            if viewModel.placement == .top { topRow }
             HStack(alignment: .top, spacing: 0) {
                 if viewModel.placement == .left {
                     categoryColumn
@@ -152,7 +152,7 @@ struct PanelView: View {
                 }
                 edgeStrip(-1).frame(width: Self.sidebarGap - (viewModel.placement == .left ? 1 : 0))
                 VStack(spacing: 0) {
-                    header
+                    if viewModel.placement == .left { header }
                     pagedGrid
                     Spacer(minLength: 0)
                     footer
@@ -196,49 +196,58 @@ struct PanelView: View {
         .onTapGesture { turn(to: viewModel.page + direction) }
     }
 
-    /// Category name and count (or the open folder, or the search), page dots on the right.
+    /// Categories on top: the tabs, or while searching the search field, or an open folder.
+    @ViewBuilder private var topRow: some View {
+        if viewModel.state.openFolderName != nil || !viewModel.state.filter.isEmpty {
+            HStack(spacing: 8) { searchOrFolder }
+                .frame(height: Self.tabBarHeight - 8)
+                .padding(.bottom, 8)
+        } else {
+            tabBar
+        }
+    }
+
+    /// Categories on the left: the category's name and count, or the search, or an open folder.
     private var header: some View {
         HStack(spacing: 8) {
-            if let folder = viewModel.state.openFolderName {
-                Button(action: onCloseFolder) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "chevron.left").font(.themed(10, .bold)).foregroundColor(DS.textTertiary)
-                        Image(systemName: "folder.fill").foregroundColor(.accent)
-                        Text(folder).fontWeight(.semibold).foregroundColor(DS.textPrimary).lineLimit(1)
-                    }
-                    .font(DS.Font.body)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .help(Loc.t("Zurück zu \(categoryTitle) (Esc)", "Back to \(categoryTitle) (Esc)"))
-            } else if !viewModel.state.filter.isEmpty {
-                filterField
-            } else if viewModel.placement == .left {
-                Text(categoryTitle).font(DS.Font.columnTitle).foregroundColor(DS.textPrimary).lineLimit(1)
-                Text("\(viewModel.state.rows.count)")
-                    .font(.system(size: 11, weight: .medium, design: .monospaced))
-                    .foregroundColor(DS.textTertiary)
+            if viewModel.state.openFolderName != nil || !viewModel.state.filter.isEmpty {
+                searchOrFolder
             } else {
-                // The tab above already names the category.
-                let n = viewModel.state.rows.count
-                Text(n == 1 ? Loc.t("1 Eintrag", "1 entry") : Loc.t("\(n) Einträge", "\(n) entries"))
-                    .font(.system(size: 11, weight: .medium, design: .monospaced))
-                    .textCase(.uppercase)
-                    .foregroundColor(DS.textTertiary)
+                Text(categoryTitle).font(DS.Font.columnTitle).foregroundColor(DS.textPrimary).lineLimit(1)
+                Text("\(viewModel.state.rows.count)").font(DS.Font.numeric).foregroundColor(DS.textTertiary)
+                Spacer(minLength: 0)
             }
-            Spacer(minLength: 4)
-            if pageCount > 1 { pageDots }
         }
         .padding(.leading, 2)
         .frame(height: Self.headerHeight - 6)
         .padding(.bottom, 6)
     }
 
+    @ViewBuilder private var searchOrFolder: some View {
+        if let folder = viewModel.state.openFolderName {
+            Button(action: onCloseFolder) {
+                HStack(spacing: 6) {
+                    Image(systemName: "chevron.left").font(.themed(10, .bold)).foregroundColor(DS.textTertiary)
+                    Image(systemName: "folder.fill").foregroundColor(.accent)
+                    Text(folder).fontWeight(.semibold).foregroundColor(DS.textPrimary).lineLimit(1)
+                }
+                .font(DS.Font.body)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(Loc.t("Zurück zu \(categoryTitle) (Esc)", "Back to \(categoryTitle) (Esc)"))
+            Spacer(minLength: 0)
+            escHint
+        } else {
+            filterField
+        }
+    }
+
     /// A dot per page (click to go there); with many pages "3 / 12" instead, so the header never overflows.
     @ViewBuilder private var pageDots: some View {
         if pageCount > 7 {
             Text("\(viewModel.page + 1) / \(pageCount)")
-                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                .font(DS.Font.numeric)
                 .foregroundColor(DS.textSecondary)
         } else {
             dotRow
@@ -261,30 +270,30 @@ struct PanelView: View {
         }
     }
 
-    /// Bottom line of every category: how to search, or how many hits the search found.
+    /// Bottom line: what typing does (or that the panel is pinned, or how many hits), page dots on the right.
     private var footer: some View {
         let state = viewModel.state
         return HStack(spacing: 6) {
-            if viewModel.pinned {
-                Image(systemName: "pin.fill").font(.themed(10, .semibold))
-                Text(Loc.t("Angeheftet – ⇧ loslassen, dann schließt der nächste Klick", "Pinned – release ⇧ and the next insert closes"))
-            } else if state.filter.isEmpty {
-                Text(Loc.t("Tippen zum Suchen · ⇧ heftet an", "Type to search · ⇧ pins"))
-            } else {
-                let n = state.rows.count
-                Text(n == 1 ? Loc.t("1 Treffer", "1 result") : Loc.t("\(n) Treffer", "\(n) results"))
+            Group {
+                if viewModel.pinned {
+                    Label(Loc.t("Angeheftet, nach dem nächsten Einfügen ⇧ loslassen", "Pinned. Let go of ⇧ to close after the next insert"),
+                          systemImage: "pin.fill")
+                } else if state.filter.isEmpty {
+                    Text(Loc.t("Tippen zum Suchen", "Type to search"))
+                } else {
+                    let n = state.rows.count
+                    Text(n == 1 ? Loc.t("1 Treffer", "1 result") : Loc.t("\(n) Treffer", "\(n) results"))
+                }
             }
-            Spacer(minLength: 4)
-            Text("HYNE ASM")
+            .font(DS.Font.caption)
+            .foregroundColor(viewModel.pinned ? .accent : DS.textTertiary)
+            .lineLimit(1)
+            .allowsHitTesting(false)
+            Spacer(minLength: 6)
+            if pageCount > 1 { pageDots }
         }
-        // Small print of a hardware panel: monospaced capitals.
-        .font(.system(size: 11, weight: .medium, design: .monospaced))
-        .textCase(.uppercase)
-        .lineLimit(1)
-        .foregroundColor(viewModel.pinned ? .accent : DS.textTertiary.opacity(0.8))
-        .padding(.leading, 2).padding(.trailing, 8)
+        .padding(.leading, 2).padding(.trailing, 4)
         .frame(maxWidth: .infinity, minHeight: Self.footerHeight, maxHeight: Self.footerHeight)
-        .allowsHitTesting(false)
     }
 
     /// Bottom-right corner: drag to make the entries wider or taller (saved).
@@ -454,7 +463,7 @@ struct PanelView: View {
             if rows.isEmpty {
                 HStack(spacing: 8) {
                     Image(systemName: viewModel.state.filter.isEmpty ? "tray" : "magnifyingglass")
-                    Text(viewModel.state.filter.isEmpty ? Loc.t("Keine Einträge – in den Einstellungen hinzufügen", "No entries – add some in Settings") : Loc.t("Nichts gefunden", "Nothing found"))
+                    Text(viewModel.state.filter.isEmpty ? Loc.t("Noch keine Einträge. Füg welche in den Einstellungen hinzu.", "No entries yet. Add some in Settings.") : Loc.t("Nichts gefunden", "Nothing found"))
                 }
                 .font(DS.Font.secondary).foregroundColor(DS.textTertiary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -537,7 +546,7 @@ struct PanelView: View {
         }
         .padding(.horizontal, 9)
         .frame(maxWidth: .infinity)
-        .frame(height: Self.headerHeight - 6)
+        .frame(height: 26)
         .background(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).fill(Color.ink.opacity(0.06)))
         .overlay(RoundedRectangle(cornerRadius: CGFloat(7).themedRadius).strokeBorder(Color.panelStroke))
     }

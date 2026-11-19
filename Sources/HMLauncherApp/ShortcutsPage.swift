@@ -44,7 +44,7 @@ struct ShortcutsPage: View {
                     row(Loc.t("Nächstes Profil", "Next profile"), combos: $model.config.shortcuts.nextProfile, maxCount: 2, requireModifier: true)
                 }
                 section(Loc.t("Im Panel", "In the Panel"), symbol: "rectangle.grid.1x2",
-                        note: Loc.t("Fest: 1–9 fügen die Zeile ein, Tippen filtert, ⌫ löscht im Filter.", "Fixed: 1–9 insert that row, typing filters, ⌫ deletes in the filter."),
+                        note: Loc.t("Immer aktiv: 1–9 fügen das Pad ein, Tippen sucht, ⌫ löscht in der Suche.", "Always on: 1–9 insert that pad, typing searches, ⌫ deletes in the search."),
                         reset: { model.config.panelKeys = .default }) {
                     ForEach(Array(PanelKeyAction.allCases.enumerated()), id: \.element) { i, action in
                         if i > 0 { divider }
@@ -61,8 +61,8 @@ struct ShortcutsPage: View {
 
     private var pluginShortcutsSection: some View {
         section(Loc.t("Plugin-Kürzel", "Plugin Shortcuts"), symbol: "bolt",
-                note: Loc.t("Fügt ein Plugin, Rack oder Preset sofort in die ausgewählte Spur ein – ganz ohne Panel. Kürzel brauchen ⌘, ⌃ oder ⌥.",
-                            "Inserts a plugin, rack or preset straight into the selected track – no panel needed. Shortcuts need ⌘, ⌃ or ⌥."),
+                note: Loc.t("Fügt ein Plugin, Rack oder Preset sofort in die ausgewählte Spur ein, ganz ohne Panel. Kürzel brauchen ⌘, ⌃ oder ⌥.",
+                            "Inserts a plugin, rack or preset straight into the selected track, no panel needed. Shortcuts need ⌘, ⌃ or ⌥."),
                 resetTitle: Loc.t("Kürzel hinzufügen …", "Add Shortcut …"), reset: { picking = true }) {
             if let pending = request {
                 itemRow(pending, combo: nil, id: nil, pending: true)
@@ -150,8 +150,7 @@ struct ShortcutsPage: View {
             }
             Text(note).font(DS.Font.caption).foregroundColor(DS.textTertiary)
             VStack(spacing: 0) { content() }
-                .background(RoundedRectangle(cornerRadius: DS.Radius.l).fill(DS.surface))
-                .overlay(RoundedRectangle(cornerRadius: DS.Radius.l).stroke(DS.hairline))
+                .plate(lit: false, radius: DS.Radius.l, filled: true)
                 .padding(.top, DS.Space.xs)
         }
     }
