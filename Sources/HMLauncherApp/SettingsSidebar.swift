@@ -144,7 +144,7 @@ struct SettingsSidebar: View {
                 Image(systemName: "globe").foregroundColor(DS.textTertiary)
             }
             .controlSize(.small)
-            .help(Loc.t("Sprache", "Language"))
+            .tooltip(Loc.t("Sprache", "Language"))
         }
     }
 }
@@ -170,6 +170,7 @@ struct ThemeButton: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .tooltip(Loc.t("Design wählen", "Choose theme"))
         .popover(isPresented: $open, arrowEdge: .trailing) {
             VStack(alignment: .leading, spacing: DS.Space.m) {
                 Text(Loc.t("Design wählen", "Choose a theme")).font(DS.Font.columnTitle).foregroundColor(DS.textPrimary)

@@ -529,10 +529,10 @@ struct SettingsView: View {
                 Label(Loc.t("Panel-Vorschau", "Panel preview"), systemImage: "eye")
                     .font(DS.Font.caption).foregroundColor(DS.textTertiary)
                     .help(Loc.t("So erscheint die Kategorie im Panel in Live", "This is how the category looks in the panel in Live"))
-                IconButton(symbol: "link.badge.plus", help: Loc.t("Neue Kette: mehrere Plugins oder Presets mit einer Taste", "New chain: several plugins or presets with one key")) {
+                IconButton(symbol: "link.badge.plus", help: Loc.t("Neue Kette", "New chain")) {
                     chainEditor = ChainEditTarget(entryID: nil)
                 }
-                IconButton(symbol: "folder.badge.plus", help: Loc.t("Neuen Ordner in dieser Kategorie anlegen", "Create a new folder in this category")) { newFolder() }
+                IconButton(symbol: "folder.badge.plus", help: Loc.t("Neuer Ordner", "New folder")) { newFolder() }
             }
             if let category {
                 if category.entries.isEmpty {
