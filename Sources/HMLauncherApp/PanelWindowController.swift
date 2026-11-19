@@ -6,8 +6,11 @@ import HMLauncherCore
 final class PanelViewModel: ObservableObject {
     @Published var state: PanelState
     @Published var hovered: Int?
-    /// Columns side by side (the setting, limited to what fits on the screen).
-    @Published var columns = PanelGrid.columns
+    /// One 3×3 block: the panel shows a page of 9 at a time.
+    let columns = 1
+    /// The page of 9 on show, and which way the last turn went (for the slide).
+    @Published var page = 0
+    var forward = true
     /// Column width and entry height (resize grip).
     @Published var size = PanelSize.default
     /// ⇧ held: inserting keeps the panel open (pinned mode).
@@ -41,11 +44,6 @@ final class PanelWindowController {
     private var outsideClickMonitor: Any?
     private var lastTab = 0
     private var topLeft = CGPoint.zero
-    /// Tallest height since the panel opened. Switching to a shorter category (or filtering) never shrinks the
-    /// panel while it is open, so the content doesn't jump away from the mouse.
-    private var heightFloor: CGFloat = 0
-    /// Same for the width: one column grows to two while open, never back.
-    private var columnsFloor = 1
     private let flyout = FolderFlyout()
     private var flyoutFolder: UUID?
 
@@ -97,6 +95,7 @@ final class PanelWindowController {
         viewModel.favoritesID = model.config.favoritesID
         viewModel.hovered = nil
         viewModel.drag = nil
+        viewModel.page = 0
         if !model.panelOpened { model.panelOpened = true }
         viewModel.size = model.config.panelSize
         if let dev = Dev.env("HM_PANEL_SIZE")?.split(separator: ",").compactMap({ Double($0) }), dev.count == 2 {
@@ -124,18 +123,8 @@ final class PanelWindowController {
     /// The gear in the panel's top-right corner.
     var onOpenSettings: (() -> Void)?
 
-    /// Sized for the fullest category right away: switching tabs never resizes the panel, and near the bottom
-    /// of the screen the rows don't get pushed away from the mouse. Search and open folders can still grow it.
-    private func resetFloors() {
-        let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
-        let fitting = max(1, Int(((screen?.visibleFrame.width ?? 1600) - PanelView.width(columns: 1, columnWidth: 0) + PanelView.blockSpacing)
-                                 / (viewModel.columnWidth + PanelView.blockSpacing)))
-        let columns = min(model.config.panelColumns, fitting)
-        viewModel.columns = columns
-        let largest = viewModel.state.largestTabCount
-        heightFloor = height(local: PanelGrid.padRows(largest, columns: columns), global: 0, extra: 0)
-        columnsFloor = PanelGrid.columnsNeeded(local: largest, global: 0, max: columns)
-    }
+    /// The panel is one 3×3 page at its saved pad size; nothing to work out per category any more.
+    private func resetFloors() {}
 
     // MARK: Resize grip
 
@@ -150,8 +139,7 @@ final class PanelWindowController {
         }
         let mouse = NSEvent.mouseLocation
         if resizeStart == nil {
-            let rows = max(1, min(PanelGrid.padRows(viewModel.state.largestTabCount, columns: viewModel.columns), PanelView.maxVisiblePadRows))
-            resizeStart = (mouse, viewModel.size, max(columnsFloor, 1), rows)
+            resizeStart = (mouse, viewModel.size, 1, 3)
         }
         guard let start = resizeStart else { return }
         let dx = mouse.x - start.mouse.x
@@ -236,9 +224,8 @@ final class PanelWindowController {
         flyoutFolder = folder
         let index = viewModel.state.rows.firstIndex { $0.folderID == folder } ?? 0
         // Beside the folder's whole block, so the list doesn't cover the pads next to the folder.
-        let block = PanelGrid.padPosition(of: index, columns: viewModel.columns).blockColumn
-        let blockMinX = panel.frame.minX + PanelView.width(columns: 1, columnWidth: 0) - PanelView.padding
-            + CGFloat(block) * (viewModel.columnWidth + PanelView.blockSpacing)
+        _ = index
+        let blockMinX = panel.frame.minX + PanelView.gridMinX
         let blockFrame = NSRect(x: blockMinX, y: panel.frame.minY, width: viewModel.columnWidth, height: panel.frame.height)
         let mouse = NSEvent.mouseLocation
         flyout.show(rows: viewModel.state.folderRows(folder),
@@ -286,39 +273,12 @@ final class PanelWindowController {
         layout()
     }
 
-    /// Pads of the category (or its hits) and of "All plugins" hits, at most `maxVisiblePadRows` together; the
-    /// category column on the left is never cut off when it fits the screen.
-    private func height(local: Int, global: Int, extra: CGFloat) -> CGFloat {
-        let limit = PanelView.maxVisiblePadRows
-        let shownLocal = min(local, limit), shownGlobal = min(global, limit - shownLocal)
-        var grid = PanelView.gridHeight(padRows: max(shownLocal, shownGlobal == 0 ? 1 : 0), padHeight: viewModel.padHeight)
-        if shownLocal == 0 { grid = 0 }
-        if shownGlobal > 0 {
-            grid += (shownLocal > 0 ? PanelView.blockSpacing : 0) + PanelView.gridHeight(padRows: shownGlobal, padHeight: viewModel.padHeight)
-        }
-        if local == 0 && global == 0 { grid = PanelView.gridHeight(padRows: 1, padHeight: viewModel.padHeight) }
-        let content = extra + grid + PanelView.footerHeight
-        let categories = PanelView.categoriesHeight(count: viewModel.state.tabs.count)
-        let screenHeight = (NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main)?.visibleFrame.height ?? 900
-        return min(max(content, categories), screenHeight - 40) + PanelView.padding * 2
-    }
-
-    /// Height follows the row count; the top-left corner stays at the click, clamped to the screen.
+    /// Always one page of 3×3 pads; the top-left corner stays at the click, clamped to the screen.
     private func layout(animated: Bool = true) {
-        let all = viewModel.state.rows
-        let globalCount = all.filter(\.isGlobal).count
-        let localRows = PanelGrid.padRows(all.count - globalCount, columns: viewModel.columns)
-        let globalRows = PanelGrid.padRows(globalCount, columns: viewModel.columns)
-        let filterHeight: CGFloat = (viewModel.state.filter.isEmpty ? 0 : PanelView.filterHeight)
-            + (viewModel.state.openFolderName == nil ? 0 : PanelView.filterHeight)
-            + (globalCount > 0 && localRows + globalRows <= PanelView.maxVisiblePadRows ? PanelView.globalHeaderHeight : 0)
-        let height = max(height(local: localRows, global: globalRows, extra: filterHeight), heightFloor)
-        heightFloor = height
-        let columns = max(PanelGrid.columnsNeeded(local: all.count - globalCount, global: globalCount, max: viewModel.columns),
-                          columnsFloor)
-        columnsFloor = columns
+        let size = PanelView.size(viewModel.size)
+        let height = size.height
         let screen = NSScreen.screens.first { $0.frame.contains(topLeft) } ?? NSScreen.main
-        var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: PanelView.width(columns: columns, columnWidth: viewModel.size.columnWidth), height: height)
+        var frame = NSRect(x: topLeft.x, y: topLeft.y - height, width: size.width, height: height)
         if let visible = screen?.visibleFrame {
             frame.origin.x = min(max(frame.minX, visible.minX), visible.maxX - frame.width)
             frame.origin.y = min(max(frame.minY, visible.minY), visible.maxY - frame.height)

@@ -561,14 +561,14 @@ struct SettingsView: View {
 
     @FocusState private var entriesFocused: Bool
 
-    /// The category as the panel shows it: blocks of 3×3 pads at the panel's size and block count (as many as fit
-    /// this column), then the contents of every open folder as its own pads below.
+    /// The category as the panel shows it: its pages of 3×3 pads at the panel's pad size, side by side as far as
+    /// this column allows, then the contents of every open folder as its own pads below.
     private func entryGrid(_ category: HMLauncherCore.Category) -> some View {
         GeometryReader { geo in
             let size = model.config.panelSize
             let blockWidth = min(CGFloat(size.columnWidth), geo.size.width)
             let fitting = Int((geo.size.width + PanelView.blockSpacing) / (blockWidth + PanelView.blockSpacing))
-            let layout = PadLayout(columns: max(1, min(model.config.panelColumns, fitting)),
+            let layout = PadLayout(columns: max(1, fitting),   // each block is one page of the panel
                                    padWidth: PanelView.padWidth(columnWidth: blockWidth),
                                    padHeight: PanelView.padHeight(size))
             let rows = flatRows(category)

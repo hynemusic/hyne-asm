@@ -128,7 +128,7 @@ struct LauncherPad<Badges: View>: View {
     @ViewBuilder var badges: () -> Badges
 
     /// Text and marks on a lit pad.
-    private static var onLit: Color { Color(white: 0.08) }
+    private static var onLit: Color { Palette.current.onLitPad }
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: CGFloat(8).themedRadius)
@@ -164,7 +164,7 @@ struct LauncherPad<Badges: View>: View {
             if active {
                 shape.fill(lit)
             } else {
-                shape.fill(LinearGradient(colors: [Color.panelRow.mix(.white, 0.045), Color.panelRow],
+                shape.fill(LinearGradient(colors: [Palette.current.padTop ?? Color.panelRow.mix(.white, 0.045), Color.panelRow],
                                           startPoint: .top, endPoint: .bottom))
             }
         }
@@ -176,7 +176,7 @@ struct LauncherPad<Badges: View>: View {
     }
 
     private func stripe(lit: Color) -> some View {
-        let fill: Color = active ? Self.onLit.opacity(0.3) : (color ?? Color.ink.opacity(0.12))
+        let fill: Color = active ? Self.onLit.opacity(0.3) : (color ?? Palette.current.padStripe)
         return Capsule()
             .fill(fill)
             .frame(height: 3)

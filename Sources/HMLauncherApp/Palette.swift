@@ -35,6 +35,10 @@ struct Palette {
     var keyFill: Color
     /// Retro: the four PlayStation logo colours (stripe on top of the windows, 1–9 key caps).
     var logoColors: [Color] = []
+    /// Pads: top of the pad's gradient (bottom is `panelRow`), the unlit stripe / page dot, text on a lit pad.
+    var padTop: Color? = nil
+    var padStripe: Color = Color.white.opacity(0.12)
+    var onLitPad: Color = Color(white: 0.08)
     var radiusScale: CGFloat = 1
     /// Face for display roles (titles, labels, names, key caps); reading text always uses the standard face.
     var displayDesign: Font.Design = .default
@@ -60,8 +64,9 @@ struct Palette {
                            raised: hex(0x1D1C1A), hover: hex(0x262421), hairline: Color.white.opacity(0.07),
                            textPrimary: hex(0xEEEAE4), textSecondary: hex(0xB5AFA6), textTertiary: hex(0x8D877E),
                            accent: hex(0xFF8C1A), accentStrong: hex(0xFF8C1A), onAccentStrong: hex(0x15120E), onAccent: hex(0x15120E),
-                           panelSurface: hex(0x121110), panelRow: hex(0x1D1C1A), panelStroke: Color.white.opacity(0.08),
-                           ink: .white, keyboardBase: hex(0x0C0B0A), keyFill: hex(0x262421))
+                           panelSurface: hex(0x121110), panelRow: hex(0x1D1C1A), panelStroke: Color.white.opacity(0.07),
+                           ink: .white, keyboardBase: hex(0x0C0B0A), keyFill: hex(0x262421),
+                           padTop: hex(0x262421), padStripe: hex(0x34312D), onLitPad: hex(0x15120E))
         case .ableton:
             // Live 12's neutral dark greys with its orange highlight and light-blue selection.
             return Palette(isDark: true,
@@ -110,8 +115,8 @@ struct Palette {
     }
 
     /// Read from every view's body (main thread); written only by `apply`.
-    nonisolated(unsafe) static private(set) var current = Palette.make(.original)
-    nonisolated(unsafe) static private(set) var theme: AppTheme = .original
+    nonisolated(unsafe) static private(set) var current = Palette.make(.pads)
+    nonisolated(unsafe) static private(set) var theme: AppTheme = .pads
 
     /// Switches the palette and the window appearance (menus, alerts, text fields follow light/dark).
     @MainActor static func apply(_ theme: AppTheme) {
