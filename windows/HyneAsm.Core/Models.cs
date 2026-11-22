@@ -270,9 +270,6 @@ public sealed partial record LauncherConfig
         new() { new Category("Favorites", isFavorites: true), new Category("Instruments"), new Category("Effects") },
         ShortcutSettings.Default);
 
-    /// <summary>Swift's <c>LauncherConfig.newToken()</c> (declared in RemoteCommand.swift): 20 lowercase hex characters.</summary>
-    public static string NewToken() => Guid.NewGuid().ToString("N")[..20];
-
     /// <summary>Swift's <c>init(from:)</c>: fields added later decode with defaults, so older config files keep loading.</summary>
     internal sealed class Reader : JsonConverter<LauncherConfig>
     {

@@ -109,6 +109,13 @@ final class SharedFixtureTests: XCTestCase {
         "files.seen": filesSeen,
         "usage.summary": usageSummary,
         "presets.match": presetsMatch,
+        "remote.parse": remoteParse,
+        "remote.link": remoteLink,
+        "remote.request": remoteRequest,
+        "bridge.protocol": bridgeProtocol,
+        "guards.main_window": guardsMainWindow,
+        "guards.tooltip": guardsTooltip,
+        "onboarding.steps": onboardingSteps,
     ]
 
     /// Areas whose `expected` is hand-written (`"reference": "hand"`): the Swift side only validates, and returns `expected`.

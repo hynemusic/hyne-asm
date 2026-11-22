@@ -54,6 +54,13 @@ public static partial class Fixtures
         ["files.seen"] = FilesSeen,
         ["usage.summary"] = UsageSummaryOp,
         ["presets.match"] = PresetsMatch,
+        ["remote.parse"] = RemoteParse,
+        ["remote.link"] = RemoteLink,
+        ["remote.request"] = RemoteRequestOp,
+        ["bridge.protocol"] = BridgeProtocolOp,
+        ["guards.main_window"] = GuardsMainWindow,
+        ["guards.tooltip"] = GuardsTooltip,
+        ["onboarding.steps"] = OnboardingSteps,
     };
 
     // MARK: Keys and text

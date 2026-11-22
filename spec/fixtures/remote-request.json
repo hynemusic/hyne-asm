@@ -1,0 +1,501 @@
+{
+  "area": "remote.request",
+  "cases": [
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": {
+            "insert": "Serum 2"
+          }
+        }
+      },
+      "input": {
+        "raw": "GET /insert?name=Serum%202&token=abc123 HTTP/1.1\r\nHost: 127.0.0.1:47821\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "valid"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": "panel"
+        }
+      },
+      "input": {
+        "raw": "GET /panel?token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "panel"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": "nextProfile"
+        }
+      },
+      "input": {
+        "raw": "GET /profile/next?token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "next profile"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /quicksearch HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "missing token"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /quicksearch?token=nope HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "wrong token"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /quicksearch?token HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "token without value"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /quicksearch?token= HTTP/1.1\r\n\r\n",
+        "token": ""
+      },
+      "name": "empty token both sides"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /quicksearch?token=abc123 HTTP/1.1\r\n\r\n",
+        "token": ""
+      },
+      "name": "install without token"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /quicksearch?token=ABC123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "token case"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /panel?token=nope&token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "first token counts"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": "panel"
+        }
+      },
+      "input": {
+        "raw": "GET /panel?token=abc123&token=nope HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "first token counts 2"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": "panel"
+        }
+      },
+      "input": {
+        "raw": "GET /panel?token=abc%31%323 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "encoded token"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /action?name=undo&token=abc123 HTTP/1.1\r\nOrigin: https://evil.example\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "origin"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /action?name=undo&token=abc123 HTTP/1.1\r\nORIGIN: https://evil.example\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "origin uppercase"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": {
+            "action": {
+              "kind": "undo"
+            }
+          }
+        }
+      },
+      "input": {
+        "raw": "GET /action?name=undo&token=abc123 HTTP/1.1\r\nOrigin : https://evil.example\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "origin space before colon"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /action?name=undo&token=abc123 HTTP/1.1\r\nSec-Fetch-Site: cross-site\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "fetch site"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /action?name=undo&token=abc123 HTTP/1.1\r\nSec-Fetch-Mode: no-cors\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "fetch mode"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /action?name=undo&token=abc123 HTTP/1.1\r\nReferer: https://x.example/\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "referer"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /action?name=undo HTTP/1.1\r\nReferer: https://x.example/\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "referer without token"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /panel?token=abc123 HTTP/1.1\r\n\r\nOrigin: x",
+        "token": "abc123"
+      },
+      "name": "header after blank line"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "badRequest"
+      },
+      "input": {
+        "raw": "POST /panel?token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "post"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "badRequest"
+      },
+      "input": {
+        "raw": "get /panel?token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "lowercase method"
+    },
+    {
+      "expected": {
+        "complete": false,
+        "outcome": "badRequest"
+      },
+      "input": {
+        "raw": "garbage",
+        "token": "abc123"
+      },
+      "name": "garbage"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "badRequest"
+      },
+      "input": {
+        "raw": "GET\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "method only"
+    },
+    {
+      "expected": {
+        "complete": false,
+        "outcome": "badRequest"
+      },
+      "input": {
+        "raw": "",
+        "token": "abc123"
+      },
+      "name": "empty"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": "panel"
+        }
+      },
+      "input": {
+        "raw": "GET  /panel?token=abc123  HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "double spaces"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": "panel"
+        }
+      },
+      "input": {
+        "raw": "GET /panel?token=abc123\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "no version"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "unknown"
+      },
+      "input": {
+        "raw": "GET /dance?token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "unknown command"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /dance HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "unknown without token"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "unknown"
+      },
+      "input": {
+        "raw": "GET ?token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "query only"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "unknown"
+      },
+      "input": {
+        "raw": "GET @evil.com/panel?token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "user info trick"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "badRequest"
+      },
+      "input": {
+        "raw": "GET http://127.0.0.1:47821/panel?token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "absolute form"
+    },
+    {
+      "expected": {
+        "complete": false,
+        "outcome": {
+          "run": "panel"
+        }
+      },
+      "input": {
+        "raw": "GET /panel?token=abc123 HTTP/1.1\nHost: x\n\n",
+        "token": "abc123"
+      },
+      "name": "bare newlines"
+    },
+    {
+      "expected": {
+        "complete": false,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /panel?tok",
+        "token": "abc123"
+      },
+      "name": "partial"
+    },
+    {
+      "expected": {
+        "complete": false,
+        "outcome": {
+          "run": "panel"
+        }
+      },
+      "input": {
+        "raw": "GET /panel?token=abc123 HTTP/1.1\r\nHost: x\r\n",
+        "token": "abc123"
+      },
+      "name": "headers not finished"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": {
+            "insert": "a|b"
+          }
+        }
+      },
+      "input": {
+        "raw": "GET /insert?name=a|b&token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "pipe in name"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": {
+            "insert": "50%zz"
+          }
+        }
+      },
+      "input": {
+        "raw": "GET /insert?name=50%zz&token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "bad percent"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "refused"
+      },
+      "input": {
+        "raw": "GET /panel#x?token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "hash in target"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": "badRequest"
+      },
+      "input": {
+        "raw": "GET :80/panel?token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "port trick"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": {
+            "insert": "a+b"
+          }
+        }
+      },
+      "input": {
+        "raw": "GET /insert?name=a+b&token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "plus in name"
+    },
+    {
+      "expected": {
+        "complete": true,
+        "outcome": {
+          "run": {
+            "action": {
+              "kind": "set_tempo",
+              "value": 140
+            }
+          }
+        }
+      },
+      "input": {
+        "raw": "GET /action?name=set_tempo&value=140&token=abc123 HTTP/1.1\r\n\r\n",
+        "token": "abc123"
+      },
+      "name": "action with value"
+    }
+  ]
+}

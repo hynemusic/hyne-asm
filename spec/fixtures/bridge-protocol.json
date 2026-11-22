@@ -1,0 +1,1087 @@
+{
+  "area": "bridge.protocol",
+  "cases": [
+    {
+      "expected": {
+        "request": {
+          "cmd": "hello"
+        },
+        "result": {
+          "capabilities": {
+            "moveDevice": false,
+            "multiSelect": false
+          },
+          "liveVersion": "12.4.16",
+          "scriptVersion": "1"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {
+            "live_version": "12.4.16",
+            "script_version": "1"
+          }
+        }
+      },
+      "name": "hello"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "hello"
+        },
+        "result": {
+          "capabilities": {
+            "moveDevice": true,
+            "multiSelect": false
+          },
+          "liveVersion": "12.4.16",
+          "scriptVersion": "4"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {
+            "capabilities": {
+              "move_device": true,
+              "multi_select": false
+            },
+            "live_version": "12.4.16",
+            "script_version": "4"
+          }
+        }
+      },
+      "name": "hello capabilities"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "hello"
+        },
+        "result": {
+          "capabilities": {
+            "moveDevice": false,
+            "multiSelect": true
+          },
+          "liveVersion": "12.1",
+          "scriptVersion": "4"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {
+            "capabilities": {
+              "moveDevice": false,
+              "multiSelect": true
+            },
+            "liveVersion": "12.1",
+            "scriptVersion": "4"
+          }
+        }
+      },
+      "name": "hello camel keys"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "hello"
+        },
+        "result": {
+          "capabilities": {
+            "moveDevice": false,
+            "multiSelect": false
+          },
+          "liveVersion": "12",
+          "scriptVersion": "3"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {
+            "capabilities": null,
+            "live_version": "12",
+            "script_version": "3"
+          }
+        }
+      },
+      "name": "hello capabilities null"
+    },
+    {
+      "expected": {
+        "error": "decoding",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {
+            "capabilities": {
+              "move_device": true
+            },
+            "live_version": "12",
+            "script_version": "3"
+          }
+        }
+      },
+      "name": "hello capabilities partial"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "hello"
+        },
+        "result": {
+          "capabilities": {
+            "moveDevice": false,
+            "multiSelect": false
+          },
+          "liveVersion": "12",
+          "scriptVersion": "5"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": null,
+          "extra": [
+            1
+          ],
+          "ok": true,
+          "result": {
+            "future_flag": 1,
+            "live_version": "12",
+            "script_version": "5"
+          }
+        }
+      },
+      "name": "hello extra keys"
+    },
+    {
+      "expected": {
+        "error": "decoding",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {
+            "script_version": "1"
+          }
+        }
+      },
+      "name": "hello missing live version"
+    },
+    {
+      "expected": {
+        "error": "decoding",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {
+            "live_version": "12",
+            "script_version": 4
+          }
+        }
+      },
+      "name": "hello numeric version"
+    },
+    {
+      "expected": {
+        "error": "remote: missing_result",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": null
+        }
+      },
+      "name": "hello result null"
+    },
+    {
+      "expected": {
+        "error": "remote: missing_result",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "ok": true
+        }
+      },
+      "name": "hello result missing"
+    },
+    {
+      "expected": {
+        "error": "remote: boom",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": "boom",
+          "ok": false,
+          "result": null
+        }
+      },
+      "name": "hello remote error"
+    },
+    {
+      "expected": {
+        "error": "remote: unknown",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": null,
+          "ok": false,
+          "result": null
+        }
+      },
+      "name": "hello remote error without message"
+    },
+    {
+      "expected": {
+        "error": "decoding",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "ok": 1,
+          "result": {
+            "live_version": "12",
+            "script_version": "1"
+          }
+        }
+      },
+      "name": "hello ok as number"
+    },
+    {
+      "expected": {
+        "error": "decoding",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": {
+          "error": 5,
+          "ok": false
+        }
+      },
+      "name": "hello error not a string"
+    },
+    {
+      "expected": {
+        "error": "timeout",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": null
+      },
+      "name": "hello silent"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "list",
+          "refresh": false
+        },
+        "result": [
+          {
+            "format": "adg",
+            "name": "My Glue",
+            "path": [
+              "Presets"
+            ],
+            "source": "user_library",
+            "uri": "u:glue"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "u:eq"
+          },
+          {
+            "name": "Serum",
+            "path": [
+              "VST3",
+              "Xfer"
+            ],
+            "source": "plugins",
+            "uri": "u:nullformat"
+          },
+          {
+            "name": "Extra",
+            "path": [],
+            "source": "max_for_live",
+            "uri": "u:extra"
+          }
+        ]
+      },
+      "input": {
+        "call": "list",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {
+            "items": [
+              {
+                "format": "adg",
+                "name": "My Glue",
+                "path": [
+                  "Presets"
+                ],
+                "source": "user_library",
+                "uri": "u:glue"
+              },
+              {
+                "name": "Future",
+                "path": [],
+                "source": "some_new_root",
+                "uri": "u:new"
+              },
+              {
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "u:eq"
+              },
+              {
+                "path": [],
+                "source": "plugins",
+                "uri": "u:noname"
+              },
+              7,
+              null,
+              {
+                "format": null,
+                "name": "Serum",
+                "path": [
+                  "VST3",
+                  "Xfer"
+                ],
+                "source": "plugins",
+                "uri": "u:nullformat"
+              },
+              {
+                "name": "Bad",
+                "path": "VST3",
+                "source": "plugins",
+                "uri": "u:badpath"
+              },
+              {
+                "file_id": 12,
+                "name": "Extra",
+                "path": [],
+                "source": "max_for_live",
+                "uri": "u:extra"
+              }
+            ]
+          }
+        }
+      },
+      "name": "list"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "list",
+          "refresh": true
+        },
+        "result": []
+      },
+      "input": {
+        "args": {
+          "refresh": true
+        },
+        "call": "list",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {
+            "items": []
+          }
+        }
+      },
+      "name": "list refresh"
+    },
+    {
+      "expected": {
+        "error": "decoding",
+        "request": {
+          "cmd": "list",
+          "refresh": false
+        }
+      },
+      "input": {
+        "call": "list",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {}
+        }
+      },
+      "name": "list without items"
+    },
+    {
+      "expected": {
+        "error": "decoding",
+        "request": {
+          "cmd": "list",
+          "refresh": false
+        }
+      },
+      "input": {
+        "call": "list",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {
+            "items": {
+              "uri": "x"
+            }
+          }
+        }
+      },
+      "name": "list items not a list"
+    },
+    {
+      "expected": {
+        "error": "remote: missing_result",
+        "request": {
+          "cmd": "list",
+          "refresh": false
+        }
+      },
+      "input": {
+        "call": "list",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": null
+        }
+      },
+      "name": "list result null"
+    },
+    {
+      "expected": {
+        "request": {
+          "all_selected": true,
+          "cmd": "load",
+          "position": "after_selected",
+          "uri": "u:a",
+          "uris": [
+            "u:a",
+            "u:b"
+          ]
+        },
+        "result": "done"
+      },
+      "input": {
+        "args": {
+          "options": {
+            "allSelectedTracks": true,
+            "position": "after_selected"
+          },
+          "uris": [
+            "u:a",
+            "u:b"
+          ]
+        },
+        "call": "load",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": null
+        }
+      },
+      "name": "load chain"
+    },
+    {
+      "expected": {
+        "request": {
+          "all_selected": false,
+          "cmd": "load",
+          "position": "end",
+          "uri": "u:a",
+          "uris": [
+            "u:a",
+            "u:b",
+            "u:c"
+          ]
+        },
+        "result": "done"
+      },
+      "input": {
+        "args": {
+          "options": {
+            "allSelectedTracks": false,
+            "position": "end"
+          },
+          "uris": [
+            "u:a",
+            "u:b",
+            "u:c"
+          ]
+        },
+        "call": "load",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": null
+        }
+      },
+      "name": "load chain defaults"
+    },
+    {
+      "expected": {
+        "error": "remote: not_found",
+        "request": {
+          "all_selected": true,
+          "cmd": "load",
+          "position": "end",
+          "uris": []
+        }
+      },
+      "input": {
+        "args": {
+          "options": {
+            "allSelectedTracks": true,
+            "position": "end"
+          },
+          "uris": []
+        },
+        "call": "load",
+        "reply": {
+          "error": "not_found",
+          "ok": false,
+          "result": null
+        }
+      },
+      "name": "load nothing"
+    },
+    {
+      "expected": {
+        "request": {
+          "all_selected": true,
+          "cmd": "load",
+          "position": "end",
+          "uri": "u:a",
+          "uris": [
+            "u:a"
+          ]
+        },
+        "result": "done"
+      },
+      "input": {
+        "args": {
+          "options": {
+            "allSelectedTracks": true,
+            "position": "end"
+          },
+          "uris": [
+            "u:a"
+          ]
+        },
+        "call": "load",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": {}
+        }
+      },
+      "name": "load result object"
+    },
+    {
+      "expected": {
+        "request": {
+          "all_selected": true,
+          "cmd": "load",
+          "position": "end",
+          "uri": "u:a",
+          "uris": [
+            "u:a"
+          ]
+        },
+        "result": "done"
+      },
+      "input": {
+        "args": {
+          "options": {
+            "allSelectedTracks": true,
+            "position": "end"
+          },
+          "uris": [
+            "u:a"
+          ]
+        },
+        "call": "load",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": true
+        }
+      },
+      "name": "load result true"
+    },
+    {
+      "expected": {
+        "request": {
+          "all_selected": true,
+          "cmd": "load",
+          "position": "end",
+          "uri": "u:a",
+          "uris": [
+            "u:a"
+          ]
+        },
+        "result": "done"
+      },
+      "input": {
+        "args": {
+          "options": {
+            "allSelectedTracks": true,
+            "position": "end"
+          },
+          "uris": [
+            "u:a"
+          ]
+        },
+        "call": "load",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": "x"
+        }
+      },
+      "name": "load result string"
+    },
+    {
+      "expected": {
+        "error": "timeout",
+        "request": {
+          "all_selected": true,
+          "cmd": "load",
+          "position": "end",
+          "uri": "u:a",
+          "uris": [
+            "u:a",
+            "u:b"
+          ]
+        }
+      },
+      "input": {
+        "args": {
+          "options": {
+            "allSelectedTracks": true,
+            "position": "end"
+          },
+          "uris": [
+            "u:a",
+            "u:b"
+          ]
+        },
+        "call": "load",
+        "reply": null
+      },
+      "name": "load chain silent"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "load",
+          "uri": "query:AudioFx#EQ%20Eight"
+        },
+        "result": "done"
+      },
+      "input": {
+        "args": {
+          "uri": "query:AudioFx#EQ%20Eight"
+        },
+        "call": "load_uri",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": null
+        }
+      },
+      "name": "load uri"
+    },
+    {
+      "expected": {
+        "error": "remote: not_found",
+        "request": {
+          "cmd": "load",
+          "uri": "x"
+        }
+      },
+      "input": {
+        "args": {
+          "uri": "x"
+        },
+        "call": "load_uri",
+        "reply": {
+          "error": "not_found",
+          "ok": false,
+          "result": null
+        }
+      },
+      "name": "load uri not found"
+    },
+    {
+      "expected": {
+        "error": "timeout",
+        "request": {
+          "cmd": "load",
+          "uri": "x"
+        }
+      },
+      "input": {
+        "args": {
+          "uri": "x"
+        },
+        "call": "load_uri",
+        "reply": null
+      },
+      "name": "load uri silent"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "action",
+          "name": "set_tempo",
+          "value": 128
+        },
+        "result": "done"
+      },
+      "input": {
+        "args": {
+          "action": {
+            "kind": "set_tempo",
+            "value": 128
+          }
+        },
+        "call": "run",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": null
+        }
+      },
+      "name": "run tempo"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "action",
+          "name": "set_tempo",
+          "value": 128.5
+        },
+        "result": "done"
+      },
+      "input": {
+        "args": {
+          "action": {
+            "kind": "set_tempo",
+            "value": 128.5
+          }
+        },
+        "call": "run",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": null
+        }
+      },
+      "name": "run tempo fraction"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "action",
+          "name": "set_time_signature",
+          "value": 7,
+          "value2": 8
+        },
+        "result": "done"
+      },
+      "input": {
+        "args": {
+          "action": {
+            "kind": "set_time_signature",
+            "value": 7,
+            "value2": 8
+          }
+        },
+        "call": "run",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": null
+        }
+      },
+      "name": "run time signature"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "action",
+          "name": "toggle_loop"
+        },
+        "result": "done"
+      },
+      "input": {
+        "args": {
+          "action": {
+            "kind": "toggle_loop"
+          }
+        },
+        "call": "run",
+        "reply": {
+          "error": null,
+          "ok": true,
+          "result": null
+        }
+      },
+      "name": "run toggle"
+    },
+    {
+      "expected": {
+        "error": "remote: action_failed: nothing to undo",
+        "request": {
+          "cmd": "action",
+          "name": "undo"
+        }
+      },
+      "input": {
+        "args": {
+          "action": {
+            "kind": "undo"
+          }
+        },
+        "call": "run",
+        "reply": {
+          "error": "action_failed: nothing to undo",
+          "ok": false,
+          "result": null
+        }
+      },
+      "name": "run action failed"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "hello"
+        },
+        "result": {
+          "capabilities": {
+            "moveDevice": false,
+            "multiSelect": false
+          },
+          "liveVersion": "12",
+          "scriptVersion": "1"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": "not json\n{\"id\":{id},\"ok\":true,\"result\":{\"script_version\":\"1\",\"live_version\":\"12\"},\"error\":null}\n"
+      },
+      "name": "garbage line first"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "hello"
+        },
+        "result": {
+          "capabilities": {
+            "moveDevice": false,
+            "multiSelect": false
+          },
+          "liveVersion": "12",
+          "scriptVersion": "1"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": "{\"id\":999,\"ok\":true,\"result\":{\"script_version\":\"9\",\"live_version\":\"9\"}}\n{\"id\":{id},\"ok\":true,\"result\":{\"script_version\":\"1\",\"live_version\":\"12\"}}\n"
+      },
+      "name": "other id first"
+    },
+    {
+      "expected": {
+        "error": "timeout",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": "{\"id\":\"{id}\",\"ok\":true,\"result\":{\"script_version\":\"1\",\"live_version\":\"12\"}}\n"
+      },
+      "name": "id as string"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "hello"
+        },
+        "result": {
+          "capabilities": {
+            "moveDevice": false,
+            "multiSelect": false
+          },
+          "liveVersion": "12",
+          "scriptVersion": "1"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": "{\"id\":{id}.0,\"ok\":true,\"result\":{\"script_version\":\"1\",\"live_version\":\"12\"}}\n"
+      },
+      "name": "id as decimal"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "hello"
+        },
+        "result": {
+          "capabilities": {
+            "moveDevice": false,
+            "multiSelect": false
+          },
+          "liveVersion": "12",
+          "scriptVersion": "1"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": "{\"id\":{id},\"ok\":true,\"result\":{\"script_version\":\"1\",\"live_version\":\"12\"}}\r\n"
+      },
+      "name": "carriage return"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "hello"
+        },
+        "result": {
+          "capabilities": {
+            "moveDevice": false,
+            "multiSelect": false
+          },
+          "liveVersion": "12",
+          "scriptVersion": "1"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": "[1]\n{\"id\":{id},\"ok\":true,\"result\":{\"script_version\":\"1\",\"live_version\":\"12\"}}\n"
+      },
+      "name": "array line"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "hello"
+        },
+        "result": {
+          "capabilities": {
+            "moveDevice": false,
+            "multiSelect": false
+          },
+          "liveVersion": "12",
+          "scriptVersion": "1"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": "\n{\"id\":{id},\"ok\":true,\"result\":{\"script_version\":\"1\",\"live_version\":\"12\"}}\n"
+      },
+      "name": "blank line"
+    },
+    {
+      "expected": {
+        "error": "timeout",
+        "request": {
+          "cmd": "hello"
+        }
+      },
+      "input": {
+        "call": "hello",
+        "reply": "{\"id\":{id},\"ok\":true,\"result\":{\"script_version\":\"1\",\"live_version\":\"12\"}}"
+      },
+      "name": "no newline"
+    },
+    {
+      "expected": {
+        "request": {
+          "cmd": "list",
+          "refresh": false
+        },
+        "result": [
+          {
+            "name": "Serum é",
+            "path": [
+              "VST3"
+            ],
+            "source": "plugins",
+            "uri": "query:Plugins#VST3:Xfer/Serum"
+          }
+        ]
+      },
+      "input": {
+        "call": "list",
+        "reply": "{\"id\":{id},\"ok\":true,\"result\":{\"items\":[{\"uri\":\"query:Plugins#VST3:Xfer\\/Serum\",\"name\":\"Serum \\u00e9\",\"source\":\"plugins\",\"path\":[\"VST3\"]}]}}\n"
+      },
+      "name": "escaped slash"
+    }
+  ]
+}

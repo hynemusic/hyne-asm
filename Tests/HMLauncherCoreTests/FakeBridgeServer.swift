@@ -9,6 +9,8 @@ final class FakeBridgeServer: @unchecked Sendable {
     private var connections: [NWConnection] = []
     private let queue = DispatchQueue(label: "fake-bridge")
     var respond: ([String: Any]) -> [String: Any]? = { _ in nil }
+    /// When set, replaces `respond`: the exact text to send back (newlines included), or nil to stay silent.
+    var respondLine: (([String: Any]) -> String?)? = nil
     var chunkSize: Int? = nil
     var reverseOrder = false
     var replyDelay: TimeInterval = 0
@@ -47,7 +49,9 @@ final class FakeBridgeServer: @unchecked Sendable {
             while let nl = buf.firstIndex(of: 0x0A) {
                 let line = buf[buf.startIndex..<nl]
                 buf = Data(buf[buf.index(after: nl)...])
-                if let req = try? JSONSerialization.jsonObject(with: line) as? [String: Any],
+                if let req = try? JSONSerialization.jsonObject(with: line) as? [String: Any], let respondLine = self.respondLine {
+                    if let text = respondLine(req) { self.send(Data(text.utf8), on: c) }
+                } else if let req = try? JSONSerialization.jsonObject(with: line) as? [String: Any],
                    let reply = self.respond(req) {
                     var out = try! JSONSerialization.data(withJSONObject: reply)
                     out.append(0x0A)
