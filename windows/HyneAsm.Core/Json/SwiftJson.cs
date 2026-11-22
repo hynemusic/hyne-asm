@@ -49,6 +49,10 @@ public static class SwiftJson
         JsonSerializer.Deserialize<T>(json.StartsWith('﻿') ? json[1..] : json, Options)
         ?? throw new JsonException("JSON is null");
 
+    /// <summary>A deep copy through the file format — what assigning a Swift value type gives. The one copy helper for
+    /// configs, categories and entries, so no nested list or record (actions, chain items) stays shared.</summary>
+    public static T Clone<T>(T value) => Deserialize<T>(Serialize(value));
+
     /// <summary>The Swift raw value of an enum case (<c>ItemSource.AudioEffects</c> → "audio_effects").</summary>
     public static string RawValue<T>(T value) where T : struct, Enum => SwiftEnumConverter<T>.ToRaw[value];
 

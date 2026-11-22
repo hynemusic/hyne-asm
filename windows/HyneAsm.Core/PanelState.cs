@@ -1,3 +1,5 @@
+using HyneAsm.Core.Json;
+
 namespace HyneAsm.Core;
 
 /// <summary>One row of the panel or the quick search.</summary>
@@ -127,9 +129,10 @@ public sealed class PanelState
         // Swift's dictionary finds canonically equal keys.
         this.usage = new Dictionary<string, int>((usage ?? new Dictionary<string, int>()).GroupBy(p => p.Key, Text.Canonical)
             .Select(g => g.Last()), Text.Canonical);
-        this.config = config;
+        // A snapshot, as Swift copies the config: later edits to the app's config never reach an open panel.
+        this.config = SwiftJson.Clone(config);
         search = index;
-        Tabs = config.Categories.Select(c => (PanelTab)new PanelTab.Category(c.Id, c.Name)).ToList();
+        Tabs = this.config.Categories.Select(c => (PanelTab)new PanelTab.Category(c.Id, c.Name)).ToList();
         this.selectedTab = Math.Min(Math.Max(selectedTab, 0), Tabs.Count - 1);
         Rows = ComputeRows();
     }

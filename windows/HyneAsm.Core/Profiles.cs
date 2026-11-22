@@ -51,7 +51,7 @@ public sealed partial record LauncherConfig
         var current = Profiles.FindIndex(p => p.Id == ActiveProfileID);
         if (current >= 0) Profiles[current].Categories = Categories;
         // A copy, as Swift's value types give: the stored menu stays as saved while the loaded one is edited.
-        var loaded = Profiles[target].Categories.Select(c => CopyCategory(c, newIDs: false)).ToList();
+        var loaded = SwiftJson.Clone(Profiles[target].Categories);
         if (!loaded.Any(c => c.IsFavorites)) loaded.Insert(0, new Category("Favorites", isFavorites: true));
         Categories = loaded;
         ActiveProfileID = id;
@@ -98,20 +98,20 @@ public sealed partial record LauncherConfig
         new() { new Category("Favorites", isFavorites: true), new Category("Instruments"), new Category("Effects") };
 
     /// <summary>Copies with new ids, so two profiles never share a category or entry id.</summary>
-    public static List<Category> Copy(IEnumerable<Category> categories) => categories.Select(c => CopyCategory(c, newIDs: true)).ToList();
-
-    static Category CopyCategory(Category c, bool newIDs)
+    public static List<Category> Copy(IEnumerable<Category> categories)
     {
-        var n = new Category(c.Name, c.IsFavorites, c.Entries.Select(e => CopyEntry(e, newIDs)).ToList());
-        if (!newIDs) n.Id = c.Id;
-        return n;
+        var copy = SwiftJson.Clone(categories.ToList());
+        foreach (var c in copy)
+        {
+            c.Id = Guid.NewGuid();
+            foreach (var e in c.Entries) RenewIDs(e);
+        }
+        return copy;
     }
 
-    static Entry CopyEntry(Entry e, bool newIDs) => e with
+    static void RenewIDs(Entry e)
     {
-        Id = newIDs ? Guid.NewGuid() : e.Id,
-        Path = e.Path.ToList(),
-        Children = e.Children?.Select(k => CopyEntry(k, newIDs)).ToList(),
-        Chain = e.Chain?.ToList(),
-    };
+        e.Id = Guid.NewGuid();
+        foreach (var k in e.Children ?? new()) RenewIDs(k);
+    }
 }
