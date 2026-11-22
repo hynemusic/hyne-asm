@@ -1,10 +1,11 @@
 using System.Text.Json.Serialization;
+using HyneAsm.Core.Json;
 
 namespace HyneAsm.Core;
 
 /// <summary>A named menu: its own categories, entries and folders ("Production", "Mixing", "Live Show").
 /// The active profile's menu is <see cref="LauncherConfig.Categories"/>; the others are kept here and swapped in on switch.</summary>
-public sealed record Profile
+public sealed record Profile : IJsonOnDeserialized
 {
     [JsonRequired] public Guid Id { get; set; }
     [JsonRequired] public string Name { get; set; } = "";
@@ -16,6 +17,12 @@ public sealed record Profile
     public Profile(string name, List<Category>? categories = null, Guid? id = null)
     {
         Id = id ?? Guid.NewGuid(); Name = name; Categories = categories ?? new();
+    }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        SwiftJson.RejectNull(nameof(Profile), Name, Categories);
+        SwiftJson.RejectNullElements(nameof(Profile), Categories);
     }
 
     /// <summary>Same id and name (as in Swift; the categories are not compared).</summary>

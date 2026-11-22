@@ -22,7 +22,7 @@ public static class ItemSourceExtensions
     public static bool IsPreset(this ItemSource source) => source is ItemSource.UserLibrary or ItemSource.UserFolders;
 }
 
-public sealed record PluginItem
+public sealed record PluginItem : IJsonOnDeserialized
 {
     [JsonRequired] public string Uri { get; set; } = "";
     [JsonRequired] public string Name { get; set; } = "";
@@ -38,13 +38,19 @@ public sealed record PluginItem
         Uri = uri; Name = name; Source = source; Path = path; Format = format;
     }
 
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        SwiftJson.RejectNull(nameof(PluginItem), Uri, Name, Path);
+        SwiftJson.RejectNullElements(nameof(PluginItem), Path);
+    }
+
     public bool Equals(PluginItem? other) => other is not null && Uri == other.Uri && Name == other.Name &&
         Source == other.Source && ValueEquality.Lists(Path, other.Path) && Format == other.Format;
 
     public override int GetHashCode() => HashCode.Combine(Uri, Name, Source, ValueEquality.Hash(Path), Format);
 }
 
-public sealed record Entry
+public sealed record Entry : IJsonOnDeserialized
 {
     [JsonRequired] public Guid Id { get; set; }
     [JsonRequired] public string Uri { get; set; } = "";
@@ -65,6 +71,12 @@ public sealed record Entry
     [JsonIgnore] public string Title => DisplayName ?? Name;
     [JsonIgnore] public bool IsFolder => Children != null;
 
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        SwiftJson.RejectNull(nameof(Entry), Uri, Name, Path, IconID);
+        SwiftJson.RejectNullElements(nameof(Entry), Path, Children, Chain);
+    }
+
     public bool Equals(Entry? o) => o is not null && Id == o.Id && Uri == o.Uri && Name == o.Name && Source == o.Source &&
         ValueEquality.Lists(Path, o.Path) && IconID == o.IconID && DisplayName == o.DisplayName &&
         ValueEquality.Lists(Children, o.Children) && ColorID == o.ColorID && ValueEquality.Lists(Chain, o.Chain) &&
@@ -79,7 +91,7 @@ public sealed record Entry
     }
 }
 
-public sealed record Category
+public sealed record Category : IJsonOnDeserialized
 {
     [JsonRequired] public Guid Id { get; set; }
     [JsonRequired] public string Name { get; set; } = "";
@@ -91,6 +103,12 @@ public sealed record Category
     public Category(string name, bool isFavorites = false, List<Entry>? entries = null)
     {
         Id = Guid.NewGuid(); Name = name; IsFavorites = isFavorites; Entries = entries ?? new();
+    }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        SwiftJson.RejectNull(nameof(Category), Name, Entries);
+        SwiftJson.RejectNullElements(nameof(Category), Entries);
     }
 }
 
@@ -149,6 +167,7 @@ public sealed record ShortcutSettings : IJsonOnDeserialized
         CloseAll ??= new();
         QuickSearch ??= DefaultQuickSearch();
         NextProfile ??= new();
+        SwiftJson.RejectNullElements(nameof(ShortcutSettings), CloseAll, QuickSearch, NextProfile);
     }
 
     public bool Equals(ShortcutSettings? o) => o is not null && Equals(CloseFocused, o.CloseFocused) &&
@@ -256,6 +275,8 @@ public sealed partial record LauncherConfig
                 Profiles = SwiftJson.IfPresent(c, "profiles", o, () => new List<Profile>()),
                 ActiveProfileID = SwiftJson.IfPresent(c, "activeProfileID", o, Guid.NewGuid),
             };
+            SwiftJson.RejectNullElements(nameof(LauncherConfig), config.Categories, config.ColorRules.Values,
+                config.SearchRules, config.ItemShortcuts, config.Profiles);
             config.EnsureProfile();
             return config;
         }

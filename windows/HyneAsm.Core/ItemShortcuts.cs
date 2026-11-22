@@ -1,9 +1,10 @@
 using System.Text.Json.Serialization;
+using HyneAsm.Core.Json;
 
 namespace HyneAsm.Core;
 
 /// <summary>A key combination that inserts one plugin, rack or preset straight away (while Live is in front).</summary>
-public sealed record ItemShortcut
+public sealed record ItemShortcut : IJsonOnDeserialized
 {
     [JsonRequired] public Guid Id { get; set; } = Guid.NewGuid();
     [JsonRequired] public KeyCombo Combo { get; set; } = new();
@@ -18,6 +19,12 @@ public sealed record ItemShortcut
     {
         Combo = combo;
         Uri = item.Uri; Name = item.Name; Source = item.Source; Path = item.Path;
+    }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        SwiftJson.RejectNull(nameof(ItemShortcut), Combo, Uri, Name, Path);
+        SwiftJson.RejectNullElements(nameof(ItemShortcut), Path);
     }
 
     [JsonIgnore] public PluginItem Item => new(Uri, Name, Source, Path);

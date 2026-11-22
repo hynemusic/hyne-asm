@@ -78,6 +78,61 @@ public class ConfigStoreTests : IDisposable
     }
 
     [Fact]
+    public void Bom_prefixed_config_loads()
+    {
+        var c = LauncherConfig.MakeDefault();
+        c.Categories[0].Entries.Add(Item("Pro-L 2"));
+        var text = SwiftJson.Serialize(c, pretty: true);
+        File.WriteAllBytes(ConfigPath, new byte[] { 0xEF, 0xBB, 0xBF }.Concat(System.Text.Encoding.UTF8.GetBytes(text)).ToArray());
+        var loaded = new ConfigStore(ConfigPath).Load();
+        Assert.Equal(c.Categories.Select(x => x.Id), loaded.Categories.Select(x => x.Id));
+        Assert.Equal(c.Categories[0].Entries, loaded.Categories[0].Entries);
+        Assert.Empty(Backups());
+    }
+
+    void AssertBackedUpAndDefault(string content)
+    {
+        File.WriteAllText(ConfigPath, content);
+        var loaded = new ConfigStore(ConfigPath).Load();
+        Assert.Equal(new[] { "Favorites", "Instruments", "Effects" }, loaded.Categories.Select(x => x.Name));
+        var backups = Backups();
+        Assert.Single(backups);
+        Assert.Equal(content, File.ReadAllText(Path.Combine(dir, backups[0])));
+    }
+
+    const string FavoritesJson =
+        "{\"id\": \"00000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"isFavorites\": true, \"entries\": [] }";
+
+    [Theory]
+    [InlineData("{\"version\": 4, \"categories\": [null]}")]
+    [InlineData("{\"version\": 4, \"categories\": [" + FavoritesJson + ", null]}")]
+    public void Null_category_element_is_backed_up_and_default_returned(string content) => AssertBackedUpAndDefault(content);
+
+    [Fact]
+    public void Null_entries_is_backed_up_and_default_returned() => AssertBackedUpAndDefault(
+        "{\"version\": 4, \"categories\": [{\"id\": \"00000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", " +
+        "\"isFavorites\": true, \"entries\": null}]}");
+
+    [Theory]
+    [InlineData("\"name\": null")]
+    [InlineData("\"entries\": [null]")]
+    [InlineData("\"shortcuts\": {\"closeAll\": [null]}")]
+    [InlineData("\"panelKeys\": {\"bindings\": {\"up\": null}}")]
+    [InlineData("\"colorRules\": {\"x\": null}")]
+    [InlineData("\"profiles\": [null]")]
+    [InlineData("\"searchRules\": [{\"id\": \"00000000-0000-0000-0000-000000000002\", \"query\": \"a\", \"pinned\": [null], \"hidden\": []}]")]
+    public void Other_nulls_Swift_rejects_are_backed_up_and_default_returned(string member)
+    {
+        // `name`/`entries` replace the Favorites category's own; the rest are top-level members.
+        var category = member.StartsWith("\"name\"") || member.StartsWith("\"entries\"")
+            ? "{\"id\": \"00000000-0000-0000-0000-000000000001\", \"isFavorites\": true, " +
+              (member.StartsWith("\"name\"") ? member + ", \"entries\": []}" : "\"name\": \"Favorites\", " + member + "}")
+            : FavoritesJson;
+        var top = category == FavoritesJson ? ", " + member : "";
+        AssertBackedUpAndDefault("{\"version\": 4, \"categories\": [" + category + "]" + top + "}");
+    }
+
+    [Fact]
     public void Legacy_HM_Launcher_folder_is_migrated()
     {
         var old = Path.Combine(dir, "HM Launcher");

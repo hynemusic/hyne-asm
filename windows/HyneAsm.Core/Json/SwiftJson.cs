@@ -44,8 +44,10 @@ public static class SwiftJson
         return sb.ToString();
     }
 
+    /// <summary>Swift <c>JSONDecoder</c> reading: a leading UTF-8 BOM is skipped, as Swift does.</summary>
     public static T Deserialize<T>(string json) =>
-        JsonSerializer.Deserialize<T>(json, Options) ?? throw new JsonException("JSON is null");
+        JsonSerializer.Deserialize<T>(json.StartsWith('﻿') ? json[1..] : json, Options)
+        ?? throw new JsonException("JSON is null");
 
     /// <summary>The Swift raw value of an enum case (<c>ItemSource.AudioEffects</c> → "audio_effects").</summary>
     public static string RawValue<T>(T value) where T : struct, Enum => SwiftEnumConverter<T>.ToRaw[value];
@@ -169,6 +171,19 @@ public static class SwiftJson
     {
         try { return IfPresent(obj, key, o, fallback); }
         catch (JsonException) { return fallback(); }
+    }
+
+    /// <summary>Swift rejects null for a non-optional value; .NET 8 does not (it ignores nullable annotations).
+    /// Called after decoding (<c>IJsonOnDeserialized</c>) so damaged files fail like they do in Swift.</summary>
+    internal static void RejectNull(string type, params object?[] values)
+    {
+        if (values.Any(v => v is null)) throw new JsonException($"{type}: null for a non-optional value");
+    }
+
+    /// <summary>Same for the elements of non-optional lists (<c>[Category]</c> cannot hold null in Swift).</summary>
+    internal static void RejectNullElements(string type, params IEnumerable<object?>?[] lists)
+    {
+        if (lists.Any(l => l != null && l.Any(x => x is null))) throw new JsonException($"{type}: null element in a list");
     }
 
     // MARK: Converters

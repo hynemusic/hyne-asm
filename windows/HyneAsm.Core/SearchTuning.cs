@@ -1,10 +1,11 @@
 using System.Text.Json.Serialization;
+using HyneAsm.Core.Json;
 
 namespace HyneAsm.Core;
 
 /// <summary>The user's own shaping of search results for a search term: results pinned to the top (in this order)
 /// and results hidden. A rule for "ser" also applies to "seru", "serum" … — the longest matching rule wins.</summary>
-public sealed record SearchRule
+public sealed record SearchRule : IJsonOnDeserialized
 {
     [JsonRequired] public Guid Id { get; set; } = Guid.NewGuid();
     /// <summary>Normalized: lowercase, single spaces.</summary>
@@ -14,6 +15,12 @@ public sealed record SearchRule
     [JsonRequired] public List<string> Pinned { get; set; } = new();
     /// <summary>Usage keys never shown for this search.</summary>
     [JsonRequired] public List<string> Hidden { get; set; } = new();
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        SwiftJson.RejectNull(nameof(SearchRule), Query, Pinned, Hidden);
+        SwiftJson.RejectNullElements(nameof(SearchRule), Pinned, Hidden);
+    }
 
     internal bool IsEmpty => Pinned.Count == 0 && Hidden.Count == 0;
 

@@ -7,7 +7,7 @@ namespace HyneAsm.Core;
 public enum PanelKeyAction { PrevTab, NextTab, Up, Down, Insert, Close }
 
 /// <summary>Stored as Swift encodes its private dictionary: <c>{"bindings": {"prevTab": [KeyCombo …], …}}</c>.</summary>
-public sealed class PanelKeyBindings : IEquatable<PanelKeyBindings>
+public sealed class PanelKeyBindings : IEquatable<PanelKeyBindings>, IJsonOnDeserialized
 {
     [JsonInclude, JsonRequired, JsonPropertyName("bindings")]
     internal Dictionary<string, List<KeyCombo>> Bindings { get; set; } = new();
@@ -36,6 +36,13 @@ public sealed class PanelKeyBindings : IEquatable<PanelKeyBindings>
                 : Default.Bindings.TryGetValue(key, out var fallback) ? fallback : new();
         }
         set => Bindings[SwiftJson.RawValue(action)] = value;
+    }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        SwiftJson.RejectNull(nameof(PanelKeyBindings), Bindings);
+        SwiftJson.RejectNullElements(nameof(PanelKeyBindings), Bindings.Values);
+        SwiftJson.RejectNullElements(nameof(PanelKeyBindings), Bindings.Values.ToArray<IEnumerable<object?>?>());
     }
 
     public bool Equals(PanelKeyBindings? other) =>

@@ -45,9 +45,10 @@ public sealed class ConfigStore
         try { data = File.ReadAllBytes(Path); }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return LauncherConfig.MakeDefault(); }
 
+        // Like Swift's `try?`: any failure to decode means a damaged file (backup + default), never a crash.
         LauncherConfig? config = null;
         try { config = SwiftJson.Deserialize<LauncherConfig>(Encoding.UTF8.GetString(data)); }
-        catch (JsonException) { }
+        catch (Exception e) when (e is not OutOfMemoryException) { }
         if (config != null && config.Categories.Any(c => c.IsFavorites))
         {
             Migrate(config);
