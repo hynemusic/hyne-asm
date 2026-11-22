@@ -16,7 +16,7 @@ sealed class TrayIcon : IDisposable
 {
     readonly AppModel model;
     readonly Forms.NotifyIcon icon;
-    public Action? OnShowIntroduction, OnQuit;
+    public Action? OnShowIntroduction, OnQuit, OnOpenSettings;
     public Action<bool>? OnStreamDeckChanged;
 
     public TrayIcon(AppModel model)
@@ -24,7 +24,7 @@ sealed class TrayIcon : IDisposable
         this.model = model;
         icon = new Forms.NotifyIcon { Icon = LoadIcon(), Text = "HYNE ASM", Visible = true, ContextMenuStrip = new Forms.ContextMenuStrip() };
         icon.ContextMenuStrip.Opening += (_, _) => Build();
-        icon.DoubleClick += (_, _) => OnShowIntroduction?.Invoke();
+        icon.DoubleClick += (_, _) => OnOpenSettings?.Invoke();
         Build();
     }
 
@@ -50,6 +50,7 @@ sealed class TrayIcon : IDisposable
         m.Add(new Forms.ToolStripMenuItem(status) { Enabled = false });
         m.Add(new Forms.ToolStripMenuItem(Loc.T($"{model.Catalog.Items.Count} Plugins, Geräte und Presets", $"{model.Catalog.Items.Count} plugins, devices and presets")) { Enabled = false });
         m.Add(new Forms.ToolStripSeparator());
+        m.Add(Item(Loc.T("Einstellungen …", "Settings …"), () => OnOpenSettings?.Invoke()));
 
         if (model.Config.Profiles.Count > 1)
         {
@@ -64,8 +65,8 @@ sealed class TrayIcon : IDisposable
         }
         m.Add(Item(Loc.T("Plugin-Liste neu laden", "Reload plugin list"), model.RefreshCatalog));
         m.Add(Item(Loc.T("Menü importieren (.hmlmenu) …", "Import menu (.hmlmenu) …"), () => ImportMenu(model)));
-        m.Add(Item(Loc.T("Menü exportieren …", "Export menu …"), ExportMenu));
-        m.Add(Item(Loc.T("LES-Menü importieren …", "Import LES menu …"), ImportLES));
+        m.Add(Item(Loc.T("Menü exportieren …", "Export menu …"), () => ExportMenu(model)));
+        m.Add(Item(Loc.T("LES-Menü importieren …", "Import LES menu …"), () => ImportLES(model)));
         m.Add(new Forms.ToolStripSeparator());
         m.Add(Item(Loc.T("Live-Script installieren …", "Install Live Script …"), () => InstallScript(model)));
         m.Add(new Forms.ToolStripMenuItem(Loc.T("Stream-Deck-Verbindung", "Stream Deck link"), null, (_, _) =>
@@ -137,7 +138,7 @@ sealed class TrayIcon : IDisposable
         }
     }
 
-    void ExportMenu()
+    public static void ExportMenu(AppModel model)
     {
         var dialog = new Microsoft.Win32.SaveFileDialog { Filter = "HYNE ASM menu (*.hmlmenu)|*.hmlmenu", FileName = "HYNE ASM menu." + MenuDocument.FileExtension };
         if (dialog.ShowDialog() != true) return;
@@ -145,7 +146,7 @@ sealed class TrayIcon : IDisposable
         catch (Exception e) { MessageBox.Show(e.Message, "HYNE ASM", MessageBoxButton.OK, MessageBoxImage.Error); }
     }
 
-    void ImportLES()
+    public static void ImportLES(AppModel model)
     {
         if (model.Catalog.Items.Count == 0)
         {

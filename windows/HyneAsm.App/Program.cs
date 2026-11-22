@@ -68,9 +68,10 @@ sealed class Shell : IDisposable
     readonly PanelWindow panel;
     readonly QuickSearchWindow quickSearch;
     readonly TrayIcon tray;
-    readonly StreamDeckServer streamDeck = new();
     readonly CancellationTokenSource stop = new();
     IntroWindow? intro;
+    Settings.SettingsWindow? settings;
+    StreamDeckServer streamDeck => model.StreamDeck;
 
     Shell(Dispatcher ui, AppModel model)
     {
@@ -78,7 +79,8 @@ sealed class Shell : IDisposable
         this.model = model;
         panel = new PanelWindow(model);
         quickSearch = new QuickSearchWindow(model);
-        tray = new TrayIcon(model) { OnShowIntroduction = ShowIntro, OnQuit = () => Application.Current.Shutdown() };
+        tray = new TrayIcon(model) { OnShowIntroduction = ShowIntro, OnOpenSettings = () => ShowSettings(), OnQuit = () => Application.Current.Shutdown() };
+        panel.OnOpenSettings = () => { panel.Hide(); ShowSettings(); };
         tray.OnStreamDeckChanged = on => streamDeck.SetEnabled(on);
         hook = new InputHook(monitor)
         {
@@ -128,6 +130,7 @@ sealed class Shell : IDisposable
         streamDeck.Token = model.Config.StreamDeckToken;
         streamDeck.OnCommand = c => ui.BeginInvoke(() => Perform(c));
         streamDeck.SetEnabled(model.Config.StreamDeckEnabled);
+        model.Changed += () => { streamDeck.Token = model.Config.StreamDeckToken; streamDeck.SetEnabled(model.Config.StreamDeckEnabled); };
         Program.ListenForForwards(line => ui.BeginInvoke(() => Handle(line)), stop.Token);
         if (Onboarding.ShowOnLaunch(model.ConfigExistedAtLaunch, model.Config.OnboardingDone)) ShowIntro();
         else if (!args.Contains("--background"))
@@ -138,8 +141,17 @@ sealed class Shell : IDisposable
 
     void Handle(string message)
     {
-        if (message == "--show") { ShowIntro(); return; }
+        if (message == "--show") { ShowSettings(); return; }
         if (RemoteCommand.TryParse(message) is { } command) Perform(command);
+    }
+
+    public void ShowSettings(int page = 0)
+    {
+        if (settings != null) { settings.Activate(); return; }
+        settings = new Settings.SettingsWindow(model, page);
+        settings.Closed += (_, _) => settings = null;
+        settings.Show();
+        settings.Activate();
     }
 
     void ShowIntro()

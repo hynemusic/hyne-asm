@@ -32,6 +32,7 @@ sealed class AppModel
     /// <summary>Raised on the UI thread after any config, connection or plugin-list change.</summary>
     public event Action? Changed;
     public Hud Hud { get; } = new();
+    public StreamDeckServer StreamDeck { get; } = new();
 
     public AppModel(Dispatcher ui, LauncherConfig loaded, ConfigStore store, bool existed)
     {
@@ -179,6 +180,14 @@ sealed class AppModel
     {
         var doc = MenuDocument.Read(path);
         Backup(Loc.T($"Vor Import von „{doc.Name}“", $"Before importing “{doc.Name}”"));
+        Config.RestoreMenu(doc.Categories);
+        ConfigChanged();
+    }
+
+    public void RestoreVersion(MenuVersion version)
+    {
+        var doc = Versions.Load(version.Id);
+        Backup(Loc.T($"Vor Wiederherstellen von „{version.Name}“", $"Before restoring “{version.Name}”"));
         Config.RestoreMenu(doc.Categories);
         ConfigChanged();
     }

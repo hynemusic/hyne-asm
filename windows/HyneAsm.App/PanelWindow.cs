@@ -21,6 +21,7 @@ sealed class PanelWindow : Overlay
     int page, lastTab;
     int? hovered;
     bool pinned;
+    public Action? OnOpenSettings;
 
     public PanelWindow(AppModel model)
     {
@@ -160,6 +161,14 @@ sealed class PanelWindow : Overlay
         var bar = new Grid { Height = TabBarHeight - 8, Margin = new Thickness(0, 0, 0, 8) };
         bar.Children.Add(new Border { Height = 1, Background = Theme.Stroke, VerticalAlignment = VerticalAlignment.Bottom, Margin = new Thickness(0, 0, 0, -5) });
         bar.Children.Add(tabs);
+        var gear = new TextBlock
+        {
+            Text = "\uE713", FontFamily = Theme.Icons, FontSize = 12, Foreground = Theme.TextTertiary, Width = 26, TextAlignment = TextAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Right, Cursor = Cursors.Hand,
+            Background = Brushes.Transparent, ToolTip = Loc.T("Einstellungen", "Settings"),
+        };
+        gear.MouseLeftButtonUp += (_, _) => OnOpenSettings?.Invoke();
+        bar.Children.Add(gear);
         return bar;
     }
 
