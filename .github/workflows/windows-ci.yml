@@ -1,0 +1,33 @@
+# Proves the C# core equals the Swift core via the shared fixtures in spec/fixtures. Never publishes anything.
+name: Windows core
+
+on:
+  push:
+    paths: ['windows/**', 'spec/**', 'bridge/**', 'Sources/HMLauncherCore/**', 'Tests/**', '.github/workflows/windows-ci.yml']
+  pull_request:
+    paths: ['windows/**', 'spec/**', 'bridge/**', 'Sources/HMLauncherCore/**', 'Tests/**', '.github/workflows/windows-ci.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: .NET tests
+        run: dotnet test windows/HyneAsm.sln
+      - name: Bridge tests
+        run: python -m unittest discover -s bridge/tests
+
+  mac-fixtures:
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use the newest Xcode
+        run: sudo xcode-select -s "$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)"
+      - name: Swift fixture tests
+        run: swift test --filter SharedFixtureTests
