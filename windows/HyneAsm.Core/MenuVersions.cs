@@ -76,12 +76,13 @@ public sealed class MenuVersionStore
 
     public static string DefaultDirectory => Path.Combine(Path.GetDirectoryName(ConfigStore.DefaultPath)!, "Versions");
 
-    /// <summary>Saves a copy of <paramref name="categories"/> as "&lt;milliseconds since 1970&gt;-&lt;8 hex&gt;.json".</summary>
+    /// <summary>Saves a copy of <paramref name="categories"/> as "&lt;milliseconds since 1970&gt;-&lt;8 hex&gt;.json".
+    /// An Unspecified-kind <paramref name="date"/> counts as UTC (<c>SwiftJson.AsUtc</c>), for the id and createdAt alike.</summary>
     public MenuVersion Save(string name, IReadOnlyList<Category> categories, bool isAutomatic, DateTime? date = null)
     {
         System.IO.Directory.CreateDirectory(Directory);
-        var when = date ?? DateTime.UtcNow;
-        var millis = (when.ToUniversalTime() - DateTime.UnixEpoch).Ticks / TimeSpan.TicksPerMillisecond;
+        var when = SwiftJson.AsUtc(date ?? DateTime.UtcNow);
+        var millis = (when - DateTime.UnixEpoch).Ticks / TimeSpan.TicksPerMillisecond;
         var id = $"{millis}-{Guid.NewGuid().ToString("N")[..8].ToUpperInvariant()}";
         var stored = new Stored { IsAutomatic = isAutomatic, Document = new MenuDocument(name, categories, when) };
         AtomicFile.WriteText(FilePath(id), SwiftJson.Serialize(stored, pretty: true));

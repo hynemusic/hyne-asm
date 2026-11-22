@@ -193,11 +193,17 @@ public static class SwiftJson
     // MARK: Dates (.iso8601) and Mac text files
 
     /// <summary>Swift <c>.iso8601</c> encoding: whole seconds (the fraction is dropped), UTC, "Z".</summary>
-    internal static string FormatIso8601(DateTime date)
+    internal static string FormatIso8601(DateTime date) =>
+        AsUtc(date).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture);
+
+    /// <summary>The one rule for a <see cref="DateTime"/> of unknown kind: Local is converted, Unspecified counts as UTC
+    /// (Swift's <c>Date</c> has no kind, and every date the core makes or reads is UTC).</summary>
+    internal static DateTime AsUtc(DateTime date) => date.Kind switch
     {
-        var utc = date.Kind == DateTimeKind.Local ? date.ToUniversalTime() : date;
-        return utc.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture);
-    }
+        DateTimeKind.Local => date.ToUniversalTime(),
+        DateTimeKind.Unspecified => DateTime.SpecifyKind(date, DateTimeKind.Utc),
+        _ => date,
+    };
 
     static readonly System.Text.RegularExpressions.Regex IsoPattern = new(
         @"^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})(?:\.([0-9]+))?(Z|[+-][0-9]{2}:?[0-9]{2})$",

@@ -38,6 +38,20 @@ public class FilesTests : IDisposable
         Assert.Equal(31, Directory.GetFiles(store.Directory).Length);
     }
 
+    /// <summary>An Unspecified-kind date counts as UTC for both the version id and createdAt (it used to be read as local
+    /// time for the id only, so the two differed by the UTC offset).</summary>
+    [Fact]
+    public void MenuVersionStore_save_treats_an_unspecified_date_as_UTC_everywhere()
+    {
+        var store = new MenuVersionStore(Path.Combine(dir, "Versions"));
+        var when = new DateTime(2026, 3, 1, 12, 30, 0, 250, DateTimeKind.Unspecified);
+        var v = store.Save("Manual", SampleConfig().Categories, isAutomatic: false, when);
+        Assert.StartsWith("1772368200250-", v.Id);
+        Assert.Equal(DateTimeKind.Utc, v.Date.Kind);
+        Assert.Equal(DateTime.SpecifyKind(when, DateTimeKind.Utc), v.Date);
+        Assert.Contains("\"createdAt\" : \"2026-03-01T12:30:00Z\"", File.ReadAllText(Path.Combine(store.Directory, v.Id + ".json")));
+    }
+
     [Fact]
     public void MenuVersionStore_save_list_load_delete()
     {
