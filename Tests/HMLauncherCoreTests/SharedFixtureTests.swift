@@ -101,6 +101,14 @@ final class SharedFixtureTests: XCTestCase {
         "edit.config": editScript,
         "colors.labels": editScript,
         "profiles.ops": editScript,
+        "les.parse": lesParse,
+        "les.query": lesQuery,
+        "les.match": lesMatch,
+        "files.hmlmenu": filesMenu,
+        "files.hmlusage": filesUsage,
+        "files.seen": filesSeen,
+        "usage.summary": usageSummary,
+        "presets.match": presetsMatch,
     ]
 
     /// Areas whose `expected` is hand-written (`"reference": "hand"`): the Swift side only validates, and returns `expected`.

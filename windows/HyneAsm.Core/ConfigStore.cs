@@ -100,9 +100,29 @@ public sealed class ConfigStore
     {
         var dir = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(Path))!;
         Directory.CreateDirectory(dir);
-        var bytes = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false).GetBytes(SwiftJson.Serialize(config, pretty: true));
-        var temp = System.IO.Path.Combine(dir, $".{System.IO.Path.GetFileName(Path)}.{Guid.NewGuid():N}.tmp");
-        File.WriteAllBytes(temp, bytes);
-        File.Move(temp, Path, overwrite: true);
+        AtomicFile.Write(Path, SwiftJson.EncodeUtf8(SwiftJson.Serialize(config, pretty: true)));
     }
+}
+
+/// <summary>Swift's <c>write(to:options: .atomic)</c>: a temporary file in the same folder, then moved over the target.
+/// On failure the temporary file is removed and the error passed on. The folder must exist (as in Swift).</summary>
+internal static class AtomicFile
+{
+    public static void Write(string path, byte[] bytes)
+    {
+        var full = System.IO.Path.GetFullPath(path);
+        var temp = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(full)!, $".{System.IO.Path.GetFileName(full)}.{Guid.NewGuid():N}.tmp");
+        try
+        {
+            File.WriteAllBytes(temp, bytes);
+            File.Move(temp, full, overwrite: true);
+        }
+        catch
+        {
+            try { File.Delete(temp); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            throw;
+        }
+    }
+
+    public static void WriteText(string path, string text) => Write(path, SwiftJson.EncodeUtf8(text));
 }

@@ -1,0 +1,306 @@
+{
+  "area": "files.hmlusage",
+  "cases": [
+    {
+      "expected": {
+        "counts": {
+          "audio_effects|eq eight": 3,
+          "plugins|serum 2": 9
+        }
+      },
+      "input": {
+        "read": "{\"format\": \"hyne-asm-usage\", \"version\": 1, \"exported\": \"2026-04-01T08:00:00Z\", \"counts\": {\"plugins|serum 2\": 9, \"audio_effects|eq eight\": 3}}"
+      },
+      "name": "read export"
+    },
+    {
+      "expected": {
+        "counts": {
+          "audio_effects|eq eight": 3,
+          "plugins|serum 2": 9
+        }
+      },
+      "input": {
+        "read": "﻿{\r\n  \"format\": \"hyne-asm-usage\",\r\n  \"version\": 1,\r\n  \"exported\": \"2026-04-01T08:00:00Z\",\r\n  \"counts\": {\r\n    \"plugins|serum 2\": 9,\r\n    \"audio_effects|eq eight\": 3\r\n  }\r\n}"
+      },
+      "name": "read export with BOM and CRLF"
+    },
+    {
+      "expected": {
+        "counts": {
+          "plugins|serum 2": 9
+        }
+      },
+      "input": {
+        "read": "{\"plugins|serum 2\":9}"
+      },
+      "name": "read raw usage.json"
+    },
+    {
+      "expected": {
+        "counts": {
+          "plugins|serum 2": 9
+        }
+      },
+      "input": {
+        "read": "{\"plugins|serum 2\":9.0}"
+      },
+      "name": "read raw with integral double"
+    },
+    {
+      "expected": {
+        "counts": {}
+      },
+      "input": {
+        "read": "{}"
+      },
+      "name": "read empty raw object"
+    },
+    {
+      "expected": {
+        "error": true
+      },
+      "input": {
+        "read": "{\"name\":\"x\"}"
+      },
+      "name": "reject other json"
+    },
+    {
+      "expected": {
+        "error": true
+      },
+      "input": {
+        "read": "nope"
+      },
+      "name": "reject not json"
+    },
+    {
+      "expected": {
+        "error": true
+      },
+      "input": {
+        "read": "{\"format\": \"hm-launcher-menu\", \"version\": 1, \"exported\": \"2026-04-01T08:00:00Z\", \"counts\": {\"plugins|serum 2\": 9, \"audio_effects|eq eight\": 3}}"
+      },
+      "name": "reject export with other format"
+    },
+    {
+      "expected": {
+        "error": true
+      },
+      "input": {
+        "read": "{\"format\": \"hyne-asm-usage\", \"exported\": \"2026-04-01T08:00:00Z\", \"counts\": {\"plugins|serum 2\": 9, \"audio_effects|eq eight\": 3}}"
+      },
+      "name": "reject export without version"
+    },
+    {
+      "expected": {
+        "error": true
+      },
+      "input": {
+        "read": "{\"plugins|a\":1.5}"
+      },
+      "name": "reject fractional count"
+    },
+    {
+      "expected": {
+        "text": "{\n  \"counts\" : {\n    \"audio_effects|eq eight\" : 3,\n    \"plugins|serum 2\" : 9,\n    \"preset|query:UserLibrary#x\\/y.adg\" : 1\n  },\n  \"exported\" : \"2026-04-01T08:00:00Z\",\n  \"format\" : \"hyne-asm-usage\",\n  \"version\" : 1\n}"
+      },
+      "input": {
+        "write": {
+          "counts": {
+            "audio_effects|eq eight": 3,
+            "plugins|serum 2": 9,
+            "preset|query:UserLibrary#x/y.adg": 1
+          },
+          "exported": 1775030400
+        }
+      },
+      "name": "write export"
+    },
+    {
+      "expected": {
+        "text": "{\n  \"counts\" : {\n\n  },\n  \"exported\" : \"1970-01-01T00:00:00Z\",\n  \"format\" : \"hyne-asm-usage\",\n  \"version\" : 1\n}"
+      },
+      "input": {
+        "write": {
+          "counts": {},
+          "exported": 0
+        }
+      },
+      "name": "write empty export"
+    },
+    {
+      "expected": {
+        "counts": {
+          "plugins|a": 3,
+          "plugins|b": 1
+        },
+        "file": {
+          "json": {
+            "plugins|a": 3,
+            "plugins|b": 1
+          }
+        },
+        "reloaded": {
+          "plugins|a": 3,
+          "plugins|b": 1
+        }
+      },
+      "input": {
+        "store": {
+          "ops": [
+            {
+              "key": "plugins|a",
+              "op": "record"
+            },
+            {
+              "counts": {
+                "plugins|a": 2,
+                "plugins|b": 1,
+                "plugins|zero": 0
+              },
+              "op": "merge"
+            }
+          ]
+        }
+      },
+      "name": "store record merge replace"
+    },
+    {
+      "expected": {
+        "counts": {
+          "plugins|c": 5
+        },
+        "file": {
+          "json": {
+            "plugins|c": 5
+          },
+          "text": "{\"plugins|c\":5}"
+        },
+        "reloaded": {
+          "plugins|c": 5
+        }
+      },
+      "input": {
+        "store": {
+          "ops": [
+            {
+              "counts": {
+                "plugins|c": 5,
+                "plugins|d": 0,
+                "plugins|e": -1
+              },
+              "op": "replaceAll"
+            }
+          ]
+        }
+      },
+      "name": "store replaceAll drops zeros"
+    },
+    {
+      "expected": {
+        "counts": {},
+        "file": {
+          "json": {},
+          "text": "{}"
+        },
+        "reloaded": {}
+      },
+      "input": {
+        "store": {
+          "initial": "{\"plugins|a\":3}",
+          "ops": [
+            {
+              "op": "reset"
+            }
+          ]
+        }
+      },
+      "name": "store reset"
+    },
+    {
+      "expected": {
+        "counts": {
+          "plugins|a": 3
+        },
+        "file": {
+          "json": {
+            "plugins|a": 3
+          },
+          "text": "{\"plugins|a\":3}"
+        },
+        "reloaded": {
+          "plugins|a": 3
+        }
+      },
+      "input": {
+        "store": {
+          "initial": "{\"plugins|a\":3,\"plugins|b\":1}",
+          "ops": [
+            {
+              "key": "plugins|b",
+              "op": "remove"
+            }
+          ]
+        }
+      },
+      "name": "store remove"
+    },
+    {
+      "expected": {
+        "counts": {
+          "plugins|a": 1
+        },
+        "file": {
+          "json": {
+            "plugins|a": 1
+          },
+          "text": "{\"plugins|a\":1}"
+        },
+        "reloaded": {
+          "plugins|a": 1
+        }
+      },
+      "input": {
+        "store": {
+          "initial": "{not json",
+          "ops": [
+            {
+              "key": "plugins|a",
+              "op": "record"
+            }
+          ]
+        }
+      },
+      "name": "store corrupt file starts empty"
+    },
+    {
+      "expected": {
+        "counts": {
+          "plugins|a": 4
+        },
+        "file": {
+          "json": {
+            "plugins|a": 4
+          },
+          "text": "{\"plugins|a\":4}"
+        },
+        "reloaded": {
+          "plugins|a": 4
+        }
+      },
+      "input": {
+        "store": {
+          "initial": "﻿{\"plugins|a\":3}",
+          "ops": [
+            {
+              "key": "plugins|a",
+              "op": "record"
+            }
+          ]
+        }
+      },
+      "name": "store loads BOM file"
+    }
+  ]
+}

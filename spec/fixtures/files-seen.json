@@ -1,0 +1,384 @@
+{
+  "area": "files.seen",
+  "cases": [
+    {
+      "expected": {
+        "file": {
+          "json": {
+            "alpha": "0001-01-01T00:00:00Z",
+            "beta": "0001-01-01T00:00:00Z"
+          }
+        },
+        "new": [],
+        "newAfterReload": []
+      },
+      "input": {
+        "probe": {
+          "items": [
+            {
+              "name": "Alpha",
+              "uri": "alpha"
+            },
+            {
+              "name": "Beta",
+              "uri": "beta"
+            }
+          ],
+          "now": 1800000000
+        },
+        "updates": [
+          {
+            "items": [
+              {
+                "name": "Alpha",
+                "uri": "alpha"
+              },
+              {
+                "name": "Beta",
+                "uri": "beta"
+              }
+            ],
+            "now": 1800000000
+          }
+        ]
+      },
+      "name": "first run marks everything known"
+    },
+    {
+      "expected": {
+        "file": {
+          "json": {
+            "alpha": "0001-01-01T00:00:00Z"
+          },
+          "text": "{\"alpha\":\"0001-01-01T00:00:00Z\"}"
+        },
+        "new": [],
+        "newAfterReload": []
+      },
+      "input": {
+        "probe": {
+          "items": [
+            {
+              "name": "Alpha",
+              "uri": "alpha"
+            }
+          ],
+          "now": 1800000000
+        },
+        "updates": [
+          {
+            "items": [
+              {
+                "name": "Alpha",
+                "uri": "alpha"
+              }
+            ],
+            "now": 1800000000
+          }
+        ]
+      },
+      "name": "first run, single item: exact text"
+    },
+    {
+      "expected": {
+        "file": {
+          "json": {
+            "alpha": "0001-01-01T00:00:00Z",
+            "beta": "0001-01-01T00:00:00Z",
+            "gamma": "2027-01-15T08:08:20Z"
+          }
+        },
+        "new": [
+          "gamma"
+        ],
+        "newAfterReload": [
+          "gamma"
+        ]
+      },
+      "input": {
+        "probe": {
+          "items": [
+            {
+              "name": "Alpha",
+              "uri": "alpha"
+            },
+            {
+              "name": "Beta",
+              "uri": "beta"
+            },
+            {
+              "name": "Gamma",
+              "uri": "gamma"
+            }
+          ],
+          "now": 1800001000
+        },
+        "updates": [
+          {
+            "items": [
+              {
+                "name": "Alpha",
+                "uri": "alpha"
+              },
+              {
+                "name": "Beta",
+                "uri": "beta"
+              }
+            ],
+            "now": 1800000000
+          },
+          {
+            "items": [
+              {
+                "name": "Alpha",
+                "uri": "alpha"
+              },
+              {
+                "name": "Beta",
+                "uri": "beta"
+              },
+              {
+                "name": "Gamma",
+                "uri": "gamma"
+              }
+            ],
+            "now": 1800000500
+          }
+        ]
+      },
+      "name": "later items are new"
+    },
+    {
+      "expected": {
+        "file": {
+          "json": {
+            "alpha": "0001-01-01T00:00:00Z",
+            "gamma": "2027-01-15T08:00:00Z"
+          }
+        },
+        "new": [
+          "gamma"
+        ],
+        "newAfterReload": [
+          "gamma"
+        ]
+      },
+      "input": {
+        "initial": "{\"alpha\":\"0001-01-01T00:00:00Z\"}",
+        "probe": {
+          "items": [
+            {
+              "name": "Alpha",
+              "uri": "alpha"
+            },
+            {
+              "name": "Gamma",
+              "uri": "gamma"
+            }
+          ],
+          "now": 1800000000
+        },
+        "updates": [
+          {
+            "items": [
+              {
+                "name": "Alpha",
+                "uri": "alpha"
+              },
+              {
+                "name": "Gamma",
+                "uri": "gamma"
+              }
+            ],
+            "now": 1800000000
+          }
+        ]
+      },
+      "name": "existing file: new item written with its date"
+    },
+    {
+      "expected": {
+        "file": {
+          "json": {
+            "gamma": "2027-01-15T08:00:00Z"
+          },
+          "text": "﻿{\"gamma\":\"2027-01-15T08:00:00Z\"}"
+        },
+        "new": [
+          "gamma"
+        ],
+        "newAfterReload": [
+          "gamma"
+        ]
+      },
+      "input": {
+        "initial": "﻿{\"gamma\":\"2027-01-15T08:00:00Z\"}",
+        "probe": {
+          "items": [
+            {
+              "name": "Gamma",
+              "uri": "gamma"
+            }
+          ],
+          "now": 1800000000
+        },
+        "updates": []
+      },
+      "name": "Mac file with BOM"
+    },
+    {
+      "expected": {
+        "file": {
+          "json": {
+            "alpha": "2027-01-15T08:00:00Z"
+          },
+          "text": "{\"alpha\":\"2027-01-15T08:00:00Z\"}"
+        },
+        "new": [
+          "alpha"
+        ],
+        "newAfterReload": [
+          "alpha"
+        ]
+      },
+      "input": {
+        "initial": "{\"alpha\":\"2027-01-15T08:00:00Z\"}",
+        "probe": {
+          "items": [
+            {
+              "name": "Alpha",
+              "uri": "alpha"
+            }
+          ],
+          "now": 1800000000
+        },
+        "updates": [
+          {
+            "items": [
+              {
+                "name": "Alpha",
+                "uri": "alpha"
+              }
+            ],
+            "now": 1800000000
+          }
+        ]
+      },
+      "name": "nothing changed: file not written"
+    },
+    {
+      "expected": {
+        "file": {
+          "json": {
+            "alpha": "2027-01-15T08:00:00Z"
+          },
+          "text": "{\"alpha\":\"2027-01-15T08:00:00Z\"}"
+        },
+        "new": [],
+        "newAfterReload": []
+      },
+      "input": {
+        "initial": "{\"alpha\":\"2027-01-15T08:00:00Z\"}",
+        "probe": {
+          "items": [
+            {
+              "name": "Alpha",
+              "uri": "alpha"
+            }
+          ],
+          "now": 1801296000
+        },
+        "updates": []
+      },
+      "name": "new ends after 14 days"
+    },
+    {
+      "expected": {
+        "file": {
+          "json": {
+            "alpha": "0001-01-01T00:00:00Z"
+          },
+          "text": "{\"alpha\":\"0001-01-01T00:00:00Z\"}"
+        },
+        "new": [],
+        "newAfterReload": []
+      },
+      "input": {
+        "initial": "[1,2",
+        "probe": {
+          "items": [
+            {
+              "name": "Alpha",
+              "uri": "alpha"
+            }
+          ],
+          "now": 1800000000
+        },
+        "updates": [
+          {
+            "items": [
+              {
+                "name": "Alpha",
+                "uri": "alpha"
+              }
+            ],
+            "now": 1800000000
+          }
+        ]
+      },
+      "name": "corrupt file: first run again"
+    },
+    {
+      "expected": {
+        "file": {
+          "json": {
+            "alpha": "2027-01-15T08:00:00Z",
+            "delta": "2027-01-15T08:00:00Z",
+            "gamma": "2027-01-15T08:00:00Z"
+          }
+        },
+        "new": [
+          "alpha"
+        ],
+        "newAfterReload": [
+          "alpha"
+        ]
+      },
+      "input": {
+        "initial": "{\"alpha\":\"2027-01-15T08:00:00Z\",\"gamma\":\"2027-01-15T08:00:00Z\",\"delta\":\"2027-01-15T08:00:00Z\"}",
+        "probe": {
+          "file": [
+            {
+              "name": "Gamma",
+              "uri": "other"
+            }
+          ],
+          "items": [
+            {
+              "name": "Alpha",
+              "uri": "alpha"
+            },
+            {
+              "name": "Gamma",
+              "uri": "gamma"
+            },
+            {
+              "name": "Delta",
+              "uri": "delta"
+            },
+            {
+              "name": "Gamma",
+              "uri": "gamma-au"
+            }
+          ],
+          "now": 1800000000,
+          "usage": {
+            "plugins|delta": 1
+          }
+        },
+        "updates": []
+      },
+      "name": "filed or inserted items are not new"
+    }
+  ]
+}

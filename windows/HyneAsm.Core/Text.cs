@@ -177,6 +177,58 @@ public static class Text
         return string.Join(" ", parts);
     }
 
+    /// <summary>Swift's <c>split(separator:maxSplits:)</c> on a String: splits at whole Characters equal to
+    /// <paramref name="separator"/>, drops empty pieces (they do not count as splits); the rest after
+    /// <paramref name="maxSplits"/> splits is one piece.</summary>
+    public static List<string> Split(string s, char separator, int maxSplits = int.MaxValue)
+    {
+        var result = new List<string>();
+        var sep = separator.ToString();
+        int start = 0, i = 0;
+        while (i < s.Length)
+        {
+            var n = NextCharacterLength(s, i);
+            if (n == 1 && s[i] == separator || n > 1 && s.Substring(i, n) == sep)
+            {
+                if (i > start)
+                {
+                    result.Add(s[start..i]);
+                    if (result.Count == maxSplits)
+                    {
+                        if (i + n < s.Length) result.Add(s[(i + n)..]);
+                        return result;
+                    }
+                }
+                start = i + n;
+            }
+            i += n;
+        }
+        if (start < s.Length) result.Add(s[start..]);
+        return result;
+    }
+
+    /// <summary>Swift's <c>split(whereSeparator: \.isWhitespace)</c>: the runs of non-whitespace Characters.</summary>
+    public static List<string> SplitWhitespace(string s)
+    {
+        var result = new List<string>();
+        var current = new StringBuilder();
+        foreach (var ch in Characters(s))
+        {
+            if (IsWhitespace(ch)) { if (current.Length > 0) { result.Add(current.ToString()); current.Clear(); } }
+            else current.Append(ch);
+        }
+        if (current.Length > 0) result.Add(current.ToString());
+        return result;
+    }
+
+    /// <summary>Swift's <c>uppercased()</c> of one Character: the invariant mapping plus the full mappings
+    /// .NET lacks ("ß" → "SS", ligatures "ﬁ" → "FI").</summary>
+    internal static string UpperCharacter(string ch) => ch switch
+    {
+        "ß" => "SS", "ﬀ" => "FF", "ﬁ" => "FI", "ﬂ" => "FL", "ﬃ" => "FFI", "ﬄ" => "FFL", "ﬅ" => "ST", "ﬆ" => "ST", "ŉ" => "ʼN",
+        _ => ch.ToUpperInvariant(),
+    };
+
     // MARK: Character properties (Swift: the first scalar's Unicode properties)
 
     /// <summary>Swift <c>Character.isLetter || isNumber</c>: Alphabetic or numeric first scalar.</summary>

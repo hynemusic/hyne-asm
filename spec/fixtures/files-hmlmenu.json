@@ -1,0 +1,250 @@
+{
+  "area": "files.hmlmenu",
+  "cases": [
+    {
+      "expected": {
+        "text": "{\n  \"categories\" : [\n    {\n      \"entries\" : [\n        {\n          \"iconID\" : \"utility\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000001\",\n          \"name\" : \"Utility\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"audio_effects\",\n          \"uri\" : \"query:Utility\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000001\",\n      \"isFavorites\" : true,\n      \"name\" : \"Favorites\"\n    },\n    {\n      \"entries\" : [\n        {\n          \"colorID\" : \"red\",\n          \"displayName\" : \"Serum\\/2\",\n          \"iconID\" : \"synth\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000002\",\n          \"name\" : \"Serum 2\",\n          \"path\" : [\n            \"VST3\",\n            \"Xfer Records\"\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"query:Serum 2\"\n        },\n        {\n          \"children\" : [\n            {\n              \"iconID\" : \"compressor\",\n              \"id\" : \"E0000000-0000-0000-0000-000000000004\",\n              \"name\" : \"Pro-C 2\",\n              \"path\" : [\n                \"VST3\",\n                \"FabFilter\"\n              ],\n              \"source\" : \"plugins\",\n              \"uri\" : \"query:Pro-C 2\"\n            }\n          ],\n          \"iconID\" : \"folder\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000003\",\n          \"name\" : \"Dyn\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000002\",\n      \"isFavorites\" : false,\n      \"name\" : \"Mein Menü\"\n    }\n  ],\n  \"createdAt\" : \"2026-03-01T12:30:00Z\",\n  \"format\" : \"hm-launcher-menu\",\n  \"formatVersion\" : 1,\n  \"name\" : \"Mein Menü\"\n}"
+      },
+      "input": {
+        "text": "{\"format\":\"hm-launcher-menu\",\"formatVersion\":1,\"name\":\"Mein Menü\",\"createdAt\":\"2026-03-01T12:30:00Z\",\"categories\":[{\"id\":\"A0000000-0000-0000-0000-000000000001\",\"name\":\"Favorites\",\"isFavorites\":true,\"entries\":[{\"id\":\"E0000000-0000-0000-0000-000000000001\",\"uri\":\"query:Utility\",\"name\":\"Utility\",\"source\":\"audio_effects\",\"path\":[],\"iconID\":\"utility\"}]},{\"id\":\"A0000000-0000-0000-0000-000000000002\",\"name\":\"Mein Menü\",\"isFavorites\":false,\"entries\":[{\"id\":\"E0000000-0000-0000-0000-000000000002\",\"uri\":\"query:Serum 2\",\"name\":\"Serum 2\",\"source\":\"plugins\",\"path\":[\"VST3\",\"Xfer Records\"],\"iconID\":\"synth\",\"displayName\":\"Serum/2\",\"colorID\":\"red\"},{\"id\":\"E0000000-0000-0000-0000-000000000003\",\"uri\":\"\",\"name\":\"Dyn\",\"source\":\"plugins\",\"path\":[],\"iconID\":\"folder\",\"children\":[{\"id\":\"E0000000-0000-0000-0000-000000000004\",\"uri\":\"query:Pro-C 2\",\"name\":\"Pro-C 2\",\"source\":\"plugins\",\"path\":[\"VST3\",\"FabFilter\"],\"iconID\":\"compressor\"}]}]}]}"
+      },
+      "name": "compact Mac file"
+    },
+    {
+      "expected": {
+        "text": "{\n  \"categories\" : [\n    {\n      \"entries\" : [\n        {\n          \"iconID\" : \"utility\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000001\",\n          \"name\" : \"Utility\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"audio_effects\",\n          \"uri\" : \"query:Utility\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000001\",\n      \"isFavorites\" : true,\n      \"name\" : \"Favorites\"\n    },\n    {\n      \"entries\" : [\n        {\n          \"colorID\" : \"red\",\n          \"displayName\" : \"Serum\\/2\",\n          \"iconID\" : \"synth\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000002\",\n          \"name\" : \"Serum 2\",\n          \"path\" : [\n            \"VST3\",\n            \"Xfer Records\"\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"query:Serum 2\"\n        },\n        {\n          \"children\" : [\n            {\n              \"iconID\" : \"compressor\",\n              \"id\" : \"E0000000-0000-0000-0000-000000000004\",\n              \"name\" : \"Pro-C 2\",\n              \"path\" : [\n                \"VST3\",\n                \"FabFilter\"\n              ],\n              \"source\" : \"plugins\",\n              \"uri\" : \"query:Pro-C 2\"\n            }\n          ],\n          \"iconID\" : \"folder\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000003\",\n          \"name\" : \"Dyn\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000002\",\n      \"isFavorites\" : false,\n      \"name\" : \"Mein Menü\"\n    }\n  ],\n  \"createdAt\" : \"2026-03-01T12:30:00Z\",\n  \"format\" : \"hm-launcher-menu\",\n  \"formatVersion\" : 1,\n  \"name\" : \"Mein Menü\"\n}"
+      },
+      "input": {
+        "text": "{\n  \"categories\" : [\n    {\n      \"entries\" : [\n        {\n          \"iconID\" : \"utility\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000001\",\n          \"name\" : \"Utility\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"audio_effects\",\n          \"uri\" : \"query:Utility\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000001\",\n      \"isFavorites\" : true,\n      \"name\" : \"Favorites\"\n    },\n    {\n      \"entries\" : [\n        {\n          \"colorID\" : \"red\",\n          \"displayName\" : \"Serum\\/2\",\n          \"iconID\" : \"synth\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000002\",\n          \"name\" : \"Serum 2\",\n          \"path\" : [\n            \"VST3\",\n            \"Xfer Records\"\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"query:Serum 2\"\n        },\n        {\n          \"children\" : [\n            {\n              \"iconID\" : \"compressor\",\n              \"id\" : \"E0000000-0000-0000-0000-000000000004\",\n              \"name\" : \"Pro-C 2\",\n              \"path\" : [\n                \"VST3\",\n                \"FabFilter\"\n              ],\n              \"source\" : \"plugins\",\n              \"uri\" : \"query:Pro-C 2\"\n            }\n          ],\n          \"iconID\" : \"folder\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000003\",\n          \"name\" : \"Dyn\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000002\",\n      \"isFavorites\" : false,\n      \"name\" : \"Mein Menü\"\n    }\n  ],\n  \"createdAt\" : \"2026-03-01T12:30:00Z\",\n  \"format\" : \"hm-launcher-menu\",\n  \"formatVersion\" : 1,\n  \"name\" : \"Mein Menü\"\n}"
+      },
+      "name": "pretty Mac file round-trips byte for byte"
+    },
+    {
+      "expected": {
+        "text": "{\n  \"categories\" : [\n    {\n      \"entries\" : [\n        {\n          \"iconID\" : \"utility\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000001\",\n          \"name\" : \"Utility\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"audio_effects\",\n          \"uri\" : \"query:Utility\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000001\",\n      \"isFavorites\" : true,\n      \"name\" : \"Favorites\"\n    }\n  ],\n  \"createdAt\" : \"2026-03-01T12:30:00Z\",\n  \"format\" : \"hm-launcher-menu\",\n  \"formatVersion\" : 2,\n  \"name\" : \"Mein Menü\"\n}"
+      },
+      "input": {
+        "text": "{\"format\": \"hm-launcher-menu\", \"formatVersion\": 2, \"name\": \"Mein Menü\", \"createdAt\": \"2026-03-01T12:30:00Z\", \"categories\": [{\"id\": \"A0000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"isFavorites\": true, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000001\", \"uri\": \"query:Utility\", \"name\": \"Utility\", \"source\": \"audio_effects\", \"path\": [], \"iconID\": \"utility\"}], \"futureCategoryKey\": true}], \"futureKey\": {\"x\": 1}}"
+      },
+      "name": "newer Mac file with unknown keys"
+    },
+    {
+      "expected": {
+        "text": "{\n  \"categories\" : [\n    {\n      \"entries\" : [\n        {\n          \"iconID\" : \"utility\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000001\",\n          \"name\" : \"Utility\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"audio_effects\",\n          \"uri\" : \"query:Utility\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000001\",\n      \"isFavorites\" : true,\n      \"name\" : \"Favorites\"\n    },\n    {\n      \"entries\" : [\n        {\n          \"colorID\" : \"red\",\n          \"displayName\" : \"Serum\\/2\",\n          \"iconID\" : \"synth\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000002\",\n          \"name\" : \"Serum 2\",\n          \"path\" : [\n            \"VST3\",\n            \"Xfer Records\"\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"query:Serum 2\"\n        },\n        {\n          \"children\" : [\n            {\n              \"iconID\" : \"compressor\",\n              \"id\" : \"E0000000-0000-0000-0000-000000000004\",\n              \"name\" : \"Pro-C 2\",\n              \"path\" : [\n                \"VST3\",\n                \"FabFilter\"\n              ],\n              \"source\" : \"plugins\",\n              \"uri\" : \"query:Pro-C 2\"\n            }\n          ],\n          \"iconID\" : \"folder\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000003\",\n          \"name\" : \"Dyn\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000002\",\n      \"isFavorites\" : false,\n      \"name\" : \"Mein Menü\"\n    }\n  ],\n  \"createdAt\" : \"2026-03-01T12:30:00Z\",\n  \"format\" : \"hm-launcher-menu\",\n  \"formatVersion\" : 1,\n  \"name\" : \"Mein Menü\"\n}"
+      },
+      "input": {
+        "text": "{\"format\": \"hm-launcher-menu\", \"formatVersion\": 1, \"name\": \"Mein Menü\", \"createdAt\": \"2026-03-01T13:30:00.75+01:00\", \"categories\": [{\"id\": \"A0000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"isFavorites\": true, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000001\", \"uri\": \"query:Utility\", \"name\": \"Utility\", \"source\": \"audio_effects\", \"path\": [], \"iconID\": \"utility\"}]}, {\"id\": \"A0000000-0000-0000-0000-000000000002\", \"name\": \"Mein Menü\", \"isFavorites\": false, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000002\", \"uri\": \"query:Serum 2\", \"name\": \"Serum 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"Xfer Records\"], \"iconID\": \"synth\", \"displayName\": \"Serum/2\", \"colorID\": \"red\"}, {\"id\": \"E0000000-0000-0000-0000-000000000003\", \"uri\": \"\", \"name\": \"Dyn\", \"source\": \"plugins\", \"path\": [], \"iconID\": \"folder\", \"children\": [{\"id\": \"E0000000-0000-0000-0000-000000000004\", \"uri\": \"query:Pro-C 2\", \"name\": \"Pro-C 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"FabFilter\"], \"iconID\": \"compressor\"}]}]}]}"
+      },
+      "name": "date with offset and fraction"
+    },
+    {
+      "expected": {
+        "text": "{\n  \"categories\" : [\n    {\n      \"entries\" : [\n        {\n          \"iconID\" : \"utility\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000001\",\n          \"name\" : \"Utility\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"audio_effects\",\n          \"uri\" : \"query:Utility\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000001\",\n      \"isFavorites\" : true,\n      \"name\" : \"Favorites\"\n    },\n    {\n      \"entries\" : [\n        {\n          \"colorID\" : \"red\",\n          \"displayName\" : \"Serum\\/2\",\n          \"iconID\" : \"synth\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000002\",\n          \"name\" : \"Serum 2\",\n          \"path\" : [\n            \"VST3\",\n            \"Xfer Records\"\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"query:Serum 2\"\n        },\n        {\n          \"children\" : [\n            {\n              \"iconID\" : \"compressor\",\n              \"id\" : \"E0000000-0000-0000-0000-000000000004\",\n              \"name\" : \"Pro-C 2\",\n              \"path\" : [\n                \"VST3\",\n                \"FabFilter\"\n              ],\n              \"source\" : \"plugins\",\n              \"uri\" : \"query:Pro-C 2\"\n            }\n          ],\n          \"iconID\" : \"folder\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000003\",\n          \"name\" : \"Dyn\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000002\",\n      \"isFavorites\" : false,\n      \"name\" : \"Mein Menü\"\n    }\n  ],\n  \"createdAt\" : \"2026-03-01T12:30:00Z\",\n  \"format\" : \"hm-launcher-menu\",\n  \"formatVersion\" : 1,\n  \"name\" : \"Mein Menü\"\n}"
+      },
+      "input": {
+        "text": "﻿{\r\n  \"format\": \"hm-launcher-menu\",\r\n  \"formatVersion\": 1,\r\n  \"name\": \"Mein Menü\",\r\n  \"createdAt\": \"2026-03-01T12:30:00Z\",\r\n  \"categories\": [\r\n    {\r\n      \"id\": \"A0000000-0000-0000-0000-000000000001\",\r\n      \"name\": \"Favorites\",\r\n      \"isFavorites\": true,\r\n      \"entries\": [\r\n        {\r\n          \"id\": \"E0000000-0000-0000-0000-000000000001\",\r\n          \"uri\": \"query:Utility\",\r\n          \"name\": \"Utility\",\r\n          \"source\": \"audio_effects\",\r\n          \"path\": [],\r\n          \"iconID\": \"utility\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"id\": \"A0000000-0000-0000-0000-000000000002\",\r\n      \"name\": \"Mein Menü\",\r\n      \"isFavorites\": false,\r\n      \"entries\": [\r\n        {\r\n          \"id\": \"E0000000-0000-0000-0000-000000000002\",\r\n          \"uri\": \"query:Serum 2\",\r\n          \"name\": \"Serum 2\",\r\n          \"source\": \"plugins\",\r\n          \"path\": [\r\n            \"VST3\",\r\n            \"Xfer Records\"\r\n          ],\r\n          \"iconID\": \"synth\",\r\n          \"displayName\": \"Serum/2\",\r\n          \"colorID\": \"red\"\r\n        },\r\n        {\r\n          \"id\": \"E0000000-0000-0000-0000-000000000003\",\r\n          \"uri\": \"\",\r\n          \"name\": \"Dyn\",\r\n          \"source\": \"plugins\",\r\n          \"path\": [],\r\n          \"iconID\": \"folder\",\r\n          \"children\": [\r\n            {\r\n              \"id\": \"E0000000-0000-0000-0000-000000000004\",\r\n              \"uri\": \"query:Pro-C 2\",\r\n              \"name\": \"Pro-C 2\",\r\n              \"source\": \"plugins\",\r\n              \"path\": [\r\n                \"VST3\",\r\n                \"FabFilter\"\r\n              ],\r\n              \"iconID\": \"compressor\"\r\n            }\r\n          ]\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}"
+      },
+      "name": "BOM and CRLF"
+    },
+    {
+      "expected": {
+        "error": "unreadable"
+      },
+      "input": {
+        "text": "{\"hello\": 1}"
+      },
+      "name": "not a menu file"
+    },
+    {
+      "expected": {
+        "error": "notAMenuFile"
+      },
+      "input": {
+        "text": "{\"format\": \"hyne-asm-usage\", \"formatVersion\": 1, \"name\": \"Mein Men\\u00fc\", \"createdAt\": \"2026-03-01T12:30:00Z\", \"categories\": [{\"id\": \"A0000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"isFavorites\": true, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000001\", \"uri\": \"query:Utility\", \"name\": \"Utility\", \"source\": \"audio_effects\", \"path\": [], \"iconID\": \"utility\"}]}, {\"id\": \"A0000000-0000-0000-0000-000000000002\", \"name\": \"Mein Men\\u00fc\", \"isFavorites\": false, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000002\", \"uri\": \"query:Serum 2\", \"name\": \"Serum 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"Xfer Records\"], \"iconID\": \"synth\", \"displayName\": \"Serum/2\", \"colorID\": \"red\"}, {\"id\": \"E0000000-0000-0000-0000-000000000003\", \"uri\": \"\", \"name\": \"Dyn\", \"source\": \"plugins\", \"path\": [], \"iconID\": \"folder\", \"children\": [{\"id\": \"E0000000-0000-0000-0000-000000000004\", \"uri\": \"query:Pro-C 2\", \"name\": \"Pro-C 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"FabFilter\"], \"iconID\": \"compressor\"}]}]}]}"
+      },
+      "name": "wrong format id"
+    },
+    {
+      "expected": {
+        "error": "unreadable"
+      },
+      "input": {
+        "text": "{\"format\": \"hm-launcher-menu\", \"formatVersion\": 1, \"name\": \"Mein Men\\u00fc\", \"createdAt\": \"2026-03-01T12:30:00\", \"categories\": [{\"id\": \"A0000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"isFavorites\": true, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000001\", \"uri\": \"query:Utility\", \"name\": \"Utility\", \"source\": \"audio_effects\", \"path\": [], \"iconID\": \"utility\"}]}, {\"id\": \"A0000000-0000-0000-0000-000000000002\", \"name\": \"Mein Men\\u00fc\", \"isFavorites\": false, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000002\", \"uri\": \"query:Serum 2\", \"name\": \"Serum 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"Xfer Records\"], \"iconID\": \"synth\", \"displayName\": \"Serum/2\", \"colorID\": \"red\"}, {\"id\": \"E0000000-0000-0000-0000-000000000003\", \"uri\": \"\", \"name\": \"Dyn\", \"source\": \"plugins\", \"path\": [], \"iconID\": \"folder\", \"children\": [{\"id\": \"E0000000-0000-0000-0000-000000000004\", \"uri\": \"query:Pro-C 2\", \"name\": \"Pro-C 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"FabFilter\"], \"iconID\": \"compressor\"}]}]}]}"
+      },
+      "name": "date without time zone"
+    },
+    {
+      "expected": {
+        "error": "unreadable"
+      },
+      "input": {
+        "text": "{\"format\": \"hm-launcher-menu\", \"formatVersion\": 1, \"name\": \"Mein Men\\u00fc\", \"createdAt\": \"2026-03-01T12:30:00Z\", \"categories\": [{\"id\": \"A0000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"is"
+      },
+      "name": "truncated"
+    },
+    {
+      "expected": {
+        "text": "{\n  \"categories\" : [\n\n  ],\n  \"createdAt\" : \"2026-03-01T12:30:00Z\",\n  \"format\" : \"hm-launcher-menu\",\n  \"formatVersion\" : 1,\n  \"name\" : \"Mein Menü\"\n}"
+      },
+      "input": {
+        "text": "{\"format\": \"hm-launcher-menu\", \"formatVersion\": 1, \"name\": \"Mein Men\\u00fc\", \"createdAt\": \"2026-03-01T12:30:00Z\", \"categories\": []}"
+      },
+      "name": "empty categories"
+    },
+    {
+      "expected": {
+        "listed": [
+          {
+            "categoryCount": 2,
+            "date": 1772368200,
+            "entryCount": 3,
+            "id": "1772368200250-HEX8",
+            "isAutomatic": true,
+            "name": "Vor LES-Import"
+          }
+        ],
+        "text": "{\n  \"document\" : {\n    \"categories\" : [\n      {\n        \"entries\" : [\n          {\n            \"iconID\" : \"utility\",\n            \"id\" : \"E0000000-0000-0000-0000-000000000001\",\n            \"name\" : \"Utility\",\n            \"path\" : [\n\n            ],\n            \"source\" : \"audio_effects\",\n            \"uri\" : \"query:Utility\"\n          }\n        ],\n        \"id\" : \"A0000000-0000-0000-0000-000000000001\",\n        \"isFavorites\" : true,\n        \"name\" : \"Favorites\"\n      },\n      {\n        \"entries\" : [\n          {\n            \"colorID\" : \"red\",\n            \"displayName\" : \"Serum\\/2\",\n            \"iconID\" : \"synth\",\n            \"id\" : \"E0000000-0000-0000-0000-000000000002\",\n            \"name\" : \"Serum 2\",\n            \"path\" : [\n              \"VST3\",\n              \"Xfer Records\"\n            ],\n            \"source\" : \"plugins\",\n            \"uri\" : \"query:Serum 2\"\n          },\n          {\n            \"children\" : [\n              {\n                \"iconID\" : \"compressor\",\n                \"id\" : \"E0000000-0000-0000-0000-000000000004\",\n                \"name\" : \"Pro-C 2\",\n                \"path\" : [\n                  \"VST3\",\n                  \"FabFilter\"\n                ],\n                \"source\" : \"plugins\",\n                \"uri\" : \"query:Pro-C 2\"\n              }\n            ],\n            \"iconID\" : \"folder\",\n            \"id\" : \"E0000000-0000-0000-0000-000000000003\",\n            \"name\" : \"Dyn\",\n            \"path\" : [\n\n            ],\n            \"source\" : \"plugins\",\n            \"uri\" : \"\"\n          }\n        ],\n        \"id\" : \"A0000000-0000-0000-0000-000000000002\",\n        \"isFavorites\" : false,\n        \"name\" : \"Mein Menü\"\n      }\n    ],\n    \"createdAt\" : \"2026-03-01T12:30:00Z\",\n    \"format\" : \"hm-launcher-menu\",\n    \"formatVersion\" : 1,\n    \"name\" : \"Vor LES-Import\"\n  },\n  \"isAutomatic\" : true\n}",
+        "version": {
+          "categoryCount": 2,
+          "date": 1772368200.25,
+          "entryCount": 3,
+          "id": "1772368200250-HEX8",
+          "isAutomatic": true,
+          "name": "Vor LES-Import"
+        }
+      },
+      "input": {
+        "save": {
+          "categories": [
+            {
+              "entries": [
+                {
+                  "iconID": "utility",
+                  "id": "E0000000-0000-0000-0000-000000000001",
+                  "name": "Utility",
+                  "path": [],
+                  "source": "audio_effects",
+                  "uri": "query:Utility"
+                }
+              ],
+              "id": "A0000000-0000-0000-0000-000000000001",
+              "isFavorites": true,
+              "name": "Favorites"
+            },
+            {
+              "entries": [
+                {
+                  "colorID": "red",
+                  "displayName": "Serum/2",
+                  "iconID": "synth",
+                  "id": "E0000000-0000-0000-0000-000000000002",
+                  "name": "Serum 2",
+                  "path": [
+                    "VST3",
+                    "Xfer Records"
+                  ],
+                  "source": "plugins",
+                  "uri": "query:Serum 2"
+                },
+                {
+                  "children": [
+                    {
+                      "iconID": "compressor",
+                      "id": "E0000000-0000-0000-0000-000000000004",
+                      "name": "Pro-C 2",
+                      "path": [
+                        "VST3",
+                        "FabFilter"
+                      ],
+                      "source": "plugins",
+                      "uri": "query:Pro-C 2"
+                    }
+                  ],
+                  "iconID": "folder",
+                  "id": "E0000000-0000-0000-0000-000000000003",
+                  "name": "Dyn",
+                  "path": [],
+                  "source": "plugins",
+                  "uri": ""
+                }
+              ],
+              "id": "A0000000-0000-0000-0000-000000000002",
+              "isFavorites": false,
+              "name": "Mein Menü"
+            }
+          ],
+          "date": 1772368200.25,
+          "isAutomatic": true,
+          "name": "Vor LES-Import"
+        }
+      },
+      "name": "version save automatic"
+    },
+    {
+      "expected": {
+        "listed": [
+          {
+            "categoryCount": 0,
+            "date": 100,
+            "entryCount": 0,
+            "id": "100000-HEX8",
+            "isAutomatic": false,
+            "name": "Mine"
+          }
+        ],
+        "text": "{\n  \"document\" : {\n    \"categories\" : [\n\n    ],\n    \"createdAt\" : \"1970-01-01T00:01:40Z\",\n    \"format\" : \"hm-launcher-menu\",\n    \"formatVersion\" : 1,\n    \"name\" : \"Mine\"\n  },\n  \"isAutomatic\" : false\n}",
+        "version": {
+          "categoryCount": 0,
+          "date": 100,
+          "entryCount": 0,
+          "id": "100000-HEX8",
+          "isAutomatic": false,
+          "name": "Mine"
+        }
+      },
+      "input": {
+        "save": {
+          "categories": [],
+          "date": 100,
+          "isAutomatic": false,
+          "name": "Mine"
+        }
+      },
+      "name": "version save manual, no categories"
+    },
+    {
+      "expected": {
+        "list": [
+          {
+            "categoryCount": 2,
+            "date": 1769904000,
+            "entryCount": 3,
+            "id": "2000-BBBBBBBB",
+            "isAutomatic": false,
+            "name": "new"
+          },
+          {
+            "categoryCount": 2,
+            "date": 1767225600,
+            "entryCount": 3,
+            "id": "1000-AAAAAAAA",
+            "isAutomatic": true,
+            "name": "old"
+          }
+        ],
+        "loaded": "{\n  \"categories\" : [\n    {\n      \"entries\" : [\n        {\n          \"iconID\" : \"utility\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000001\",\n          \"name\" : \"Utility\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"audio_effects\",\n          \"uri\" : \"query:Utility\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000001\",\n      \"isFavorites\" : true,\n      \"name\" : \"Favorites\"\n    },\n    {\n      \"entries\" : [\n        {\n          \"colorID\" : \"red\",\n          \"displayName\" : \"Serum\\/2\",\n          \"iconID\" : \"synth\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000002\",\n          \"name\" : \"Serum 2\",\n          \"path\" : [\n            \"VST3\",\n            \"Xfer Records\"\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"query:Serum 2\"\n        },\n        {\n          \"children\" : [\n            {\n              \"iconID\" : \"compressor\",\n              \"id\" : \"E0000000-0000-0000-0000-000000000004\",\n              \"name\" : \"Pro-C 2\",\n              \"path\" : [\n                \"VST3\",\n                \"FabFilter\"\n              ],\n              \"source\" : \"plugins\",\n              \"uri\" : \"query:Pro-C 2\"\n            }\n          ],\n          \"iconID\" : \"folder\",\n          \"id\" : \"E0000000-0000-0000-0000-000000000003\",\n          \"name\" : \"Dyn\",\n          \"path\" : [\n\n          ],\n          \"source\" : \"plugins\",\n          \"uri\" : \"\"\n        }\n      ],\n      \"id\" : \"A0000000-0000-0000-0000-000000000002\",\n      \"isFavorites\" : false,\n      \"name\" : \"Mein Menü\"\n    }\n  ],\n  \"createdAt\" : \"2026-02-01T00:00:00Z\",\n  \"format\" : \"hm-launcher-menu\",\n  \"formatVersion\" : 1,\n  \"name\" : \"new\"\n}"
+      },
+      "input": {
+        "files": {
+          "1000-AAAAAAAA.json": "{\"isAutomatic\": true, \"document\": {\"format\": \"hm-launcher-menu\", \"formatVersion\": 1, \"name\": \"old\", \"createdAt\": \"2026-01-01T00:00:00Z\", \"categories\": [{\"id\": \"A0000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"isFavorites\": true, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000001\", \"uri\": \"query:Utility\", \"name\": \"Utility\", \"source\": \"audio_effects\", \"path\": [], \"iconID\": \"utility\"}]}, {\"id\": \"A0000000-0000-0000-0000-000000000002\", \"name\": \"Mein Men\\u00fc\", \"isFavorites\": false, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000002\", \"uri\": \"query:Serum 2\", \"name\": \"Serum 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"Xfer Records\"], \"iconID\": \"synth\", \"displayName\": \"Serum/2\", \"colorID\": \"red\"}, {\"id\": \"E0000000-0000-0000-0000-000000000003\", \"uri\": \"\", \"name\": \"Dyn\", \"source\": \"plugins\", \"path\": [], \"iconID\": \"folder\", \"children\": [{\"id\": \"E0000000-0000-0000-0000-000000000004\", \"uri\": \"query:Pro-C 2\", \"name\": \"Pro-C 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"FabFilter\"], \"iconID\": \"compressor\"}]}]}]}}",
+          "2000-BBBBBBBB.json": "{\"isAutomatic\": false, \"document\": {\"format\": \"hm-launcher-menu\", \"formatVersion\": 1, \"name\": \"new\", \"createdAt\": \"2026-02-01T00:00:00Z\", \"categories\": [{\"id\": \"A0000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"isFavorites\": true, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000001\", \"uri\": \"query:Utility\", \"name\": \"Utility\", \"source\": \"audio_effects\", \"path\": [], \"iconID\": \"utility\"}]}, {\"id\": \"A0000000-0000-0000-0000-000000000002\", \"name\": \"Mein Men\\u00fc\", \"isFavorites\": false, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000002\", \"uri\": \"query:Serum 2\", \"name\": \"Serum 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"Xfer Records\"], \"iconID\": \"synth\", \"displayName\": \"Serum/2\", \"colorID\": \"red\"}, {\"id\": \"E0000000-0000-0000-0000-000000000003\", \"uri\": \"\", \"name\": \"Dyn\", \"source\": \"plugins\", \"path\": [], \"iconID\": \"folder\", \"children\": [{\"id\": \"E0000000-0000-0000-0000-000000000004\", \"uri\": \"query:Pro-C 2\", \"name\": \"Pro-C 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"FabFilter\"], \"iconID\": \"compressor\"}]}]}]}}",
+          "3000-CCCCCCCC.json": "{broken",
+          "4000-DDDDDDDD.JSON": "{\"isAutomatic\": false, \"document\": {\"format\": \"hm-launcher-menu\", \"formatVersion\": 1, \"name\": \"upper ext\", \"createdAt\": \"2026-03-01T12:30:00Z\", \"categories\": [{\"id\": \"A0000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"isFavorites\": true, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000001\", \"uri\": \"query:Utility\", \"name\": \"Utility\", \"source\": \"audio_effects\", \"path\": [], \"iconID\": \"utility\"}]}, {\"id\": \"A0000000-0000-0000-0000-000000000002\", \"name\": \"Mein Men\\u00fc\", \"isFavorites\": false, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000002\", \"uri\": \"query:Serum 2\", \"name\": \"Serum 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"Xfer Records\"], \"iconID\": \"synth\", \"displayName\": \"Serum/2\", \"colorID\": \"red\"}, {\"id\": \"E0000000-0000-0000-0000-000000000003\", \"uri\": \"\", \"name\": \"Dyn\", \"source\": \"plugins\", \"path\": [], \"iconID\": \"folder\", \"children\": [{\"id\": \"E0000000-0000-0000-0000-000000000004\", \"uri\": \"query:Pro-C 2\", \"name\": \"Pro-C 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"FabFilter\"], \"iconID\": \"compressor\"}]}]}]}}",
+          "notes.txt": "hello"
+        },
+        "load": "2000-BBBBBBBB"
+      },
+      "name": "version list newest first, skips other files"
+    }
+  ]
+}

@@ -190,6 +190,94 @@ public static class SwiftJson
         if (lists.Any(l => l != null && l.Any(x => x is null))) throw new JsonException($"{type}: null element in a list");
     }
 
+    // MARK: Dates (.iso8601) and Mac text files
+
+    /// <summary>Swift <c>.iso8601</c> encoding: whole seconds (the fraction is dropped), UTC, "Z".</summary>
+    internal static string FormatIso8601(DateTime date)
+    {
+        var utc = date.Kind == DateTimeKind.Local ? date.ToUniversalTime() : date;
+        return utc.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture);
+    }
+
+    static readonly System.Text.RegularExpressions.Regex IsoPattern = new(
+        @"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(Z|[+-]\d{2}:?\d{2})$",
+        System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    /// <summary>Swift <c>.iso8601</c> decoding: "T" and a zone ("Z", "+01:00", "+0100") required, a fraction accepted.</summary>
+    internal static bool TryParseIso8601(string s, out DateTime utc)
+    {
+        utc = default;
+        var m = IsoPattern.Match(s);
+        if (!m.Success) return false;
+        int G(int i) => int.Parse(m.Groups[i].Value, CultureInfo.InvariantCulture);
+        try
+        {
+            var local = new DateTime(G(1), G(2), G(3), G(4), G(5), G(6), DateTimeKind.Utc);
+            if (m.Groups[7].Success)
+            {
+                var digits = (m.Groups[7].Value + "0000000")[..7];
+                local = local.AddTicks(long.Parse(digits, CultureInfo.InvariantCulture));
+            }
+            var zone = m.Groups[8].Value;
+            if (zone != "Z")
+            {
+                var z = zone.Replace(":", "");
+                var minutes = int.Parse(z[1..3], CultureInfo.InvariantCulture) * 60 + int.Parse(z[3..5], CultureInfo.InvariantCulture);
+                local = local.AddMinutes(z[0] == '+' ? -minutes : minutes);
+            }
+            utc = local;
+            return true;
+        }
+        catch (ArgumentOutOfRangeException) { return false; }
+    }
+
+    /// <summary>A <c>Date</c> property written with Swift's <c>.iso8601</c> strategy.</summary>
+    internal sealed class Iso8601Converter : JsonConverter<DateTime>
+    {
+        public override DateTime Read(ref Utf8JsonReader reader, Type t, JsonSerializerOptions o)
+        {
+            if (reader.TokenType != JsonTokenType.String || !TryParseIso8601(reader.GetString()!, out var d))
+                throw new JsonException("not an ISO-8601 date");
+            return d;
+        }
+
+        public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions o) =>
+            writer.WriteStringValue(FormatIso8601(value));
+    }
+
+    static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+
+    /// <summary>UTF-8 file bytes as text; invalid UTF-8 throws (as <c>JSONDecoder</c> rejects it). A BOM is kept.</summary>
+    internal static string DecodeUtf8(byte[] data) => StrictUtf8.GetString(data);
+
+    /// <summary>Text as file bytes: UTF-8 without a BOM.</summary>
+    internal static byte[] EncodeUtf8(string text) => StrictUtf8.GetBytes(text);
+
+    /// <summary>Swift <c>[String: Int]</c> decoding: an object of integral numbers (1.0 counts, 1.5 does not).
+    /// Keys are compared canonically; a repeated key keeps the last value. A leading BOM is skipped.</summary>
+    internal static Dictionary<string, int> ReadCounts(string json)
+    {
+        using var doc = JsonDocument.Parse(json.StartsWith('﻿') ? json[1..] : json);
+        return ReadCounts(doc.RootElement);
+    }
+
+    internal static Dictionary<string, int> ReadCounts(JsonElement e)
+    {
+        if (e.ValueKind != JsonValueKind.Object) throw new JsonException("counts must be an object");
+        var result = new Dictionary<string, int>(Text.Canonical);
+        foreach (var p in e.EnumerateObject()) result[p.Name] = ReadInt(p.Value);
+        return result;
+    }
+
+    /// <summary>Swift <c>Int</c> decoding of a JSON number: integral values only (also written as 9.0).</summary>
+    internal static int ReadInt(JsonElement v)
+    {
+        if (v.ValueKind != JsonValueKind.Number) throw new JsonException("not a number");
+        if (v.TryGetInt32(out var i)) return i;
+        if (v.TryGetDouble(out var d) && d == Math.Floor(d) && d >= int.MinValue && d <= int.MaxValue) return (int)d;
+        throw new JsonException("not an Int");
+    }
+
     // MARK: Converters
 
     sealed class UuidConverter : JsonConverter<Guid>

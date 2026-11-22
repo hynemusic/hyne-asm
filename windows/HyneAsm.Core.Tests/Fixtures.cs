@@ -46,6 +46,14 @@ public static partial class Fixtures
         ["edit.config"] = EditScriptOp,
         ["colors.labels"] = EditScriptOp,
         ["profiles.ops"] = EditScriptOp,
+        ["les.parse"] = LesParse,
+        ["les.query"] = LesQuery,
+        ["les.match"] = LesMatch,
+        ["files.hmlmenu"] = FilesMenu,
+        ["files.hmlusage"] = FilesUsage,
+        ["files.seen"] = FilesSeen,
+        ["usage.summary"] = UsageSummaryOp,
+        ["presets.match"] = PresetsMatch,
     };
 
     // MARK: Keys and text
