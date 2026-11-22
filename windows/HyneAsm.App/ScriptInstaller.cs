@@ -24,11 +24,17 @@ static class ScriptInstaller
                         .Select(d => Path.Combine(d, "Preferences", "Library.cfg"))
                         .FirstOrDefault(File.Exists)
                     : null;
-                if (cfg != null)
+                // <UserLibrary><LibraryProject><ProjectName Value="User Library"/><ProjectPath Value="…\Ableton"/>:
+                // ProjectPath is the folder that *contains* the User Library, ProjectName its folder name.
+                if (cfg != null && Regex.Match(File.ReadAllText(cfg), @"<UserLibrary>(.*?)</UserLibrary>", RegexOptions.Singleline) is { Success: true } block)
                 {
-                    var text = File.ReadAllText(cfg);
-                    var user = Regex.Match(text, @"<UserLibrary>.*?<ProjectPath\s+Value=""([^""]+)""", RegexOptions.Singleline);
-                    if (user.Success && Directory.Exists(user.Groups[1].Value)) return user.Groups[1].Value;
+                    var name = Regex.Match(block.Groups[1].Value, @"<ProjectName\s+Value=""([^""]*)""");
+                    var parent = Regex.Match(block.Groups[1].Value, @"<ProjectPath\s+Value=""([^""]+)""");
+                    if (parent.Success)
+                    {
+                        var library = Path.Combine(parent.Groups[1].Value, name.Success && name.Groups[1].Value.Length > 0 ? name.Groups[1].Value : "User Library");
+                        if (Directory.Exists(library)) return library;
+                    }
                 }
             }
             catch (Exception) { /* fall back to the default */ }
@@ -57,5 +63,13 @@ static class ScriptInstaller
         }
         var legacy = Path.Combine(ScriptsFolder, "HMLauncherBridge");
         try { if (Directory.Exists(legacy)) Directory.Delete(legacy, recursive: true); } catch (Exception) { }
+        // The first Windows test build put the script one folder too high (…\Ableton\Remote Scripts); remove that copy.
+        var misplaced = Path.Combine(Path.GetDirectoryName(UserLibrary)!, "Remote Scripts", "ASMbridge");
+        try
+        {
+            if (!string.Equals(misplaced, Target, StringComparison.OrdinalIgnoreCase) && Directory.Exists(misplaced))
+                Directory.Delete(misplaced, recursive: true);
+        }
+        catch (Exception) { }
     }
 }
