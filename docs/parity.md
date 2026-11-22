@@ -62,4 +62,10 @@ Every user-facing feature of HYNE ASM with its status on both platforms. Windows
 - Keypad Enter, keypad = and keypad Clear have no Windows translation in `KeyTranslation` (such combos are skipped).
 - The Windows default paths for the User Library (`%USERPROFILE%\Documents\Ableton\User Library`, or the one in Live's
   `Library.cfg`) and for LES's config are unconfirmed; check them on a real PC.
+- **A store file that exists but can't be read is not treated as missing** (Windows: antivirus, OneDrive/Dropbox and
+  editors lock files). `ConfigStore.Load` retries briefly, then throws `ConfigUnreadableException` and leaves the file
+  alone; the app must show it (retry / quit) and must not save a default over it. `UsageStore` and `SeenStore` become
+  `IsReadOnly` (counts and dates change in memory only). On the Mac such a file counts as missing.
+- UI language: `LanguageExtensions.Resolve` uses the Windows display language (`CultureInfo.CurrentUICulture`) where the
+  Mac uses `Locale.preferredLanguages`.
 - `hyneasm://` and Stream Deck links: copy `Link().OriginalString` to the clipboard (not `ToString()`, which unescapes).
