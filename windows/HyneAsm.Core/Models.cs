@@ -71,6 +71,35 @@ public sealed record Entry : IJsonOnDeserialized
     [JsonIgnore] public string Title => DisplayName ?? Name;
     [JsonIgnore] public bool IsFolder => Children != null;
 
+    /// <summary>For the JSON reader.</summary>
+    public Entry() { }
+
+    /// <summary>Swift <c>init(item:iconID:)</c>.</summary>
+    public Entry(PluginItem item, string iconID = IconCatalog.DefaultID)
+    {
+        Id = Guid.NewGuid(); Uri = item.Uri; Name = item.Name; Source = item.Source; Path = item.Path.ToList(); IconID = iconID;
+    }
+
+    /// <summary>Swift <c>init(action:)</c>.</summary>
+    public Entry(LiveAction action)
+    {
+        Id = Guid.NewGuid(); Uri = ""; Name = action.Title; Source = ItemSource.Plugins; Path = new();
+        IconID = action.Kind.IconID(); Action = action;
+    }
+
+    /// <summary>Swift <c>init(folderNamed:)</c>: an empty folder.</summary>
+    public static Entry FolderNamed(string name) => new()
+    {
+        Id = Guid.NewGuid(), Uri = "", Name = name, Source = ItemSource.Plugins, Path = new(), IconID = IconCatalog.FolderID,
+        Children = new(),
+    };
+
+    /// <summary>Swift <c>init(chainNamed:steps:iconID:)</c>.</summary>
+    public static Entry ChainNamed(string name, List<PluginItem> steps, string iconID = "rack") => new()
+    {
+        Id = Guid.NewGuid(), Uri = "", Name = name, Source = ItemSource.Plugins, Path = new(), IconID = iconID, Chain = steps,
+    };
+
     void IJsonOnDeserialized.OnDeserialized()
     {
         SwiftJson.RejectNull(nameof(Entry), Uri, Name, Path, IconID);

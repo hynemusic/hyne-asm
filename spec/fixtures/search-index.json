@@ -1,0 +1,1685 @@
+{
+  "area": "search.index",
+  "cases": [
+    {
+      "expected": {
+        "rows": [
+          {
+            "alternatives": [],
+            "iconID": "eq",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "EQ Eight",
+            "path": [],
+            "popularity": 92,
+            "title": "EQ Eight",
+            "uri": "eq",
+            "usageKey": "audio_effects|eq eight"
+          },
+          {
+            "alternatives": [
+              "aau"
+            ],
+            "iconID": "eq",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "popularity": 100,
+            "title": "Pro-Q 4",
+            "uri": "a3",
+            "usageKey": "plugins|pro-q 4"
+          }
+        ],
+        "usageKeys": [
+          "plugins|pro-q 4",
+          "plugins|pro-q 4",
+          "audio_effects|eq eight"
+        ]
+      },
+      "input": {
+        "items": [
+          {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "a3"
+          },
+          {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "aau"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          }
+        ]
+      },
+      "name": "index rows and lookups"
+    },
+    {
+      "expected": {
+        "rows": [
+          {
+            "alternatives": [
+              "m"
+            ],
+            "iconID": "console",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "REDD17 Stereo",
+            "path": [
+              "VST3",
+              "Waves"
+            ],
+            "popularity": 0,
+            "title": "REDD17",
+            "uri": "s",
+            "usageKey": "plugins|redd17"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Solo",
+            "path": [
+              "VST3",
+              "Y"
+            ],
+            "popularity": 0,
+            "title": "Solo",
+            "uri": "x",
+            "usageKey": "plugins|solo"
+          }
+        ],
+        "usageKeys": [
+          "plugins|redd17",
+          "plugins|redd17",
+          "plugins|solo"
+        ]
+      },
+      "input": {
+        "items": [
+          {
+            "name": "REDD17 Mono",
+            "path": [
+              "VST3",
+              "Waves"
+            ],
+            "source": "plugins",
+            "uri": "m"
+          },
+          {
+            "name": "REDD17 Stereo",
+            "path": [
+              "VST3",
+              "Waves"
+            ],
+            "source": "plugins",
+            "uri": "s"
+          },
+          {
+            "name": "Solo",
+            "path": [
+              "VST3",
+              "Y"
+            ],
+            "source": "plugins",
+            "uri": "x"
+          }
+        ]
+      },
+      "name": "alternatives"
+    },
+    {
+      "expected": {
+        "rows": [
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Lone Stereo",
+            "path": [
+              "VST3",
+              "Y"
+            ],
+            "popularity": 0,
+            "title": "Lone Stereo",
+            "uri": "l",
+            "usageKey": "plugins|lone"
+          },
+          {
+            "alternatives": [
+              "m"
+            ],
+            "iconID": "console",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "REDD17 Stereo",
+            "path": [
+              "VST3",
+              "Waves"
+            ],
+            "popularity": 0,
+            "title": "REDD17",
+            "uri": "s",
+            "usageKey": "plugins|redd17"
+          }
+        ],
+        "usageKeys": [
+          "plugins|redd17",
+          "plugins|redd17",
+          "plugins|lone"
+        ]
+      },
+      "input": {
+        "items": [
+          {
+            "name": "REDD17 Mono",
+            "path": [
+              "VST3",
+              "Waves"
+            ],
+            "source": "plugins",
+            "uri": "m"
+          },
+          {
+            "name": "REDD17 Stereo",
+            "path": [
+              "VST3",
+              "Waves"
+            ],
+            "source": "plugins",
+            "uri": "s"
+          },
+          {
+            "name": "Lone Stereo",
+            "path": [
+              "VST3",
+              "Y"
+            ],
+            "source": "plugins",
+            "uri": "l"
+          }
+        ]
+      },
+      "name": "merged channel titles"
+    },
+    {
+      "expected": {
+        "rows": [
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "_Test",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "_Test",
+            "uri": "s18",
+            "usageKey": "plugins|_test"
+          },
+          {
+            "alternatives": [],
+            "iconID": "compressor",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "(Old) Comp",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "(Old) Comp",
+            "uri": "s19",
+            "usageKey": "plugins|(old) comp"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "#Rack",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "#Rack",
+            "uri": "s21",
+            "usageKey": "plugins|#rack"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "~Tilde",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "~Tilde",
+            "uri": "s45",
+            "usageKey": "plugins|~tilde"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "😀 Smile",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "😀 Smile",
+            "uri": "s44",
+            "usageKey": "plugins|😀 smile"
+          },
+          {
+            "alternatives": [],
+            "iconID": "eq",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "3-Band EQ",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "3-Band EQ",
+            "uri": "s20",
+            "usageKey": "plugins|3-band eq"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Ableton & Co",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Ableton & Co",
+            "uri": "s33",
+            "usageKey": "plugins|ableton & co"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Aether",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Aether",
+            "uri": "s35",
+            "usageKey": "plugins|aether"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Æther",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Æther",
+            "uri": "s34",
+            "usageKey": "plugins|æther"
+          },
+          {
+            "alternatives": [],
+            "iconID": "synth",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "BA-1",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "BA-1",
+            "uri": "s9",
+            "usageKey": "plugins|ba-1"
+          },
+          {
+            "alternatives": [],
+            "iconID": "console",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "BA-1 FX Strip",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "BA-1 FX Strip",
+            "uri": "s10",
+            "usageKey": "plugins|ba-1 fx strip"
+          },
+          {
+            "alternatives": [],
+            "iconID": "synth",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "ba1",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "ba1",
+            "uri": "s11",
+            "usageKey": "plugins|ba1"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "BX Digital",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "BX Digital",
+            "uri": "s8",
+            "usageKey": "plugins|bx digital"
+          },
+          {
+            "alternatives": [],
+            "iconID": "bass",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "bx_boom",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "bx_boom",
+            "uri": "s7",
+            "usageKey": "plugins|bx_boom"
+          },
+          {
+            "alternatives": [],
+            "iconID": "eq",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "bx_digital V3",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "bx_digital V3",
+            "uri": "s6",
+            "usageKey": "plugins|bx_digital v3"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "CLA 2A",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 76,
+            "title": "CLA 2A",
+            "uri": "s29",
+            "usageKey": "plugins|cla 2a"
+          },
+          {
+            "alternatives": [],
+            "iconID": "compressor",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "CLA-2A",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 76,
+            "title": "CLA-2A",
+            "uri": "s30",
+            "usageKey": "plugins|cla-2a"
+          },
+          {
+            "alternatives": [],
+            "iconID": "compressor",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "CLA-76",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 76,
+            "title": "CLA-76",
+            "uri": "s28",
+            "usageKey": "plugins|cla-76"
+          },
+          {
+            "alternatives": [],
+            "iconID": "compressor",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "dbx 160",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "dbx 160",
+            "uri": "s22",
+            "usageKey": "plugins|dbx 160"
+          },
+          {
+            "alternatives": [],
+            "iconID": "eq",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "EQ Eight",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 92,
+            "title": "EQ Eight",
+            "uri": "s24",
+            "usageKey": "plugins|eq eight"
+          },
+          {
+            "alternatives": [],
+            "iconID": "filter",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "IIR Filter",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "IIR Filter",
+            "uri": "s48",
+            "usageKey": "plugins|iir filter"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Itest",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Itest",
+            "uri": "s50",
+            "usageKey": "plugins|itest"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "ıtest",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "ıtest",
+            "uri": "s49",
+            "usageKey": "plugins|ıtest"
+          },
+          {
+            "alternatives": [],
+            "iconID": "limiter",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "L1 Limiter",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "L1 Limiter",
+            "uri": "s26",
+            "usageKey": "plugins|l1 limiter"
+          },
+          {
+            "alternatives": [],
+            "iconID": "limiter",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "L1+ Ultramaximizer",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "L1+ Ultramaximizer",
+            "uri": "s27",
+            "usageKey": "plugins|l1+ ultramaximizer"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Mu Tone",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Mu Tone",
+            "uri": "s41",
+            "usageKey": "plugins|mu tone"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Olsen",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Olsen",
+            "uri": "s37",
+            "usageKey": "plugins|olsen"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Ølsen",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Ølsen",
+            "uri": "s36",
+            "usageKey": "plugins|ølsen"
+          },
+          {
+            "alternatives": [],
+            "iconID": "reverb",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Omega Verb",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Omega Verb",
+            "uri": "s43",
+            "usageKey": "plugins|omega verb"
+          },
+          {
+            "alternatives": [],
+            "iconID": "mastering",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Ozone 12",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 90,
+            "title": "Ozone 12",
+            "uri": "s12",
+            "usageKey": "plugins|ozone 12"
+          },
+          {
+            "alternatives": [],
+            "iconID": "stereo",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Ozone 12 Imager",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 90,
+            "title": "Ozone 12 Imager",
+            "uri": "s14",
+            "usageKey": "plugins|ozone 12 imager"
+          },
+          {
+            "alternatives": [],
+            "iconID": "mastering",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Ozone 9",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 90,
+            "title": "Ozone 9",
+            "uri": "s13",
+            "usageKey": "plugins|ozone 9"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Pro Q 3",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 100,
+            "title": "Pro Q 3",
+            "uri": "s1",
+            "usageKey": "plugins|pro q 3"
+          },
+          {
+            "alternatives": [],
+            "iconID": "limiter",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 95,
+            "title": "Pro-L 2",
+            "uri": "s5",
+            "usageKey": "plugins|pro-l 2"
+          },
+          {
+            "alternatives": [],
+            "iconID": "eq",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Pro-Q 3",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 100,
+            "title": "Pro-Q 3",
+            "uri": "s0",
+            "usageKey": "plugins|pro-q 3"
+          },
+          {
+            "alternatives": [],
+            "iconID": "eq",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 100,
+            "title": "Pro-Q 4",
+            "uri": "s4",
+            "usageKey": "plugins|pro-q 4"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "ProQ 3",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 100,
+            "title": "ProQ 3",
+            "uri": "s2",
+            "usageKey": "plugins|proq 3"
+          },
+          {
+            "alternatives": [],
+            "iconID": "stereo",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Reel ADT",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Reel ADT",
+            "uri": "s31",
+            "usageKey": "plugins|reel adt"
+          },
+          {
+            "alternatives": [],
+            "iconID": "stereo",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Reel ADT Live",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Reel ADT Live",
+            "uri": "s32",
+            "usageKey": "plugins|reel adt live"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Skoda",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Skoda",
+            "uri": "s39",
+            "usageKey": "plugins|skoda"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "ŠKODA",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "ŠKODA",
+            "uri": "s38",
+            "usageKey": "plugins|škoda"
+          },
+          {
+            "alternatives": [],
+            "iconID": "compressor",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Uber Comp",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Uber Comp",
+            "uri": "s16",
+            "usageKey": "plugins|uber comp"
+          },
+          {
+            "alternatives": [],
+            "iconID": "compressor",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Über Comp",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Über Comp",
+            "uri": "s15",
+            "usageKey": "plugins|über comp"
+          },
+          {
+            "alternatives": [],
+            "iconID": "synth",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "zebra 3",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "zebra 3",
+            "uri": "s47",
+            "usageKey": "plugins|zebra 3"
+          },
+          {
+            "alternatives": [],
+            "iconID": "synth",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Zebra2",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Zebra2",
+            "uri": "s46",
+            "usageKey": "plugins|zebra2"
+          },
+          {
+            "alternatives": [],
+            "iconID": "generic",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "µ-Tone",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "µ-Tone",
+            "uri": "s40",
+            "usageKey": "plugins|µ-tone"
+          },
+          {
+            "alternatives": [],
+            "iconID": "reverb",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Ω Verb",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "popularity": 0,
+            "title": "Ω Verb",
+            "uri": "s42",
+            "usageKey": "plugins|ω verb"
+          }
+        ],
+        "usageKeys": [
+          "plugins|pro-q 3",
+          "plugins|pro q 3",
+          "plugins|proq 3",
+          "plugins|pro-q 3",
+          "plugins|pro-q 4",
+          "plugins|pro-l 2",
+          "plugins|bx_digital v3",
+          "plugins|bx_boom",
+          "plugins|bx digital",
+          "plugins|ba-1",
+          "plugins|ba-1 fx strip",
+          "plugins|ba1",
+          "plugins|ozone 12",
+          "plugins|ozone 9",
+          "plugins|ozone 12 imager",
+          "plugins|über comp",
+          "plugins|uber comp",
+          "plugins|über comp",
+          "plugins|_test",
+          "plugins|(old) comp",
+          "plugins|3-band eq",
+          "plugins|#rack",
+          "plugins|dbx 160",
+          "plugins|dbx 160",
+          "plugins|eq eight",
+          "plugins|eq eight",
+          "plugins|l1 limiter",
+          "plugins|l1+ ultramaximizer",
+          "plugins|cla-76",
+          "plugins|cla 2a",
+          "plugins|cla-2a",
+          "plugins|reel adt",
+          "plugins|reel adt live",
+          "plugins|ableton & co",
+          "plugins|æther",
+          "plugins|aether",
+          "plugins|ølsen",
+          "plugins|olsen",
+          "plugins|škoda",
+          "plugins|skoda",
+          "plugins|µ-tone",
+          "plugins|mu tone",
+          "plugins|ω verb",
+          "plugins|omega verb",
+          "plugins|😀 smile",
+          "plugins|~tilde",
+          "plugins|zebra2",
+          "plugins|zebra 3",
+          "plugins|iir filter",
+          "plugins|ıtest",
+          "plugins|itest"
+        ]
+      },
+      "input": {
+        "items": [
+          {
+            "name": "Pro-Q 3",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s0"
+          },
+          {
+            "name": "Pro Q 3",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s1"
+          },
+          {
+            "name": "ProQ 3",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s2"
+          },
+          {
+            "name": "pro-q 3",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s3"
+          },
+          {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s4"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s5"
+          },
+          {
+            "name": "bx_digital V3",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s6"
+          },
+          {
+            "name": "bx_boom",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s7"
+          },
+          {
+            "name": "BX Digital",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s8"
+          },
+          {
+            "name": "BA-1",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s9"
+          },
+          {
+            "name": "BA-1 FX Strip",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s10"
+          },
+          {
+            "name": "ba1",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s11"
+          },
+          {
+            "name": "Ozone 12",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s12"
+          },
+          {
+            "name": "Ozone 9",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s13"
+          },
+          {
+            "name": "Ozone 12 Imager",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s14"
+          },
+          {
+            "name": "Über Comp",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s15"
+          },
+          {
+            "name": "Uber Comp",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s16"
+          },
+          {
+            "name": "ÜBER Comp",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s17"
+          },
+          {
+            "name": "_Test",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s18"
+          },
+          {
+            "name": "(Old) Comp",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s19"
+          },
+          {
+            "name": "3-Band EQ",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s20"
+          },
+          {
+            "name": "#Rack",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s21"
+          },
+          {
+            "name": "dbx 160",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s22"
+          },
+          {
+            "name": "Dbx 160",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s23"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s24"
+          },
+          {
+            "name": "Eq Eight",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s25"
+          },
+          {
+            "name": "L1 Limiter",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s26"
+          },
+          {
+            "name": "L1+ Ultramaximizer",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s27"
+          },
+          {
+            "name": "CLA-76",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s28"
+          },
+          {
+            "name": "CLA 2A",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s29"
+          },
+          {
+            "name": "CLA-2A",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s30"
+          },
+          {
+            "name": "Reel ADT",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s31"
+          },
+          {
+            "name": "Reel ADT Live",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s32"
+          },
+          {
+            "name": "Ableton & Co",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s33"
+          },
+          {
+            "name": "Æther",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s34"
+          },
+          {
+            "name": "Aether",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s35"
+          },
+          {
+            "name": "Ølsen",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s36"
+          },
+          {
+            "name": "Olsen",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s37"
+          },
+          {
+            "name": "ŠKODA",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s38"
+          },
+          {
+            "name": "Skoda",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s39"
+          },
+          {
+            "name": "µ-Tone",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s40"
+          },
+          {
+            "name": "Mu Tone",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s41"
+          },
+          {
+            "name": "Ω Verb",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s42"
+          },
+          {
+            "name": "Omega Verb",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s43"
+          },
+          {
+            "name": "😀 Smile",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s44"
+          },
+          {
+            "name": "~Tilde",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s45"
+          },
+          {
+            "name": "Zebra2",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s46"
+          },
+          {
+            "name": "zebra 3",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s47"
+          },
+          {
+            "name": "IIR Filter",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s48"
+          },
+          {
+            "name": "ıtest",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s49"
+          },
+          {
+            "name": "Itest",
+            "path": [
+              "VST3",
+              "V"
+            ],
+            "source": "plugins",
+            "uri": "s50"
+          }
+        ]
+      },
+      "name": "alphabetical order"
+    },
+    {
+      "expected": {
+        "rows": [
+          {
+            "alternatives": [],
+            "colorID": "green",
+            "iconID": "eq",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "EQ Eight",
+            "path": [],
+            "popularity": 92,
+            "title": "EQ Eight",
+            "uri": "eq8",
+            "usageKey": "audio_effects|eq eight"
+          },
+          {
+            "alternatives": [],
+            "colorID": "green",
+            "iconID": "filter",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": false,
+            "name": "Ölfilter",
+            "path": [],
+            "popularity": 0,
+            "title": "Ölfilter",
+            "uri": "o-live",
+            "usageKey": "audio_effects|ölfilter"
+          },
+          {
+            "alternatives": [],
+            "colorID": "blue",
+            "iconID": "eq",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": true,
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "popularity": 100,
+            "title": "Pro-Q 4",
+            "uri": "pq",
+            "usageKey": "plugins|pro-q 4"
+          },
+          {
+            "alternatives": [
+              "u-au",
+              "u-v2"
+            ],
+            "colorID": "red",
+            "iconID": "compressor",
+            "isAvailable": true,
+            "isGlobal": true,
+            "isNew": true,
+            "name": "Über Comp",
+            "path": [
+              "VST3",
+              "Überwerk"
+            ],
+            "popularity": 0,
+            "title": "Über Comp",
+            "uri": "u-v3",
+            "usageKey": "plugins|über comp"
+          }
+        ],
+        "usageKeys": [
+          "plugins|über comp",
+          "plugins|über comp",
+          "plugins|über comp",
+          "plugins|über comp",
+          "plugins|über comp",
+          "audio_effects|ölfilter",
+          "audio_effects|ölfilter",
+          "audio_effects|eq eight",
+          "plugins|pro-q 4"
+        ]
+      },
+      "input": {
+        "config": {
+          "categories": [
+            {
+              "entries": [],
+              "id": "00000000-0000-0000-0000-000000000001",
+              "isFavorites": true,
+              "name": "Favorites"
+            }
+          ],
+          "colorRules": {
+            "live": "green",
+            "vendor:FabFilter": "blue",
+            "vendor:Überwerk": "red"
+          },
+          "version": 4
+        },
+        "items": [
+          {
+            "name": "Über Comp",
+            "path": [
+              "VST3",
+              "Überwerk"
+            ],
+            "source": "plugins",
+            "uri": "u-v3"
+          },
+          {
+            "name": "Über Comp",
+            "path": [
+              "AUv2",
+              "Überwerk"
+            ],
+            "source": "plugins",
+            "uri": "u-au"
+          },
+          {
+            "name": "Überwerk Über Comp",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "u-v2"
+          },
+          {
+            "name": "überwerk über comp",
+            "path": [
+              "VST",
+              "Other"
+            ],
+            "source": "plugins",
+            "uri": "u-v2b"
+          },
+          {
+            "name": "ÜBER COMP",
+            "path": [
+              "VST3",
+              "Elsewhere"
+            ],
+            "source": "plugins",
+            "uri": "u-caps"
+          },
+          {
+            "name": "Ölfilter",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "o-live"
+          },
+          {
+            "name": "Ölfilter",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "o-live2"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "pq"
+          }
+        ],
+        "newURIs": [
+          "pq",
+          "u-v3",
+          "missing"
+        ]
+      },
+      "name": "unicode, colors, new"
+    }
+  ]
+}

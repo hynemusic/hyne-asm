@@ -60,7 +60,7 @@ public sealed class ConfigStore
         return LauncherConfig.MakeDefault();
     }
 
-    /// <summary>v1 → v2: "close all plugin windows" moved from ⌘⌥W to ⌘⌃W.</summary>
+    /// <summary>v1 → v2: "close all plugin windows" moved from ⌘⌥W to ⌘⌃W; v2 → v3 → v4: icons re-guessed.</summary>
     internal static void Migrate(LauncherConfig config)
     {
         if (config.Version < 2)
@@ -69,9 +69,31 @@ public sealed class ConfigStore
             var @new = new KeyCombo(13, ModifierSet.Cmd | ModifierSet.Ctrl);
             config.Shortcuts.CloseAll = config.Shortcuts.CloseAll.Select(c => c == old ? @new : c).ToList();
         }
-        // v2 → v3 and v3 → v4 re-guess the icons of entries still on the generic icon (IconGuesser): ported with
-        // IconGuesser in Task 4.
+        if (config.Version < 3)
+        {
+            // v2 → v3: entries still on the plain default icon get a guessed one.
+            foreach (var e in config.Categories.SelectMany(c => c.Entries).Where(e => e.IconID == IconCatalog.DefaultID))
+                e.IconID = IconGuesser.Guess(new PluginItem(e.Uri, e.Name, e.Source, e.Path));
+        }
+        if (config.Version < 4)
+        {
+            // v3 → v4: new icon kinds (amp, mic, repair, mastering …) for entries still on the generic icon,
+            // in folders and in every stored profile too.
+            RegessGeneric(config.Categories);
+            foreach (var p in config.Profiles) RegessGeneric(p.Categories);
+        }
         config.Version = LauncherConfig.CurrentVersion;
+    }
+
+    static void RegessGeneric(List<Category> categories)
+    {
+        void Fix(Entry e)
+        {
+            if (e.IsFolder) e.Children!.ForEach(Fix);
+            else if (e.IconID == IconCatalog.DefaultID && e.Chain == null && e.Action == null)
+                e.IconID = IconGuesser.Guess(new PluginItem(e.Uri, e.Name, e.Source, e.Path));
+        }
+        foreach (var c in categories) c.Entries.ForEach(Fix);
     }
 
     public void Save(LauncherConfig config)

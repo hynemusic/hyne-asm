@@ -1,0 +1,1113 @@
+{
+  "area": "plugins.groups",
+  "cases": [
+    {
+      "expected": {
+        "formatLabels": [
+          "VST2",
+          "AU",
+          "VST3",
+          "VST3",
+          "VST2",
+          "AU",
+          "Live",
+          "Live"
+        ],
+        "groups": [
+          {
+            "items": [
+              "eq"
+            ],
+            "title": "Live · Audio Effects"
+          },
+          {
+            "items": [
+              "drift"
+            ],
+            "title": "Live · Instruments"
+          },
+          {
+            "items": [
+              "v3",
+              "q3",
+              "au",
+              "v2"
+            ],
+            "title": "FabFilter"
+          },
+          {
+            "items": [
+              "k7"
+            ],
+            "title": "Native Instruments"
+          },
+          {
+            "items": [
+              "serum"
+            ],
+            "title": "Weitere VST2"
+          }
+        ]
+      },
+      "input": {
+        "items": [
+          {
+            "name": "FabFilter Pro-L 2",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "v2"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "au"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "v3"
+          },
+          {
+            "name": "Pro-Q 3",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "q3"
+          },
+          {
+            "name": "Serum",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "serum"
+          },
+          {
+            "name": "Kontakt 7",
+            "path": [
+              "AUv2",
+              "Native Instruments"
+            ],
+            "source": "plugins",
+            "uri": "k7"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "drift"
+          }
+        ],
+        "search": ""
+      },
+      "name": "grouping test"
+    },
+    {
+      "expected": {
+        "formatLabels": [
+          "VST2",
+          "AU",
+          "VST3",
+          "VST3",
+          "VST2",
+          "AU",
+          "Live",
+          "Live"
+        ],
+        "groups": [
+          {
+            "items": [
+              "v3",
+              "au",
+              "v2"
+            ],
+            "title": "FabFilter"
+          }
+        ]
+      },
+      "input": {
+        "items": [
+          {
+            "name": "FabFilter Pro-L 2",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "v2"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "au"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "v3"
+          },
+          {
+            "name": "Pro-Q 3",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "q3"
+          },
+          {
+            "name": "Serum",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "serum"
+          },
+          {
+            "name": "Kontakt 7",
+            "path": [
+              "AUv2",
+              "Native Instruments"
+            ],
+            "source": "plugins",
+            "uri": "k7"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "drift"
+          }
+        ],
+        "search": "pro-l"
+      },
+      "name": "search pro-l"
+    },
+    {
+      "expected": {
+        "formatLabels": [
+          "VST2",
+          "AU",
+          "VST3",
+          "VST3",
+          "VST2",
+          "AU",
+          "Live",
+          "Live",
+          "VST3",
+          "VST3",
+          "VST3",
+          "AU",
+          "VST2",
+          "VST3",
+          "VST3",
+          "VST3",
+          "Live",
+          "Live",
+          "Live",
+          "Live",
+          "Rack",
+          "Rack",
+          "Preset",
+          "VST3",
+          "Rack",
+          "VST2",
+          "CLAP",
+          "",
+          "AU"
+        ],
+        "groups": [
+          {
+            "items": [
+              "pre1"
+            ],
+            "title": "Presets · Audio Effects"
+          },
+          {
+            "items": [
+              "pre2"
+            ],
+            "title": "Presets · Instruments"
+          },
+          {
+            "items": [
+              "pre6",
+              "pre4",
+              "pre5"
+            ],
+            "title": "Presets · My Sounds"
+          },
+          {
+            "items": [
+              "pre3"
+            ],
+            "title": "Presets · User Library"
+          },
+          {
+            "items": [
+              "eq"
+            ],
+            "title": "Live · Audio Effects"
+          },
+          {
+            "items": [
+              "drift"
+            ],
+            "title": "Live · Instruments"
+          },
+          {
+            "items": [
+              "arp2",
+              "arp",
+              "chord"
+            ],
+            "title": "Live · MIDI Effects"
+          },
+          {
+            "items": [
+              "lfo"
+            ],
+            "title": "Live · Max for Live"
+          },
+          {
+            "items": [
+              "abc"
+            ],
+            "title": "aardvark"
+          },
+          {
+            "items": [
+              "at"
+            ],
+            "title": "Ableton"
+          },
+          {
+            "items": [
+              "bx2",
+              "bx"
+            ],
+            "title": "Brainworx"
+          },
+          {
+            "items": [
+              "v3",
+              "q3",
+              "au",
+              "v2"
+            ],
+            "title": "FabFilter"
+          },
+          {
+            "items": [
+              "k7"
+            ],
+            "title": "Native Instruments"
+          },
+          {
+            "items": [
+              "ub",
+              "ubv",
+              "ubd"
+            ],
+            "title": "Überwerk"
+          },
+          {
+            "items": [
+              "zed"
+            ],
+            "title": "Zebra"
+          },
+          {
+            "items": [
+              "my",
+              "serum",
+              "np",
+              "w"
+            ],
+            "title": "Weitere VST2"
+          }
+        ]
+      },
+      "input": {
+        "items": [
+          {
+            "name": "FabFilter Pro-L 2",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "v2"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "au"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "v3"
+          },
+          {
+            "name": "Pro-Q 3",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "q3"
+          },
+          {
+            "name": "Serum",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "serum"
+          },
+          {
+            "name": "Kontakt 7",
+            "path": [
+              "AUv2",
+              "Native Instruments"
+            ],
+            "source": "plugins",
+            "uri": "k7"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "drift"
+          },
+          {
+            "name": "bx_digital V3",
+            "path": [
+              "VST3",
+              "Brainworx"
+            ],
+            "source": "plugins",
+            "uri": "bx"
+          },
+          {
+            "name": "BX Digital",
+            "path": [
+              "VST3",
+              "Brainworx"
+            ],
+            "source": "plugins",
+            "uri": "bx2"
+          },
+          {
+            "name": "Über Comp",
+            "path": [
+              "VST3",
+              "Überwerk"
+            ],
+            "source": "plugins",
+            "uri": "ub"
+          },
+          {
+            "name": "Über Verb",
+            "path": [
+              "AUv2",
+              "Überwerk"
+            ],
+            "source": "plugins",
+            "uri": "ubv"
+          },
+          {
+            "name": "Überwerk Delay",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "ubd"
+          },
+          {
+            "name": "abc",
+            "path": [
+              "VST3",
+              "aardvark"
+            ],
+            "source": "plugins",
+            "uri": "abc"
+          },
+          {
+            "name": "Zed",
+            "path": [
+              "VST3",
+              "Zebra"
+            ],
+            "source": "plugins",
+            "uri": "zed"
+          },
+          {
+            "name": "ableton thing",
+            "path": [
+              "VST3",
+              "Ableton"
+            ],
+            "source": "plugins",
+            "uri": "at"
+          },
+          {
+            "name": "Arpeggiator",
+            "path": [],
+            "source": "midi_effects",
+            "uri": "arp"
+          },
+          {
+            "name": "LFO",
+            "path": [],
+            "source": "max_for_live",
+            "uri": "lfo"
+          },
+          {
+            "name": "Chord",
+            "path": [],
+            "source": "midi_effects",
+            "uri": "chord"
+          },
+          {
+            "name": "arp",
+            "path": [],
+            "source": "midi_effects",
+            "uri": "arp2"
+          },
+          {
+            "format": "adg",
+            "name": "Bus Glue",
+            "path": [
+              "Presets",
+              "Audio Effects"
+            ],
+            "source": "user_library",
+            "uri": "pre1"
+          },
+          {
+            "format": "adg",
+            "name": "808 Kit",
+            "path": [
+              "Presets",
+              "Instruments",
+              "Drum Rack"
+            ],
+            "source": "user_library",
+            "uri": "pre2"
+          },
+          {
+            "format": "adv",
+            "name": "Loose",
+            "path": [],
+            "source": "user_library",
+            "uri": "pre3"
+          },
+          {
+            "format": "vstpreset",
+            "name": "Serum Lead",
+            "path": [
+              "My Sounds"
+            ],
+            "source": "user_folders",
+            "uri": "pre4"
+          },
+          {
+            "format": "ADG",
+            "name": "Vox Chain",
+            "path": [
+              "My Sounds"
+            ],
+            "source": "user_folders",
+            "uri": "pre5"
+          },
+          {
+            "format": "fxp",
+            "name": "Odd",
+            "path": [
+              "My Sounds"
+            ],
+            "source": "user_folders",
+            "uri": "pre6"
+          },
+          {
+            "name": "Weird",
+            "path": [
+              "CLAP",
+              "Weird Inc"
+            ],
+            "source": "plugins",
+            "uri": "w"
+          },
+          {
+            "name": "NoPath",
+            "path": [],
+            "source": "plugins",
+            "uri": "np"
+          },
+          {
+            "name": "Mystery",
+            "path": [
+              "AUv3"
+            ],
+            "source": "plugins",
+            "uri": "my"
+          }
+        ],
+        "search": ""
+      },
+      "name": "mixed library"
+    },
+    {
+      "expected": {
+        "formatLabels": [
+          "VST2",
+          "AU",
+          "VST3",
+          "VST3",
+          "VST2",
+          "AU",
+          "Live",
+          "Live",
+          "VST3",
+          "VST3",
+          "VST3",
+          "AU",
+          "VST2",
+          "VST3",
+          "VST3",
+          "VST3",
+          "Live",
+          "Live",
+          "Live",
+          "Live",
+          "Rack",
+          "Rack",
+          "Preset",
+          "VST3",
+          "Rack",
+          "VST2",
+          "CLAP",
+          "",
+          "AU"
+        ],
+        "groups": [
+          {
+            "items": [
+              "ub",
+              "ubv",
+              "ubd"
+            ],
+            "title": "Überwerk"
+          }
+        ]
+      },
+      "input": {
+        "items": [
+          {
+            "name": "FabFilter Pro-L 2",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "v2"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "au"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "v3"
+          },
+          {
+            "name": "Pro-Q 3",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "q3"
+          },
+          {
+            "name": "Serum",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "serum"
+          },
+          {
+            "name": "Kontakt 7",
+            "path": [
+              "AUv2",
+              "Native Instruments"
+            ],
+            "source": "plugins",
+            "uri": "k7"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "drift"
+          },
+          {
+            "name": "bx_digital V3",
+            "path": [
+              "VST3",
+              "Brainworx"
+            ],
+            "source": "plugins",
+            "uri": "bx"
+          },
+          {
+            "name": "BX Digital",
+            "path": [
+              "VST3",
+              "Brainworx"
+            ],
+            "source": "plugins",
+            "uri": "bx2"
+          },
+          {
+            "name": "Über Comp",
+            "path": [
+              "VST3",
+              "Überwerk"
+            ],
+            "source": "plugins",
+            "uri": "ub"
+          },
+          {
+            "name": "Über Verb",
+            "path": [
+              "AUv2",
+              "Überwerk"
+            ],
+            "source": "plugins",
+            "uri": "ubv"
+          },
+          {
+            "name": "Überwerk Delay",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "ubd"
+          },
+          {
+            "name": "abc",
+            "path": [
+              "VST3",
+              "aardvark"
+            ],
+            "source": "plugins",
+            "uri": "abc"
+          },
+          {
+            "name": "Zed",
+            "path": [
+              "VST3",
+              "Zebra"
+            ],
+            "source": "plugins",
+            "uri": "zed"
+          },
+          {
+            "name": "ableton thing",
+            "path": [
+              "VST3",
+              "Ableton"
+            ],
+            "source": "plugins",
+            "uri": "at"
+          },
+          {
+            "name": "Arpeggiator",
+            "path": [],
+            "source": "midi_effects",
+            "uri": "arp"
+          },
+          {
+            "name": "LFO",
+            "path": [],
+            "source": "max_for_live",
+            "uri": "lfo"
+          },
+          {
+            "name": "Chord",
+            "path": [],
+            "source": "midi_effects",
+            "uri": "chord"
+          },
+          {
+            "name": "arp",
+            "path": [],
+            "source": "midi_effects",
+            "uri": "arp2"
+          },
+          {
+            "format": "adg",
+            "name": "Bus Glue",
+            "path": [
+              "Presets",
+              "Audio Effects"
+            ],
+            "source": "user_library",
+            "uri": "pre1"
+          },
+          {
+            "format": "adg",
+            "name": "808 Kit",
+            "path": [
+              "Presets",
+              "Instruments",
+              "Drum Rack"
+            ],
+            "source": "user_library",
+            "uri": "pre2"
+          },
+          {
+            "format": "adv",
+            "name": "Loose",
+            "path": [],
+            "source": "user_library",
+            "uri": "pre3"
+          },
+          {
+            "format": "vstpreset",
+            "name": "Serum Lead",
+            "path": [
+              "My Sounds"
+            ],
+            "source": "user_folders",
+            "uri": "pre4"
+          },
+          {
+            "format": "ADG",
+            "name": "Vox Chain",
+            "path": [
+              "My Sounds"
+            ],
+            "source": "user_folders",
+            "uri": "pre5"
+          },
+          {
+            "format": "fxp",
+            "name": "Odd",
+            "path": [
+              "My Sounds"
+            ],
+            "source": "user_folders",
+            "uri": "pre6"
+          },
+          {
+            "name": "Weird",
+            "path": [
+              "CLAP",
+              "Weird Inc"
+            ],
+            "source": "plugins",
+            "uri": "w"
+          },
+          {
+            "name": "NoPath",
+            "path": [],
+            "source": "plugins",
+            "uri": "np"
+          },
+          {
+            "name": "Mystery",
+            "path": [
+              "AUv3"
+            ],
+            "source": "plugins",
+            "uri": "my"
+          }
+        ],
+        "search": "über"
+      },
+      "name": "mixed library search"
+    },
+    {
+      "expected": {
+        "formatLabels": [
+          "VST2",
+          "AU",
+          "VST3",
+          "VST3",
+          "VST2",
+          "AU",
+          "Live",
+          "Live"
+        ],
+        "groups": [
+          {
+            "items": [
+              "eq"
+            ],
+            "title": "Live · Audio Effects"
+          },
+          {
+            "items": [
+              "drift"
+            ],
+            "title": "Live · Instruments"
+          },
+          {
+            "items": [
+              "v3",
+              "q3",
+              "au",
+              "v2"
+            ],
+            "title": "FabFilter"
+          },
+          {
+            "items": [
+              "k7"
+            ],
+            "title": "Native Instruments"
+          },
+          {
+            "items": [
+              "serum"
+            ],
+            "title": "Weitere VST2"
+          }
+        ]
+      },
+      "input": {
+        "items": [
+          {
+            "name": "FabFilter Pro-L 2",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "v2"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "au"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "v3"
+          },
+          {
+            "name": "Pro-Q 3",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "q3"
+          },
+          {
+            "name": "Serum",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "serum"
+          },
+          {
+            "name": "Kontakt 7",
+            "path": [
+              "AUv2",
+              "Native Instruments"
+            ],
+            "source": "plugins",
+            "uri": "k7"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "drift"
+          }
+        ],
+        "search": "  "
+      },
+      "name": "blank search"
+    },
+    {
+      "expected": {
+        "formatLabels": [
+          "VST2",
+          "AU",
+          "VST3",
+          "VST3",
+          "VST2",
+          "AU",
+          "Live",
+          "Live"
+        ],
+        "groups": []
+      },
+      "input": {
+        "items": [
+          {
+            "name": "FabFilter Pro-L 2",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "v2"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "au"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "v3"
+          },
+          {
+            "name": "Pro-Q 3",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "q3"
+          },
+          {
+            "name": "Serum",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "serum"
+          },
+          {
+            "name": "Kontakt 7",
+            "path": [
+              "AUv2",
+              "Native Instruments"
+            ],
+            "source": "plugins",
+            "uri": "k7"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "drift"
+          }
+        ],
+        "search": "zzz"
+      },
+      "name": "no match"
+    }
+  ]
+}
