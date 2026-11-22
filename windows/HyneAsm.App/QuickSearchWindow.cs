@@ -2,15 +2,17 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using HyneAsm.Core;
 
 namespace HyneAsm.App;
 
-/// <summary>The quick search: a field in the upper middle of the screen, results below. Like the panel it never
-/// takes focus from Live — keys arrive through the keyboard hook.</summary>
+/// <summary>The quick search: a field in the upper middle of the screen, results below (same look as the Mac's).
+/// Like the panel it never takes focus from Live — keys arrive through the keyboard hook.</summary>
 sealed class QuickSearchWindow : Overlay
 {
-    const int Visible = 10;
+    const double Width_ = 620, FieldHeight = 58, RowHeight = 42;
+    const int Visible = 8;
     readonly AppModel model;
     QuickSearchState? state;
 
@@ -48,53 +50,114 @@ sealed class QuickSearchWindow : Overlay
     void Render()
     {
         if (state == null) return;
-        var root = new StackPanel { Width = 560, Margin = new Thickness(14, 12, 14, 12) };
-        var query = new TextBlock { FontSize = 19, Margin = new Thickness(4, 0, 4, 8) };
-        if (state.Query.Length == 0)
+        FontFamily = Theme.Display;
+        var root = new StackPanel { Width = Width_ };
+        root.Children.Add(Field());
+        var results = state.Results;
+        if (results.Count > 0)
         {
-            query.Text = Loc.T("Plugin, Preset oder Befehl suchen …", "Search plugins, presets or commands …");
-            query.Foreground = Theme.Faint;
+            root.Children.Add(new Border { Height = 1, Background = Theme.Stroke });
+            var list = new StackPanel { Margin = new Thickness(8) };
+            var start = Math.Max(0, Math.Min(state.Highlighted - Visible / 2, results.Count - Visible));
+            for (var i = start; i < Math.Min(results.Count, start + Visible); i++) list.Children.Add(Row(results[i], i));
+            root.Children.Add(list);
+        }
+        Content = Theme.Chrome(root, 16);
+    }
+
+    UIElement Field()
+    {
+        var typing = state!.Query.Length > 0;
+        var line = new DockPanel { Height = FieldHeight, Margin = new Thickness(18, 0, 18, 0), LastChildFill = true };
+        var hints = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+        hints.Children.Add(Hint("↵", Loc.T("einfügen", "insert")));
+        hints.Children.Add(Hint("esc", Loc.T("schließen", "close")));
+        DockPanel.SetDock(hints, Dock.Right);
+        line.Children.Add(hints);
+        var icon = new TextBlock { Text = "", FontFamily = Theme.Icons, FontSize = 18, Foreground = typing ? Theme.Accent : Theme.TextTertiary, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 12, 0) };
+        DockPanel.SetDock(icon, Dock.Left);
+        line.Children.Add(icon);
+        var text = new TextBlock { FontSize = 20, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
+        if (typing)
+        {
+            text.Inlines.Add(new System.Windows.Documents.Run(state.Query)
+            {
+                Foreground = state.IsQuerySelected ? Theme.OnAccent : Theme.TextPrimary,
+                Background = state.IsQuerySelected ? Theme.Accent : Brushes.Transparent,
+            });
+            if (!state.IsQuerySelected) text.Inlines.Add(new System.Windows.Documents.Run("▏") { Foreground = Theme.Accent });
         }
         else
         {
-            query.Inlines.Add(new System.Windows.Documents.Run(state.Query)
-            {
-                Foreground = Theme.Text, Background = state.IsQuerySelected ? Theme.Accent : System.Windows.Media.Brushes.Transparent,
-            });
-            query.Inlines.Add(new System.Windows.Documents.Run("▏") { Foreground = Theme.Accent });
+            // Caret before the placeholder, like a real empty field.
+            text.Inlines.Add(new System.Windows.Documents.Run("▏") { Foreground = Theme.Accent });
+            text.Inlines.Add(new System.Windows.Documents.Run(Loc.T("Plugins und Presets suchen …", "Search plugins and presets …")) { Foreground = Theme.TextTertiary });
         }
-        root.Children.Add(query);
-        var results = state.Results;
-        var start = Math.Max(0, Math.Min(state.Highlighted - Visible / 2, results.Count - Visible));
-        for (var i = start; i < Math.Min(results.Count, start + Visible); i++)
+        line.Children.Add(text);
+        return line;
+    }
+
+    static UIElement Hint(string key, string text)
+    {
+        var hint = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(10, 0, 0, 0) };
+        var cap = Theme.KeyCap(key, Theme.TextSecondary, Theme.Ink(0.07));
+        cap.VerticalAlignment = VerticalAlignment.Center;
+        hint.Children.Add(cap);
+        hint.Children.Add(new TextBlock { Text = text, FontSize = 11, Foreground = Theme.TextTertiary, Margin = new Thickness(5, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center, FontFamily = Theme.Font });
+        return hint;
+    }
+
+    /// <summary>Same rows as the panel's list: plate, icon in the label colour, short glowing stripe, lit when chosen.</summary>
+    UIElement Row(QuickResult result, int index)
+    {
+        var holder = new Border { Height = RowHeight, Margin = new Thickness(0, 0, 0, 4), Cursor = Cursors.Hand, Background = Brushes.Transparent };
+        holder.Child = Plate(result, index == state!.Highlighted);
+        holder.Opacity = result.Row.IsAvailable ? 1 : 0.5;
+        holder.MouseEnter += (_, _) => { if (state.Highlighted != index) { state.Highlight(index); Render(); } };
+        holder.MouseLeftButtonUp += (_, _) => Insert(result.Row);
+        return holder;
+    }
+
+    static Border Plate(QuickResult result, bool active)
+    {
+        var r = result.Row;
+        var color = Theme.LabelColor(r.ColorID);
+        var onLit = Theme.Current.OnLitPad;
+        var line = new DockPanel { LastChildFill = true, Margin = new Thickness(10, 0, 10, 2) };
+        var icon = Theme.Icon(r.IconID, 15, active ? Theme.B(Color.FromArgb(190, onLit.R, onLit.G, onLit.B)) : color is { } c ? Theme.B(c) : Theme.TextTertiary);
+        icon.Width = 20;
+        icon.Margin = new Thickness(0, 0, 9, 0);
+        DockPanel.SetDock(icon, Dock.Left);
+        line.Children.Add(icon);
+        var badges = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+        if (r.IsNew) badges.Children.Add(Theme.NewBadge());
+        if (active)
         {
-            var result = results[i];
-            var line = new DockPanel { LastChildFill = true };
-            var place = new TextBlock { Text = result.Place ?? "", Foreground = Theme.Dim, FontSize = 12, VerticalAlignment = VerticalAlignment.Center };
-            DockPanel.SetDock(place, Dock.Right);
-            line.Children.Add(place);
-            line.Children.Add(new TextBlock
-            {
-                Text = result.Row.Title, Foreground = Theme.Text, FontSize = 14, TextTrimming = TextTrimming.CharacterEllipsis,
-                VerticalAlignment = VerticalAlignment.Center,
-            });
-            var row = new Border
-            {
-                Child = line, Padding = new Thickness(10, 6, 10, 6), CornerRadius = new CornerRadius(6), Cursor = Cursors.Hand,
-                Background = i == state.Highlighted ? Theme.PadHover : System.Windows.Media.Brushes.Transparent,
-                BorderBrush = i == state.Highlighted ? Theme.Accent : System.Windows.Media.Brushes.Transparent,
-                BorderThickness = new Thickness(1), Opacity = result.Row.IsAvailable ? 1 : 0.4,
-            };
-            var r = result.Row;
-            row.MouseLeftButtonUp += (_, _) => Insert(r);
-            root.Children.Add(row);
+            var enter = Theme.KeyCap("↵", Theme.B(onLit), Theme.B(Color.FromArgb(38, onLit.R, onLit.G, onLit.B)));
+            enter.Margin = new Thickness(4, 0, 0, 0);
+            badges.Children.Add(enter);
         }
-        if (results.Count == 0 && state.Query.Length > 0)
-            root.Children.Add(new TextBlock { Text = Loc.T("Nichts gefunden", "Nothing found"), Foreground = Theme.Dim, Margin = new Thickness(10, 4, 10, 4) });
-        Content = new Border
+        DockPanel.SetDock(badges, Dock.Right);
+        line.Children.Add(badges);
+        var text = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+        text.Children.Add(new TextBlock
         {
-            Background = Theme.Background, BorderBrush = Theme.Border, BorderThickness = new Thickness(1),
-            CornerRadius = new CornerRadius(14), Child = root,
-        };
+            Text = r.Title, FontSize = 12, FontWeight = FontWeights.SemiBold, TextTrimming = TextTrimming.CharacterEllipsis,
+            Foreground = active ? Theme.B(onLit) : r.IsAvailable ? Theme.TextPrimary : Theme.TextTertiary,
+        });
+        var place = result.Place ?? Loc.T("Alle Plugins", "All plugins") + " · " + PluginGrouping.FormatLabel(new PluginItem(r.Uri, r.Name, r.Source, r.Path));
+        text.Children.Add(new TextBlock
+        {
+            Text = place, FontSize = 11, FontFamily = Theme.Font, TextTrimming = TextTrimming.CharacterEllipsis,
+            Foreground = active ? Theme.B(Color.FromArgb(178, onLit.R, onLit.G, onLit.B)) : Theme.TextTertiary,
+        });
+        line.Children.Add(text);
+        var grid = new Grid();
+        grid.Children.Add(line);
+        var stripe = (FrameworkElement)Theme.Stripe(active, color, 64, 3);
+        stripe.VerticalAlignment = VerticalAlignment.Bottom;
+        stripe.Margin = new Thickness(0, 0, 0, 4);
+        grid.Children.Add(stripe);
+        return Theme.Plate(grid, active, color ?? Theme.Current.Accent);
     }
 }

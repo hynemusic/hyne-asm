@@ -6,26 +6,6 @@ using Forms = System.Windows.Forms;
 
 namespace HyneAsm.App;
 
-/// <summary>Colours of the Original theme (the pad look): warm black, pads #262421→#1D1C1A, Ableton orange.</summary>
-static class Theme
-{
-    public static readonly Brush Background = Solid(0x12, 0x11, 0x10);
-    public static readonly Brush PadTop = Solid(0x26, 0x24, 0x21);
-    public static readonly Brush Pad = new LinearGradientBrush(Color.FromRgb(0x26, 0x24, 0x21), Color.FromRgb(0x1D, 0x1C, 0x1A), 90);
-    public static readonly Brush PadHover = new LinearGradientBrush(Color.FromRgb(0x33, 0x30, 0x2B), Color.FromRgb(0x26, 0x24, 0x21), 90);
-    public static readonly Brush Accent = Solid(0xFF, 0x8C, 0x1A);
-    public static readonly Brush Text = Solid(0xF2, 0xEE, 0xE8);
-    public static readonly Brush Dim = Solid(0x8A, 0x84, 0x7C);
-    public static readonly Brush Faint = Solid(0x4A, 0x46, 0x40);
-    public static readonly Brush Border = Solid(0x2E, 0x2B, 0x27);
-    public static readonly FontFamily Font = new("Segoe UI Variable Text, Segoe UI");
-
-    static SolidColorBrush Solid(byte r, byte g, byte b) { var s = new SolidColorBrush(Color.FromRgb(r, g, b)); s.Freeze(); return s; }
-
-    public static Brush Of(HyneAsm.Core.ColorDef c) =>
-        new SolidColorBrush(Color.FromRgb((byte)(c.Red * 255), (byte)(c.Green * 255), (byte)(c.Blue * 255)));
-}
-
 /// <summary>A floating window that never takes focus from Live: keys reach it through the keyboard hook.
 /// Positions are physical pixels (the mouse hook's coordinates).</summary>
 class Overlay : Window
@@ -87,19 +67,15 @@ sealed class Hud
     {
         if (window == null)
         {
-            label = new System.Windows.Controls.TextBlock { Foreground = Theme.Text, FontSize = 13, Margin = new Thickness(14, 8, 14, 8) };
-            window = new Overlay
-            {
-                Content = new System.Windows.Controls.Border
-                {
-                    Background = Theme.Background, BorderBrush = Theme.Accent, BorderThickness = new Thickness(1),
-                    CornerRadius = new CornerRadius(8), Child = label,
-                },
-            };
+            label = new System.Windows.Controls.TextBlock { FontSize = 13, Margin = new Thickness(14, 8, 14, 8) };
+            window = new Overlay();
             timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(1.8) };
             timer.Tick += (_, _) => { timer!.Stop(); window!.Hide(); };
         }
         label!.Text = text;
+        label.Foreground = Theme.TextPrimary;
+        if (label.Parent is System.Windows.Controls.Panel old) old.Children.Remove(label);   // re-wrapped in the current theme
+        window.Content = Theme.Chrome(label, 8);
         Native.GetCursorPos(out var p);
         p.X += 16; p.Y += 20;
         window.ShowAt(p);

@@ -86,6 +86,14 @@ sealed class TrayIcon : IDisposable
             language.DropDownItems.Add(new Forms.ToolStripMenuItem(title, null, (_, _) => { model.Config.Language = value; model.ConfigChanged(); })
             { Checked = model.Config.Language == value });
         m.Add(language);
+        var design = new Forms.ToolStripMenuItem(Loc.T("Design", "Look"));
+        foreach (var theme in Enum.GetValues<AppTheme>())
+        {
+            var t = theme;
+            design.DropDownItems.Add(new Forms.ToolStripMenuItem(t.Title(), null, (_, _) => { model.Config.Theme = t; model.ConfigChanged(); })
+            { Checked = model.Config.Theme == t, ToolTipText = t.Subtitle() });
+        }
+        m.Add(design);
         m.Add(new Forms.ToolStripMenuItem(Loc.T("Mit Windows starten", "Start with Windows"), null, (_, _) =>
             WindowsDefaults.StartsWithWindows = !WindowsDefaults.StartsWithWindows) { Checked = WindowsDefaults.StartsWithWindows });
         m.Add(Item(Loc.T("Einstellungsordner öffnen", "Open settings folder"), () =>

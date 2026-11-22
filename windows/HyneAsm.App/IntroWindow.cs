@@ -83,7 +83,7 @@ sealed class IntroWindow : Window
         var badge = new Border
         {
             Width = 24, Height = 24, CornerRadius = new CornerRadius(12), VerticalAlignment = VerticalAlignment.Top,
-            Background = done ? new SolidColorBrush(Color.FromRgb(0x3C, 0xB3, 0x71)) : Theme.PadTop,
+            Background = done ? new SolidColorBrush(Color.FromRgb(0x3C, 0xB3, 0x71)) : Theme.PadTopFixed,
             Child = new TextBlock { Text = done ? "✓" : number.ToString(), Foreground = Theme.Text, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, FontSize = 12 },
         };
         grid.Children.Add(badge);
@@ -99,7 +99,7 @@ sealed class IntroWindow : Window
     static Button Button(string title, bool primary = false) => new()
     {
         Content = title, Padding = new Thickness(14, 5, 14, 5), FontSize = 13, Cursor = System.Windows.Input.Cursors.Hand,
-        Background = primary ? Theme.Accent : Theme.PadTop, Foreground = primary ? Theme.Background : Theme.Text,
-        BorderBrush = primary ? Theme.Accent : Theme.Border,
+        Background = primary ? Theme.Orange : Theme.PadTopFixed, Foreground = primary ? Theme.Background : Theme.Text,
+        BorderBrush = primary ? Theme.Orange : Theme.Border,
     };
 }

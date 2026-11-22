@@ -41,6 +41,7 @@ sealed class AppModel
         Config = loaded;
         WindowsDefaults.Apply(Config, existed);
         Loc.Language = LanguageExtensions.Resolve(Config.Language);
+        Theme.Apply(Config.Theme);
         Catalog = new PluginCatalog(PluginCatalog.DefaultCachePath, Client);
         Catalog.ItemsChanged += (_, _) => ui.BeginInvoke(() => { InvalidateSearchIndex(); Changed?.Invoke(); });
         Save();   // persists migrations right away
@@ -58,6 +59,7 @@ sealed class AppModel
     public void ConfigChanged()
     {
         Loc.Language = LanguageExtensions.Resolve(Config.Language);
+        Theme.Apply(Config.Theme);
         InvalidateSearchIndex();
         Save();
         Changed?.Invoke();
