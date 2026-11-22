@@ -71,7 +71,43 @@ final class SharedFixtureTests: XCTestCase {
     /// One handler per fixture area. Later tasks add entries here (and one on the C# side).
     static let handlers: [String: (JSONValue) throws -> JSONValue] = [
         "smoke.echo": { $0 },
+        "config.roundtrip": configRoundtrip,
     ]
+
+    struct FixtureError: Error, CustomStringConvertible { let description: String }
+
+    /// Config text → decode → encode exactly as `ConfigStore.save` does. Ids and the Stream Deck token that decoding
+    /// generates are random, so they become `NEW-1`, `NEW-2` … and `NEW-TOKEN` (the C# handler does the same).
+    static func configRoundtrip(_ input: JSONValue) throws -> JSONValue {
+        guard case .string(let text) = input else { throw FixtureError(description: "config.roundtrip: input must be a string") }
+        let saved = Loc.language
+        Loc.language = .de
+        defer { Loc.language = saved }
+        let config = try JSONDecoder().decode(LauncherConfig.self, from: Data(text.utf8))
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let output = String(decoding: try encoder.encode(config), as: UTF8.self)
+        return .string(replaceGenerated(in: output, input: text))
+    }
+
+    /// UUIDs (and the Stream Deck token) in `output` that are not in `input` → `NEW-n` in order of first appearance.
+    static func replaceGenerated(in output: String, input: String) -> String {
+        let known = input.uppercased()
+        var result = output
+        let token = try! NSRegularExpression(pattern: "\"streamDeckToken\" : \"([0-9a-f]{20})\"")
+        if let m = token.firstMatch(in: result, range: NSRange(result.startIndex..., in: result)),
+           let r = Range(m.range(at: 1), in: result), !input.contains(String(result[r])) {
+            result.replaceSubrange(r, with: "NEW-TOKEN")
+        }
+        let uuid = try! NSRegularExpression(pattern: "[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}")
+        var names: [String: String] = [:]
+        for m in uuid.matches(in: result, range: NSRange(result.startIndex..., in: result)) {
+            let id = String(result[Range(m.range, in: result)!])
+            if !known.contains(id), names[id] == nil { names[id] = "NEW-\(names.count + 1)" }
+        }
+        for (id, name) in names { result = result.replacingOccurrences(of: id, with: name) }
+        return result
+    }
 
     static var fixturesDir: URL {
         URL(fileURLWithPath: #filePath)
