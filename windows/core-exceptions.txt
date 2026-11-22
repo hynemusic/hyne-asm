@@ -1,0 +1,7 @@
+# Swift core files that have no same-named C# counterpart in windows/HyneAsm.Core.
+#
+# Format: one Swift base name per line (the file name without ".swift"). Blank lines and lines
+# starting with "#" are ignored. Every entry needs a reason on the line above it, and the same
+# exception must also be explained in docs/parity.md.
+#
+# Currently empty: every Sources/HMLauncherCore/*.swift file has a same-named windows/HyneAsm.Core/*.cs file.

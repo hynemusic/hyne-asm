@@ -381,17 +381,19 @@ public static partial class Fixtures
         return result;
     }
 
-    public static string FixturesDir()
+    /// <summary>The repository root: the first folder above the test binaries that contains <c>spec/fixtures</c>.</summary>
+    public static string RepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir != null)
         {
-            var candidate = Path.Combine(dir.FullName, "spec", "fixtures");
-            if (Directory.Exists(candidate)) return candidate;
+            if (Directory.Exists(Path.Combine(dir.FullName, "spec", "fixtures"))) return dir.FullName;
             dir = dir.Parent;
         }
         throw new DirectoryNotFoundException("spec/fixtures not found above " + AppContext.BaseDirectory);
     }
+
+    public static string FixturesDir() => Path.Combine(RepoRoot(), "spec", "fixtures");
 
     public static IEnumerable<(string File, string Area, string CaseName, JsonNode? Input, JsonNode? Expected)> All()
     {
