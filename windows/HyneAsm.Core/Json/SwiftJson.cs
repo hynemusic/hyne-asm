@@ -200,10 +200,11 @@ public static class SwiftJson
     }
 
     static readonly System.Text.RegularExpressions.Regex IsoPattern = new(
-        @"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(Z|[+-]\d{2}:?\d{2})$",
+        @"^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})(?:\.([0-9]+))?(Z|[+-][0-9]{2}:?[0-9]{2})$",
         System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 
-    /// <summary>Swift <c>.iso8601</c> decoding: "T" and a zone ("Z", "+01:00", "+0100") required, a fraction accepted.</summary>
+    /// <summary>Swift <c>.iso8601</c> decoding: "T" and a zone ("Z", "+01:00", "+0100") required, a fraction accepted.
+    /// ASCII digits only ("٢٠٢٦" is no year). Any malformed date gives false, never an exception.</summary>
     internal static bool TryParseIso8601(string s, out DateTime utc)
     {
         utc = default;
@@ -228,7 +229,7 @@ public static class SwiftJson
             utc = local;
             return true;
         }
-        catch (ArgumentOutOfRangeException) { return false; }
+        catch (Exception e) when (e is ArgumentOutOfRangeException or FormatException or OverflowException) { return false; }
     }
 
     /// <summary>A <c>Date</c> property written with Swift's <c>.iso8601</c> strategy.</summary>

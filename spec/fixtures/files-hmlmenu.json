@@ -245,6 +245,33 @@
         "load": "2000-BBBBBBBB"
       },
       "name": "version list newest first, skips other files"
+    },
+    {
+      "expected": {
+        "error": "unreadable"
+      },
+      "input": {
+        "text": "{\"format\": \"hm-launcher-menu\", \"formatVersion\": 1, \"name\": \"Mein Men\\u00fc\", \"createdAt\": \"٢٠٢٦-03-01T12:30:00Z\", \"categories\": [{\"id\": \"A0000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"isFavorites\": true, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000001\", \"uri\": \"query:Utility\", \"name\": \"Utility\", \"source\": \"audio_effects\", \"path\": [], \"iconID\": \"utility\"}]}, {\"id\": \"A0000000-0000-0000-0000-000000000002\", \"name\": \"Mein Men\\u00fc\", \"isFavorites\": false, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000002\", \"uri\": \"query:Serum 2\", \"name\": \"Serum 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"Xfer Records\"], \"iconID\": \"synth\", \"displayName\": \"Serum/2\", \"colorID\": \"red\"}, {\"id\": \"E0000000-0000-0000-0000-000000000003\", \"uri\": \"\", \"name\": \"Dyn\", \"source\": \"plugins\", \"path\": [], \"iconID\": \"folder\", \"children\": [{\"id\": \"E0000000-0000-0000-0000-000000000004\", \"uri\": \"query:Pro-C 2\", \"name\": \"Pro-C 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"FabFilter\"], \"iconID\": \"compressor\"}]}]}]}"
+      },
+      "name": "date with non-ASCII digits"
+    },
+    {
+      "expected": {
+        "error": "unreadable"
+      },
+      "input": {
+        "text": "{\"format\": \"hm-launcher-menu\", \"formatVersion\": 1, \"name\": \"Mein Men\\u00fc\", \"createdAt\": \"２０２６-03-01T12:30:00Z\", \"categories\": [{\"id\": \"A0000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"isFavorites\": true, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000001\", \"uri\": \"query:Utility\", \"name\": \"Utility\", \"source\": \"audio_effects\", \"path\": [], \"iconID\": \"utility\"}]}, {\"id\": \"A0000000-0000-0000-0000-000000000002\", \"name\": \"Mein Men\\u00fc\", \"isFavorites\": false, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000002\", \"uri\": \"query:Serum 2\", \"name\": \"Serum 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"Xfer Records\"], \"iconID\": \"synth\", \"displayName\": \"Serum/2\", \"colorID\": \"red\"}, {\"id\": \"E0000000-0000-0000-0000-000000000003\", \"uri\": \"\", \"name\": \"Dyn\", \"source\": \"plugins\", \"path\": [], \"iconID\": \"folder\", \"children\": [{\"id\": \"E0000000-0000-0000-0000-000000000004\", \"uri\": \"query:Pro-C 2\", \"name\": \"Pro-C 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"FabFilter\"], \"iconID\": \"compressor\"}]}]}]}"
+      },
+      "name": "date with fullwidth digits"
+    },
+    {
+      "expected": {
+        "error": "unreadable"
+      },
+      "input": {
+        "text": "{\"format\": \"hm-launcher-menu\", \"formatVersion\": 1, \"name\": \"Mein Men\\u00fc\", \"createdAt\": \"2026-13-01T12:30:00Z\", \"categories\": [{\"id\": \"A0000000-0000-0000-0000-000000000001\", \"name\": \"Favorites\", \"isFavorites\": true, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000001\", \"uri\": \"query:Utility\", \"name\": \"Utility\", \"source\": \"audio_effects\", \"path\": [], \"iconID\": \"utility\"}]}, {\"id\": \"A0000000-0000-0000-0000-000000000002\", \"name\": \"Mein Men\\u00fc\", \"isFavorites\": false, \"entries\": [{\"id\": \"E0000000-0000-0000-0000-000000000002\", \"uri\": \"query:Serum 2\", \"name\": \"Serum 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"Xfer Records\"], \"iconID\": \"synth\", \"displayName\": \"Serum/2\", \"colorID\": \"red\"}, {\"id\": \"E0000000-0000-0000-0000-000000000003\", \"uri\": \"\", \"name\": \"Dyn\", \"source\": \"plugins\", \"path\": [], \"iconID\": \"folder\", \"children\": [{\"id\": \"E0000000-0000-0000-0000-000000000004\", \"uri\": \"query:Pro-C 2\", \"name\": \"Pro-C 2\", \"source\": \"plugins\", \"path\": [\"VST3\", \"FabFilter\"], \"iconID\": \"compressor\"}]}]}]}"
+      },
+      "name": "date with month 13"
     }
   ]
 }

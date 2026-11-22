@@ -301,6 +301,15 @@
         }
       },
       "name": "store loads BOM file"
+    },
+    {
+      "expected": {
+        "error": true
+      },
+      "input": {
+        "read": "{\"format\": \"hyne-asm-usage\", \"version\": 1, \"exported\": \"2026-04-01T0٨:00:00Z\", \"counts\": {\"plugins|serum 2\": 9, \"audio_effects|eq eight\": 3}}"
+      },
+      "name": "reject export date with non-ASCII digits"
     }
   ]
 }
