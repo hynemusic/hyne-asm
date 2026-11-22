@@ -108,8 +108,10 @@ sealed class PanelWindow : Overlay
     {
         if (state == null) return;
         FontFamily = Theme.Display;
+        var left = model.Config.CategoryPlacement == CategoryPlacement.Left;
         var root = new StackPanel { Margin = new Thickness(Inset) };
-        root.Children.Add(TopRow());
+        if (!left || state.Filter.Length > 0 || state.OpenFolderName != null) root.Children.Add(TopRow());
+        else root.Children.Add(CategoryHeader());
         var body = new DockPanel { Width = GridWidth + EdgeWidth + 6, Height = GridHeight, LastChildFill = false };
         var pads = Pads();
         DockPanel.SetDock(pads, Dock.Left);
@@ -122,7 +124,49 @@ sealed class PanelWindow : Overlay
         }
         root.Children.Add(body);
         root.Children.Add(Footer());
-        Content = Theme.Chrome(root, 12);
+        if (!left) { Content = Theme.Chrome(root, 12); return; }
+        // Categories as a column on the left (Behavior → Categories: Left).
+        var column = new StackPanel { Width = 132, Margin = new Thickness(Inset, Inset, 6, Inset) };
+        for (var i = 0; i < state.Tabs.Count; i++)
+        {
+            var tab = (Border)Tab(i);
+            tab.Height = 28;
+            tab.Margin = new Thickness(0, 0, 0, 2);
+            tab.HorizontalAlignment = HorizontalAlignment.Stretch;
+            column.Children.Add(tab);
+        }
+        var gear = SettingsGear();
+        gear.HorizontalAlignment = HorizontalAlignment.Left;
+        gear.Margin = new Thickness(4, 8, 0, 0);
+        column.Children.Add(gear);
+        var row = new StackPanel { Orientation = Orientation.Horizontal };
+        row.Children.Add(column);
+        row.Children.Add(new Border { Width = 1, Background = Theme.Stroke, Margin = new Thickness(0, Inset, 0, Inset) });
+        root.Margin = new Thickness(12, Inset, Inset, Inset);
+        row.Children.Add(root);
+        Content = Theme.Chrome(row, 12);
+    }
+
+    /// <summary>Categories on the left: the category's name and count above the pads.</summary>
+    UIElement CategoryHeader()
+    {
+        var line = new StackPanel { Orientation = Orientation.Horizontal, Height = 24, Margin = new Thickness(2, 0, 0, 6) };
+        var name = state!.Tabs[state.SelectedTab] is PanelTab.Category c ? c.Name : "";
+        line.Children.Add(new TextBlock { Text = name, FontSize = 13, FontWeight = FontWeights.SemiBold, Foreground = Theme.TextPrimary, VerticalAlignment = VerticalAlignment.Center });
+        line.Children.Add(new TextBlock { Text = state.Rows.Count.ToString(), FontSize = 11, FontWeight = FontWeights.SemiBold, Foreground = Theme.TextTertiary, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0, 0, 0) });
+        return line;
+    }
+
+    TextBlock SettingsGear()
+    {
+        var gear = new TextBlock
+        {
+            Text = "\uE713", FontFamily = Theme.Icons, FontSize = 12, Foreground = Theme.TextTertiary, Width = 26, TextAlignment = TextAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Right, Cursor = Cursors.Hand,
+            Background = Brushes.Transparent, ToolTip = Loc.T("Einstellungen", "Settings"),
+        };
+        gear.MouseLeftButtonUp += (_, _) => OnOpenSettings?.Invoke();
+        return gear;
     }
 
     UIElement EdgeArrow(string glyph, int delta)
@@ -161,14 +205,7 @@ sealed class PanelWindow : Overlay
         var bar = new Grid { Height = TabBarHeight - 8, Margin = new Thickness(0, 0, 0, 8) };
         bar.Children.Add(new Border { Height = 1, Background = Theme.Stroke, VerticalAlignment = VerticalAlignment.Bottom, Margin = new Thickness(0, 0, 0, -5) });
         bar.Children.Add(tabs);
-        var gear = new TextBlock
-        {
-            Text = "\uE713", FontFamily = Theme.Icons, FontSize = 12, Foreground = Theme.TextTertiary, Width = 26, TextAlignment = TextAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Right, Cursor = Cursors.Hand,
-            Background = Brushes.Transparent, ToolTip = Loc.T("Einstellungen", "Settings"),
-        };
-        gear.MouseLeftButtonUp += (_, _) => OnOpenSettings?.Invoke();
-        bar.Children.Add(gear);
+        bar.Children.Add(SettingsGear());
         return bar;
     }
 
@@ -268,79 +305,7 @@ sealed class PanelWindow : Overlay
         return holder;
     }
 
-    Border Plate(PanelRow row, int slot, bool active)
-    {
-        // Folders stand out in the accent unless they have their own colour label.
-        var label = Theme.LabelColor(row.ColorID);
-        var color = label ?? (row.FolderID != null ? Theme.Current.Accent : (Color?)null);
-        var lit = color ?? Theme.Current.Accent;
-        var onLit = Theme.B(Theme.Current.OnLitPad);
-        var iconBrush = active ? Theme.B(Color.FromArgb(190, Theme.Current.OnLitPad.R, Theme.Current.OnLitPad.G, Theme.Current.OnLitPad.B))
-            : color is { } ic ? Theme.B(ic) : Theme.TextTertiary;
-        var titleBrush = active ? onLit : row.IsAvailable ? Theme.TextPrimary : Theme.TextTertiary;
-        var numberBrush = active ? Theme.B(Color.FromArgb(166, Theme.Current.OnLitPad.R, Theme.Current.OnLitPad.G, Theme.Current.OnLitPad.B)) : Theme.TextTertiary;
-        var grid = new Grid();
-        if (IsGrid)
-        {
-            var center = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(6, 8, 6, 12) };
-            var icon = Theme.Icon(row.IconID, 17, iconBrush);
-            icon.Height = 20;
-            center.Children.Add(icon);
-            center.Children.Add(new TextBlock
-            {
-                Text = row.Title, FontSize = 12, FontWeight = FontWeights.SemiBold, Foreground = titleBrush, TextWrapping = TextWrapping.Wrap,
-                TextAlignment = TextAlignment.Center, MaxHeight = 32, TextTrimming = TextTrimming.CharacterEllipsis, Margin = new Thickness(0, 6, 0, 0),
-            });
-            grid.Children.Add(center);
-            if (slot < 9)
-                grid.Children.Add(new TextBlock { Text = (slot + 1).ToString(), FontSize = 11, FontWeight = FontWeights.SemiBold, Foreground = numberBrush, Margin = new Thickness(7, 5, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top });
-            var badges = Badges(row);
-            badges.HorizontalAlignment = HorizontalAlignment.Right;
-            badges.VerticalAlignment = VerticalAlignment.Top;
-            badges.Margin = new Thickness(5);
-            grid.Children.Add(badges);
-            var stripe = Theme.Stripe(active, color, 72, 3.5);
-            ((FrameworkElement)stripe).VerticalAlignment = VerticalAlignment.Bottom;
-            ((FrameworkElement)stripe).Margin = new Thickness(0, 0, 0, 6);
-            grid.Children.Add(stripe);
-        }
-        else
-        {
-            var line = new DockPanel { LastChildFill = true, Margin = new Thickness(10, 0, 10, 2) };
-            var number = new TextBlock { Text = slot < 9 ? (slot + 1).ToString() : "", Width = 12, FontSize = 11, FontWeight = FontWeights.SemiBold, Foreground = numberBrush, VerticalAlignment = VerticalAlignment.Center };
-            DockPanel.SetDock(number, Dock.Left);
-            line.Children.Add(number);
-            var icon = Theme.Icon(row.IconID, 15, iconBrush);
-            icon.Width = 20;
-            icon.Margin = new Thickness(9, 0, 9, 0);
-            DockPanel.SetDock(icon, Dock.Left);
-            line.Children.Add(icon);
-            var badges = Badges(row);
-            badges.VerticalAlignment = VerticalAlignment.Center;
-            DockPanel.SetDock(badges, Dock.Right);
-            line.Children.Add(badges);
-            line.Children.Add(new TextBlock { Text = row.Title, FontSize = 12, FontWeight = FontWeights.SemiBold, Foreground = titleBrush, TextTrimming = TextTrimming.CharacterEllipsis, VerticalAlignment = VerticalAlignment.Center });
-            grid.Children.Add(line);
-            var stripe = Theme.Stripe(active, color, 64, 3);
-            ((FrameworkElement)stripe).VerticalAlignment = VerticalAlignment.Bottom;
-            ((FrameworkElement)stripe).Margin = new Thickness(0, 0, 0, 4);
-            grid.Children.Add(stripe);
-        }
-        return Theme.Plate(grid, active, lit);
-    }
-
-    static StackPanel Badges(PanelRow row)
-    {
-        var badges = new StackPanel { Orientation = Orientation.Horizontal };
-        if (row.IsNew) badges.Children.Add(Theme.NewBadge());
-        if (row.FolderID != null)
-            badges.Children.Add(new Border
-            {
-                Background = Theme.Ink(0.09), CornerRadius = new CornerRadius(8), Padding = new Thickness(5, 1, 5, 1), Margin = new Thickness(3, 0, 0, 0),
-                Child = new TextBlock { Text = row.ChildCount.ToString(), FontSize = 10, FontWeight = FontWeights.SemiBold, Foreground = Theme.TextSecondary },
-            });
-        return badges;
-    }
+    Border Plate(PanelRow row, int slot, bool active) => PadView.Build(PadData.Of(row, slot), IsGrid, active);
 
     /// <summary>Bottom line: what typing does (or that the panel is pinned, or how many hits), page dots on the right.</summary>
     UIElement Footer()

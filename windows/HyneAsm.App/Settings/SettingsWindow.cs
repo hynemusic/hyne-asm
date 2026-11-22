@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using HyneAsm.Core;
 
 namespace HyneAsm.App.Settings;
@@ -14,57 +16,58 @@ abstract class Page
     protected readonly SettingsWindow Window;
     protected Page(AppModel model, SettingsWindow window) { Model = model; Window = window; }
     public abstract UIElement Build();
-    /// <summary>Saves the config and redraws the page.</summary>
+    /// <summary>Saves the config; the window redraws from the model's change event.</summary>
     protected void Changed() => Model.ConfigChanged();
+    /// <summary>Keys pressed while the page is shown (Delete, Ctrl+G in the Library). True = handled.</summary>
+    public virtual bool Key(KeyEventArgs e) => false;
 }
 
-/// <summary>The settings window: a sidebar like the Mac's (pages, Live status) and the page on the right.</summary>
+/// <summary>The settings window, laid out like the Mac's: sidebar with the pages (glowing selection), Live status,
+/// theme and language at the bottom; the page on the right.</summary>
 sealed class SettingsWindow : Window
 {
     readonly AppModel model;
     readonly Grid root = new();
     readonly ContentControl content = new();
-    readonly List<(string Group, string Icon, string Title, string Subtitle, Func<Page> Make)> pages;
+    readonly List<(int Group, string Icon, string Title, Func<Page> Make)> pages;
+    readonly Dictionary<int, Page> made = new();
     int current;
-    Page? page;
+    bool redrawing;
 
     public SettingsWindow(AppModel model, int startPage = 0)
     {
         this.model = model;
         Title = Loc.T("HYNE ASM – Einstellungen", "HYNE ASM – Settings");
-        Width = 1100; Height = 740; MinWidth = 900; MinHeight = 560;
+        Width = 1320; Height = 820; MinWidth = 1000; MinHeight = 600;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         Icon = TrayIcon.ImageSource();
         pages = new()
         {
-            (Loc.T("Menü", "Menu"), "", Loc.T("Bibliothek", "Library"), Loc.T("Plugins & Kategorien", "Plugins & categories"), () => new LibraryPage(model, this)),
-            (Loc.T("Menü", "Menu"), "", Loc.T("Profile", "Profiles"), Loc.T("Menüs wechseln & sichern", "Switch & save menus"), () => new ProfilesPage(model, this)),
-            (Loc.T("Menü", "Menu"), "", Loc.T("Suche formen", "Shape Search"), Loc.T("Anpinnen & ausblenden", "Pin & hide results"), () => new SearchPage(model, this)),
-            (Loc.T("Einrichtung", "Setup"), "", Loc.T("Tastenkürzel", "Shortcuts"), Loc.T("Fenster, Suche, Panel", "Windows, search, panel"), () => new ShortcutsPage(model, this)),
-            (Loc.T("Einrichtung", "Setup"), "", Loc.T("Verhalten", "Behavior"), Loc.T("Panel, Einfügen, Geräte", "Panel, inserting, devices"), () => new BehaviorPage(model, this)),
-            (Loc.T("Einblicke", "Insights"), "", Loc.T("Statistik", "Stats"), Loc.T("Was du am meisten nutzt", "What you use most"), () => new StatsPage(model, this)),
+            (0, "", Loc.T("Bibliothek", "Library"), () => new LibraryPage(model, this)),
+            (0, "", Loc.T("Profile", "Profiles"), () => new ProfilesPage(model, this)),
+            (0, "", Loc.T("Suche formen", "Shape Search"), () => new SearchPage(model, this)),
+            (1, "", Loc.T("Tastenkürzel", "Shortcuts"), () => new ShortcutsPage(model, this)),
+            (1, "", Loc.T("Verhalten", "Behavior"), () => new BehaviorPage(model, this)),
+            (2, "", Loc.T("Statistik", "Stats"), () => new StatsPage(model, this)),
         };
         current = Math.Clamp(startPage, 0, pages.Count - 1);
-        root.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(232) });
+        root.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(272) });
         root.ColumnDefinitions.Add(new ColumnDefinition());
         Grid.SetColumn(content, 1);
         Content = root;
         model.Changed += OnModelChanged;
         Closed += (_, _) => model.Changed -= OnModelChanged;
-        Select(current);
-    }
-
-    void OnModelChanged() { if (!redrawing) Redraw(); }
-    bool redrawing;
-
-    public void Select(int index)
-    {
-        current = index;
-        page = pages[index].Make();
+        PreviewKeyDown += (_, e) => { if (Page.Key(e)) e.Handled = true; };
         Redraw();
     }
 
-    /// <summary>Re-reads the config into the sidebar and the page (keeps the page's own state, e.g. a search).</summary>
+    Page Page => made.TryGetValue(current, out var p) ? p : made[current] = pages[current].Make();
+
+    void OnModelChanged() => Redraw();
+
+    public void Select(int index) { current = index; Redraw(); }
+
+    /// <summary>Re-reads the config into the sidebar and the page (pages keep their own state, e.g. a search).</summary>
     public void Redraw()
     {
         if (redrawing) return;
@@ -75,7 +78,7 @@ sealed class SettingsWindow : Window
             Background = UI.Canvas;
             root.Children.Clear();
             root.Children.Add(Sidebar());
-            content.Content = page!.Build();
+            content.Content = Page.Build();
             root.Children.Add(content);
         }
         finally { redrawing = false; }
@@ -83,54 +86,129 @@ sealed class SettingsWindow : Window
 
     UIElement Sidebar()
     {
-        var list = new StackPanel { Margin = new Thickness(14, 18, 14, 14) };
-        var brand = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(6, 0, 0, 14) };
-        var logo = new Image { Source = TrayIcon.ImageSource(), Width = 28, Height = 28, Margin = new Thickness(0, 0, 10, 0) };
-        brand.Children.Add(logo);
+        var list = new StackPanel { Margin = new Thickness(10, 16, 10, 10) };
+        var brand = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(8, 0, 0, 30) };
+        brand.Children.Add(new Image { Source = TrayIcon.ImageSource(), Width = 38, Height = 38, Margin = new Thickness(0, 0, 12, 0) });
         var name = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-        name.Children.Add(UI.Text("HYNE ASM", 15, weight: FontWeights.Bold));
-        name.Children.Add(UI.Text("Ableton Shortcuts Manager", 10.5, Theme.TextTertiary));
+        name.Children.Add(UI.Text("HYNE ASM", 17, weight: FontWeights.Bold));
+        name.Children.Add(UI.Text("Ableton Shortcuts Manager", 12, Theme.TextSecondary));
         brand.Children.Add(name);
         list.Children.Add(brand);
-        string? group = null;
+        var group = 0;
         for (var i = 0; i < pages.Count; i++)
         {
-            var p = pages[i];
-            if (p.Group != group) { group = p.Group; list.Children.Add(UI.Section(group)); }
-            list.Children.Add(SidebarItem(i, p.Icon, p.Title, p.Subtitle));
+            if (pages[i].Group != group) { group = pages[i].Group; list.Children.Add(new Border { Height = 18 }); }
+            list.Children.Add(SidebarItem(i));
         }
-        var status = new StackPanel { Margin = new Thickness(14, 0, 14, 16), VerticalAlignment = VerticalAlignment.Bottom };
-        var line = new StackPanel { Orientation = Orientation.Horizontal };
-        line.Children.Add(UI.Dot(model.IsConnected ? System.Windows.Media.Color.FromRgb(0x4C, 0xCC, 0x80) : System.Windows.Media.Color.FromRgb(0x88, 0x88, 0x88), 8));
-        var t = UI.Text(model.IsConnected ? Loc.T("Mit Live verbunden", "Connected to Live") : Loc.T("Live nicht verbunden", "Live not connected"), 12, weight: FontWeights.SemiBold);
-        t.Margin = new Thickness(8, 0, 0, 0);
-        line.Children.Add(t);
-        status.Children.Add(line);
-        status.Children.Add(UI.Caption(model.IsConnected
+
+        var bottom = new StackPanel { Margin = new Thickness(14, 0, 14, 14) };
+        var status = new Grid { Margin = new Thickness(0, 0, 0, 12) };
+        status.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(18) });
+        status.ColumnDefinitions.Add(new ColumnDefinition());
+        status.Children.Add(UI.Dot(model.IsConnected ? Color.FromRgb(0x4C, 0xCC, 0x80) : Color.FromRgb(0x88, 0x84, 0x7E), 8));
+        var lines = new StackPanel();
+        lines.Children.Add(UI.Text(model.IsConnected ? Loc.T("Mit Live verbunden", "Connected to Live") : Loc.T("Live nicht verbunden", "Live not connected"), 13, weight: FontWeights.SemiBold));
+        lines.Children.Add(UI.Text(model.IsConnected
             ? $"Live {model.Hello?.LiveVersion} · {Loc.Number(model.Catalog.Items.Count)} " + Loc.T("Einträge", "items")
-            : Loc.T("In Live ASMbridge wählen", "Select ASMbridge in Live")));
+            : Loc.T("In Live ASMbridge wählen", "Select ASMbridge in Live"), 12.5, Theme.TextSecondary));
+        Grid.SetColumn(lines, 1);
+        status.Children.Add(lines);
+        bottom.Children.Add(status);
+        bottom.Children.Add(ThemePicker());
+        bottom.Children.Add(LanguagePicker());
+
         var dock = new DockPanel { LastChildFill = true };
-        DockPanel.SetDock(status, Dock.Bottom);
-        dock.Children.Add(status);
+        DockPanel.SetDock(bottom, Dock.Bottom);
+        dock.Children.Add(bottom);
         dock.Children.Add(UI.Scroll(list));
         return new Border { Background = UI.Sidebar, BorderBrush = Theme.Stroke, BorderThickness = new Thickness(0, 0, 1, 0), Child = dock };
     }
 
-    UIElement SidebarItem(int index, string icon, string title, string subtitle)
+    UIElement SidebarItem(int index)
     {
         var selected = index == current;
+        var (_, icon, title, _) = pages[index];
         var row = new StackPanel { Orientation = Orientation.Horizontal };
-        row.Children.Add(new TextBlock { Text = icon, FontFamily = Theme.Icons, FontSize = 15, Width = 22, Foreground = selected ? Theme.Accent : Theme.TextSecondary, VerticalAlignment = VerticalAlignment.Center });
-        var text = new StackPanel { Margin = new Thickness(8, 0, 0, 0) };
-        text.Children.Add(UI.Text(title, 13, weight: FontWeights.SemiBold));
-        text.Children.Add(UI.Text(subtitle, 11, Theme.TextTertiary));
-        row.Children.Add(text);
+        var tile = new Border
+        {
+            Width = 30, Height = 30, CornerRadius = new CornerRadius(Theme.Radius(7)), Background = selected ? UI.AccentTint(0.15) : Theme.Ink(0.06),
+            Child = UI.Icon(icon, 14, selected ? Theme.Accent : Theme.TextSecondary),
+        };
+        ((TextBlock)tile.Child).HorizontalAlignment = HorizontalAlignment.Center;
+        row.Children.Add(tile);
+        var t = UI.Text(title, 16, weight: FontWeights.SemiBold);
+        t.Margin = new Thickness(12, 0, 0, 0);
+        row.Children.Add(t);
         var item = new Border
         {
-            Child = row, Padding = new Thickness(8, 6, 8, 6), CornerRadius = new CornerRadius(Theme.Radius(8)), Cursor = Cursors.Hand,
-            Background = selected ? UI.Hover : System.Windows.Media.Brushes.Transparent, Margin = new Thickness(0, 1, 0, 1),
+            Child = row, Padding = new Thickness(6, 6, 8, 6), CornerRadius = new CornerRadius(Theme.Radius(9)), Cursor = Cursors.Hand,
+            Background = selected ? UI.Raised : Brushes.Transparent, Margin = new Thickness(0, 2, 0, 2), BorderThickness = new Thickness(1.5),
+            BorderBrush = Brushes.Transparent,
         };
+        if (selected) UI.Glow(item);
+        else
+        {
+            item.MouseEnter += (_, _) => item.Background = Theme.Ink(0.04);
+            item.MouseLeave += (_, _) => item.Background = Brushes.Transparent;
+        }
         item.MouseLeftButtonUp += (_, _) => Select(index);
         return item;
+    }
+
+    /// <summary>Theme card: a tiny preview of the panel in the theme, its name, opens the list of themes.</summary>
+    UIElement ThemePicker()
+    {
+        var c = model.Config;
+        var row = new DockPanel { LastChildFill = true };
+        var chevrons = UI.Icon("", 11, Theme.TextTertiary);
+        DockPanel.SetDock(chevrons, Dock.Right);
+        row.Children.Add(chevrons);
+        var preview = MiniTheme(c.Theme);
+        DockPanel.SetDock(preview, Dock.Left);
+        row.Children.Add(preview);
+        var text = new StackPanel { Margin = new Thickness(12, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+        text.Children.Add(UI.Text(Loc.T("Design", "Theme"), 11.5, Theme.TextSecondary));
+        text.Children.Add(UI.Text(c.Theme.Title(), 13.5, weight: FontWeights.SemiBold));
+        row.Children.Add(text);
+        var card = new Border
+        {
+            Child = row, Padding = new Thickness(10, 7, 10, 7), CornerRadius = new CornerRadius(Theme.Radius(9)), Background = UI.Raised,
+            Cursor = Cursors.Hand, Margin = new Thickness(0, 0, 0, 12), BorderBrush = Theme.Stroke, BorderThickness = new Thickness(1),
+        };
+        card.MouseLeftButtonUp += (_, _) => UI.Menu(card, Enum.GetValues<AppTheme>().Select(t =>
+            new UI.MenuItem(t.Title() + "  ·  " + t.Subtitle(), () => { c.Theme = t; model.ConfigChanged(); }, Checked: t == c.Theme,
+                Swatch: Palette.Make(t).Accent)).ToList(), atMouse: false);
+        return card;
+    }
+
+    /// <summary>The Mac's little theme picture: a panel with two rows, a highlighted one and the accent.</summary>
+    static FrameworkElement MiniTheme(AppTheme theme)
+    {
+        var p = Palette.Make(theme);
+        var stack = new StackPanel { Margin = new Thickness(4, 5, 4, 5) };
+        stack.Children.Add(new Border { Height = 4, Width = 14, CornerRadius = new CornerRadius(2), Background = Theme.B(p.Accent), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 0, 3) });
+        stack.Children.Add(new Border { Height = 5, CornerRadius = new CornerRadius(2), Background = Theme.B(p.Accent), Margin = new Thickness(0, 0, 0, 3) });
+        stack.Children.Add(new Border { Height = 5, CornerRadius = new CornerRadius(2), Background = Theme.B(p.PanelRow) });
+        return new Border { Width = 38, Height = 28, CornerRadius = new CornerRadius(5), Background = Theme.B(p.PanelSurface), BorderBrush = Theme.B(p.PanelStroke), BorderThickness = new Thickness(1), Child = stack };
+    }
+
+    UIElement LanguagePicker()
+    {
+        var c = model.Config;
+        var row = new StackPanel { Orientation = Orientation.Horizontal };
+        var globe = UI.Icon("", 14, Theme.TextSecondary);
+        globe.Margin = new Thickness(2, 0, 10, 0);
+        row.Children.Add(globe);
+        var title = c.Language switch { HyneAsm.Core.Language.De => "Deutsch", HyneAsm.Core.Language.En => "English", _ => Loc.T("Automatisch", "Automatic") };
+        var pill = new StackPanel { Orientation = Orientation.Horizontal };
+        pill.Children.Add(UI.Text(title, 13.5, weight: FontWeights.Medium));
+        var chev = UI.Icon("", 10, Theme.TextTertiary);
+        chev.Margin = new Thickness(14, 0, 0, 0);
+        pill.Children.Add(chev);
+        var box = new Border { Child = pill, Padding = new Thickness(10, 4, 8, 4), CornerRadius = new CornerRadius(Theme.Radius(6)), Background = UI.Raised, Cursor = Cursors.Hand };
+        box.MouseLeftButtonUp += (_, _) => UI.Menu(box, new (string, HyneAsm.Core.Language?)[] { (Loc.T("Automatisch", "Automatic"), null), ("Deutsch", HyneAsm.Core.Language.De), ("English", HyneAsm.Core.Language.En) }
+            .Select(o => new UI.MenuItem(o.Item1, () => { c.Language = o.Item2; model.ConfigChanged(); }, Checked: c.Language == o.Item2)).ToList(), atMouse: false);
+        row.Children.Add(box);
+        return row;
     }
 }
