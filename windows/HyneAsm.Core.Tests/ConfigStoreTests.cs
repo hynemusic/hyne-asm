@@ -224,4 +224,22 @@ public class ConfigStoreTests : IDisposable
         Assert.Contains(new ConfigStore(ConfigPath).Load().Categories, x => x.IsFavorites);
         Assert.Contains(new ConfigStore(Path.Combine(dir, "nope", "config.json")).Load().Categories, x => x.IsFavorites);
     }
+
+    /// <summary>Swift's JSONDecoder rejects invalid UTF-8, so the file is backed up and the default used (controller
+    /// ruling: match Swift rather than decode to U+FFFD).</summary>
+    [Fact]
+    public void Invalid_UTF8_is_damage_backup_and_default()
+    {
+        var c = LauncherConfig.MakeDefault();
+        c.Categories[0].Entries.Add(Item("Pro-L 2"));
+        var bytes = SwiftJson.EncodeUtf8(SwiftJson.Serialize(c, pretty: true).Replace("Pro-L 2", "Pro-L X"));
+        bytes[bytes.AsSpan().IndexOf("Pro-L X"u8) + 6] = 0xFF;   // not valid anywhere in UTF-8
+        File.WriteAllBytes(ConfigPath, bytes);
+
+        var loaded = new ConfigStore(ConfigPath).Load();
+        Assert.Empty(loaded.Categories[0].Entries);
+        var backup = Assert.Single(Backups());
+        Assert.Equal(bytes, File.ReadAllBytes(Path.Combine(dir, backup)));
+        Assert.False(File.Exists(ConfigPath));
+    }
 }

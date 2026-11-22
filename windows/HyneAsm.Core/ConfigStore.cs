@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json;
 using HyneAsm.Core.Json;
 
@@ -53,9 +52,10 @@ public sealed class ConfigStore
         catch (IOException e) { throw new ConfigUnreadableException(Path, e); }
         if (data == null) return LauncherConfig.MakeDefault();
 
-        // Like Swift's `try?`: any failure to decode means a damaged file (backup + default), never a crash.
+        // Like Swift's `try?`: any failure to decode (invalid UTF-8 included, as JSONDecoder rejects it) means a damaged
+        // file (backup + default), never a crash.
         LauncherConfig? config = null;
-        try { config = SwiftJson.Deserialize<LauncherConfig>(Encoding.UTF8.GetString(data)); }
+        try { config = SwiftJson.Deserialize<LauncherConfig>(SwiftJson.DecodeUtf8(data)); }
         catch (Exception e) when (e is not OutOfMemoryException) { }
         if (config != null && config.Categories.Any(c => c.IsFavorites))
         {
