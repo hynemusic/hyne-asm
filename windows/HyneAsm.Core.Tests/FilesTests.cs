@@ -16,7 +16,7 @@ public class FilesTests : IDisposable
         try { Directory.Delete(dir, recursive: true); } catch (IOException) { }
     }
 
-    static PluginItem Item(string name, ItemSource source = ItemSource.Plugins) => new("u:" + name, name, source, new());
+    static PluginItem Item(string name, ItemSource source = ItemSource.Plugins) => new("u:" + name, name, source, Array.Empty<string>());
 
     static LauncherConfig SampleConfig()
     {
@@ -151,7 +151,7 @@ public class FilesTests : IDisposable
     public async Task PluginCatalog_refresh_writes_cache_and_load_cache_restores()
     {
         var cache = Path.Combine(dir, "catalog-cache.json");
-        var items = new List<PluginItem> { new("u:eq", "EQ Eight", ItemSource.AudioEffects, new()) };
+        var items = new List<PluginItem> { new("u:eq", "EQ Eight", ItemSource.AudioEffects, Array.Empty<string>()) };
         var catalog = new PluginCatalog(cache, _ => Task.FromResult(items));
         var changes = 0;
         catalog.ItemsChanged += (_, _) => changes++;

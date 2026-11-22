@@ -40,7 +40,7 @@ public static class KeyTranslation
     static readonly Dictionary<ushort, ushort> VkToMac = Table.ToDictionary(r => r.Vk, r => r.Mac);
 
     /// <summary>Every (macOS key code, Windows virtual key) pair the table knows.</summary>
-    public static IReadOnlyList<(ushort Mac, ushort Vk)> Rows => Table;
+    public static IReadOnlyList<(ushort Mac, ushort Vk)> Rows { get; } = Array.AsReadOnly(Table);
 
     const ModifierSet AllMac = ModifierSet.Cmd | ModifierSet.Alt | ModifierSet.Shift | ModifierSet.Ctrl;
     const WinModifiers AllWin = WinModifiers.Ctrl | WinModifiers.Alt | WinModifiers.Shift | WinModifiers.Win;

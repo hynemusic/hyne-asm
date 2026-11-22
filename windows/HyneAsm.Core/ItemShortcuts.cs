@@ -18,7 +18,7 @@ public sealed record ItemShortcut : IJsonOnDeserialized
     public ItemShortcut(KeyCombo combo, PluginItem item)
     {
         Combo = combo;
-        Uri = item.Uri; Name = item.Name; Source = item.Source; Path = item.Path;
+        Uri = item.Uri; Name = item.Name; Source = item.Source; Path = item.Path.ToList();
     }
 
     void IJsonOnDeserialized.OnDeserialized()

@@ -116,9 +116,9 @@ public static class LiveActionKindExtensions
 
 public sealed record LiveAction
 {
-    [JsonRequired] public LiveActionKind Kind { get; set; }
-    public double? Value { get; set; }
-    public int? Value2 { get; set; }
+    [JsonRequired] public LiveActionKind Kind { get; init; }
+    public double? Value { get; init; }
+    public int? Value2 { get; init; }
 
     /// <summary>For the JSON reader: missing values stay null (Swift's synthesized decoding adds no defaults).</summary>
     public LiveAction() { }

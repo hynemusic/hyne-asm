@@ -9,24 +9,24 @@ public sealed record PanelRow
     public string Name { get; init; } = "";
     public ItemSource Source { get; init; }
     public IReadOnlyList<string> Path { get; init; } = Array.Empty<string>();
-    public string IconID { get; set; } = "";
+    public string IconID { get; init; } = "";
     public string Title { get; init; } = "";
     public bool IsAvailable { get; init; }
     /// <summary>Set for folder rows: activating them opens the folder instead of inserting.</summary>
-    public Guid? FolderID { get; set; }
-    public int ChildCount { get; set; }
+    public Guid? FolderID { get; init; }
+    public int ChildCount { get; init; }
     /// <summary>A search hit from the whole plugin list, shown after the category's own hits.</summary>
-    public bool IsGlobal { get; set; }
+    public bool IsGlobal { get; init; }
     /// <summary>Counts inserts per plugin (shared by its formats).</summary>
-    public string UsageKey { get; set; } = "";
+    public string UsageKey { get; init; } = "";
     /// <summary>Color label (<c>ColorPalette</c> id), already resolved against the color rules.</summary>
-    public string? ColorID { get; set; }
+    public string? ColorID { get; init; }
     /// <summary>A chain: the URIs to insert, in order.</summary>
-    public IReadOnlyList<string>? Chain { get; set; }
+    public IReadOnlyList<string>? Chain { get; init; }
     /// <summary>A Live action to run instead of inserting.</summary>
-    public LiveAction? Action { get; set; }
+    public LiveAction? Action { get; init; }
     /// <summary>Not yet filed or inserted, first seen recently.</summary>
-    public bool IsNew { get; set; }
+    public bool IsNew { get; init; }
 
     /// <summary>Row for a chain or Live action entry; null for plugins and folders.</summary>
     internal static PanelRow? Special(Entry e, SearchIndex index, string? colorID)
@@ -235,7 +235,7 @@ public sealed class PanelState
         var uri = resolved?.Uri ?? e.Uri;
         return new PanelRow
         {
-            Uri = uri, Name = e.Name, Source = e.Source, Path = resolved?.Path ?? e.Path, IconID = e.IconID, Title = e.Title,
+            Uri = uri, Name = e.Name, Source = e.Source, Path = resolved?.Path ?? e.Path.ToArray(), IconID = e.IconID, Title = e.Title,
             IsAvailable = resolved != null, UsageKey = search.UsageKey.TryGetValue(uri, out var k) ? k : uri,
             ColorID = config.ColorID(e),
         };

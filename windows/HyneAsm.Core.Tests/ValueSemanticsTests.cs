@@ -50,9 +50,8 @@ public class ValueSemanticsTests
         c.SwitchProfile(first);   // the stored "first" profile now holds the menu; the loaded one is its copy
 
         var loaded = c.Categories[0].Entries;
-        loaded[0].Action!.Value = 174;
-        loaded[1].Chain![0].Name = "Changed";
-        loaded[1].Chain![0].Path.Add("X");
+        loaded[0].Action = loaded[0].Action! with { Value = 174 };
+        loaded[1].Chain![0] = loaded[1].Chain![0] with { Name = "Changed", Path = new[] { "VST3", "FabFilter", "X" } };
 
         var stored = c.Profiles.Single(p => p.Id == first).Categories[0].Entries;
         Assert.Equal(128, stored[0].Action!.Value);
@@ -68,10 +67,45 @@ public class ValueSemanticsTests
         c.AddChain("Vocal", new[] { Item("Pro-Q 4") }, c.FavoritesID);
         var id = c.AddProfile("Copy", copyingCurrent: true);
         var copy = c.Profiles.Single(p => p.Id == id).Categories[0].Entries;
-        c.Categories[0].Entries[0].Action!.Value = 174;
-        c.Categories[0].Entries[1].Chain![0].Name = "Changed";
+        c.Categories[0].Entries[0].Action = c.Categories[0].Entries[0].Action! with { Value = 174 };
+        c.Categories[0].Entries[1].Chain![0] = c.Categories[0].Entries[1].Chain![0] with { Name = "Changed" };
         Assert.Equal(128, copy[0].Action!.Value);
         Assert.Equal("Pro-Q 4", copy[1].Chain![0].Name);
         Assert.NotEqual(c.Categories[0].Entries[0].Id, copy[0].Id);
+    }
+
+    [Fact]
+    public void PluginItem_path_is_a_read_only_copy()
+    {
+        var path = new List<string> { "VST3", "FabFilter" };
+        var item = new PluginItem("u:q", "Pro-Q 4", ItemSource.Plugins, path);
+        path.Add("X");
+        Assert.Equal(new[] { "VST3", "FabFilter" }, item.Path);
+        Assert.IsNotType<List<string>>(item.Path);
+        Assert.IsNotType<string[]>(item.Path);
+
+        var decoded = Json.SwiftJson.Deserialize<PluginItem>(Json.SwiftJson.Serialize(item));
+        Assert.Equal(item, decoded);
+        Assert.IsNotType<List<string>>(decoded.Path);
+
+        var renamed = item with { Name = "Pro-Q 3" };
+        Assert.Equal("Pro-Q 4", item.Name);
+        Assert.Equal(item.Path, renamed.Path);
+    }
+
+    [Fact]
+    public void Panel_rows_do_not_alias_the_config_entry_path()
+    {
+        var c = LauncherConfig.MakeDefault();
+        c.AddEntry(Item("Gone", ItemSource.Plugins, "VST3", "Vendor"), c.FavoritesID);   // not in the catalog: row falls back to the entry
+        var state = new PanelState(c, Array.Empty<PluginItem>());
+        Assert.IsNotType<List<string>>(state.Rows[0].Path);
+    }
+
+    [Fact]
+    public void KeyTranslation_rows_cannot_be_written_through()
+    {
+        Assert.IsNotType<(ushort, ushort)[]>(KeyTranslation.Rows);
+        Assert.Throws<NotSupportedException>(() => ((IList<(ushort, ushort)>)KeyTranslation.Rows)[0] = (0, 0));
     }
 }

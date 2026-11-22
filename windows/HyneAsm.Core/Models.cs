@@ -22,18 +22,23 @@ public static class ItemSourceExtensions
     public static bool IsPreset(this ItemSource source) => source is ItemSource.UserLibrary or ItemSource.UserFolders;
 }
 
+/// <summary>A plugin, device or preset from Live's browser. Immutable (a Swift value): one instance is shared by the
+/// catalog, the config, the search index and the panel across threads; change one with <c>with</c>.</summary>
 public sealed record PluginItem : IJsonOnDeserialized
 {
-    [JsonRequired] public string Uri { get; set; } = "";
-    [JsonRequired] public string Name { get; set; } = "";
-    [JsonRequired] public ItemSource Source { get; set; }
-    [JsonRequired] public List<string> Path { get; set; } = new();
+    readonly IReadOnlyList<string> path = Array.Empty<string>();
+
+    [JsonRequired] public string Uri { get; init; } = "";
+    [JsonRequired] public string Name { get; init; } = "";
+    [JsonRequired] public ItemSource Source { get; init; }
+    /// <summary>A read-only copy of the list it was given.</summary>
+    [JsonRequired] public IReadOnlyList<string> Path { get => path; init => path = ValueEquality.ReadOnlyCopy(value); }
     /// <summary>Presets only: file extension without the dot ("adg", "vstpreset"). Null for devices and plugins.</summary>
-    public string? Format { get; set; }
+    public string? Format { get; init; }
 
     public PluginItem() { }
 
-    public PluginItem(string uri, string name, ItemSource source, List<string> path, string? format = null)
+    public PluginItem(string uri, string name, ItemSource source, IReadOnlyList<string> path, string? format = null)
     {
         Uri = uri; Name = name; Source = source; Path = path; Format = format;
     }
@@ -155,8 +160,8 @@ public enum ModifierSet : byte
 /// <summary>A key in macOS virtual key codes with Mac modifiers (the file format on both platforms).</summary>
 public sealed record KeyCombo
 {
-    [JsonRequired] public ushort KeyCode { get; set; }
-    [JsonRequired] public ModifierSet Modifiers { get; set; }
+    [JsonRequired] public ushort KeyCode { get; init; }
+    [JsonRequired] public ModifierSet Modifiers { get; init; }
 
     public KeyCombo() { }
 
@@ -318,9 +323,12 @@ public sealed partial record LauncherConfig
 /// <summary>Value equality for the list-holding records, as Swift's synthesized Equatable/Hashable compare arrays.</summary>
 internal static class ValueEquality
 {
-    public static bool Lists<T>(List<T>? a, List<T>? b) => a is null ? b is null : b is not null && a.SequenceEqual(b);
+    /// <summary>A read-only copy for an immutable value's list; null stays null (so the JSON reader can reject it).</summary>
+    public static IReadOnlyList<T> ReadOnlyCopy<T>(IEnumerable<T>? list) => list is null ? null! : Array.AsReadOnly(list.ToArray());
 
-    public static int Hash<T>(List<T>? list)
+    public static bool Lists<T>(IReadOnlyList<T>? a, IReadOnlyList<T>? b) => a is null ? b is null : b is not null && a.SequenceEqual(b);
+
+    public static int Hash<T>(IReadOnlyList<T>? list)
     {
         if (list is null) return 0;
         var h = new HashCode();

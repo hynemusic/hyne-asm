@@ -35,7 +35,7 @@ public sealed class QuickSearch
             var uri = resolved?.Uri ?? e.Uri;
             return new PanelRow
             {
-                Uri = uri, Name = e.Name, Source = e.Source, Path = resolved?.Path ?? e.Path, IconID = e.IconID,
+                Uri = uri, Name = e.Name, Source = e.Source, Path = resolved?.Path ?? e.Path.ToArray(), IconID = e.IconID,
                 Title = e.Title, IsAvailable = resolved != null,
                 UsageKey = index.UsageKey.TryGetValue(uri, out var k) ? k : uri, ColorID = config.ColorID(e),
             };

@@ -37,7 +37,7 @@ public class SearchTests
 
     static List<PluginItem> Library(int count, string tag) => Enumerable.Range(0, count).Select(i => new PluginItem(
         $"u:{tag}{i}", $"{tag} Plugin {i / 3} {new[] { "Comp", "EQ", "Verb", "Delay" }[i % 4]}", ItemSource.Plugins,
-        new() { new[] { "VST3", "AUv2", "VST" }[i % 3], $"Vendor{i % 60}" })).ToList();
+        new[] { new[] { "VST3", "AUv2", "VST" }[i % 3], $"Vendor{i % 60}" })).ToList();
 
     /// <summary>Swift: building the index takes 50–130 ms for ~3,500 items. Timing only means something in an optimized
     /// build, so this guard runs in Release (<c>dotnet test -c Release</c>) and is skipped in Debug.</summary>
