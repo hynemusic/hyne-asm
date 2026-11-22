@@ -3,8 +3,7 @@ namespace HyneAsm.Core;
 public sealed record QuickResult(PanelRow Row, string? Place);
 
 /// <summary>The quick search: every category (and folder) first, then all installed plugins, ranked by match quality
-/// and insert count. With nothing typed it offers the most used plugins (or Favorites when nothing is used yet).
-/// (<c>QuickSearchState</c>, the typing and keys of its window, comes with the keys.)</summary>
+/// and insert count. With nothing typed it offers the most used plugins (or Favorites when nothing is used yet).</summary>
 public sealed class QuickSearch
 {
     public const int MaxResults = 30;
@@ -116,5 +115,57 @@ public sealed class QuickSearch
             .Select(x => new QuickResult(x.Row, x.Place))
             .ToList();
         return ranked.Count == 0 ? favorites : ranked;
+    }
+}
+
+/// <summary>Typing and keys of the quick search window.</summary>
+public sealed class QuickSearchState
+{
+    readonly QuickSearch search;
+    readonly TextInput input = new();
+    public string Query => input.Text;
+    /// <summary>Select-all selected the whole query (drawn highlighted; the next key replaces it).</summary>
+    public bool IsQuerySelected => input.IsAllSelected;
+    public int Highlighted { get; private set; }
+    public List<QuickResult> Results { get; private set; }
+
+    public QuickSearchState(QuickSearch search)
+    {
+        this.search = search;
+        Results = search.Results("");
+    }
+
+    public PanelAction Handle(PanelKey key)
+    {
+        switch (key.Kind)
+        {
+            case PanelKeyKind.Down:
+                input.Deselect();
+                Highlighted = Math.Min(Highlighted + 1, Math.Max(Results.Count - 1, 0));
+                break;
+            case PanelKeyKind.Up:
+                input.Deselect();
+                Highlighted = Math.Max(Highlighted - 1, 0);
+                break;
+            case PanelKeyKind.ReturnKey:
+                if (Highlighted < 0 || Highlighted >= Results.Count || !Results[Highlighted].Row.IsAvailable) return PanelAction.None;
+                return PanelAction.Insert(Results[Highlighted].Row);
+            case PanelKeyKind.Escape: return PanelAction.Close;
+            case PanelKeyKind.Left: case PanelKeyKind.Right: case PanelKeyKind.Tab: break;
+            default:
+                var before = Query;
+                if (input.Apply(key) && !Text.Equal(Query, before))
+                {
+                    Results = search.Results(Query);
+                    Highlighted = 0;
+                }
+                break;
+        }
+        return PanelAction.None;
+    }
+
+    public void Highlight(int index)
+    {
+        if (index >= 0 && index < Results.Count) Highlighted = index;
     }
 }

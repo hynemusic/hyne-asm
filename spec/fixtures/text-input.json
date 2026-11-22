@@ -1,0 +1,1144 @@
+{
+  "area": "text.input",
+  "cases": [
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "p"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pr"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pr"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "p"
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "p"
+          },
+          {
+            "char": "r"
+          },
+          {
+            "char": "o"
+          },
+          "backspace",
+          "backspace"
+        ]
+      },
+      "name": "type and backspace"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "a"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          "backspace",
+          {
+            "char": "a"
+          },
+          "backspace",
+          "backspace"
+        ]
+      },
+      "name": "backspace on empty"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "4"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "4x"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "4x0"
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "digit": 4
+          },
+          {
+            "char": "x"
+          },
+          {
+            "digit": 0
+          }
+        ]
+      },
+      "name": "digits type like characters"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "p"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pr"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": true,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "z"
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "p"
+          },
+          {
+            "char": "r"
+          },
+          {
+            "char": "o"
+          },
+          "selectAll",
+          {
+            "char": "z"
+          }
+        ]
+      },
+      "name": "select all then type replaces"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "p"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pr"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": true,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "a"
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "p"
+          },
+          {
+            "char": "r"
+          },
+          {
+            "char": "o"
+          },
+          "selectAll",
+          "backspace",
+          {
+            "char": "a"
+          }
+        ]
+      },
+      "name": "select all then backspace clears"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "a"
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          "selectAll",
+          {
+            "char": "a"
+          }
+        ]
+      },
+      "name": "select all on empty selects nothing"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "p"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pr"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q"
+          },
+          {
+            "handled": true,
+            "selected": true,
+            "text": "pro q"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "p"
+          },
+          {
+            "char": "r"
+          },
+          {
+            "char": "o"
+          },
+          {
+            "char": " "
+          },
+          {
+            "char": "q"
+          },
+          "selectAll",
+          "deleteWord"
+        ]
+      },
+      "name": "select all then delete word"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "p"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pr"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q"
+          },
+          {
+            "handled": true,
+            "selected": true,
+            "text": "pro q"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "p"
+          },
+          {
+            "char": "r"
+          },
+          {
+            "char": "o"
+          },
+          {
+            "char": " "
+          },
+          {
+            "char": "q"
+          },
+          "selectAll",
+          "deleteToStart"
+        ]
+      },
+      "name": "select all then delete to start"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "p"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pr"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": true,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "4"
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "p"
+          },
+          {
+            "char": "r"
+          },
+          {
+            "char": "o"
+          },
+          "selectAll",
+          {
+            "digit": 4
+          }
+        ]
+      },
+      "name": "select all then digit replaces"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "a"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "ab"
+          },
+          {
+            "handled": true,
+            "selected": true,
+            "text": "ab"
+          },
+          {
+            "handled": false,
+            "selected": true,
+            "text": "ab"
+          },
+          {
+            "handled": false,
+            "selected": true,
+            "text": "ab"
+          },
+          {
+            "handled": false,
+            "selected": true,
+            "text": "ab"
+          },
+          {
+            "handled": false,
+            "selected": true,
+            "text": "ab"
+          },
+          {
+            "handled": false,
+            "selected": true,
+            "text": "ab"
+          },
+          {
+            "handled": false,
+            "selected": true,
+            "text": "ab"
+          },
+          {
+            "handled": false,
+            "selected": true,
+            "text": "ab"
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "a"
+          },
+          {
+            "char": "b"
+          },
+          "selectAll",
+          "left",
+          "right",
+          "up",
+          "down",
+          "tab",
+          "return",
+          "escape"
+        ]
+      },
+      "name": "navigation keys are not edits and keep the selection"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "a"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "ab"
+          },
+          {
+            "handled": true,
+            "selected": true,
+            "text": "ab"
+          },
+          {
+            "handled": null,
+            "selected": false,
+            "text": "ab"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "abc"
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "a"
+          },
+          {
+            "char": "b"
+          },
+          "selectAll",
+          "deselect",
+          {
+            "char": "c"
+          }
+        ]
+      },
+      "name": "deselect keeps the text and the next key appends"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "p"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pr"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q 4"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "p"
+          },
+          {
+            "char": "r"
+          },
+          {
+            "char": "o"
+          },
+          {
+            "char": " "
+          },
+          {
+            "char": "q"
+          },
+          {
+            "char": " "
+          },
+          {
+            "char": "4"
+          },
+          "deleteWord",
+          "deleteWord",
+          "deleteWord",
+          "deleteWord"
+        ]
+      },
+      "name": "delete word drops the last word"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "p"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pr"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q  "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro "
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "p"
+          },
+          {
+            "char": "r"
+          },
+          {
+            "char": "o"
+          },
+          {
+            "char": " "
+          },
+          {
+            "char": "q"
+          },
+          {
+            "char": " "
+          },
+          {
+            "char": " "
+          },
+          "deleteWord"
+        ]
+      },
+      "name": "delete word drops trailing spaces first"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": " "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "  "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "   "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": " "
+          },
+          {
+            "char": " "
+          },
+          {
+            "char": " "
+          },
+          "deleteWord"
+        ]
+      },
+      "name": "delete word on spaces only"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "p"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pr"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "pro q 4"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "p"
+          },
+          {
+            "char": "r"
+          },
+          {
+            "char": "o"
+          },
+          {
+            "char": " "
+          },
+          {
+            "char": "q"
+          },
+          {
+            "char": " "
+          },
+          {
+            "char": "4"
+          },
+          "deleteToStart",
+          "deleteToStart"
+        ]
+      },
+      "name": "delete to start"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "serum "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "serum"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "serumx"
+          }
+        ]
+      },
+      "input": {
+        "initial": "serum 2",
+        "ops": [
+          "deleteWord",
+          "backspace",
+          {
+            "char": "x"
+          }
+        ]
+      },
+      "name": "initial text"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "e"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "é"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "éx"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "é"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "a"
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "e"
+          },
+          {
+            "char": "́"
+          },
+          {
+            "char": "x"
+          },
+          "backspace",
+          "backspace",
+          {
+            "char": "a"
+          }
+        ]
+      },
+      "name": "e with combining acute is one Character"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "caf"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "ca"
+          }
+        ]
+      },
+      "input": {
+        "initial": "café",
+        "ops": [
+          "backspace",
+          "backspace"
+        ]
+      },
+      "name": "backspace removes a whole combining sequence"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "a"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          }
+        ]
+      },
+      "input": {
+        "initial": "a👍🏽",
+        "ops": [
+          "backspace",
+          "backspace"
+        ]
+      },
+      "name": "emoji with skin tone is one Character"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "x"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          }
+        ]
+      },
+      "input": {
+        "initial": "x🇩🇪",
+        "ops": [
+          "backspace",
+          "backspace",
+          "backspace"
+        ]
+      },
+      "name": "flag emoji is one Character"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "👍"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "👍🏽"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": ""
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "a"
+          }
+        ]
+      },
+      "input": {
+        "ops": [
+          {
+            "char": "👍"
+          },
+          {
+            "char": "🏽"
+          },
+          "backspace",
+          {
+            "char": "a"
+          }
+        ]
+      },
+      "name": "type a skin tone after the emoji joins it"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "über comp "
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "über "
+          }
+        ]
+      },
+      "input": {
+        "initial": "über comp 👍🏽",
+        "ops": [
+          "deleteWord",
+          "deleteWord"
+        ]
+      },
+      "name": "delete word over emoji and accents"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "x "
+          }
+        ]
+      },
+      "input": {
+        "initial": "x café",
+        "ops": [
+          "deleteWord"
+        ]
+      },
+      "name": "delete word over combining word"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": true,
+            "text": "abc"
+          },
+          {
+            "handled": true,
+            "selected": false,
+            "text": "é"
+          }
+        ]
+      },
+      "input": {
+        "initial": "abc",
+        "ops": [
+          "selectAll",
+          {
+            "char": "é"
+          }
+        ]
+      },
+      "name": "select all then type an accented character"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "a"
+          }
+        ]
+      },
+      "input": {
+        "initial": "a\r\n",
+        "ops": [
+          "backspace"
+        ]
+      },
+      "name": "crlf is one Character"
+    },
+    {
+      "expected": {
+        "steps": [
+          {
+            "handled": true,
+            "selected": false,
+            "text": "a "
+          }
+        ]
+      },
+      "input": {
+        "initial": "a b",
+        "ops": [
+          "deleteWord"
+        ]
+      },
+      "name": "no-break space counts as whitespace"
+    }
+  ]
+}

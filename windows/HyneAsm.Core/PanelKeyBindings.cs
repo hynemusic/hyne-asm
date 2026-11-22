@@ -6,6 +6,31 @@ namespace HyneAsm.Core;
 /// <summary>Rebindable keys inside the open panel. Digits 1–9, typing and ⌫ stay fixed.</summary>
 public enum PanelKeyAction { PrevTab, NextTab, Up, Down, Insert, Close }
 
+public static class PanelKeyActionExtensions
+{
+    public static string Label(this PanelKeyAction action) => action switch
+    {
+        PanelKeyAction.PrevTab => Loc.T("Vorheriger Tab", "Previous tab"),
+        PanelKeyAction.NextTab => Loc.T("Nächster Tab", "Next tab"),
+        PanelKeyAction.Up => Loc.T("Nach oben", "Move up"),
+        PanelKeyAction.Down => Loc.T("Nach unten", "Move down"),
+        PanelKeyAction.Insert => Loc.T("Markiertes Plugin einfügen", "Insert highlighted plugin"),
+        PanelKeyAction.Close => Loc.T("Panel schließen", "Close panel"),
+        _ => throw new ArgumentOutOfRangeException(nameof(action)),
+    };
+
+    internal static PanelKey ToPanelKey(this PanelKeyAction action) => action switch
+    {
+        PanelKeyAction.PrevTab => Core.PanelKey.Of(PanelKeyKind.Left),
+        PanelKeyAction.NextTab => Core.PanelKey.Of(PanelKeyKind.Right),
+        PanelKeyAction.Up => Core.PanelKey.Of(PanelKeyKind.Up),
+        PanelKeyAction.Down => Core.PanelKey.Of(PanelKeyKind.Down),
+        PanelKeyAction.Insert => Core.PanelKey.Of(PanelKeyKind.ReturnKey),
+        PanelKeyAction.Close => Core.PanelKey.Of(PanelKeyKind.Escape),
+        _ => throw new ArgumentOutOfRangeException(nameof(action)),
+    };
+}
+
 /// <summary>Stored as Swift encodes its private dictionary: <c>{"bindings": {"prevTab": [KeyCombo …], …}}</c>.</summary>
 public sealed class PanelKeyBindings : IEquatable<PanelKeyBindings>, IJsonOnDeserialized
 {
@@ -36,6 +61,14 @@ public sealed class PanelKeyBindings : IEquatable<PanelKeyBindings>, IJsonOnDese
                 : Default.Bindings.TryGetValue(key, out var fallback) ? fallback : new();
         }
         set => Bindings[SwiftJson.RawValue(action)] = value;
+    }
+
+    /// <summary>Swift <c>key(for:)</c>: the first action (in declaration order) that has this combo.</summary>
+    public PanelKey? Key(KeyCombo combo)
+    {
+        foreach (var action in Enum.GetValues<PanelKeyAction>())
+            if (this[action].Contains(combo)) return action.ToPanelKey();
+        return null;
     }
 
     void IJsonOnDeserialized.OnDeserialized()

@@ -56,3 +56,23 @@ public sealed record PanelRow
 
     public override int GetHashCode() => HashCode.Combine(Uri, Title, UsageKey);
 }
+
+public enum PanelKeyKind { Digit, Character, Backspace, Left, Right, Tab, Up, Down, ReturnKey, Escape, SelectAll, DeleteWord, DeleteToStart }
+
+/// <summary>A key the open panel / quick search reacts to (Swift <c>PanelKey</c>). <see cref="Character"/> is one Character (text element).</summary>
+public readonly record struct PanelKey(PanelKeyKind Kind, int Digit = 0, string Character = "")
+{
+    public static PanelKey OfDigit(int d) => new(PanelKeyKind.Digit, d);
+    public static PanelKey OfCharacter(string c) => new(PanelKeyKind.Character, 0, c);
+    public static PanelKey Of(PanelKeyKind kind) => new(kind);
+}
+
+public enum PanelActionKind { None, Close, Insert }
+
+/// <summary>What a key press asks the window to do (Swift <c>PanelAction</c>).</summary>
+public sealed record PanelAction(PanelActionKind Kind, PanelRow? Row = null)
+{
+    public static readonly PanelAction None = new(PanelActionKind.None);
+    public static readonly PanelAction Close = new(PanelActionKind.Close);
+    public static PanelAction Insert(PanelRow row) => new(PanelActionKind.Insert, row);
+}

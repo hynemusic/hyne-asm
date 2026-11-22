@@ -30,7 +30,155 @@ public static class Fixtures
         },
         ["search.index"] = SearchIndexRows,
         ["search.quick"] = SearchQuick,
+        ["search.quick_state"] = SearchQuickState,
+        ["text.input"] = TextInputOps,
+        ["keys.double_right_click"] = DoubleRightClick,
+        ["keys.digit"] = input => new JsonArray(input!.AsArray()
+            .Select(n => DigitKeys.Digit((ushort)n!.GetValue<double>()) is int d ? JsonValue.Create(d) : null).ToArray()),
+        ["keys.shortcut_match"] = ShortcutMatch,
+        ["keys.panel_bindings"] = PanelBindings,
+        ["keys.translation"] = KeyTranslationOp,
     };
+
+    // MARK: Keys and text
+
+    static int Int(JsonNode? n) => (int)n!.GetValue<double>();
+
+    static readonly Dictionary<string, PanelKeyKind> SimpleKeys = new()
+    {
+        ["backspace"] = PanelKeyKind.Backspace, ["left"] = PanelKeyKind.Left, ["right"] = PanelKeyKind.Right, ["tab"] = PanelKeyKind.Tab,
+        ["up"] = PanelKeyKind.Up, ["down"] = PanelKeyKind.Down, ["return"] = PanelKeyKind.ReturnKey, ["escape"] = PanelKeyKind.Escape,
+        ["selectAll"] = PanelKeyKind.SelectAll, ["deleteWord"] = PanelKeyKind.DeleteWord, ["deleteToStart"] = PanelKeyKind.DeleteToStart,
+    };
+
+    /// <summary>A key as fixture JSON: a name, <c>{"digit": 4}</c> or <c>{"char": "é"}</c> (one Character).</summary>
+    static PanelKey ParseKey(JsonNode? node)
+    {
+        if (node is JsonValue v && SimpleKeys.TryGetValue(v.GetValue<string>(), out var kind)) return PanelKey.Of(kind);
+        if (node is JsonObject o && o["digit"] is JsonNode d) return PanelKey.OfDigit(Int(d));
+        if (node is JsonObject c && c["char"] is JsonNode ch)
+        {
+            var s = Str(ch);
+            if (Text.Count(s) != 1) throw new InvalidOperationException("char must be one Character: " + s);
+            return PanelKey.OfCharacter(s);
+        }
+        throw new InvalidOperationException("unknown key " + node?.ToJsonString());
+    }
+
+    static string KeyName(PanelKey k) => k.Kind switch
+    {
+        PanelKeyKind.Digit => "digit " + k.Digit,
+        PanelKeyKind.Character => "char " + k.Character,
+        _ => SimpleKeys.First(p => p.Value == k.Kind).Key,
+    };
+
+    static KeyCombo Combo(JsonNode? n) => new((ushort)Int(n!["keyCode"]), (ModifierSet)(byte)Int(n["modifiers"]));
+
+    static JsonObject ComboJson(KeyCombo c) => new() { ["keyCode"] = (int)c.KeyCode, ["modifiers"] = (int)c.Modifiers };
+
+    static string CamelName<T>(T value) where T : struct, Enum
+    {
+        var n = value.ToString();
+        return char.ToLowerInvariant(n[0]) + n[1..];
+    }
+
+    static JsonNode? TextInputOps(JsonNode? input)
+    {
+        var t = new TextInput(input!["initial"] is JsonNode i ? Str(i) : "");
+        var steps = new JsonArray();
+        foreach (var op in input["ops"]!.AsArray())
+        {
+            JsonNode? handled = null;
+            if (op is JsonValue v && v.GetValue<string>() == "deselect") t.Deselect();
+            else handled = JsonValue.Create(t.Apply(ParseKey(op)));
+            steps.Add(new JsonObject { ["handled"] = handled, ["text"] = t.Text, ["selected"] = t.IsAllSelected });
+        }
+        return new JsonObject { ["steps"] = steps };
+    }
+
+    static JsonNode? DoubleRightClick(JsonNode? input)
+    {
+        var d = new DoubleRightClickDetector(TimeSpan.FromSeconds(input!["interval"]!.GetValue<double>()));
+        var epoch = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        return Strings(input["times"]!.AsArray().Select(t =>
+            d.RightMouseDown(epoch + TimeSpan.FromSeconds(t!.GetValue<double>())) == ClickVerdict.OpenPanel ? "openPanel" : "passThrough"));
+    }
+
+    static JsonNode? ShortcutMatch(JsonNode? input)
+    {
+        var settings = input!["settings"] is JsonObject s ? Decode<ShortcutSettings>(s) : ShortcutSettings.Default;
+        var matcher = new ShortcutMatcher(settings);
+        var items = (input["items"]?.AsArray() ?? new JsonArray()).Select(i =>
+            new ItemShortcut(Combo(i), new PluginItem(Str(i!["uri"]), Str(i["uri"]), ItemSource.Plugins, new List<string>()))).ToList();
+        return new JsonArray(input["probes"]!.AsArray().Select(p =>
+        {
+            var c = Combo(p);
+            var action = matcher.Match(c.KeyCode, c.Modifiers);
+            var item = ShortcutMatcher.ItemShortcutFor(c.KeyCode, c.Modifiers, items);
+            return (JsonNode?)new JsonObject { ["action"] = action is { } a ? CamelName(a) : null, ["item"] = item?.Uri };
+        }).ToArray());
+    }
+
+    static JsonNode? PanelBindings(JsonNode? input) => WithGerman(() =>
+    {
+        var bindings = PanelKeyBindings.Default;
+        if (input!["json"] is JsonObject j)
+        {
+            try { bindings = Decode<PanelKeyBindings>(j); }
+            catch (Exception e) when (e is System.Text.Json.JsonException or InvalidOperationException) { return new JsonObject { ["error"] = true }; }
+        }
+        var perAction = new JsonObject();
+        var labels = new JsonObject();
+        foreach (var a in Enum.GetValues<PanelKeyAction>())
+        {
+            perAction[SwiftJson.RawValue(a)] = new JsonArray(bindings[a].Select(c => (JsonNode?)ComboJson(c)).ToArray());
+            labels[SwiftJson.RawValue(a)] = a.Label();
+        }
+        var keys = input["probes"]!.AsArray().Select(p => bindings.Key(Combo(p)) is { } k ? JsonValue.Create(KeyName(k)) : null);
+        return new JsonObject { ["bindings"] = perAction, ["keys"] = new JsonArray(keys.ToArray()), ["labels"] = labels };
+    });
+
+    static JsonNode? SearchQuickState(JsonNode? input) => WithGerman(() =>
+    {
+        var items = Decode<List<PluginItem>>(input!["items"]);
+        var config = Decode<LauncherConfig>(input["config"]);
+        var usage = new Dictionary<string, int>(Text.Canonical);
+        foreach (var pair in input["usage"]?.AsArray() ?? new JsonArray()) usage[Str(pair![0])] = Int(pair[1]);
+        var state = new QuickSearchState(new QuickSearch(config, items, usage));
+        JsonNode Snapshot(string action) => new JsonObject
+        {
+            ["action"] = action, ["query"] = state.Query, ["selected"] = state.IsQuerySelected, ["highlighted"] = state.Highlighted,
+            ["titles"] = Strings(state.Results.Select(r => r.Row.Title)),
+        };
+        var steps = new JsonArray { Snapshot("start") };
+        foreach (var k in input["keys"]!.AsArray())
+        {
+            var result = state.Handle(ParseKey(k));
+            steps.Add(Snapshot(result.Kind switch
+            {
+                PanelActionKind.None => "none",
+                PanelActionKind.Close => "close",
+                _ => "insert " + result.Row!.UsageKey,
+            }));
+        }
+        return steps;
+    });
+
+    /// <summary><c>{mac:{keyCode,modifiers}}</c> → <c>{windows:{vk,modifiers}|null}</c>, and <c>{windows}</c> → <c>{mac|null}</c> (hand-written expected).</summary>
+    static JsonNode? KeyTranslationOp(JsonNode? input)
+    {
+        if (input!["mac"] is JsonNode mac)
+            return new JsonObject
+            {
+                ["windows"] = KeyTranslation.ToWindows(Combo(mac)) is var (vk, mods)
+                    ? new JsonObject { ["vk"] = (int)vk, ["modifiers"] = (int)mods } : null,
+            };
+        var w = input["windows"]!;
+        return new JsonObject
+        {
+            ["mac"] = KeyTranslation.FromWindows((ushort)Int(w["vk"]), (WinModifiers)(byte)Int(w["modifiers"])) is { } c ? ComboJson(c) : null,
+        };
+    }
 
     /// <summary>Config text → decode → <c>ConfigStore.Migrate</c> → encode as <c>Save</c> does.</summary>
     static JsonNode? ConfigMigrate(JsonNode? input)

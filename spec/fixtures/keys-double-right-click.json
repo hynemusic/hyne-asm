@@ -1,0 +1,173 @@
+{
+  "area": "keys.double_right_click",
+  "cases": [
+    {
+      "expected": [
+        "passThrough"
+      ],
+      "input": {
+        "interval": 2,
+        "times": [
+          0
+        ]
+      },
+      "name": "single press passes through"
+    },
+    {
+      "expected": [
+        "passThrough",
+        "openPanel"
+      ],
+      "input": {
+        "interval": 2,
+        "times": [
+          0,
+          1
+        ]
+      },
+      "name": "second press within the interval opens"
+    },
+    {
+      "expected": [
+        "passThrough",
+        "openPanel"
+      ],
+      "input": {
+        "interval": 2,
+        "times": [
+          0,
+          2
+        ]
+      },
+      "name": "exactly at the interval opens"
+    },
+    {
+      "expected": [
+        "passThrough",
+        "passThrough"
+      ],
+      "input": {
+        "interval": 2,
+        "times": [
+          0,
+          3
+        ]
+      },
+      "name": "just after the interval starts over"
+    },
+    {
+      "expected": [
+        "passThrough",
+        "openPanel",
+        "passThrough"
+      ],
+      "input": {
+        "interval": 2,
+        "times": [
+          0,
+          1,
+          2
+        ]
+      },
+      "name": "a third press starts over after an open"
+    },
+    {
+      "expected": [
+        "passThrough",
+        "openPanel",
+        "passThrough",
+        "openPanel"
+      ],
+      "input": {
+        "interval": 2,
+        "times": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "name": "four presses make two double clicks"
+    },
+    {
+      "expected": [
+        "passThrough",
+        "passThrough",
+        "passThrough",
+        "passThrough"
+      ],
+      "input": {
+        "interval": 1,
+        "times": [
+          0,
+          2,
+          4,
+          6
+        ]
+      },
+      "name": "slow presses never open"
+    },
+    {
+      "expected": [
+        "passThrough",
+        "passThrough",
+        "openPanel"
+      ],
+      "input": {
+        "interval": 2,
+        "times": [
+          0,
+          3,
+          4
+        ]
+      },
+      "name": "a late press restarts the window"
+    },
+    {
+      "expected": [
+        "passThrough",
+        "openPanel",
+        "passThrough",
+        "openPanel",
+        "passThrough",
+        "passThrough"
+      ],
+      "input": {
+        "interval": 0.5,
+        "times": [
+          0,
+          0.25,
+          10,
+          10.5,
+          11,
+          11.75
+        ]
+      },
+      "name": "simple decimals"
+    },
+    {
+      "expected": [
+        "passThrough",
+        "openPanel",
+        "passThrough"
+      ],
+      "input": {
+        "interval": 0,
+        "times": [
+          5,
+          5,
+          6
+        ]
+      },
+      "name": "zero interval opens only on equal times"
+    },
+    {
+      "expected": [],
+      "input": {
+        "interval": 1,
+        "times": []
+      },
+      "name": "no presses"
+    }
+  ]
+}

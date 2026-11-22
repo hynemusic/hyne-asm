@@ -87,6 +87,17 @@ final class SharedFixtureTests: XCTestCase {
         },
         "search.index": searchIndex,
         "search.quick": searchQuick,
+        "search.quick_state": searchQuickState,
+        "text.input": textInput,
+        "keys.double_right_click": doubleRightClick,
+        "keys.digit": { .array(try numbers($0).map { n in DigitKeys.digit(forKeyCode: UInt16(n)).map { .number(Double($0)) } ?? .null }) },
+        "keys.shortcut_match": shortcutMatch,
+        "keys.panel_bindings": panelBindings,
+    ]
+
+    /// Areas whose `expected` is hand-written (`"reference": "hand"`): the Swift side only validates, and returns `expected`.
+    static let handValidators: [String: (_ input: JSONValue, _ expected: JSONValue) throws -> JSONValue] = [
+        "keys.translation": validateKeyTranslation,
     ]
 
     struct FixtureError: Error, CustomStringConvertible { let description: String }
@@ -272,6 +283,166 @@ final class SharedFixtureTests: XCTestCase {
         })
     }
 
+    // MARK: Keys and text
+
+    static func numbers(_ v: JSONValue?) throws -> [Double] {
+        guard case .array(let a)? = v else { return [] }
+        return try a.map { guard case .number(let n) = $0 else { throw FixtureError(description: "expected a number") }; return n }
+    }
+
+    static func int(_ v: JSONValue?) throws -> Int {
+        guard case .number(let n)? = v else { throw FixtureError(description: "expected a number, got \(String(describing: v))") }
+        return Int(n)
+    }
+
+    static let simpleKeys: [String: PanelKey] = [
+        "backspace": .backspace, "left": .left, "right": .right, "tab": .tab, "up": .up, "down": .down,
+        "return": .returnKey, "escape": .escape, "selectAll": .selectAll, "deleteWord": .deleteWord, "deleteToStart": .deleteToStart,
+    ]
+
+    /// A key as fixture JSON: a name ("backspace", "selectAll" …), `{"digit": 4}` or `{"char": "é"}` (one Character).
+    static func panelKey(_ v: JSONValue?) throws -> PanelKey {
+        if case .string(let name)? = v, let k = simpleKeys[name] { return k }
+        if case .number(let d)? = v?["digit"] { return .digit(Int(d)) }
+        if case .string(let c)? = v?["char"] {
+            guard c.count == 1, let ch = c.first else { throw FixtureError(description: "char must be one Character: \(c)") }
+            return .character(ch)
+        }
+        throw FixtureError(description: "unknown key \(String(describing: v))")
+    }
+
+    static func keyName(_ k: PanelKey) -> String {
+        switch k {
+        case .digit(let d): return "digit \(d)"
+        case .character(let c): return "char \(c)"
+        default: return simpleKeys.first { $0.value == k }!.key
+        }
+    }
+
+    static func combo(_ v: JSONValue?) throws -> KeyCombo {
+        KeyCombo(keyCode: UInt16(try int(v?["keyCode"])), modifiers: ModifierSet(rawValue: UInt8(try int(v?["modifiers"]))))
+    }
+
+    static func comboJSON(_ c: KeyCombo) -> JSONValue {
+        .object(["keyCode": .number(Double(c.keyCode)), "modifiers": .number(Double(c.modifiers.rawValue))])
+    }
+
+    /// `{initial?, ops: [key | "deselect"]}` → `{steps: [{handled, text, selected}]}`; "handled" is null for "deselect".
+    static func textInput(_ input: JSONValue) throws -> JSONValue {
+        var t = TextInput(try { if case .string(let s)? = input["initial"] { return s } else { return "" } }())
+        guard case .array(let ops)? = input["ops"] else { throw FixtureError(description: "text.input needs ops") }
+        let steps = try ops.map { op -> JSONValue in
+            var handled = JSONValue.null
+            if case .string("deselect") = op { t.deselect() } else { handled = .bool(t.apply(try panelKey(op))) }
+            return .object(["handled": handled, "text": .string(t.text), "selected": .bool(t.isAllSelected)])
+        }
+        return .object(["steps": .array(steps)])
+    }
+
+    /// `{interval, times}` (seconds) → verdict per press.
+    static func doubleRightClick(_ input: JSONValue) throws -> JSONValue {
+        guard case .number(let interval)? = input["interval"] else { throw FixtureError(description: "needs interval") }
+        var d = DoubleRightClickDetector(interval: interval)
+        return .array(try numbers(input["times"]).map { .string(d.rightMouseDown(at: $0) == .openPanel ? "openPanel" : "passThrough") })
+    }
+
+    /// `{settings?, items: [{uri, keyCode, modifiers}], probes: [{keyCode, modifiers}]}` → `[{action, item}]` (item = uri).
+    static func shortcutMatch(_ input: JSONValue) throws -> JSONValue {
+        var settings = ShortcutSettings.default
+        if let s = input["settings"], s != .null { settings = try decode(ShortcutSettings.self, s) }
+        let matcher = ShortcutMatcher(settings: settings)
+        var items: [ItemShortcut] = []
+        if case .array(let list)? = input["items"] {
+            for i in list {
+                let item = PluginItem(uri: try string(i["uri"]), name: try string(i["uri"]), source: .plugins, path: [])
+                items.append(ItemShortcut(combo: try combo(i), item: item))
+            }
+        }
+        guard case .array(let probes)? = input["probes"] else { throw FixtureError(description: "needs probes") }
+        return .array(try probes.map { p in
+            let c = try combo(p)
+            let action = matcher.match(keyCode: c.keyCode, modifiers: c.modifiers)
+            let item = ShortcutMatcher.itemShortcut(keyCode: c.keyCode, modifiers: c.modifiers, in: items)
+            return .object(["action": optional(action.map { "\($0)" }), "item": optional(item?.uri)])
+        })
+    }
+
+    /// `{json, probes}` (json null = defaults) → bindings per action, the panel key per probe, German labels; or `{error}`.
+    static func panelBindings(_ input: JSONValue) throws -> JSONValue {
+        let saved = Loc.language
+        Loc.language = .de
+        defer { Loc.language = saved }
+        var bindings = PanelKeyBindings.default
+        if let j = input["json"], j != .null {
+            do { bindings = try decode(PanelKeyBindings.self, j) } catch { return .object(["error": .bool(true)]) }
+        }
+        var perAction: [String: JSONValue] = [:], labels: [String: JSONValue] = [:]
+        for a in PanelKeyAction.allCases {
+            perAction[a.rawValue] = .array(bindings[a].map(comboJSON))
+            labels[a.rawValue] = .string(a.label)
+        }
+        guard case .array(let probes)? = input["probes"] else { throw FixtureError(description: "needs probes") }
+        let keys = try probes.map { optional(bindings.key(for: try combo($0)).map(keyName)) }
+        return .object(["bindings": .object(perAction), "keys": .array(keys), "labels": .object(labels)])
+    }
+
+    /// `{items, config, usage, keys}` → one state per key: `{action, query, selected, highlighted, titles}`.
+    static func searchQuickState(_ input: JSONValue) throws -> JSONValue {
+        let saved = Loc.language
+        Loc.language = .de
+        defer { Loc.language = saved }
+        let items = try decode([PluginItem].self, input["items"])
+        let config = try decode(LauncherConfig.self, input["config"])
+        var usage: [String: Int] = [:]
+        if case .array(let pairs)? = input["usage"] {
+            for p in pairs {
+                guard case .array(let kv) = p, kv.count == 2 else { continue }
+                usage[try string(kv[0])] = try int(kv[1])
+            }
+        }
+        var state = QuickSearchState(search: QuickSearch(config: config, items: items, usage: usage))
+        func snapshot(_ action: String) -> JSONValue {
+            .object(["action": .string(action), "query": .string(state.query), "selected": .bool(state.isQuerySelected),
+                     "highlighted": .number(Double(state.highlighted)), "titles": .array(state.results.map { .string($0.row.title) })])
+        }
+        guard case .array(let keys)? = input["keys"] else { throw FixtureError(description: "needs keys") }
+        var steps = [snapshot("start")]
+        for k in keys {
+            let action: String
+            switch state.handle(try panelKey(k)) {
+            case .none: action = "none"
+            case .close: action = "close"
+            case .insert(let row): action = "insert \(row.usageKey)"
+            }
+            steps.append(snapshot(action))
+        }
+        return .array(steps)
+    }
+
+    /// macOS virtual key codes (Carbon `kVK_*`, HIToolbox/Events.h).
+    static let macKeyCodes: Set<Int> = [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+        33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53,
+        54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 67, 69, 71, 72, 73, 74, 75, 76, 78, 79, 80, 81,
+        82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
+        96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 109, 111, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,
+        123, 124, 125, 126,
+    ]
+
+    /// Every `keyCode` under a "mac" key (input or expected) must be a real macOS key code; `expected` is returned unchanged.
+    static func validateKeyTranslation(_ input: JSONValue, _ expected: JSONValue) throws -> JSONValue {
+        func check(_ v: JSONValue) throws {
+            guard case .object(let o) = v else { return }
+            if case .object(let mac)? = o["mac"], case .number(let code)? = mac["keyCode"] {
+                guard macKeyCodes.contains(Int(code)) else { throw FixtureError(description: "not a macOS key code: \(Int(code))") }
+            }
+            for (_, child) in o { try check(child) }
+        }
+        try check(input)
+        try check(expected)
+        return expected
+    }
+
     /// UUIDs (and the Stream Deck token) in `output` that are not in `input` → `NEW-n` in order of first appearance.
     static func replaceGenerated(in output: String, input: String) -> String {
         let known = input.uppercased()
@@ -310,8 +481,9 @@ final class SharedFixtureTests: XCTestCase {
                 XCTFail("\(name): needs \"area\" and \"cases\""); continue
             }
             let isHand: Bool = { if case .string("hand")? = root["reference"] { return true } else { return false } }()
+            let validator = isHand ? Self.handValidators[area] : nil
             let handler = Self.handlers[area]
-            if handler == nil {
+            if handler == nil && validator == nil {
                 if isHand { continue }   // validated later, once a handler exists
                 XCTFail("\(name): no Swift handler for area \(area)"); continue
             }
@@ -320,7 +492,7 @@ final class SharedFixtureTests: XCTestCase {
                 guard case .string(let caseName)? = cases[i]["name"] else { XCTFail("\(name): case \(i) has no name"); continue }
                 XCTAssertTrue(seen.insert(caseName).inserted, "\(name): duplicate case name \(caseName)")
                 let input = cases[i]["input"] ?? .null
-                let actual = try handler!(input)
+                let actual = try validator?(input, cases[i]["expected"] ?? .null) ?? handler!(input)
                 if recording && !isHand {
                     guard case .object(var o) = cases[i] else { continue }
                     o["expected"] = actual

@@ -37,7 +37,9 @@ by `JSONValue.pretty()` in `SharedFixtureTests.swift` (a small hand-written seri
 `JSONSerialization`, because Foundation's pretty printing emits `"key" : value`): 2-space indent, keys
 sorted, `"key": value`, integral numbers without a decimal point, and a trailing newline. Fixture files
 should be committed in that canonical form. Record mode fails if an area has no Swift handler.
-Files with `"reference": "hand"` are never rewritten.
+Files with `"reference": "hand"` are never rewritten. A hand file's Swift side may register a validator in
+`SharedFixtureTests.handValidators` (it receives `input` and `expected`, checks them and returns `expected`), for areas
+Swift cannot compute (`keys.translation`: Windows key codes).
 
 ## Every area needs a handler on both sides
 

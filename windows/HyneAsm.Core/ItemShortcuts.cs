@@ -59,3 +59,14 @@ public sealed partial record LauncherConfig
         return ItemShortcuts.FirstOrDefault(s => s.Combo == combo && s.Id != ignoring)?.Name;
     }
 }
+
+public sealed partial class ShortcutMatcher
+{
+    /// <summary>Item shortcuts come after the built-in ones, so those always win. (Swift extension in ItemShortcuts.swift;
+    /// named like the config accessor <c>ItemShortcutFor</c>.)</summary>
+    public static ItemShortcut? ItemShortcutFor(ushort keyCode, ModifierSet modifiers, IEnumerable<ItemShortcut> shortcuts)
+    {
+        var combo = new KeyCombo(keyCode, modifiers);
+        return shortcuts.FirstOrDefault(s => s.Combo == combo);
+    }
+}
