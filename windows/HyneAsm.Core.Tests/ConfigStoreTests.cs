@@ -189,4 +189,39 @@ public class ConfigStoreTests : IDisposable
             : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "Application Support");
         Assert.Equal(expected, ConfigStore.SupportDirectory);
     }
+
+    // A locked file (antivirus, OneDrive, an editor) is not a missing file: Load must not hand out a default that a
+    // later Save would write over the user's real menu.
+    [Fact]
+    public void Load_of_a_locked_file_throws_and_leaves_it_alone()
+    {
+        var c = LauncherConfig.MakeDefault();
+        c.Categories[0].Entries.Add(Item("Pro-L 2"));
+        new ConfigStore(ConfigPath).Save(c);
+        var before = File.ReadAllBytes(ConfigPath);
+        using (new FileStream(ConfigPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            var e = Assert.Throws<ConfigUnreadableException>(() => new ConfigStore(ConfigPath).Load());
+            Assert.IsAssignableFrom<IOException>(e);
+            Assert.Contains("config.json", e.Message);
+        }
+        Assert.Equal(before, File.ReadAllBytes(ConfigPath));
+        Assert.Empty(Backups());
+    }
+
+    [Fact]
+    public void Load_where_a_folder_stands_in_for_the_file_throws()
+    {
+        Directory.CreateDirectory(ConfigPath);
+        Assert.Throws<ConfigUnreadableException>(() => new ConfigStore(ConfigPath).Load());
+        Assert.True(Directory.Exists(ConfigPath));
+        Assert.Empty(Backups());
+    }
+
+    [Fact]
+    public void Load_of_a_missing_file_or_folder_is_the_default()
+    {
+        Assert.Contains(new ConfigStore(ConfigPath).Load().Categories, x => x.IsFavorites);
+        Assert.Contains(new ConfigStore(Path.Combine(dir, "nope", "config.json")).Load().Categories, x => x.IsFavorites);
+    }
 }

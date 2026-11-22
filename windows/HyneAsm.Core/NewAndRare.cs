@@ -14,13 +14,21 @@ public sealed class SeenStore
     readonly Dictionary<string, DateTime> firstSeen;
     readonly object gate = new();
 
-    /// <summary>A missing or unreadable file starts empty.</summary>
+    /// <summary>A missing or damaged file starts empty. A file that exists but can't be read (locked, no permission;
+    /// retried briefly) also starts empty, but the store is then <see cref="IsReadOnly"/>.</summary>
     public SeenStore(string path)
     {
         Path = path;
-        try { firstSeen = Read(SwiftJson.DecodeUtf8(File.ReadAllBytes(path))); }
+        byte[]? data = null;
+        try { data = StoreFile.Read(path); }
+        catch (IOException) { IsReadOnly = true; }
+        try { firstSeen = data == null ? new(Text.Canonical) : Read(SwiftJson.DecodeUtf8(data)); }
         catch (Exception e) when (e is not OutOfMemoryException) { firstSeen = new(Text.Canonical); }
     }
+
+    /// <summary>seen.json existed but couldn't be read when the store was opened. Dates are still recorded in memory,
+    /// but the file is never written, so the real first-seen dates survive. Differs from Swift, which would overwrite them.</summary>
+    public bool IsReadOnly { get; }
 
     static Dictionary<string, DateTime> Read(string text)
     {
@@ -52,7 +60,7 @@ public sealed class SeenStore
                 firstSeen[item.Uri] = firstRun ? DistantPast : when;
                 changed = true;
             }
-            if (!changed) return;
+            if (!changed || IsReadOnly) return;
             try
             {
                 Directory.CreateDirectory(System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(Path))!);

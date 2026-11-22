@@ -177,4 +177,51 @@ public class FilesTests : IDisposable
         var seen = new SeenStore(path);
         Assert.Equal(SeenStore.DistantPast, seen.Date("u:Alpha"));
     }
+
+    [Fact]
+    public void UsageStore_never_overwrites_a_locked_file()
+    {
+        var path = Path.Combine(dir, "usage.json");
+        File.WriteAllText(path, "{\"plugins|a\":7}");
+        var before = File.ReadAllBytes(path);
+        UsageStore store;
+        using (new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+            store = new UsageStore(path);
+        Assert.True(store.IsReadOnly);
+        store.Record("plugins|b");
+        store.Merge(new Dictionary<string, int> { ["plugins|c"] = 2 });
+        store.Reset();
+        store.Record("plugins|b");
+        Assert.Equal(1, store.Counts["plugins|b"]);   // counted in memory
+        Assert.Equal(before, File.ReadAllBytes(path));
+        Assert.Equal(7, new UsageStore(path).Counts["plugins|a"]);
+    }
+
+    [Fact]
+    public void UsageStore_where_a_folder_stands_in_for_the_file_is_read_only()
+    {
+        var path = Path.Combine(dir, "usage.json");
+        Directory.CreateDirectory(path);
+        var store = new UsageStore(path);
+        Assert.True(store.IsReadOnly);
+        store.Record("plugins|a");
+        Assert.True(Directory.Exists(path));
+        Assert.False(new UsageStore(Path.Combine(dir, "missing.json")).IsReadOnly);
+    }
+
+    [Fact]
+    public void SeenStore_never_overwrites_a_locked_file()
+    {
+        var path = Path.Combine(dir, "seen.json");
+        File.WriteAllText(path, "{\"u:Alpha\":\"2026-01-02T03:04:05Z\"}");
+        var before = File.ReadAllBytes(path);
+        SeenStore seen;
+        using (new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+            seen = new SeenStore(path);
+        Assert.True(seen.IsReadOnly);
+        seen.Update(new[] { Item("Beta") }, DateTime.UnixEpoch);
+        Assert.NotNull(seen.Date("u:Beta"));   // known in memory
+        Assert.Equal(before, File.ReadAllBytes(path));
+        Assert.False(new SeenStore(path).IsReadOnly);
+    }
 }

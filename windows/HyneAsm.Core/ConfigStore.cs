@@ -38,12 +38,20 @@ public sealed class ConfigStore
         try { Directory.Move(old, @new); } catch (IOException) { } catch (UnauthorizedAccessException) { }
     }
 
-    /// <summary>Missing file → default. Unreadable file → backed up as config.corrupt-&lt;timestamp&gt;.json, then default.</summary>
+    /// <summary>Missing file (or folder) → default. A file that reads but doesn't decode (bad JSON, invalid UTF-8) →
+    /// backed up as config.corrupt-&lt;timestamp&gt;.json, then default.
+    /// <para>A file that exists but can't be read (locked by an antivirus scanner, a sync client or an editor; no
+    /// permission) is retried briefly, then <see cref="ConfigUnreadableException"/> is thrown and the file is left
+    /// alone. This differs from Swift, which starts with the default and so lets the next save overwrite the user's
+    /// menu. The caller (the app at launch) shows the message and offers to retry or quit; it must not fall back to
+    /// <see cref="LauncherConfig.MakeDefault"/> and save that.</para></summary>
+    /// <exception cref="ConfigUnreadableException">config.json exists but could not be read.</exception>
     public LauncherConfig Load()
     {
-        byte[] data;
-        try { data = File.ReadAllBytes(Path); }
-        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return LauncherConfig.MakeDefault(); }
+        byte[]? data;
+        try { data = StoreFile.Read(Path); }
+        catch (IOException e) { throw new ConfigUnreadableException(Path, e); }
+        if (data == null) return LauncherConfig.MakeDefault();
 
         // Like Swift's `try?`: any failure to decode means a damaged file (backup + default), never a crash.
         LauncherConfig? config = null;
@@ -101,6 +109,43 @@ public sealed class ConfigStore
         var dir = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(Path))!;
         Directory.CreateDirectory(dir);
         AtomicFile.Write(Path, SwiftJson.EncodeUtf8(SwiftJson.Serialize(config, pretty: true)));
+    }
+}
+
+/// <summary>config.json exists but could not be read (locked, no permission). The file is untouched; nothing has been
+/// loaded, so nothing may be saved over it.</summary>
+public sealed class ConfigUnreadableException : IOException
+{
+    public string FilePath { get; }
+
+    public ConfigUnreadableException(string path, Exception inner)
+        : base($"{System.IO.Path.GetFileName(path)} could not be read ({inner.Message}). It was left unchanged.", inner)
+    {
+        FilePath = path;
+    }
+}
+
+/// <summary>Reads a store file and tells "missing" apart from "there but unreadable".</summary>
+internal static class StoreFile
+{
+    const int Attempts = 3;
+    static readonly TimeSpan Pause = TimeSpan.FromMilliseconds(50);
+
+    /// <summary>The file's bytes, or null when it (or its folder) doesn't exist. Any other failure (a sharing
+    /// violation, no permission, a folder in its place) is retried <see cref="Attempts"/> times, then thrown as an
+    /// <see cref="IOException"/>.</summary>
+    public static byte[]? Read(string path)
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            try { return File.ReadAllBytes(path); }
+            catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException) { return null; }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+            {
+                if (attempt >= Attempts) throw e as IOException ?? new IOException(e.Message, e);
+                Thread.Sleep(Pause);
+            }
+        }
     }
 }
 

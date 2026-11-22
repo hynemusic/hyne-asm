@@ -13,14 +13,22 @@ public sealed class UsageStore
     /// <summary>A copy (Swift returns the dictionary by value).</summary>
     public Dictionary<string, int> Counts => new(counts, Text.Canonical);
 
-    /// <summary>A missing or unreadable file starts empty (no backup, as on the Mac).</summary>
+    /// <summary>A missing or damaged file starts empty (no backup, as on the Mac). A file that exists but can't be
+    /// read (locked, no permission; retried briefly) also starts empty, but the store is then <see cref="IsReadOnly"/>.</summary>
     public UsageStore(string path)
     {
         this.path = path;
-        try { counts = SwiftJson.ReadCounts(SwiftJson.DecodeUtf8(File.ReadAllBytes(path))); }
+        byte[]? data = null;
+        try { data = StoreFile.Read(path); }
+        catch (IOException) { IsReadOnly = true; }
+        try { counts = data == null ? new(Text.Canonical) : SwiftJson.ReadCounts(SwiftJson.DecodeUtf8(data)); }
         catch (Exception e) when (e is not OutOfMemoryException) { counts = new(Text.Canonical); }
     }
 
+    /// <summary>usage.json existed but couldn't be read when the store was opened. Counts still change in memory, but
+    /// the file is never written, so the user's real counts survive (a new store reads them once the file is free).
+    /// Differs from Swift, which would overwrite them.</summary>
+    public bool IsReadOnly { get; }
     public static string DefaultPath => Path.Combine(Path.GetDirectoryName(ConfigStore.DefaultPath)!, "usage.json");
 
     /// <summary>Raised after every change, so an open Stats page can refresh (Swift's <c>didChange</c> notification).</summary>
@@ -56,15 +64,16 @@ public sealed class UsageStore
         Save();
     }
 
-    /// <summary>Like Swift's <c>try?</c>: a failed write is ignored.</summary>
+    /// <summary>Like Swift's <c>try?</c>: a failed write is ignored. Skipped when <see cref="IsReadOnly"/>.</summary>
     void Save()
     {
-        try
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
-            AtomicFile.WriteText(path, SwiftJson.Serialize(counts));
-        }
-        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
+        if (!IsReadOnly)
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
+                AtomicFile.WriteText(path, SwiftJson.Serialize(counts));
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
         DidChange?.Invoke(this, EventArgs.Empty);
     }
 }
