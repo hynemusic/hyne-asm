@@ -1,0 +1,1327 @@
+{
+  "area": "profiles.ops",
+  "cases": [
+    {
+      "expected": {
+        "activeProfileID": "NEW-1",
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-2",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              }
+            ],
+            "id": "NEW-3",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [
+              {
+                "entries": [
+                  {
+                    "iconID": "synth",
+                    "id": "NEW-6",
+                    "name": "Serum 2",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "s"
+                  }
+                ],
+                "id": "NEW-7",
+                "isFavorites": true,
+                "name": "Favorites"
+              },
+              {
+                "entries": [],
+                "id": "NEW-8",
+                "isFavorites": false,
+                "name": "Instruments"
+              },
+              {
+                "entries": [],
+                "id": "NEW-9",
+                "isFavorites": false,
+                "name": "Effects"
+              }
+            ],
+            "id": "NEW-10",
+            "name": "Standard"
+          },
+          {
+            "categories": [
+              {
+                "entries": [
+                  {
+                    "iconID": "eq",
+                    "id": "NEW-2",
+                    "name": "EQ Eight",
+                    "path": [],
+                    "source": "audio_effects",
+                    "uri": "eq"
+                  }
+                ],
+                "id": "NEW-3",
+                "isFavorites": true,
+                "name": "Favorites"
+              },
+              {
+                "entries": [],
+                "id": "NEW-4",
+                "isFavorites": false,
+                "name": "Instruments"
+              },
+              {
+                "entries": [],
+                "id": "NEW-5",
+                "isFavorites": false,
+                "name": "Effects"
+              }
+            ],
+            "id": "NEW-1",
+            "name": "Mixing"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-1",
+          null,
+          {
+            "id": "NEW-1",
+            "name": "Mixing"
+          },
+          null,
+          null,
+          {
+            "id": "NEW-10",
+            "name": "Standard"
+          },
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "as": "m",
+            "copy": false,
+            "name": "Mixing",
+            "op": "addProfile"
+          },
+          {
+            "op": "switchProfile",
+            "profile": "$m"
+          },
+          {
+            "op": "activeProfile"
+          },
+          {
+            "cat": "favorites",
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "op": "switchProfile",
+            "profile": 0
+          },
+          {
+            "op": "activeProfile"
+          },
+          {
+            "op": "switchProfile",
+            "profile": "$m"
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "switching saves the current menu and loads the other"
+    },
+    {
+      "expected": {
+        "activeProfileID": "NEW-1",
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Serum 2",
+                "path": [],
+                "source": "plugins",
+                "uri": "s"
+              }
+            ],
+            "id": "NEW-3",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [
+              {
+                "entries": [
+                  {
+                    "iconID": "synth",
+                    "id": "NEW-2",
+                    "name": "Serum 2",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "s"
+                  }
+                ],
+                "id": "NEW-3",
+                "isFavorites": true,
+                "name": "Favorites"
+              },
+              {
+                "entries": [],
+                "id": "NEW-4",
+                "isFavorites": false,
+                "name": "Instruments"
+              },
+              {
+                "entries": [],
+                "id": "NEW-5",
+                "isFavorites": false,
+                "name": "Effects"
+              }
+            ],
+            "id": "NEW-1",
+            "name": "Standard"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-6",
+          null,
+          {
+            "id": "NEW-6",
+            "name": "Live Show"
+          },
+          null,
+          {
+            "id": "NEW-1",
+            "name": "Standard"
+          },
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "as": "copy",
+            "copy": true,
+            "name": "Live Show",
+            "op": "addProfile"
+          },
+          {
+            "op": "nextProfile"
+          },
+          {
+            "op": "activeProfile"
+          },
+          {
+            "op": "nextProfile"
+          },
+          {
+            "op": "activeProfile"
+          },
+          {
+            "name": "Stage",
+            "op": "renameProfile",
+            "profile": "$copy"
+          },
+          {
+            "op": "deleteProfile",
+            "profile": 0
+          },
+          {
+            "op": "deleteProfile",
+            "profile": "$copy"
+          },
+          {
+            "op": "deleteProfile",
+            "profile": 0
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "copy gets new ids, next cycles, rename and delete"
+    },
+    {
+      "expected": {
+        "activeProfileID": "NEW-1",
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [],
+            "id": "NEW-1",
+            "name": "Standard"
+          },
+          {
+            "categories": [
+              {
+                "entries": [],
+                "id": "NEW-5",
+                "isFavorites": true,
+                "name": "Favorites"
+              },
+              {
+                "entries": [],
+                "id": "NEW-6",
+                "isFavorites": false,
+                "name": "Instruments"
+              },
+              {
+                "entries": [],
+                "id": "NEW-7",
+                "isFavorites": false,
+                "name": "Effects"
+              }
+            ],
+            "id": "NEW-8",
+            "name": "Empty"
+          }
+        ],
+        "results": [
+          "NEW-8"
+        ]
+      },
+      "input": {
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "copy": false,
+            "name": "Empty",
+            "op": "addProfile"
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "add empty profile"
+    },
+    {
+      "expected": {
+        "activeProfileID": "NEW-1",
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "iconID": "synth",
+                    "id": "NEW-3",
+                    "name": "Serum 2",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "s"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-4",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "colorID": "red",
+                "iconID": "eq",
+                "id": "NEW-6",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              }
+            ],
+            "id": "NEW-7",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [],
+            "id": "NEW-1",
+            "name": "Standard"
+          },
+          {
+            "categories": [
+              {
+                "entries": [],
+                "id": "NEW-8",
+                "isFavorites": true,
+                "name": "Favorites"
+              },
+              {
+                "entries": [
+                  {
+                    "children": [
+                      {
+                        "iconID": "synth",
+                        "id": "NEW-9",
+                        "name": "Serum 2",
+                        "path": [],
+                        "source": "plugins",
+                        "uri": "s"
+                      }
+                    ],
+                    "iconID": "folder",
+                    "id": "NEW-10",
+                    "name": "F",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": ""
+                  }
+                ],
+                "id": "NEW-11",
+                "isFavorites": false,
+                "name": "Instruments"
+              },
+              {
+                "entries": [
+                  {
+                    "colorID": "red",
+                    "iconID": "eq",
+                    "id": "NEW-12",
+                    "name": "EQ Eight",
+                    "path": [],
+                    "source": "audio_effects",
+                    "uri": "eq"
+                  }
+                ],
+                "id": "NEW-13",
+                "isFavorites": false,
+                "name": "Effects"
+              }
+            ],
+            "id": "NEW-14",
+            "name": "Copy"
+          }
+        ],
+        "results": [
+          "NEW-4",
+          null,
+          null,
+          null,
+          "NEW-14"
+        ]
+      },
+      "input": {
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "as": "f",
+            "cat": 1,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": 1,
+            "folder": "$f",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "color": "red",
+            "entry": "EQ Eight",
+            "op": "setColor"
+          },
+          {
+            "copy": true,
+            "name": "Copy",
+            "op": "addProfile"
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "copy includes folders with new ids"
+    },
+    {
+      "expected": {
+        "activeProfileID": "NEW-1",
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [],
+            "id": "NEW-1",
+            "name": "Standard"
+          },
+          {
+            "categories": [
+              {
+                "entries": [],
+                "id": "NEW-5",
+                "isFavorites": true,
+                "name": "Favorites"
+              },
+              {
+                "entries": [],
+                "id": "NEW-6",
+                "isFavorites": false,
+                "name": "Instruments"
+              },
+              {
+                "entries": [],
+                "id": "NEW-7",
+                "isFavorites": false,
+                "name": "Effects"
+              }
+            ],
+            "id": "NEW-8",
+            "name": "B"
+          }
+        ],
+        "results": [
+          "NEW-8",
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "as": "a",
+            "copy": false,
+            "name": "A",
+            "op": "addProfile"
+          },
+          {
+            "name": "  B  ",
+            "op": "renameProfile",
+            "profile": "$a"
+          },
+          {
+            "name": "   ",
+            "op": "renameProfile",
+            "profile": "$a"
+          },
+          {
+            "name": "X",
+            "op": "renameProfile",
+            "profile": "00000000-0000-0000-0000-000000000000"
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "rename trims and ignores blank names"
+    },
+    {
+      "expected": {
+        "activeProfileID": "NEW-1",
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Serum 2",
+                "path": [],
+                "source": "plugins",
+                "uri": "s"
+              }
+            ],
+            "id": "NEW-3",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [],
+            "id": "NEW-1",
+            "name": "Standard"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "op": "switchProfile",
+            "profile": 0
+          },
+          {
+            "op": "switchProfile",
+            "profile": "00000000-0000-0000-0000-000000000000"
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "switch to active or unknown profile does nothing"
+    },
+    {
+      "expected": {
+        "activeProfileID": "NEW-1",
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [],
+            "id": "NEW-1",
+            "name": "Standard"
+          }
+        ],
+        "results": [
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "op": "nextProfile"
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "next profile with one profile does nothing"
+    },
+    {
+      "expected": {
+        "activeProfileID": "NEW-1",
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [
+              {
+                "entries": [],
+                "id": "NEW-2",
+                "isFavorites": true,
+                "name": "Favorites"
+              },
+              {
+                "entries": [],
+                "id": "NEW-3",
+                "isFavorites": false,
+                "name": "Instruments"
+              },
+              {
+                "entries": [],
+                "id": "NEW-4",
+                "isFavorites": false,
+                "name": "Effects"
+              }
+            ],
+            "id": "NEW-1",
+            "name": "Standard"
+          },
+          {
+            "categories": [
+              {
+                "entries": [],
+                "id": "NEW-5",
+                "isFavorites": true,
+                "name": "Favorites"
+              },
+              {
+                "entries": [],
+                "id": "NEW-6",
+                "isFavorites": false,
+                "name": "Instruments"
+              },
+              {
+                "entries": [],
+                "id": "NEW-7",
+                "isFavorites": false,
+                "name": "Effects"
+              }
+            ],
+            "id": "NEW-8",
+            "name": "C"
+          }
+        ],
+        "results": [
+          "NEW-9",
+          "NEW-8",
+          null,
+          null,
+          null,
+          {
+            "id": "NEW-1",
+            "name": "Standard"
+          }
+        ]
+      },
+      "input": {
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "as": "b",
+            "copy": false,
+            "name": "B",
+            "op": "addProfile"
+          },
+          {
+            "as": "c",
+            "copy": false,
+            "name": "C",
+            "op": "addProfile"
+          },
+          {
+            "op": "switchProfile",
+            "profile": "$c"
+          },
+          {
+            "op": "deleteProfile",
+            "profile": "$b"
+          },
+          {
+            "op": "nextProfile"
+          },
+          {
+            "op": "activeProfile"
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "switch delete the inactive then next"
+    },
+    {
+      "expected": {
+        "activeProfileID": "AAAAAAAA-0000-0000-0000-000000000002",
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "22222222-2222-2222-2222-222222222222",
+            "isFavorites": false,
+            "name": "Only"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [
+              {
+                "entries": [],
+                "id": "11111111-1111-1111-1111-111111111111",
+                "isFavorites": true,
+                "name": "Favorites"
+              }
+            ],
+            "id": "AAAAAAAA-0000-0000-0000-000000000001",
+            "name": "Main"
+          },
+          {
+            "categories": [
+              {
+                "entries": [],
+                "id": "22222222-2222-2222-2222-222222222222",
+                "isFavorites": false,
+                "name": "Only"
+              }
+            ],
+            "id": "AAAAAAAA-0000-0000-0000-000000000002",
+            "name": "Bare"
+          }
+        ],
+        "results": [
+          null,
+          {
+            "id": "AAAAAAAA-0000-0000-0000-000000000002",
+            "name": "Bare"
+          }
+        ]
+      },
+      "input": {
+        "config": {
+          "activeProfileID": "AAAAAAAA-0000-0000-0000-000000000001",
+          "categories": [
+            {
+              "entries": [],
+              "id": "11111111-1111-1111-1111-111111111111",
+              "isFavorites": true,
+              "name": "Favorites"
+            }
+          ],
+          "profiles": [
+            {
+              "categories": [],
+              "id": "AAAAAAAA-0000-0000-0000-000000000001",
+              "name": "Main"
+            },
+            {
+              "categories": [
+                {
+                  "entries": [],
+                  "id": "22222222-2222-2222-2222-222222222222",
+                  "isFavorites": false,
+                  "name": "Only"
+                }
+              ],
+              "id": "AAAAAAAA-0000-0000-0000-000000000002",
+              "name": "Bare"
+            }
+          ],
+          "version": 4
+        },
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "op": "switchProfile",
+            "profile": 1
+          },
+          {
+            "op": "activeProfile"
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "loaded profile without favorites gets one"
+    },
+    {
+      "expected": {
+        "activeProfileID": "NEW-1",
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Serum 2",
+                "path": [],
+                "source": "plugins",
+                "uri": "s"
+              }
+            ],
+            "id": "NEW-3",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Synths"
+          },
+          {
+            "entries": [],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [
+              {
+                "entries": [],
+                "id": "NEW-6",
+                "isFavorites": true,
+                "name": "Favorites"
+              },
+              {
+                "entries": [],
+                "id": "NEW-7",
+                "isFavorites": false,
+                "name": "Instruments"
+              },
+              {
+                "entries": [],
+                "id": "NEW-8",
+                "isFavorites": false,
+                "name": "Effects"
+              }
+            ],
+            "id": "NEW-9",
+            "name": "Standard"
+          },
+          {
+            "categories": [
+              {
+                "entries": [],
+                "id": "NEW-3",
+                "isFavorites": true,
+                "name": "Favorites"
+              },
+              {
+                "entries": [],
+                "id": "NEW-4",
+                "isFavorites": false,
+                "name": "Instruments"
+              },
+              {
+                "entries": [],
+                "id": "NEW-5",
+                "isFavorites": false,
+                "name": "Effects"
+              }
+            ],
+            "id": "NEW-1",
+            "name": "B"
+          }
+        ],
+        "results": [
+          "NEW-1",
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "as": "b",
+            "copy": false,
+            "name": "B",
+            "op": "addProfile"
+          },
+          {
+            "op": "switchProfile",
+            "profile": "$b"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 1,
+            "name": "Synths",
+            "op": "renameCategory"
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "edits after a switch stay out of the stored profile"
+    },
+    {
+      "expected": {
+        "activeProfileID": "NEW-1",
+        "categories": [
+          {
+            "entries": [],
+            "id": "11111111-1111-1111-1111-111111111111",
+            "isFavorites": true,
+            "name": "Favorites"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [],
+            "id": "NEW-1",
+            "name": "Standard"
+          }
+        ],
+        "results": [
+          {
+            "id": "NEW-1",
+            "name": "Standard"
+          }
+        ]
+      },
+      "input": {
+        "config": {
+          "categories": [
+            {
+              "entries": [],
+              "id": "11111111-1111-1111-1111-111111111111",
+              "isFavorites": true,
+              "name": "Favorites"
+            }
+          ],
+          "version": 4
+        },
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "op": "activeProfile"
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "old config gets one active profile"
+    },
+    {
+      "expected": {
+        "activeProfileID": "AAAAAAAA-0000-0000-0000-000000000001",
+        "categories": [
+          {
+            "entries": [],
+            "id": "11111111-1111-1111-1111-111111111111",
+            "isFavorites": true,
+            "name": "Favorites"
+          }
+        ],
+        "profiles": [
+          {
+            "categories": [],
+            "id": "AAAAAAAA-0000-0000-0000-000000000001",
+            "name": "Main"
+          }
+        ],
+        "results": [
+          {
+            "id": "AAAAAAAA-0000-0000-0000-000000000001",
+            "name": "Main"
+          },
+          null
+        ]
+      },
+      "input": {
+        "config": {
+          "activeProfileID": "AAAAAAAA-0000-0000-0000-00000000000F",
+          "categories": [
+            {
+              "entries": [],
+              "id": "11111111-1111-1111-1111-111111111111",
+              "isFavorites": true,
+              "name": "Favorites"
+            }
+          ],
+          "profiles": [
+            {
+              "categories": [],
+              "id": "AAAAAAAA-0000-0000-0000-000000000001",
+              "name": "Main"
+            },
+            {
+              "categories": [],
+              "id": "AAAAAAAA-0000-0000-0000-000000000002",
+              "name": "Other"
+            }
+          ],
+          "version": 4
+        },
+        "items": {
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "uri": "s"
+          }
+        },
+        "ops": [
+          {
+            "op": "activeProfile"
+          },
+          {
+            "op": "deleteProfile",
+            "profile": 1
+          }
+        ],
+        "show": [
+          "profiles",
+          "activeProfileID"
+        ]
+      },
+      "name": "unknown active profile id falls back to the first"
+    }
+  ]
+}

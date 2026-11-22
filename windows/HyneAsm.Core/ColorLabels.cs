@@ -1,15 +1,32 @@
 namespace HyneAsm.Core;
 
-/// <summary>Color rules that apply to a whole group of plugins — also to ones added later and to search hits.
-/// (Only what search needs is here so far: the palette ids, the rules and the lookup; editing comes with the panel.)</summary>
+public sealed record ColorDef(string Id, string De, string En, double Red, double Green, double Blue)
+{
+    public string Label => Loc.T(De, En);
+}
+
 public static class ColorPalette
 {
     /// <summary>Stored on an entry to mean "no color, even if a rule would give one".</summary>
     public const string NoneID = "none";
 
-    public static readonly IReadOnlyList<string> AllIDs = new[] { "red", "orange", "yellow", "green", "teal", "blue", "purple", "pink", "gray" };
+    public static readonly IReadOnlyList<ColorDef> All = new ColorDef[]
+    {
+        new("red", "Rot", "Red", 0.93, 0.33, 0.31),
+        new("orange", "Orange", "Orange", 0.98, 0.58, 0.20),
+        new("yellow", "Gelb", "Yellow", 0.97, 0.83, 0.25),
+        new("green", "Grün", "Green", 0.40, 0.80, 0.38),
+        new("teal", "Türkis", "Teal", 0.25, 0.78, 0.75),
+        new("blue", "Blau", "Blue", 0.33, 0.58, 0.96),
+        new("purple", "Lila", "Purple", 0.67, 0.47, 0.93),
+        new("pink", "Pink", "Pink", 0.95, 0.45, 0.70),
+        new("gray", "Grau", "Gray", 0.62, 0.62, 0.62),
+    };
+
+    public static ColorDef? Color(string? id) => All.FirstOrDefault(c => Text.Equal(c.Id, id));
 }
 
+/// <summary>Colors that apply to a whole group of plugins — also to ones added later and to search hits.</summary>
 public abstract record ColorRule
 {
     public sealed record LiveDevices : ColorRule;
@@ -50,11 +67,27 @@ public sealed partial record LauncherConfig
 
     public string? GetColorRule(ColorRule rule) => LookupColorRule(rule.Key);
 
+    /// <summary>Swift dictionaries treat canonically equal keys as one: an existing key keeps its spelling.</summary>
     public void SetColorRule(string? colorID, ColorRule rule)
     {
         var existing = ColorRules.Keys.FirstOrDefault(k => Text.Equal(k, rule.Key));
-        if (existing != null) ColorRules.Remove(existing);
-        if (colorID != null) ColorRules[rule.Key] = colorID;
+        if (colorID == null) { if (existing != null) ColorRules.Remove(existing); }
+        else ColorRules[existing ?? rule.Key] = colorID;
+    }
+
+    /// <summary>Like icons, a color belongs to the plugin: every entry of it (all categories, all formats) changes.
+    /// null falls back to the rules; a folder's color only changes that folder.</summary>
+    public void SetColor(string? colorID, Guid entry, Guid categoryID)
+    {
+        if (FindEntry(entry, categoryID) is not { } target) return;
+        foreach (var category in Categories)
+            foreach (var e in category.Entries)
+            {
+                if (e.Id == target.Id || (!target.IsFolder && !e.IsFolder && SamePlugin(e, target))) e.ColorID = colorID;
+                if (target.IsFolder) continue;
+                foreach (var child in e.Children ?? new())
+                    if (SamePlugin(child, target)) child.ColorID = colorID;
+            }
     }
 
     /// <summary>Swift dictionaries treat canonically equal keys as one (a vendor folder may come decomposed).</summary>

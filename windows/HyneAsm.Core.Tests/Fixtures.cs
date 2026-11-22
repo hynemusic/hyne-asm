@@ -4,7 +4,7 @@ using HyneAsm.Core.Json;
 
 namespace HyneAsm.Core.Tests;
 
-public static class Fixtures
+public static partial class Fixtures
 {
     /// <summary>One handler per fixture area. Later tasks add entries here.</summary>
     public static readonly Dictionary<string, Func<JsonNode?, JsonNode?>> Handlers = new()
@@ -38,6 +38,14 @@ public static class Fixtures
         ["keys.shortcut_match"] = ShortcutMatch,
         ["keys.panel_bindings"] = PanelBindings,
         ["keys.translation"] = KeyTranslationOp,
+        ["panel.state"] = PanelStateOp,
+        ["panel.grid"] = PanelGridOp,
+        ["entry.resolve"] = EntryResolve,
+        ["browser.selection"] = EditScriptOp,
+        ["edit.multi"] = EditScriptOp,
+        ["edit.config"] = EditScriptOp,
+        ["colors.labels"] = EditScriptOp,
+        ["profiles.ops"] = EditScriptOp,
     };
 
     // MARK: Keys and text
@@ -337,14 +345,8 @@ public static class Fixtures
     static JsonNode? ConfigRoundtrip(JsonNode? input)
     {
         var text = input!.GetValue<string>();
-        var saved = Loc.Language;
-        Loc.Language = Language.De;
-        try
-        {
-            var output = SwiftJson.Serialize(SwiftJson.Deserialize<LauncherConfig>(text), pretty: true);
-            return JsonValue.Create(ReplaceGenerated(output, text));
-        }
-        finally { Loc.Language = saved; }
+        return WithGerman(() =>
+            JsonValue.Create(ReplaceGenerated(SwiftJson.Serialize(SwiftJson.Deserialize<LauncherConfig>(text), pretty: true), text)));
     }
 
     /// <summary>Same as the Swift runner: UUIDs (and the Stream Deck token) in <paramref name="output"/> that are

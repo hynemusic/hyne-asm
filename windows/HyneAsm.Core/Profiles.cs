@@ -33,6 +33,52 @@ public sealed record Profile : IJsonOnDeserialized
 
 public sealed partial record LauncherConfig
 {
+    [JsonIgnore] public Profile ActiveProfile => Profiles.FirstOrDefault(p => p.Id == ActiveProfileID) ?? Profiles[0];
+
+    /// <summary>Adds a profile (not switching to it): a copy of the current menu, or a fresh one with Favorites.</summary>
+    public Guid AddProfile(string name, bool copyingCurrent)
+    {
+        var profile = new Profile(name, copyingCurrent ? Copy(Categories) : FreshCategories());
+        Profiles.Add(profile);
+        return profile.Id;
+    }
+
+    /// <summary>Saves the current menu into the active profile, then loads the other one.</summary>
+    public void SwitchProfile(Guid id)
+    {
+        var target = Profiles.FindIndex(p => p.Id == id);
+        if (id == ActiveProfileID || target < 0) return;
+        var current = Profiles.FindIndex(p => p.Id == ActiveProfileID);
+        if (current >= 0) Profiles[current].Categories = Categories;
+        // A copy, as Swift's value types give: the stored menu stays as saved while the loaded one is edited.
+        var loaded = Profiles[target].Categories.Select(c => CopyCategory(c, newIDs: false)).ToList();
+        if (!loaded.Any(c => c.IsFavorites)) loaded.Insert(0, new Category("Favorites", isFavorites: true));
+        Categories = loaded;
+        ActiveProfileID = id;
+    }
+
+    public void SwitchToNextProfile()
+    {
+        var i = Profiles.FindIndex(p => p.Id == ActiveProfileID);
+        if (Profiles.Count <= 1 || i < 0) return;
+        SwitchProfile(Profiles[(i + 1) % Profiles.Count].Id);
+    }
+
+    public void RenameProfile(Guid id, string name)
+    {
+        var trimmed = Text.TrimWhitespaces(name);
+        var i = Profiles.FindIndex(p => p.Id == id);
+        if (trimmed.Length == 0 || i < 0) return;
+        Profiles[i].Name = trimmed;
+    }
+
+    /// <summary>The active profile and the last one stay.</summary>
+    public void DeleteProfile(Guid id)
+    {
+        if (id == ActiveProfileID || Profiles.Count <= 1) return;
+        Profiles.RemoveAll(p => p.Id == id);
+    }
+
     /// <summary>Makes sure there is one profile and it is the active one (configs from before profiles).</summary>
     internal void EnsureProfile()
     {
@@ -47,4 +93,25 @@ public sealed partial record LauncherConfig
             ActiveProfileID = Profiles[0].Id;
         }
     }
+
+    public static List<Category> FreshCategories() =>
+        new() { new Category("Favorites", isFavorites: true), new Category("Instruments"), new Category("Effects") };
+
+    /// <summary>Copies with new ids, so two profiles never share a category or entry id.</summary>
+    public static List<Category> Copy(IEnumerable<Category> categories) => categories.Select(c => CopyCategory(c, newIDs: true)).ToList();
+
+    static Category CopyCategory(Category c, bool newIDs)
+    {
+        var n = new Category(c.Name, c.IsFavorites, c.Entries.Select(e => CopyEntry(e, newIDs)).ToList());
+        if (!newIDs) n.Id = c.Id;
+        return n;
+    }
+
+    static Entry CopyEntry(Entry e, bool newIDs) => e with
+    {
+        Id = newIDs ? Guid.NewGuid() : e.Id,
+        Path = e.Path.ToList(),
+        Children = e.Children?.Select(k => CopyEntry(k, newIDs)).ToList(),
+        Chain = e.Chain?.ToList(),
+    };
 }

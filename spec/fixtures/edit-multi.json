@@ -1,0 +1,2438 @@
+{
+  "area": "edit.multi",
+  "cases": [
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "D",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:D"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-5",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-6",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-7",
+                "name": "E",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:E"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "before": "A",
+            "cat": 2,
+            "entries": [
+              "D",
+              "B"
+            ],
+            "folder": null,
+            "op": "moveEntries"
+          }
+        ]
+      },
+      "name": "move entries before anchor keeps order"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "D",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:D"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-5",
+                "name": "E",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:E"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-6",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-7",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "A",
+              "B"
+            ],
+            "op": "moveEntries"
+          }
+        ]
+      },
+      "name": "move entries to end"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-5",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-6",
+                "name": "D",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:D"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-7",
+                    "name": "E",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:E"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-8",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-9",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "NEW-8",
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": 2,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "A",
+              "C"
+            ],
+            "folder": "$f",
+            "op": "moveEntries"
+          },
+          {
+            "before": "C",
+            "cat": 2,
+            "entries": [
+              "E"
+            ],
+            "folder": "$f",
+            "op": "moveEntries"
+          },
+          {
+            "before": "B",
+            "cat": 2,
+            "entries": [
+              "A",
+              "C"
+            ],
+            "op": "moveEntries"
+          }
+        ]
+      },
+      "name": "move entries into folder and back out"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-5",
+                "name": "D",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:D"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-6",
+                "name": "E",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:E"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-7",
+                    "name": "A",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:A"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-8",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "children": [],
+                "iconID": "folder",
+                "id": "NEW-9",
+                "name": "G",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-10",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "NEW-8",
+          "NEW-9",
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": 2,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "as": "g",
+            "cat": 2,
+            "name": "G",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "$g",
+              "A"
+            ],
+            "folder": "$f",
+            "op": "moveEntries"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "$f"
+            ],
+            "folder": "$f",
+            "op": "moveEntries"
+          }
+        ]
+      },
+      "name": "folders stay out of folders"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "children": [],
+                "iconID": "folder",
+                "id": "NEW-3",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-5",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-6",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-7",
+                "name": "D",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:D"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-8",
+                "name": "E",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:E"
+              }
+            ],
+            "id": "NEW-9",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "NEW-3",
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": 2,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "before": "A",
+            "cat": 2,
+            "entries": [
+              "$f"
+            ],
+            "op": "moveEntries"
+          }
+        ]
+      },
+      "name": "moving a folder at top level"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-5",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-6",
+                "name": "D",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:D"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-7",
+                "name": "E",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:E"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "A"
+            ],
+            "folder": "B",
+            "op": "moveEntries"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "A"
+            ],
+            "folder": "00000000-0000-0000-0000-000000000000",
+            "op": "moveEntries"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "00000000-0000-0000-0000-000000000000"
+            ],
+            "op": "moveEntries"
+          }
+        ]
+      },
+      "name": "move into a plugin or unknown target does nothing"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "D",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:D"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-5",
+                "name": "E",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:E"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-6",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-7",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "before": "C",
+            "cat": 2,
+            "entries": [
+              "B",
+              "C"
+            ],
+            "op": "moveEntries"
+          }
+        ]
+      },
+      "name": "anchor that is moving falls back to the end"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-4",
+                    "name": "B",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:B"
+                  },
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-5",
+                    "name": "D",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:D"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-6",
+                "name": "Group",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-7",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-8",
+                "name": "E",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:E"
+              }
+            ],
+            "id": "NEW-9",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "NEW-6"
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "as": "g",
+            "cat": 2,
+            "entries": [
+              "D",
+              "B"
+            ],
+            "name": "Group",
+            "op": "groupEntries"
+          }
+        ]
+      },
+      "name": "group creates folder at first selected position"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-3",
+                    "name": "A",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:A"
+                  },
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-4",
+                    "name": "E",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:E"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-5",
+                "name": "Group",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-6",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-7",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-8",
+                "name": "D",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:D"
+              },
+              {
+                "children": [],
+                "iconID": "folder",
+                "id": "NEW-9",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-10",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "NEW-9",
+          null,
+          "NEW-5"
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": 2,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "E"
+            ],
+            "folder": "$f",
+            "op": "moveEntries"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "A",
+              "E",
+              "$f"
+            ],
+            "name": "Group",
+            "op": "groupEntries"
+          }
+        ]
+      },
+      "name": "group takes plugins from other folders and ignores folders"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-5",
+                    "name": "E",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:E"
+                  },
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-6",
+                    "name": "D",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:D"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-7",
+                "name": "Group",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-8",
+                    "name": "C",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:C"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-9",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-10",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "NEW-9",
+          null,
+          "NEW-7"
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": 2,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "C",
+              "D"
+            ],
+            "folder": "$f",
+            "op": "moveEntries"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "D",
+              "E"
+            ],
+            "name": "Group",
+            "op": "groupEntries"
+          }
+        ]
+      },
+      "name": "group of a plugin inside a folder goes in front of that folder"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-5",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-6",
+                    "name": "D",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:D"
+                  },
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-7",
+                    "name": "E",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:E"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-8",
+                "name": "Tail",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-9",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "NEW-8"
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "D",
+              "E"
+            ],
+            "name": "Tail",
+            "op": "groupEntries"
+          }
+        ]
+      },
+      "name": "group of the last entries goes to the end"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-5",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-6",
+                "name": "D",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:D"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-7",
+                "name": "E",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:E"
+              },
+              {
+                "children": [],
+                "iconID": "folder",
+                "id": "NEW-8",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-9",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "NEW-8",
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": 2,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "$f"
+            ],
+            "name": "Group",
+            "op": "groupEntries"
+          }
+        ]
+      },
+      "name": "group with only folders does nothing"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-5",
+                "name": "D",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:D"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-6",
+                "name": "E",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:E"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-7",
+                    "name": "A",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:A"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-8",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-9",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "NEW-8",
+          null,
+          [
+            "NEW-3",
+            "NEW-4",
+            "NEW-5",
+            "NEW-6",
+            "NEW-8",
+            "NEW-7"
+          ]
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "E",
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": 2,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "entries": [
+              "A"
+            ],
+            "folder": "$f",
+            "op": "moveEntries"
+          },
+          {
+            "cat": 2,
+            "op": "orderedEntryIDs"
+          }
+        ]
+      },
+      "name": "ordered ids follow list order"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-2",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-4",
+                    "name": "D",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:D"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-5",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-7",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          "NEW-5",
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "C",
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": 2,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$f",
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "cat": 1,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "entries": [
+              "A",
+              "B",
+              "D",
+              "$f"
+            ],
+            "from": 2,
+            "op": "moveEntriesToCategory",
+            "to": 1
+          }
+        ]
+      },
+      "name": "move entries to other category"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-2",
+                "name": "D",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:D"
+              }
+            ],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "children": [],
+                "iconID": "folder",
+                "id": "NEW-4",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          "NEW-4",
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "as": "f",
+            "cat": 2,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$f",
+            "item": "D",
+            "op": "addEntry"
+          },
+          {
+            "entries": [
+              "D"
+            ],
+            "from": 2,
+            "op": "moveEntriesToCategory",
+            "to": 1
+          }
+        ]
+      },
+      "name": "move plugin out of folder into other category"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              }
+            ],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "entries": [
+              "A"
+            ],
+            "from": 2,
+            "op": "moveEntriesToCategory",
+            "to": 2
+          },
+          {
+            "entries": [
+              "A"
+            ],
+            "from": 2,
+            "op": "moveEntriesToCategory",
+            "to": "00000000-0000-0000-0000-000000000000"
+          }
+        ]
+      },
+      "name": "move to same category does nothing"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "iconID": "generic",
+                    "id": "NEW-2",
+                    "name": "A",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": "u:A"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-3",
+                "name": "G",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-4",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          "NEW-3",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "A": {
+            "name": "A",
+            "uri": "u:A"
+          },
+          "B": {
+            "name": "B",
+            "uri": "u:B"
+          },
+          "C": {
+            "name": "C",
+            "uri": "u:C"
+          },
+          "D": {
+            "name": "D",
+            "uri": "u:D"
+          },
+          "E": {
+            "name": "E",
+            "uri": "u:E"
+          }
+        },
+        "ops": [
+          {
+            "as": "g",
+            "cat": 1,
+            "name": "G",
+            "op": "addFolder"
+          },
+          {
+            "cat": 1,
+            "folder": "$g",
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "A",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "B",
+            "op": "addEntry"
+          },
+          {
+            "entries": [
+              "A",
+              "B"
+            ],
+            "from": 2,
+            "op": "moveEntriesToCategory",
+            "to": 1
+          }
+        ]
+      },
+      "name": "plugin already inside a target folder is not duplicated"
+    }
+  ]
+}

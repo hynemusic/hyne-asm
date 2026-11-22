@@ -93,6 +93,14 @@ final class SharedFixtureTests: XCTestCase {
         "keys.digit": { .array(try numbers($0).map { n in DigitKeys.digit(forKeyCode: UInt16(n)).map { .number(Double($0)) } ?? .null }) },
         "keys.shortcut_match": shortcutMatch,
         "keys.panel_bindings": panelBindings,
+        "panel.state": panelState,
+        "panel.grid": panelGrid,
+        "entry.resolve": entryResolve,
+        "browser.selection": editScript,
+        "edit.multi": editScript,
+        "edit.config": editScript,
+        "colors.labels": editScript,
+        "profiles.ops": editScript,
     ]
 
     /// Areas whose `expected` is hand-written (`"reference": "hand"`): the Swift side only validates, and returns `expected`.

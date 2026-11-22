@@ -1,0 +1,2234 @@
+{
+  "area": "colors.labels",
+  "cases": [
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq8"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Drift",
+                "path": [],
+                "source": "instruments",
+                "uri": "drift"
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-4",
+                "name": "Serum 2",
+                "path": [
+                  "VST3",
+                  "Xfer Records"
+                ],
+                "source": "plugins",
+                "uri": "serum"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-7",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "colorRules": {},
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "drift": {
+            "name": "Drift",
+            "source": "instruments",
+            "uri": "drift"
+          },
+          "eq8": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          },
+          "proQau": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "uri": "serum"
+          },
+          "util": {
+            "name": "Utility",
+            "source": "audio_effects",
+            "uri": "util"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq8",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "drift",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "entry": "EQ Eight",
+            "op": "colorOf"
+          }
+        ],
+        "show": [
+          "colorRules"
+        ]
+      },
+      "name": "no color by default"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq8"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Drift",
+                "path": [],
+                "source": "instruments",
+                "uri": "drift"
+              },
+              {
+                "colorID": "blue",
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-4",
+                "name": "Serum 2",
+                "path": [
+                  "VST3",
+                  "Xfer Records"
+                ],
+                "source": "plugins",
+                "uri": "serum"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "colorID": "blue",
+                "iconID": "eq",
+                "id": "NEW-7",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "colorRules": {},
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "blue",
+          "blue",
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "drift": {
+            "name": "Drift",
+            "source": "instruments",
+            "uri": "drift"
+          },
+          "eq8": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          },
+          "proQau": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "uri": "serum"
+          },
+          "util": {
+            "name": "Utility",
+            "source": "audio_effects",
+            "uri": "util"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq8",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "drift",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "color": "blue",
+            "entry": "Pro-Q 4",
+            "op": "setColor"
+          },
+          {
+            "cat": "favorites",
+            "entry": "Pro-Q 4",
+            "op": "colorOf"
+          },
+          {
+            "cat": 2,
+            "entry": "Pro-Q 4",
+            "op": "colorOf"
+          },
+          {
+            "cat": "favorites",
+            "entry": "Serum 2",
+            "op": "colorOf"
+          }
+        ],
+        "show": [
+          "colorRules"
+        ]
+      },
+      "name": "set color syncs across categories and formats"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq8"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Drift",
+                "path": [],
+                "source": "instruments",
+                "uri": "drift"
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-4",
+                "name": "Serum 2",
+                "path": [
+                  "VST3",
+                  "Xfer Records"
+                ],
+                "source": "plugins",
+                "uri": "serum"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-7",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "colorRules": {
+          "live": "orange"
+        },
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "orange",
+          "orange",
+          null,
+          "orange",
+          "orange"
+        ]
+      },
+      "input": {
+        "items": {
+          "drift": {
+            "name": "Drift",
+            "source": "instruments",
+            "uri": "drift"
+          },
+          "eq8": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          },
+          "proQau": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "uri": "serum"
+          },
+          "util": {
+            "name": "Utility",
+            "source": "audio_effects",
+            "uri": "util"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq8",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "drift",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "color": "orange",
+            "op": "setColorRule",
+            "rule": "live"
+          },
+          {
+            "cat": "favorites",
+            "entry": "EQ Eight",
+            "op": "colorOf"
+          },
+          {
+            "cat": "favorites",
+            "entry": "Drift",
+            "op": "colorOf"
+          },
+          {
+            "cat": "favorites",
+            "entry": "Serum 2",
+            "op": "colorOf"
+          },
+          {
+            "item": "util",
+            "op": "colorOfItem"
+          },
+          {
+            "op": "colorRule",
+            "rule": "live"
+          }
+        ],
+        "show": [
+          "colorRules"
+        ]
+      },
+      "name": "live device rule colors all live devices including later ones"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq8"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Drift",
+                "path": [],
+                "source": "instruments",
+                "uri": "drift"
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-4",
+                "name": "Serum 2",
+                "path": [
+                  "VST3",
+                  "Xfer Records"
+                ],
+                "source": "plugins",
+                "uri": "serum"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-7",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "colorRules": {
+          "vendor:FabFilter": "purple"
+        },
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "purple",
+          "purple",
+          null,
+          [
+            "vendor:FabFilter"
+          ],
+          [
+            "live"
+          ],
+          "purple",
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "drift": {
+            "name": "Drift",
+            "source": "instruments",
+            "uri": "drift"
+          },
+          "eq8": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          },
+          "proQau": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "uri": "serum"
+          },
+          "util": {
+            "name": "Utility",
+            "source": "audio_effects",
+            "uri": "util"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq8",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "drift",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "color": "purple",
+            "op": "setColorRule",
+            "rule": {
+              "vendor": "FabFilter"
+            }
+          },
+          {
+            "cat": "favorites",
+            "entry": "Pro-Q 4",
+            "op": "colorOf"
+          },
+          {
+            "item": "proQau",
+            "op": "colorOfItem"
+          },
+          {
+            "cat": "favorites",
+            "entry": "Serum 2",
+            "op": "colorOf"
+          },
+          {
+            "item": "proQ",
+            "op": "rulesForItem"
+          },
+          {
+            "item": "eq8",
+            "op": "rulesForItem"
+          },
+          {
+            "op": "colorRule",
+            "rule": {
+              "vendor": "FabFilter"
+            }
+          },
+          {
+            "op": "colorRule",
+            "rule": {
+              "vendor": "Xfer Records"
+            }
+          }
+        ],
+        "show": [
+          "colorRules"
+        ]
+      },
+      "name": "vendor rule"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq8"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Drift",
+                "path": [],
+                "source": "instruments",
+                "uri": "drift"
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-4",
+                "name": "Serum 2",
+                "path": [
+                  "VST3",
+                  "Xfer Records"
+                ],
+                "source": "plugins",
+                "uri": "serum"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-7",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "colorRules": {},
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "green",
+          null,
+          null,
+          null,
+          "orange",
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "drift": {
+            "name": "Drift",
+            "source": "instruments",
+            "uri": "drift"
+          },
+          "eq8": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          },
+          "proQau": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "uri": "serum"
+          },
+          "util": {
+            "name": "Utility",
+            "source": "audio_effects",
+            "uri": "util"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq8",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "drift",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "color": "orange",
+            "op": "setColorRule",
+            "rule": "live"
+          },
+          {
+            "cat": "favorites",
+            "color": "green",
+            "entry": "EQ Eight",
+            "op": "setColor"
+          },
+          {
+            "cat": "favorites",
+            "entry": "EQ Eight",
+            "op": "colorOf"
+          },
+          {
+            "cat": "favorites",
+            "color": "none",
+            "entry": "EQ Eight",
+            "op": "setColor"
+          },
+          {
+            "cat": "favorites",
+            "entry": "EQ Eight",
+            "op": "colorOf"
+          },
+          {
+            "cat": "favorites",
+            "color": null,
+            "entry": "EQ Eight",
+            "op": "setColor"
+          },
+          {
+            "cat": "favorites",
+            "entry": "EQ Eight",
+            "op": "colorOf"
+          },
+          {
+            "color": null,
+            "op": "setColorRule",
+            "rule": "live"
+          },
+          {
+            "cat": "favorites",
+            "entry": "EQ Eight",
+            "op": "colorOf"
+          }
+        ],
+        "show": [
+          "colorRules"
+        ]
+      },
+      "name": "own color beats rule and none clears it"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq8"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Drift",
+                "path": [],
+                "source": "instruments",
+                "uri": "drift"
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-4",
+                "name": "Serum 2",
+                "path": [
+                  "VST3",
+                  "Xfer Records"
+                ],
+                "source": "plugins",
+                "uri": "serum"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "eq",
+                    "id": "NEW-5",
+                    "name": "Pro-Q 4",
+                    "path": [
+                      "AUv2",
+                      "FabFilter"
+                    ],
+                    "source": "plugins",
+                    "uri": "pq-au"
+                  }
+                ],
+                "colorID": "red",
+                "iconID": "folder",
+                "id": "NEW-6",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-7",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [
+              {
+                "children": [],
+                "iconID": "folder",
+                "id": "NEW-8",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-9",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-10",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              }
+            ],
+            "id": "NEW-11",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "colorRules": {
+          "vendor:FabFilter": "orange"
+        },
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "NEW-6",
+          "NEW-8",
+          null,
+          null,
+          null,
+          null,
+          "red"
+        ]
+      },
+      "input": {
+        "items": {
+          "drift": {
+            "name": "Drift",
+            "source": "instruments",
+            "uri": "drift"
+          },
+          "eq8": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          },
+          "proQau": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "uri": "serum"
+          },
+          "util": {
+            "name": "Utility",
+            "source": "audio_effects",
+            "uri": "util"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq8",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "drift",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": "favorites",
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "as": "g",
+            "cat": 1,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": "favorites",
+            "folder": "$f",
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "color": "orange",
+            "op": "setColorRule",
+            "rule": {
+              "vendor": "FabFilter"
+            }
+          },
+          {
+            "cat": "favorites",
+            "entry": "$f",
+            "op": "colorOf"
+          },
+          {
+            "cat": "favorites",
+            "color": "red",
+            "entry": "$f",
+            "op": "setColor"
+          },
+          {
+            "cat": "favorites",
+            "entry": "$f",
+            "op": "colorOf"
+          }
+        ],
+        "show": [
+          "colorRules"
+        ]
+      },
+      "name": "folder color only changes that folder and folders ignore rules"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq8"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Drift",
+                "path": [],
+                "source": "instruments",
+                "uri": "drift"
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              },
+              {
+                "colorID": "pink",
+                "iconID": "synth",
+                "id": "NEW-4",
+                "name": "Serum 2",
+                "path": [
+                  "VST3",
+                  "Xfer Records"
+                ],
+                "source": "plugins",
+                "uri": "serum"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "colorID": "pink",
+                    "iconID": "synth",
+                    "id": "NEW-6",
+                    "name": "Serum 2",
+                    "path": [
+                      "VST3",
+                      "Xfer Records"
+                    ],
+                    "source": "plugins",
+                    "uri": "serum"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-7",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-9",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              }
+            ],
+            "id": "NEW-10",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "colorRules": {},
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "NEW-7",
+          null,
+          null,
+          "pink"
+        ]
+      },
+      "input": {
+        "items": {
+          "drift": {
+            "name": "Drift",
+            "source": "instruments",
+            "uri": "drift"
+          },
+          "eq8": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          },
+          "proQau": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "uri": "serum"
+          },
+          "util": {
+            "name": "Utility",
+            "source": "audio_effects",
+            "uri": "util"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq8",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "drift",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": 1,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": 1,
+            "folder": "$f",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "color": "pink",
+            "entry": "Serum 2",
+            "op": "setColor"
+          },
+          {
+            "cat": 1,
+            "entry": "Serum 2",
+            "op": "colorOf"
+          }
+        ],
+        "show": [
+          "colorRules"
+        ]
+      },
+      "name": "color reaches into folders"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq8"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Drift",
+                "path": [],
+                "source": "instruments",
+                "uri": "drift"
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-4",
+                "name": "Serum 2",
+                "path": [
+                  "VST3",
+                  "Xfer Records"
+                ],
+                "source": "plugins",
+                "uri": "serum"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-7",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "colorRules": {},
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "drift": {
+            "name": "Drift",
+            "source": "instruments",
+            "uri": "drift"
+          },
+          "eq8": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          },
+          "proQau": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "uri": "serum"
+          },
+          "util": {
+            "name": "Utility",
+            "source": "audio_effects",
+            "uri": "util"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq8",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "drift",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "color": "pink",
+            "entry": "00000000-0000-0000-0000-000000000000",
+            "op": "setColor"
+          }
+        ],
+        "show": [
+          "colorRules"
+        ]
+      },
+      "name": "set color on unknown entry does nothing"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq8"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Drift",
+                "path": [],
+                "source": "instruments",
+                "uri": "drift"
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-4",
+                "name": "Serum 2",
+                "path": [
+                  "VST3",
+                  "Xfer Records"
+                ],
+                "source": "plugins",
+                "uri": "serum"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-7",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "colorRules": {},
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          [],
+          [],
+          [],
+          [],
+          [
+            "live"
+          ]
+        ]
+      },
+      "input": {
+        "items": {
+          "drift": {
+            "name": "Drift",
+            "source": "instruments",
+            "uri": "drift"
+          },
+          "eq8": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          },
+          "proQau": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "uri": "serum"
+          },
+          "util": {
+            "name": "Utility",
+            "source": "audio_effects",
+            "uri": "util"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq8",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "drift",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "item": {
+              "name": "Pro-Q 4",
+              "path": [
+                "VST",
+                "FabFilter"
+              ],
+              "uri": "v2"
+            },
+            "op": "rulesForItem"
+          },
+          {
+            "item": {
+              "name": "Glue",
+              "path": [
+                "A",
+                "B"
+              ],
+              "source": "user_library",
+              "uri": "g"
+            },
+            "op": "rulesForItem"
+          },
+          {
+            "item": {
+              "name": "Lone",
+              "path": [
+                "VST3"
+              ],
+              "uri": "l"
+            },
+            "op": "rulesForItem"
+          },
+          {
+            "item": {
+              "name": "Max",
+              "source": "max_for_live",
+              "uri": "m"
+            },
+            "op": "rulesForItem"
+          },
+          {
+            "item": {
+              "name": "Arp",
+              "source": "midi_effects",
+              "uri": "a"
+            },
+            "op": "rulesForItem"
+          }
+        ],
+        "show": [
+          "colorRules"
+        ]
+      },
+      "name": "vst2 and presets get no rules"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq8"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Drift",
+                "path": [],
+                "source": "instruments",
+                "uri": "drift"
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-4",
+                "name": "Serum 2",
+                "path": [
+                  "VST3",
+                  "Xfer Records"
+                ],
+                "source": "plugins",
+                "uri": "serum"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-7",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "colorRules": {
+          "vendor:Günter": "gray"
+        },
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "teal",
+          "teal",
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "drift": {
+            "name": "Drift",
+            "source": "instruments",
+            "uri": "drift"
+          },
+          "eq8": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          },
+          "proQau": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "uri": "serum"
+          },
+          "util": {
+            "name": "Utility",
+            "source": "audio_effects",
+            "uri": "util"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq8",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "drift",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "color": "teal",
+            "op": "setColorRule",
+            "rule": {
+              "vendor": "Günter"
+            }
+          },
+          {
+            "item": {
+              "name": "X",
+              "path": [
+                "VST3",
+                "Günter"
+              ],
+              "uri": "x"
+            },
+            "op": "colorOfItem"
+          },
+          {
+            "op": "colorRule",
+            "rule": {
+              "vendor": "Günter"
+            }
+          },
+          {
+            "color": "gray",
+            "op": "setColorRule",
+            "rule": {
+              "vendor": "Günter"
+            }
+          }
+        ],
+        "show": [
+          "colorRules"
+        ]
+      },
+      "name": "vendor rule with decomposed vendor name"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq8"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-2",
+                "name": "Drift",
+                "path": [],
+                "source": "instruments",
+                "uri": "drift"
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              },
+              {
+                "iconID": "synth",
+                "id": "NEW-4",
+                "name": "Serum 2",
+                "path": [
+                  "VST3",
+                  "Xfer Records"
+                ],
+                "source": "plugins",
+                "uri": "serum"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-7",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "colorRules": {},
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          [
+            {
+              "blue": 0.31,
+              "green": 0.33,
+              "id": "red",
+              "label": "Rot",
+              "red": 0.93
+            },
+            {
+              "blue": 0.2,
+              "green": 0.58,
+              "id": "orange",
+              "label": "Orange",
+              "red": 0.98
+            },
+            {
+              "blue": 0.25,
+              "green": 0.83,
+              "id": "yellow",
+              "label": "Gelb",
+              "red": 0.97
+            },
+            {
+              "blue": 0.38,
+              "green": 0.8,
+              "id": "green",
+              "label": "Grün",
+              "red": 0.4
+            },
+            {
+              "blue": 0.75,
+              "green": 0.78,
+              "id": "teal",
+              "label": "Türkis",
+              "red": 0.25
+            },
+            {
+              "blue": 0.96,
+              "green": 0.58,
+              "id": "blue",
+              "label": "Blau",
+              "red": 0.33
+            },
+            {
+              "blue": 0.93,
+              "green": 0.47,
+              "id": "purple",
+              "label": "Lila",
+              "red": 0.67
+            },
+            {
+              "blue": 0.7,
+              "green": 0.45,
+              "id": "pink",
+              "label": "Pink",
+              "red": 0.95
+            },
+            {
+              "blue": 0.62,
+              "green": 0.62,
+              "id": "gray",
+              "label": "Grau",
+              "red": 0.62
+            }
+          ],
+          null,
+          "blue",
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "drift": {
+            "name": "Drift",
+            "source": "instruments",
+            "uri": "drift"
+          },
+          "eq8": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          },
+          "proQau": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "serum": {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "uri": "serum"
+          },
+          "util": {
+            "name": "Utility",
+            "source": "audio_effects",
+            "uri": "util"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq8",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "drift",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "serum",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "proQau",
+            "op": "addEntry"
+          },
+          {
+            "op": "palette"
+          },
+          {
+            "id": "none",
+            "op": "color"
+          },
+          {
+            "id": "blue",
+            "op": "color"
+          },
+          {
+            "id": null,
+            "op": "color"
+          },
+          {
+            "id": "Blue",
+            "op": "color"
+          }
+        ],
+        "show": [
+          "colorRules"
+        ]
+      },
+      "name": "palette has nine colors with labels"
+    }
+  ]
+}

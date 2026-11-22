@@ -1,0 +1,453 @@
+{
+  "area": "entry.resolve",
+  "cases": [
+    {
+      "expected": [
+        {
+          "index": "u:1",
+          "linear": "u:1"
+        }
+      ],
+      "input": {
+        "installed": [
+          {
+            "name": "X",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:X"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:1"
+          }
+        ],
+        "probes": [
+          {
+            "name": "Pro-L 2",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:1"
+          }
+        ]
+      },
+      "name": "by uri"
+    },
+    {
+      "expected": [
+        {
+          "index": "u:new",
+          "linear": "u:new"
+        }
+      ],
+      "input": {
+        "installed": [
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "u:new"
+          }
+        ],
+        "probes": [
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "u:old"
+          }
+        ]
+      },
+      "name": "by name when uri changed"
+    },
+    {
+      "expected": [
+        {
+          "index": null,
+          "linear": null
+        }
+      ],
+      "input": {
+        "installed": [
+          {
+            "name": "Utility",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:new"
+          }
+        ],
+        "probes": [
+          {
+            "name": "Utility",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "u:old"
+          }
+        ]
+      },
+      "name": "name fallback requires same source"
+    },
+    {
+      "expected": [
+        {
+          "index": "u:au",
+          "linear": "u:au"
+        }
+      ],
+      "input": {
+        "installed": [
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "u:v3"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "u:au"
+          }
+        ],
+        "probes": [
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "u:old"
+          }
+        ]
+      },
+      "name": "name fallback prefers same path"
+    },
+    {
+      "expected": [
+        {
+          "index": null,
+          "linear": null
+        }
+      ],
+      "input": {
+        "installed": [
+          {
+            "name": "Other",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:Other"
+          }
+        ],
+        "probes": [
+          {
+            "name": "Gone",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:Gone"
+          }
+        ]
+      },
+      "name": "unresolvable"
+    },
+    {
+      "expected": [
+        {
+          "index": "u:v3",
+          "linear": "u:v3"
+        },
+        {
+          "index": "u:au",
+          "linear": "u:au"
+        },
+        {
+          "index": "u:v3",
+          "linear": "u:v3"
+        },
+        {
+          "index": "u:util",
+          "linear": "u:util"
+        },
+        {
+          "index": null,
+          "linear": null
+        }
+      ],
+      "input": {
+        "installed": [
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "u:v3"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "u:au"
+          },
+          {
+            "name": "Utility",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "u:util"
+          },
+          {
+            "name": "Utility",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:plug"
+          }
+        ],
+        "probes": [
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "u:v3"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "u:gone"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "u:gone2"
+          },
+          {
+            "name": "Utility",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "u:x"
+          },
+          {
+            "name": "Nope",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:nope"
+          }
+        ]
+      },
+      "name": "index matches linear resolve"
+    },
+    {
+      "expected": [
+        {
+          "index": "u:dup",
+          "linear": "u:dup"
+        },
+        {
+          "index": "u:dup",
+          "linear": "u:dup"
+        }
+      ],
+      "input": {
+        "installed": [
+          {
+            "name": "A",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:dup"
+          },
+          {
+            "name": "B",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:dup"
+          },
+          {
+            "name": "A",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:a2"
+          }
+        ],
+        "probes": [
+          {
+            "name": "Z",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:dup"
+          },
+          {
+            "name": "A",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:none"
+          }
+        ]
+      },
+      "name": "duplicate uris resolve to the first"
+    },
+    {
+      "expected": [
+        {
+          "index": "u:m1",
+          "linear": "u:m1"
+        },
+        {
+          "index": "u:m2",
+          "linear": "u:m2"
+        },
+        {
+          "index": null,
+          "linear": null
+        }
+      ],
+      "input": {
+        "installed": [
+          {
+            "name": "Müller",
+            "path": [
+              "VST3",
+              "Günter"
+            ],
+            "source": "plugins",
+            "uri": "u:m1"
+          },
+          {
+            "name": "Müller",
+            "path": [
+              "VST3",
+              "Other"
+            ],
+            "source": "plugins",
+            "uri": "u:m2"
+          }
+        ],
+        "probes": [
+          {
+            "name": "Müller",
+            "path": [
+              "VST3",
+              "Günter"
+            ],
+            "source": "plugins",
+            "uri": "u:x"
+          },
+          {
+            "name": "Müller",
+            "path": [
+              "VST3",
+              "Other"
+            ],
+            "source": "plugins",
+            "uri": "u:y"
+          },
+          {
+            "name": "x",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:m̈"
+          }
+        ]
+      },
+      "name": "canonically equal names and paths"
+    },
+    {
+      "expected": [
+        {
+          "index": "u:é",
+          "linear": "u:é"
+        }
+      ],
+      "input": {
+        "installed": [
+          {
+            "name": "A",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:é"
+          },
+          {
+            "name": "B",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:b"
+          }
+        ],
+        "probes": [
+          {
+            "name": "Q",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:é"
+          }
+        ]
+      },
+      "name": "canonically equal uris"
+    },
+    {
+      "expected": [
+        {
+          "index": "u:v3",
+          "linear": "u:v3"
+        }
+      ],
+      "input": {
+        "installed": [
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "u:v3"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "u:au"
+          }
+        ],
+        "probes": [
+          {
+            "name": "Pro-L 2",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:old"
+          }
+        ]
+      },
+      "name": "first candidate when no path matches"
+    }
+  ]
+}

@@ -1,0 +1,3810 @@
+{
+  "area": "edit.config",
+  "cases": [
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          "NEW-1"
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "op": "favoritesID"
+          }
+        ]
+      },
+      "name": "default config"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:EQ Eight"
+              }
+            ],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "EQ Eight"
+            },
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "EQ Eight"
+            },
+            "op": "addEntry"
+          }
+        ]
+      },
+      "name": "add entry ignores duplicate uri in same category"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-1",
+                "name": "Zzyzx",
+                "path": [
+                  "x"
+                ],
+                "source": "audio_effects",
+                "uri": "u:Zzyzx"
+              }
+            ],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "Zzyzx",
+              "path": [
+                "x"
+              ],
+              "source": "audio_effects"
+            },
+            "op": "addEntry"
+          }
+        ]
+      },
+      "name": "add entry uses default icon when nothing matches"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              },
+              {
+                "iconID": "console",
+                "id": "NEW-2",
+                "name": "SSL E Channel",
+                "path": [
+                  "VST3",
+                  "UA"
+                ],
+                "source": "plugins",
+                "uri": "ssl"
+              }
+            ],
+            "id": "NEW-3",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-4",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq"
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "ssl",
+            "op": "addEntry"
+          },
+          {
+            "cat": 1,
+            "item": "proQ",
+            "op": "addEntry"
+          }
+        ]
+      },
+      "name": "add entry guesses icons"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              }
+            ],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              }
+            ],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "cat": 1,
+            "item": "eq",
+            "op": "addEntry"
+          }
+        ]
+      },
+      "name": "same plugin in another category is added"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-1",
+                "name": "C",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:C"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-2",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-3",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              }
+            ],
+            "id": "NEW-4",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "A"
+            },
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "B"
+            },
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "C"
+            },
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "from": 2,
+            "op": "moveEntry",
+            "to": 0
+          }
+        ]
+      },
+      "name": "move entry reorders"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "generic",
+                "id": "NEW-1",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:A"
+              },
+              {
+                "iconID": "generic",
+                "id": "NEW-2",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:B"
+              }
+            ],
+            "id": "NEW-3",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "A"
+            },
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "B"
+            },
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "from": 2,
+            "op": "moveEntry",
+            "to": 0
+          },
+          {
+            "cat": "favorites",
+            "from": 0,
+            "op": "moveEntry",
+            "to": 2
+          }
+        ]
+      },
+      "name": "move entry out of range does nothing"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Effects"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "cat": "favorites",
+            "op": "deleteCategory"
+          },
+          {
+            "from": 0,
+            "op": "moveCategory",
+            "to": 2
+          },
+          {
+            "from": 2,
+            "op": "moveCategory",
+            "to": 0
+          }
+        ]
+      },
+      "name": "favorites cannot be deleted or moved"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          "NEW-4",
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "as": "c",
+            "name": "Reverb & Echos",
+            "op": "addCategory"
+          },
+          {
+            "cat": "$c",
+            "name": "Space",
+            "op": "renameCategory"
+          },
+          {
+            "cat": "$c",
+            "op": "deleteCategory"
+          }
+        ]
+      },
+      "name": "category crud"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Effects"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "  Space  "
+          }
+        ],
+        "results": [
+          "NEW-4",
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "as": "c",
+            "name": "Reverb",
+            "op": "addCategory"
+          },
+          {
+            "cat": "$c",
+            "name": "  Space  ",
+            "op": "renameCategory"
+          },
+          {
+            "cat": "00000000-0000-0000-0000-000000000000",
+            "name": "None",
+            "op": "renameCategory"
+          }
+        ]
+      },
+      "name": "category rename keeps"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "EQ Eight"
+            },
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "entry": "EQ Eight",
+            "icon": "eq",
+            "op": "setIcon"
+          },
+          {
+            "cat": "favorites",
+            "entry": "EQ Eight",
+            "name": "EQ8",
+            "op": "setDisplayName"
+          },
+          {
+            "cat": "favorites",
+            "entry": "EQ8",
+            "op": "removeEntry"
+          }
+        ]
+      },
+      "name": "remove, set icon and display name"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "displayName": "EQ8",
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:EQ Eight"
+              },
+              {
+                "iconID": "utility",
+                "id": "NEW-2",
+                "name": "Utility",
+                "path": [],
+                "source": "plugins",
+                "uri": "u:Utility"
+              }
+            ],
+            "id": "NEW-3",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "EQ Eight"
+            },
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "Utility"
+            },
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "entry": "EQ Eight",
+            "name": "  EQ8 ",
+            "op": "setDisplayName"
+          },
+          {
+            "cat": "favorites",
+            "entry": "Utility",
+            "name": "   ",
+            "op": "setDisplayName"
+          },
+          {
+            "cat": "favorites",
+            "entry": "Utility",
+            "name": "Util",
+            "op": "setDisplayName"
+          },
+          {
+            "cat": "favorites",
+            "entry": "Util",
+            "name": null,
+            "op": "setDisplayName"
+          }
+        ]
+      },
+      "name": "display name is trimmed and cleared"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-4",
+                    "name": "LA-2",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "la2"
+                  },
+                  {
+                    "iconID": "console",
+                    "id": "NEW-5",
+                    "name": "SSL E Channel",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "ssl"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-6",
+                "name": "UAD",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-7",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-6",
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "as": "uad",
+            "cat": 2,
+            "name": "UAD",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "ssl",
+            "op": "addEntry"
+          }
+        ]
+      },
+      "name": "add folder and entries into it"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-4",
+                    "name": "LA-2",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "la2"
+                  },
+                  {
+                    "iconID": "console",
+                    "id": "NEW-5",
+                    "name": "SSL E Channel",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "ssl"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-6",
+                "name": "UAD",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-7",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-6",
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "as": "uad",
+            "cat": 2,
+            "name": "UAD",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "ssl",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "la2",
+            "op": "addEntry"
+          }
+        ]
+      },
+      "name": "no duplicate inside same folder"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-4",
+                    "name": "LA-2",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "la2"
+                  },
+                  {
+                    "iconID": "console",
+                    "id": "NEW-5",
+                    "name": "SSL E Channel",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "ssl"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-6",
+                "name": "UAD",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "iconID": "compressor",
+                "id": "NEW-7",
+                "name": "LA-2",
+                "path": [
+                  "VST3",
+                  "UA"
+                ],
+                "source": "plugins",
+                "uri": "la2"
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-6",
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "as": "uad",
+            "cat": 2,
+            "name": "UAD",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "ssl",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": "la2",
+            "op": "addEntry"
+          }
+        ]
+      },
+      "name": "same plugin at top level and in a folder"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-3",
+                    "name": "LA-2",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "la2"
+                  },
+                  {
+                    "iconID": "console",
+                    "id": "NEW-4",
+                    "name": "SSL E Channel",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "ssl"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-5",
+                "name": "UAD",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-6",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              }
+            ],
+            "id": "NEW-7",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-5",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "as": "uad",
+            "cat": 2,
+            "name": "UAD",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "ssl",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "entry": "EQ Eight",
+            "folder": "$uad",
+            "op": "moveToFolder"
+          },
+          {
+            "cat": 2,
+            "entry": "EQ Eight",
+            "folder": null,
+            "op": "moveToFolder"
+          }
+        ]
+      },
+      "name": "move entry into and out of folder"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-4",
+                    "name": "LA-2",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "la2"
+                  },
+                  {
+                    "iconID": "console",
+                    "id": "NEW-5",
+                    "name": "SSL E Channel",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "ssl"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-6",
+                "name": "UAD",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "children": [],
+                "iconID": "folder",
+                "id": "NEW-7",
+                "name": "Other",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-6",
+          null,
+          null,
+          "NEW-7",
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "as": "uad",
+            "cat": 2,
+            "name": "UAD",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "ssl",
+            "op": "addEntry"
+          },
+          {
+            "as": "o",
+            "cat": 2,
+            "name": "Other",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "entry": "$o",
+            "folder": "$uad",
+            "op": "moveToFolder"
+          },
+          {
+            "cat": 2,
+            "entry": "EQ Eight",
+            "folder": "EQ Eight",
+            "op": "moveToFolder"
+          }
+        ]
+      },
+      "name": "folders cannot go into folders"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "console",
+                    "id": "NEW-4",
+                    "name": "SSL E Channel",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "ssl"
+                  },
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-5",
+                    "name": "LA-2",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "la2"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-6",
+                "name": "UAD",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-7",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-6",
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "as": "uad",
+            "cat": 2,
+            "name": "UAD",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "ssl",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "from": 1,
+            "op": "moveEntry",
+            "to": 0
+          }
+        ]
+      },
+      "name": "reorder inside folder"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              },
+              {
+                "iconID": "compressor",
+                "id": "NEW-4",
+                "name": "LA-2",
+                "path": [
+                  "VST3",
+                  "UA"
+                ],
+                "source": "plugins",
+                "uri": "la2"
+              },
+              {
+                "iconID": "console",
+                "id": "NEW-5",
+                "name": "SSL E Channel",
+                "path": [
+                  "VST3",
+                  "UA"
+                ],
+                "source": "plugins",
+                "uri": "ssl"
+              },
+              {
+                "iconID": "utility",
+                "id": "NEW-6",
+                "name": "Utility",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "u:Utility"
+              }
+            ],
+            "id": "NEW-7",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-8",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "as": "uad",
+            "cat": 2,
+            "name": "UAD",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "ssl",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "item": {
+              "name": "Utility",
+              "source": "audio_effects"
+            },
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "op": "dissolveFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "EQ Eight",
+            "op": "dissolveFolder"
+          }
+        ]
+      },
+      "name": "dissolve folder keeps children in place"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              }
+            ],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-5",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "as": "uad",
+            "cat": 2,
+            "name": "UAD",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "ssl",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "entry": "LA-2",
+            "name": "LA-2A",
+            "op": "setDisplayName"
+          },
+          {
+            "cat": 2,
+            "entry": "LA-2A",
+            "icon": "heart",
+            "op": "setIcon"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "name": "Universal Audio",
+            "op": "renameFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "name": "   ",
+            "op": "renameFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "EQ Eight",
+            "name": "Not a folder",
+            "op": "renameFolder"
+          },
+          {
+            "cat": 2,
+            "entry": "LA-2A",
+            "op": "removeEntry"
+          },
+          {
+            "cat": 2,
+            "entry": "$uad",
+            "op": "removeEntry"
+          }
+        ]
+      },
+      "name": "remove, rename and icon for nested entries"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "star",
+                "id": "NEW-1",
+                "name": "LA-2",
+                "path": [
+                  "VST3",
+                  "UA"
+                ],
+                "source": "plugins",
+                "uri": "la2"
+              },
+              {
+                "iconID": "console",
+                "id": "NEW-2",
+                "name": "SSL E Channel",
+                "path": [
+                  "VST3",
+                  "UA"
+                ],
+                "source": "plugins",
+                "uri": "ssl"
+              }
+            ],
+            "id": "NEW-3",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-5",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "star",
+                    "id": "NEW-6",
+                    "name": "LA-2",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "la2"
+                  },
+                  {
+                    "iconID": "console",
+                    "id": "NEW-7",
+                    "name": "SSL E Channel",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "ssl"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-8",
+                "name": "UAD",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-9",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-8",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "as": "uad",
+            "cat": 2,
+            "name": "UAD",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "ssl",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "entry": "LA-2",
+            "icon": "star",
+            "op": "setIcon"
+          },
+          {
+            "cat": "favorites",
+            "item": "ssl",
+            "op": "addEntry"
+          }
+        ]
+      },
+      "name": "icon sync reaches into folders"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              }
+            ],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "AUv2",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-au"
+              },
+              {
+                "children": [],
+                "iconID": "star",
+                "id": "NEW-4",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "children": [],
+                "iconID": "folder",
+                "id": "NEW-6",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-7",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          "NEW-4",
+          "NEW-6",
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "vst3",
+            "op": "addEntry"
+          },
+          {
+            "cat": 1,
+            "item": "au",
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": 1,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "as": "g",
+            "cat": 2,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": "favorites",
+            "entry": "Pro-Q 4",
+            "icon": "eq",
+            "op": "setIcon"
+          },
+          {
+            "cat": 1,
+            "entry": "$f",
+            "icon": "star",
+            "op": "setIcon"
+          }
+        ]
+      },
+      "name": "icon sync across formats, folder icon only on the folder"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq"
+              }
+            ],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-4",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-5",
+                    "name": "LA-2",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "la2"
+                  },
+                  {
+                    "iconID": "console",
+                    "id": "NEW-6",
+                    "name": "SSL E Channel",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "ssl"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-7",
+                "name": "UAD",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-7",
+          null,
+          null,
+          null,
+          [
+            "Pro-Q 4",
+            "EQ Eight",
+            "LA-2",
+            "SSL E Channel"
+          ]
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "as": "uad",
+            "cat": 2,
+            "name": "UAD",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "cat": 2,
+            "folder": "$uad",
+            "item": "ssl",
+            "op": "addEntry"
+          },
+          {
+            "cat": "favorites",
+            "item": "proQ",
+            "op": "addEntry"
+          },
+          {
+            "op": "allPluginEntries"
+          }
+        ]
+      },
+      "name": "all plugin entries"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "chain": [
+                  {
+                    "name": "Pro-Q 4",
+                    "path": [
+                      "VST3",
+                      "FabFilter"
+                    ],
+                    "source": "plugins",
+                    "uri": "pq"
+                  }
+                ],
+                "iconID": "rack",
+                "id": "NEW-3",
+                "name": "Vocal",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "action": {
+                  "kind": "set_tempo",
+                  "value": 128
+                },
+                "iconID": "meter",
+                "id": "NEW-4",
+                "name": "Tempo 128",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "action": {
+                  "kind": "set_tempo",
+                  "value": 174
+                },
+                "iconID": "meter",
+                "id": "NEW-5",
+                "name": "Tempo 174",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "action": {
+                  "kind": "set_time_signature",
+                  "value": 7,
+                  "value2": 8
+                },
+                "iconID": "chord",
+                "id": "NEW-6",
+                "name": "Taktart 7/8",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "action": {
+                  "kind": "toggle_metronome"
+                },
+                "iconID": "tuner",
+                "id": "NEW-7",
+                "name": "Metronom an/aus",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-8",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          "NEW-3",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "as": "chain",
+            "cat": 2,
+            "name": "Vocal",
+            "op": "addChain",
+            "steps": [
+              "proQ"
+            ]
+          },
+          {
+            "action": {
+              "kind": "set_tempo",
+              "value": 128
+            },
+            "cat": 2,
+            "op": "addAction"
+          },
+          {
+            "action": {
+              "kind": "set_tempo",
+              "value": 174
+            },
+            "cat": 2,
+            "op": "addAction"
+          },
+          {
+            "action": {
+              "kind": "set_tempo",
+              "value": 128
+            },
+            "cat": 2,
+            "op": "addAction"
+          },
+          {
+            "action": {
+              "kind": "set_time_signature",
+              "value": 7,
+              "value2": 8
+            },
+            "cat": 2,
+            "op": "addAction"
+          },
+          {
+            "action": {
+              "kind": "toggle_metronome"
+            },
+            "cat": 2,
+            "op": "addAction"
+          }
+        ]
+      },
+      "name": "chains and actions with different values"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "chain": [
+                  {
+                    "name": "Pro-Q 4",
+                    "path": [
+                      "VST3",
+                      "FabFilter"
+                    ],
+                    "source": "plugins",
+                    "uri": "pq"
+                  },
+                  {
+                    "name": "LA-2",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "la2"
+                  }
+                ],
+                "iconID": "rack",
+                "id": "NEW-3",
+                "name": "Vocal 2",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          "NEW-3",
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "as": "c",
+            "cat": 2,
+            "name": "Vocal",
+            "op": "addChain",
+            "steps": [
+              "proQ"
+            ]
+          },
+          {
+            "cat": 2,
+            "entry": "$c",
+            "name": "Mine",
+            "op": "setDisplayName"
+          },
+          {
+            "cat": 2,
+            "entry": "$c",
+            "name": "Vocal 2",
+            "op": "updateChain",
+            "steps": [
+              "proQ",
+              "la2"
+            ]
+          }
+        ]
+      },
+      "name": "update chain"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "chain": [
+                      {
+                        "name": "Pro-Q 4",
+                        "path": [
+                          "VST3",
+                          "FabFilter"
+                        ],
+                        "source": "plugins",
+                        "uri": "pq"
+                      }
+                    ],
+                    "iconID": "rack",
+                    "id": "NEW-3",
+                    "name": "Vocal",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": ""
+                  },
+                  {
+                    "action": {
+                      "kind": "undo"
+                    },
+                    "iconID": "utility",
+                    "id": "NEW-4",
+                    "name": "Widerrufen",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": ""
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-5",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "action": {
+                  "kind": "undo"
+                },
+                "iconID": "utility",
+                "id": "NEW-6",
+                "name": "Widerrufen",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-7",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          "NEW-5",
+          "NEW-3",
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "as": "f",
+            "cat": 2,
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": 2,
+            "folder": "$f",
+            "name": "Vocal",
+            "op": "addChain",
+            "steps": [
+              "proQ"
+            ]
+          },
+          {
+            "action": {
+              "kind": "undo"
+            },
+            "cat": 2,
+            "folder": "$f",
+            "op": "addAction"
+          },
+          {
+            "action": {
+              "kind": "undo"
+            },
+            "cat": 2,
+            "folder": "$f",
+            "op": "addAction"
+          },
+          {
+            "action": {
+              "kind": "undo"
+            },
+            "cat": 2,
+            "op": "addAction"
+          }
+        ]
+      },
+      "name": "chain and action into a folder"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "action": {
+                  "kind": "set_tempo",
+                  "value": 174.5
+                },
+                "displayName": "Fast",
+                "iconID": "meter",
+                "id": "NEW-1",
+                "name": "Tempo 174.5",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "action": {
+              "kind": "set_tempo",
+              "value": 120
+            },
+            "cat": "favorites",
+            "op": "addAction"
+          },
+          {
+            "action": {
+              "kind": "set_tempo",
+              "value": 128
+            },
+            "cat": "favorites",
+            "entry": "Tempo 120",
+            "op": "updateAction"
+          },
+          {
+            "cat": "favorites",
+            "entry": "Tempo 128",
+            "name": "Fast",
+            "op": "setDisplayName"
+          },
+          {
+            "action": {
+              "kind": "set_tempo",
+              "value": 174.5
+            },
+            "cat": "favorites",
+            "entry": "Fast",
+            "op": "updateAction"
+          }
+        ]
+      },
+      "name": "changing an action's value renames it unless renamed by hand"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "A"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          "NEW-2",
+          null,
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "as": "a",
+            "name": "A",
+            "op": "addCategory"
+          },
+          {
+            "before": "Instruments",
+            "cat": "Effects",
+            "op": "moveCategoryBefore"
+          },
+          {
+            "before": null,
+            "cat": "Effects",
+            "op": "moveCategoryBefore"
+          },
+          {
+            "before": "Instruments",
+            "cat": "$a",
+            "op": "moveCategoryBefore"
+          }
+        ]
+      },
+      "name": "category order: move before another and to end"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Effects"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          }
+        ],
+        "results": [
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "before": "favorites",
+            "cat": "Effects",
+            "op": "moveCategoryBefore"
+          },
+          {
+            "before": null,
+            "cat": "favorites",
+            "op": "moveCategoryBefore"
+          }
+        ]
+      },
+      "name": "category order: favorites stays first"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null
+        ]
+      },
+      "input": {
+        "items": {},
+        "ops": [
+          {
+            "before": "Instruments",
+            "cat": "Instruments",
+            "op": "moveCategoryBefore"
+          }
+        ]
+      },
+      "name": "category order: drop on itself changes nothing"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq-v3"
+              }
+            ],
+            "id": "NEW-2",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-4",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-1",
+          null,
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": "vst3",
+            "op": "addEntry"
+          },
+          {
+            "installed": [
+              "vst3",
+              "au"
+            ],
+            "op": "favoriteEntry",
+            "uri": "pq-v3"
+          },
+          {
+            "installed": [
+              "vst3",
+              "au"
+            ],
+            "op": "favoriteEntry",
+            "uri": "pq-au"
+          },
+          {
+            "folderRow": true,
+            "installed": [
+              "vst3",
+              "au"
+            ],
+            "op": "favoriteEntry",
+            "uri": "pq-v3"
+          }
+        ]
+      },
+      "name": "favorite entry matches by resolved uri"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-1",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "old"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-2",
+                    "name": "LA-2",
+                    "path": [
+                      "VST3",
+                      "UA"
+                    ],
+                    "source": "plugins",
+                    "uri": "la2"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-3",
+                "name": "F",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-4",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          "NEW-3",
+          null,
+          "NEW-1",
+          "NEW-2",
+          null
+        ]
+      },
+      "input": {
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": "favorites",
+            "item": {
+              "name": "Pro-Q 4",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "uri": "old"
+            },
+            "op": "addEntry"
+          },
+          {
+            "as": "f",
+            "cat": "favorites",
+            "name": "F",
+            "op": "addFolder"
+          },
+          {
+            "cat": "favorites",
+            "folder": "$f",
+            "item": "la2",
+            "op": "addEntry"
+          },
+          {
+            "installed": [
+              "vst3"
+            ],
+            "op": "favoriteEntry",
+            "uri": "pq-v3"
+          },
+          {
+            "installed": [],
+            "op": "favoriteEntry",
+            "uri": "la2"
+          },
+          {
+            "installed": [
+              "vst3"
+            ],
+            "op": "favoriteEntry",
+            "uri": "nope"
+          }
+        ]
+      },
+      "name": "favorite entry through a stale uri and inside a folder"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "11111111-1111-1111-1111-111111111111",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "heart",
+                "id": "33333333-3333-3333-3333-333333333333",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "x"
+              },
+              {
+                "iconID": "heart",
+                "id": "NEW-1",
+                "name": "EQ Eight",
+                "path": [],
+                "source": "audio_effects",
+                "uri": "eq"
+              }
+            ],
+            "id": "22222222-2222-2222-2222-222222222222",
+            "isFavorites": false,
+            "name": "Ours"
+          }
+        ],
+        "results": [
+          null,
+          null
+        ]
+      },
+      "input": {
+        "config": {
+          "categories": [
+            {
+              "entries": [],
+              "id": "11111111-1111-1111-1111-111111111111",
+              "isFavorites": true,
+              "name": "Favorites"
+            },
+            {
+              "entries": [
+                {
+                  "iconID": "heart",
+                  "id": "33333333-3333-3333-3333-333333333333",
+                  "name": "EQ Eight",
+                  "path": [],
+                  "source": "audio_effects",
+                  "uri": "x"
+                }
+              ],
+              "id": "22222222-2222-2222-2222-222222222222",
+              "isFavorites": false,
+              "name": "Mine"
+            }
+          ],
+          "version": 4
+        },
+        "items": {
+          "au": {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "uri": "pq-au"
+          },
+          "eq": {
+            "name": "EQ Eight",
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          "la2": {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "la2"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          },
+          "ssl": {
+            "name": "SSL E Channel",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "uri": "ssl"
+          },
+          "vst3": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq-v3"
+          }
+        },
+        "ops": [
+          {
+            "cat": "Mine",
+            "item": "eq",
+            "op": "addEntry"
+          },
+          {
+            "cat": "Mine",
+            "name": "Ours",
+            "op": "renameCategory"
+          }
+        ]
+      },
+      "name": "existing config is edited"
+    }
+  ]
+}

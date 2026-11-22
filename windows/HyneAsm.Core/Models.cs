@@ -239,6 +239,8 @@ public sealed partial record LauncherConfig
     /// <summary>Pads in a grid or rows of a list, and the list's size.</summary>
     public PanelStyle PanelStyle { get; set; } = PanelStyle.Grid;
     public PanelListSize PanelList { get; set; } = PanelListSize.Default;
+    /// <summary>Where each entry sits on a page, from the style and its size.</summary>
+    [JsonIgnore] public PanelPage PanelPage => new(PanelStyle, PanelGrid, PanelList);
     /// <summary>Categories as tabs on top of the panel or as a column on its left.</summary>
     public CategoryPlacement CategoryPlacement { get; set; } = CategoryPlacement.Top;
     /// <summary>The welcome window was finished or skipped.</summary>
