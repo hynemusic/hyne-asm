@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyneAsm.Core", "HyneAsm.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyneAsm.Core.Tests", "HyneAsm.Core.Tests\HyneAsm.Core.Tests.csproj", "{4100791E-642C-4E51-B860-D3FF33065C26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyneAsm.App", "HyneAsm.App\HyneAsm.App.csproj", "{6C47D376-E28F-4507-A54A-E12A476D93AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{4100791E-642C-4E51-B860-D3FF33065C26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4100791E-642C-4E51-B860-D3FF33065C26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4100791E-642C-4E51-B860-D3FF33065C26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C47D376-E28F-4507-A54A-E12A476D93AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C47D376-E28F-4507-A54A-E12A476D93AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C47D376-E28F-4507-A54A-E12A476D93AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C47D376-E28F-4507-A54A-E12A476D93AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

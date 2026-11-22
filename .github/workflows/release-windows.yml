@@ -1,0 +1,64 @@
+# Builds and publishes a Windows release from the tagged commit, on GitHub's own machine.
+# Push a tag like win-v1.2.3. Mac releases (tags vX.Y.Z) are separate and untouched by this workflow.
+# A Windows release is never marked "latest", so the README's Mac download link keeps pointing at the Mac app.
+name: Release (Windows)
+
+on:
+  push:
+    tags: ['win-v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to build, e.g. win-v1.0.0'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - name: Check the tag
+        shell: bash
+        run: echo "$TAG" | grep -Eq '^win-v[0-9]+\.[0-9]+\.[0-9]+$' || { echo "Tag '$TAG' is not win-vX.Y.Z"; exit 1; }
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Test
+        run: |
+          dotnet test windows/HyneAsm.sln
+          python -m unittest discover -s bridge/tests
+
+      - name: Build
+        shell: bash
+        run: |
+          VERSION="${TAG#win-v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          dotnet publish windows/HyneAsm.App/HyneAsm.App.csproj -c Release -r win-x64 --self-contained \
+            -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true \
+            -p:HM_VERSION="$VERSION" -o publish
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $zip = "HYNE-ASM-Windows-$env:VERSION.zip"
+          Compress-Archive -Path "publish/HYNE ASM.exe" -DestinationPath $zip
+          (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower() + "  $zip" | Out-File -Encoding ascii "$zip.sha256"
+
+      - name: Publish
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" "HYNE-ASM-Windows-$VERSION.zip" "HYNE-ASM-Windows-$VERSION.zip.sha256" \
+            --title "HYNE ASM for Windows $VERSION" --latest=false \
+            --notes "Windows version. Download the zip, unpack it and start HYNE ASM.exe. The first time, Windows shows \"Windows protected your PC\": click More info → Run anyway. The welcome window walks you through the rest."

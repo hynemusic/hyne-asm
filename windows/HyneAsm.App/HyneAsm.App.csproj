@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Lets the app compile on macOS/Linux too (it only runs on Windows). -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>HyneAsm.App</RootNamespace>
+    <AssemblyName>HYNE ASM</AssemblyName>
+    <Product>HYNE Ableton Shortcuts Manager</Product>
+    <Company>HYNE</Company>
+    <Version Condition="'$(HM_VERSION)' != ''">$(HM_VERSION)</Version>
+    <Version Condition="'$(HM_VERSION)' == ''">0.1.0</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>AppIcon.ico</ApplicationIcon>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- Per-monitor DPI comes from app.manifest (WPF owns the windows; WinForms only draws the tray menu). -->
+    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HyneAsm.Core\HyneAsm.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The Live script ships inside the exe and is written to Live's User Library on install. -->
+    <EmbeddedResource Include="..\..\bridge\ASMbridge\*.py" LogicalName="ASMbridge/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="AppIcon.ico" LogicalName="AppIcon.ico" />
+  </ItemGroup>
+
+</Project>
