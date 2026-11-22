@@ -69,3 +69,7 @@ Every user-facing feature of HYNE ASM with its status on both platforms. Windows
 - UI language: `LanguageExtensions.Resolve` uses the Windows display language (`CultureInfo.CurrentUICulture`) where the
   Mac uses `Locale.preferredLanguages`.
 - `hyneasm://` and Stream Deck links: copy `Link().OriginalString` to the clipboard (not `ToString()`, which unescapes).
+- **Dates with a UTC offset or fractional seconds in `.hmlmenu`/`.hmlusage`** (only in hand-edited files; both apps
+  write whole seconds with `Z`): the Mac's answer depends on the macOS version (macOS 26 reads
+  `2026-03-01T13:30:00.75+01:00`, macOS 15 rejects it), so it is not a shared fixture. Windows reads it. Out-of-range
+  fields such as hour 25 are rejected on Windows, while the Mac rolls them over.

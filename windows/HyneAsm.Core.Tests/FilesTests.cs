@@ -156,7 +156,9 @@ public class FilesTests : IDisposable
     {
         var target = Path.Combine(dir, "config.json");
         Directory.CreateDirectory(target);   // a folder where the file should go: the move fails
-        Assert.ThrowsAny<IOException>(() => new ConfigStore(target).Save(LauncherConfig.MakeDefault()));
+        // macOS reports an IOException here, Windows an UnauthorizedAccessException.
+        var e = Assert.ThrowsAny<Exception>(() => new ConfigStore(target).Save(LauncherConfig.MakeDefault()));
+        Assert.True(e is IOException or UnauthorizedAccessException, e.GetType().Name);
         Assert.ThrowsAny<Exception>(() => new MenuDocument("x", new List<Category>()).Write(target));
         Assert.Empty(Directory.GetFiles(dir));
     }
