@@ -20,9 +20,17 @@ C# side match.
 
 ## Recording
 
-```
-HM_RECORD_FIXTURES=1 swift test --filter SharedFixtureTests
-```
+Never hand-edit `expected`. The one exception is a file marked `"reference": "hand"`, whose `expected`
+values are written by hand because they are not produced by Swift.
+
+Workflow for a new or changed area:
+
+1. Write the inputs, with every `expected` set to `null`.
+2. Record on the Mac: `spec/record-fixtures.sh` (runs from any directory). It runs
+   `HM_RECORD_FIXTURES=1 swift test --filter SharedFixtureTests`, then prints `git diff --stat spec/fixtures`.
+3. Review the diff of the recorded `expected` values.
+4. Implement the C# side in `windows/HyneAsm.Core`.
+5. Run `dotnet test windows/HyneAsm.sln`.
 
 Record mode runs the Swift handler for every case and rewrites `expected` in place. Files are written
 by `JSONValue.pretty()` in `SharedFixtureTests.swift` (a small hand-written serializer, not
