@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 
 namespace HyneAsm.Core.Tests;
 
+[Collection(LocCollection.Name)]
 public class SharedFixtureTests
 {
     public static IEnumerable<object[]> Cases() =>

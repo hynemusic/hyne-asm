@@ -5,6 +5,7 @@ using Xunit.Abstractions;
 
 namespace HyneAsm.Core.Tests;
 
+[Collection(LocCollection.Name)]
 public class SearchTests
 {
     readonly ITestOutputHelper output;

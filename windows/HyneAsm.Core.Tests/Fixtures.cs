@@ -61,6 +61,9 @@ public static partial class Fixtures
         ["guards.main_window"] = GuardsMainWindow,
         ["guards.tooltip"] = GuardsTooltip,
         ["onboarding.steps"] = OnboardingSteps,
+        ["loc.resolve"] = input => LanguageExtensions.Resolve(LanguageOf(input!["choice"]), input["preferred"]!.AsArray().Select(Str)) == Language.De ? "de" : "en",
+        ["loc.number"] = input => WithLanguage(LanguageOf(input!["language"])!.Value,
+            () => Strings(input["values"]!.AsArray().Select(v => Loc.Number(Int(v))))),
     };
 
     // MARK: Keys and text
@@ -225,19 +228,30 @@ public static partial class Fixtures
 
     static T Decode<T>(JsonNode? node) => SwiftJson.Deserialize<T>(node!.ToJsonString());
 
-    /// <summary>Loc.Language is global: handlers that need German hold a lock, so parallel tests can't see each other's language.</summary>
+    /// <summary>Loc.Language is global. Every test class that sets it (through these helpers too) is in the
+    /// non-parallel "Loc" collection (<see cref="LocCollection"/>), so no other test runs meanwhile; the lock also
+    /// keeps the handlers of one class apart.</summary>
     static readonly object LanguageLock = new();
 
-    static JsonNode? WithGerman(Func<JsonNode?> body)
+    static JsonNode? WithGerman(Func<JsonNode?> body) => WithLanguage(Language.De, body);
+
+    static JsonNode? WithLanguage(Language language, Func<JsonNode?> body)
     {
         lock (LanguageLock)
         {
             var saved = Loc.Language;
-            Loc.Language = Language.De;
+            Loc.Language = language;
             try { return body(); }
             finally { Loc.Language = saved; }
         }
     }
+
+    static Language? LanguageOf(JsonNode? n) => n is null ? null : Str(n) switch
+    {
+        "de" => Language.De,
+        "en" => Language.En,
+        var other => throw new ArgumentException("unknown language " + other),
+    };
 
     static JsonNode? SearchScore(JsonNode? input)
     {

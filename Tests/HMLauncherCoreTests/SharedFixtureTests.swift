@@ -116,6 +116,8 @@ final class SharedFixtureTests: XCTestCase {
         "guards.main_window": guardsMainWindow,
         "guards.tooltip": guardsTooltip,
         "onboarding.steps": onboardingSteps,
+        "loc.resolve": locResolve,
+        "loc.number": locNumber,
     ]
 
     /// Areas whose `expected` is hand-written (`"reference": "hand"`): the Swift side only validates, and returns `expected`.
@@ -304,6 +306,29 @@ final class SharedFixtureTests: XCTestCase {
             }
             return .object(["query": .string(q), "results": .array(results)])
         })
+    }
+
+    // MARK: Localization
+
+    static func language(_ v: JSONValue?) throws -> Language? {
+        if case .null? = v { return nil }
+        guard let l = Language(rawValue: try string(v)) else { throw FixtureError(description: "unknown language") }
+        return l
+    }
+
+    /// `{choice, preferred}` → "de" | "en".
+    static func locResolve(_ input: JSONValue) throws -> JSONValue {
+        guard case .object(let o) = input else { throw FixtureError(description: "loc.resolve: object expected") }
+        return .string(Language.resolve(try language(o["choice"]), preferred: try strings(o["preferred"])).rawValue)
+    }
+
+    /// `{language, values}` → `Loc.number` of each value with that UI language.
+    static func locNumber(_ input: JSONValue) throws -> JSONValue {
+        guard case .object(let o) = input, let l = try language(o["language"]) else { throw FixtureError(description: "loc.number: object expected") }
+        let saved = Loc.language
+        Loc.language = l
+        defer { Loc.language = saved }
+        return .array(try numbers(o["values"]).map { .string(Loc.number(Int($0))) })
     }
 
     // MARK: Keys and text
