@@ -109,6 +109,33 @@ sealed class BehaviorPage : Page
             Loc.T("Dieselben Befehle funktionieren als hyneasm://-Link, z. B. hyneasm://insert?name=Pro-Q%204.", "The same commands work as hyneasm:// links, e.g. hyneasm://insert?name=Pro-Q%204."), null));
         panel.Children.Add(UI.Card(rows.ToArray()));
 
+        // Your presets
+        var ws = WindowsSettings.Current;
+        var folderButtons = new StackPanel { Orientation = Orientation.Horizontal };
+        folderButtons.Children.Add(UI.SmallButton(Loc.T("Ändern …", "Change …"), () =>
+        {
+            using var dialog = new System.Windows.Forms.FolderBrowserDialog { SelectedPath = ws.PresetFolder, UseDescriptionForTitle = true, Description = Loc.T("Ordner für eingefügte Presets", "Folder for dropped presets") };
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
+            ws.PresetFolderSetting = dialog.SelectedPath;
+            ws.Save();
+            Window.Redraw();
+        }));
+        folderButtons.Children.Add(UI.IconButton("", () =>
+        {
+            System.IO.Directory.CreateDirectory(ws.PresetFolder);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", ws.PresetFolder) { UseShellExecute = true });
+        }, Loc.T("Im Explorer öffnen", "Open in Explorer")));
+        if (!string.IsNullOrWhiteSpace(ws.PresetFolderSetting))
+            folderButtons.Children.Add(UI.IconButton("", () => { ws.PresetFolderSetting = null; ws.Save(); Window.Redraw(); }, Loc.T("Standard", "Default")));
+        var inLibrary = PresetImport.IsInside(System.IO.Path.Combine(ws.PresetFolder, "x"), ScriptInstaller.UserLibrary);
+        panel.Children.Add(UI.GroupHeader("", Loc.T("Eigene Presets", "Your Presets"),
+            Loc.T("Presets (.adg, .adv, .vstpreset …), die du in die Bibliothek ziehst und die Live noch nicht kennt, werden hierhin kopiert.",
+                  "Presets (.adg, .adv, .vstpreset …) you drop into the Library that Live doesn't know yet are copied here.")));
+        panel.Children.Add(UI.Card(UI.Row(Loc.T("Ordner für eingefügte Presets", "Folder for dropped presets"),
+            ws.PresetFolder + (inLibrary ? "" : "\n" + Loc.T("Liegt außerhalb der User Library: in Live unter „Orte“ hinzufügen, sonst findet Live die Presets nicht.",
+                                                             "Outside the User Library: add it in Live under “Places”, or Live won't find the presets.")),
+            folderButtons)));
+
         // Windows
         panel.Children.Add(UI.GroupHeader("", "Windows"));
         panel.Children.Add(UI.Card(UI.Row(Loc.T("Mit Windows starten", "Start with Windows"), Loc.T("Startet still im Infobereich.", "Starts quietly in the notification area."),

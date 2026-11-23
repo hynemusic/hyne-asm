@@ -43,6 +43,7 @@ sealed class AppModel
         WindowsDefaults.Apply(Config, existed);
         Loc.Language = LanguageExtensions.Resolve(Config.Language);
         Theme.Apply(Config.Theme);
+        lastState = HyneAsm.Core.Json.SwiftJson.Serialize(Config, pretty: false);
         Catalog = new PluginCatalog(PluginCatalog.DefaultCachePath, Client);
         Catalog.ItemsChanged += (_, _) => ui.BeginInvoke(() => { InvalidateSearchIndex(); Changed?.Invoke(); });
         Save();   // persists migrations right away
@@ -56,8 +57,39 @@ sealed class AppModel
         Client.Start();
     }
 
+    // MARK: Undo (Ctrl+Z / Win+Z in the settings)
+
+    readonly List<string> undo = new();
+    string lastState;
+
+    public bool CanUndo => undo.Count > 0;
+
+    /// <summary>Goes back one change of the config (icons, colours, folders, order, shortcuts …).</summary>
+    public bool Undo()
+    {
+        if (undo.Count == 0) return false;
+        var previous = undo[^1];
+        undo.RemoveAt(undo.Count - 1);
+        Config = HyneAsm.Core.Json.SwiftJson.Deserialize<LauncherConfig>(previous);
+        lastState = previous;
+        Apply();
+        return true;
+    }
+
     /// <summary>Call after changing <see cref="Config"/> in place.</summary>
     public void ConfigChanged()
+    {
+        var now = HyneAsm.Core.Json.SwiftJson.Serialize(Config, pretty: false);
+        if (now != lastState)
+        {
+            undo.Add(lastState);
+            if (undo.Count > 60) undo.RemoveAt(0);
+            lastState = now;
+        }
+        Apply();
+    }
+
+    void Apply()
     {
         Loc.Language = LanguageExtensions.Resolve(Config.Language);
         Theme.Apply(Config.Theme);

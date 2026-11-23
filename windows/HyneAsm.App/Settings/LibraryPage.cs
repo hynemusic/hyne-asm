@@ -121,13 +121,17 @@ sealed class LibraryPage : Page
         if (field.Parent is Panel old) old.Children.Remove(field);
         var head = new StackPanel();
         head.Children.Add(Head(Loc.T("Plugins & Presets", "Plugins & Presets"), Loc.Number(Model.Catalog.Items.Count),
+            UI.IconButton("\uE713", () => Window.Select(4), Loc.T("Ordner für eigene Presets (Verhalten)", "Folder for your presets (Behavior)")),
             UI.IconButton("", Model.RefreshCatalog, Loc.T("Live-Liste neu laden", "Reload Live's list"))));
         head.Children.Add(field);
         field.Margin = new Thickness(0, 0, 0, 12);
 
         RefreshBrowser();
         Detach(browserScroll);
-        return Column(head, browserScroll, Loc.T("Doppelklick oder ziehen zum Hinzufügen. Umschalt oder Strg für mehrere.", "Double-click or drag to add. Hold Shift or Ctrl to pick several."));
+        var drop = new Border { Child = browserScroll, Background = Brushes.Transparent, AllowDrop = true };
+        drop.DragOver += (_, e) => { e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None; e.Handled = true; };
+        drop.Drop += (_, e) => { if (e.Data.GetData(DataFormats.FileDrop) is string[] files) ImportPresets(files, null, null); };
+        return Column(head, drop, Loc.T("Doppelklick oder ziehen zum Hinzufügen. Umschalt oder Strg für mehrere. Presets auch aus dem Explorer.", "Double-click or drag to add. Hold Shift or Ctrl to pick several. Presets also from Explorer."));
     }
 
     static void Detach(FrameworkElement e)
@@ -325,11 +329,12 @@ sealed class LibraryPage : Page
             UI.Menu(row, items);
         };
         // Drop plugins from the left, or pads from the preview (moves them here).
-        row.DragOver += (_, e) => { e.Effects = e.Data.GetDataPresent(ItemsFormat) ? DragDropEffects.Copy : e.Data.GetDataPresent(EntriesFormat) ? DragDropEffects.Move : DragDropEffects.None; row.Background = UI.AccentTint(0.18); e.Handled = true; };
+        row.DragOver += (_, e) => { e.Effects = e.Data.GetDataPresent(ItemsFormat) || e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : e.Data.GetDataPresent(EntriesFormat) ? DragDropEffects.Move : DragDropEffects.None; row.Background = UI.AccentTint(0.18); e.Handled = true; };
         row.DragLeave += (_, _) => row.Background = selected ? UI.Raised : Brushes.Transparent;
         row.Drop += (_, e) =>
         {
             if (e.Data.GetData(ItemsFormat) is List<object> items) Add(items, c.Id, null);
+            else if (e.Data.GetData(DataFormats.FileDrop) is string[] files) ImportPresets(files, c.Id, null);
             else if (e.Data.GetData(EntriesFormat) is (Guid from, List<Guid> ids) && from != c.Id) MoveToCategory(from, ids, c.Id);
         };
         return row;
@@ -370,7 +375,7 @@ sealed class LibraryPage : Page
         live = UI.IconButton("", () => UI.Menu(live!, Enum.GetValues<LiveActionKind>().Select(k =>
             new UI.MenuItem(k.Title(), () => Add(new List<object> { k }, category.Id, openFolder), Glyph: IconGlyphs.Glyph(k.IconID()))).ToList(), atMouse: false),
             Loc.T("Live-Befehl hinzufügen", "Add a Live command"));
-        var chain = UI.IconButton("", () => NewChain(category), Loc.T("Kette aus den links markierten Einträgen", "Chain from the items selected on the left"));
+        var chain = UI.IconButton("", () => ChainEditor.Create(Window, Model, category.Id, browserSelection.OfType<PluginItem>().ToList()), Loc.T("Neue Kette …", "New chain …"));
         var head = new StackPanel();
         head.Children.Add(Head(folder?.Title ?? category.Name, entries.Count.ToString(), toggle, chain, live, folderButton));
         var hints = new WrapPanel { Margin = new Thickness(0, -4, 0, 14) };
@@ -401,8 +406,24 @@ sealed class LibraryPage : Page
         Detach(previewScroll);
         previewScroll.Dispatcher.BeginInvoke(() => previewScroll.ScrollToVerticalOffset(offset), System.Windows.Threading.DispatcherPriority.Loaded);
         var drop = new Border { Child = previewScroll, Background = Brushes.Transparent, AllowDrop = true };
-        drop.DragOver += (_, e) => { e.Effects = e.Data.GetDataPresent(ItemsFormat) ? DragDropEffects.Copy : DragDropEffects.None; e.Handled = true; };
-        drop.Drop += (_, e) => { if (e.Data.GetData(ItemsFormat) is List<object> items) Add(items, category.Id, folder?.Id); };
+        drop.DragOver += (_, e) =>
+        {
+            e.Effects = e.Data.GetDataPresent(ItemsFormat) || e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy
+                : e.Data.GetDataPresent(EntriesFormat) ? DragDropEffects.Move : DragDropEffects.None;
+            e.Handled = true;
+        };
+        drop.Drop += (_, e) =>
+        {
+            if (e.Data.GetData(ItemsFormat) is List<object> items) Add(items, category.Id, folder?.Id);
+            else if (e.Data.GetData(DataFormats.FileDrop) is string[] files) ImportPresets(files, category.Id, folder?.Id);
+            else if (e.Data.GetData(EntriesFormat) is (Guid from, List<Guid> ids))
+            {
+                if (from != category.Id) { MoveToCategory(from, ids, category.Id); return; }
+                // Dragged out of a folder onto the empty area: back at the end of the category.
+                foreach (var id in ids) if (category.Entries.All(x => x.Id != id)) Model.Config.MoveEntry(id, null, category.Id);
+                Changed();
+            }
+        };
         return Column(head, drop, Loc.T("Ziehen zum Umsortieren. Rechtsklick für Icon, Name und Farbe.", "Drag to reorder. Right-click for icon, name and colour."), divider: false);
     }
 
@@ -502,7 +523,7 @@ sealed class LibraryPage : Page
             if (ev.ClickCount == 2)
             {
                 ev.Handled = true;
-                if (e.IsFolder) { openFolder = e.Id; selectedEntries.Clear(); Window.Redraw(); }
+                if (e.IsFolder) FolderPopover(element, category, e);
                 else Rename(category, e);
                 return;
             }
@@ -554,6 +575,9 @@ sealed class LibraryPage : Page
                     Changed();
                     return;
                 }
+                // Out of a folder (the folder pop-over) onto a pad: back at the top level, in that place.
+                if (folder == null)
+                    foreach (var id in ids) if (entries.All(x => x.Id != id)) Model.Config.MoveEntry(id, null, category.Id);
                 // Reorder: the dragged entries take the place of the one dropped on.
                 var target = index;
                 foreach (var id in ids)
@@ -569,6 +593,139 @@ sealed class LibraryPage : Page
     }
 
     static PluginItem Item(Entry e) => new(e.Uri, e.Name, e.Source, e.Path);
+
+    /// <summary>Double-click on a folder: its entries in a pop-over beside it (not "into" the folder), so they can be
+    /// dragged straight back out, or new ones dropped in.</summary>
+    void FolderPopover(FrameworkElement at, Category category, Entry folder)
+    {
+        var popup = new System.Windows.Controls.Primitives.Popup
+        {
+            PlacementTarget = at, Placement = System.Windows.Controls.Primitives.PlacementMode.Right, StaysOpen = false, AllowsTransparency = true,
+            HorizontalOffset = 6,
+        };
+        var list = new StackPanel { Width = 280 };
+        var head = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(4, 2, 0, 10) };
+        head.Children.Add(Theme.Icon("folder", 14, Theme.Accent));
+        var title = UI.Text(folder.Title, 14, weight: FontWeights.Bold);
+        title.Margin = new Thickness(8, 0, 0, 0);
+        head.Children.Add(title);
+        var count = UI.Text((folder.Children?.Count ?? 0).ToString(), 12, Theme.TextTertiary, FontWeights.SemiBold);
+        count.Margin = new Thickness(8, 0, 0, 0);
+        head.Children.Add(count);
+        list.Children.Add(head);
+        var children = folder.Children ?? new List<Entry>();
+        for (var i = 0; i < children.Count; i++)
+        {
+            var child = children[i];
+            var holder = new Border { Height = Math.Max(38, Model.Config.PanelSize.ItemHeight), Margin = new Thickness(0, 0, 0, 4), Background = Brushes.Transparent, Cursor = Cursors.Hand };
+            var data = Data(child, i);
+            holder.Child = PadView.Build(data, false, false);
+            holder.MouseEnter += (_, _) => holder.Child = PadView.Build(data, false, true);
+            holder.MouseLeave += (_, _) => holder.Child = PadView.Build(data, false, false);
+            holder.PreviewMouseLeftButtonDown += (_, ev) => { dragStart = ev.GetPosition(Window); if (ev.ClickCount == 2) { popup.IsOpen = false; Rename(category, child); } };
+            holder.MouseMove += (_, ev) =>
+            {
+                if (ev.LeftButton != MouseButtonState.Pressed || !Far(ev.GetPosition(Window))) return;
+                popup.IsOpen = false;
+                DragDrop.DoDragDrop(holder, new DataObject(EntriesFormat, (category.Id, new List<Guid> { child.Id })), DragDropEffects.Move);
+            };
+            holder.MouseRightButtonUp += (_, ev) =>
+            {
+                ev.Handled = true;
+                UI.Menu(holder, new List<UI.MenuItem>
+                {
+                    new(Loc.T("Aus dem Ordner nehmen", "Take out of the folder"), () => { popup.IsOpen = false; Model.Config.MoveEntry(child.Id, null, category.Id); Changed(); }, Glyph: ""),
+                    new(Loc.T("Umbenennen …", "Rename …"), () => { popup.IsOpen = false; Rename(category, child); }, Glyph: ""),
+                    new(Loc.T("Entfernen", "Remove"), () => { popup.IsOpen = false; Model.Config.RemoveEntry(child.Id, category.Id); Changed(); }, Glyph: ""),
+                });
+            };
+            list.Children.Add(holder);
+        }
+        if (children.Count == 0) list.Children.Add(UI.Caption(Loc.T("Leer. Zieh Plugins hierher.", "Empty. Drag plugins here.")));
+        var hint = UI.Caption(Loc.T("Zum Herausnehmen aus dem Fenster ziehen.", "Drag out of this window to take entries out."));
+        hint.Margin = new Thickness(4, 8, 0, 0);
+        list.Children.Add(hint);
+        var box = new Border
+        {
+            Child = new ScrollViewer { Content = list, MaxHeight = 560, VerticalScrollBarVisibility = ScrollBarVisibility.Auto },
+            Background = UI.Surface, BorderBrush = Theme.Accent, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(Theme.Radius(12)),
+            Padding = new Thickness(10), Margin = new Thickness(0, 0, 14, 14), AllowDrop = true,
+            Effect = new System.Windows.Media.Effects.DropShadowEffect { BlurRadius = 22, ShadowDepth = 5, Opacity = 0.5, Color = Colors.Black },
+        };
+        box.DragOver += (_, e) => { e.Effects = e.Data.GetDataPresent(ItemsFormat) || e.Data.GetDataPresent(EntriesFormat) ? DragDropEffects.Copy : DragDropEffects.None; e.Handled = true; };
+        box.Drop += (_, e) =>
+        {
+            popup.IsOpen = false;
+            if (e.Data.GetData(ItemsFormat) is List<object> items) Add(items, category.Id, folder.Id);
+            else if (e.Data.GetData(EntriesFormat) is (Guid from, List<Guid> ids) && from == category.Id)
+            { foreach (var id in ids) Model.Config.MoveEntry(id, folder.Id, category.Id); Changed(); }
+        };
+        popup.Child = box;
+        popup.IsOpen = true;
+    }
+
+    /// <summary>Preset files from Explorer: the ones Live lists are found, the others copied into the preset folder
+    /// (Behavior) and picked up once Live has scanned them. With a category, they are added to it too.</summary>
+    async void ImportPresets(string[] paths, Guid? category, Guid? folder)
+    {
+        var files = paths.SelectMany(p => System.IO.Directory.Exists(p) ? System.IO.Directory.EnumerateFiles(p, "*", System.IO.SearchOption.AllDirectories) : new[] { p })
+            .Where(PresetFormat.IsPresetFile).ToList();
+        if (files.Count == 0)
+        {
+            UI.Tell(Window, Loc.T("Keine Presets", "No presets"), Loc.T("Ziehen kannst du .adg, .adv, .vstpreset, .fxp, .fxb und .amxd.", "You can drag in .adg, .adv, .vstpreset, .fxp, .fxb and .amxd files."));
+            return;
+        }
+        var library = ScriptInstaller.UserLibrary;
+        List<string> AddFound(List<string> list)
+        {
+            var missing = new List<string>();
+            var found = new List<object>();
+            foreach (var f in list)
+                if (PresetImport.Match(f, Model.Catalog.Items, library) is { } item) found.Add(item); else missing.Add(f);
+            if (found.Count > 0 && category != null) Add(found, category, folder);
+            return missing;
+        }
+        var missing = AddFound(files);
+        if (missing.Count == 0) { if (category == null) Model.Hud.Show(Loc.T("Schon in Live", "Already in Live")); return; }
+        try { await Model.Catalog.Refresh(rescan: true); } catch (Exception) { }
+        missing = AddFound(missing);
+        if (missing.Count == 0) return;
+        var target = WindowsSettings.Current.PresetFolder;
+        var names = string.Join("\n", missing.Select(System.IO.Path.GetFileName).Take(8));
+        if (!UI.Confirm(Window, Loc.T("Presets kopieren?", "Copy the presets?"),
+                Loc.T($"Live kennt diese Presets noch nicht:\n{names}\n\nHYNE ASM kopiert sie nach „{target}“, damit Live sie laden kann. Die Originale bleiben, wo sie sind.",
+                      $"Live doesn't know these presets yet:\n{names}\n\nHYNE ASM copies them to “{target}” so Live can load them. The originals stay where they are."),
+                Loc.T("Kopieren", "Copy"))) return;
+        var copies = new List<string>();
+        foreach (var file in missing)
+        {
+            try
+            {
+                System.IO.Directory.CreateDirectory(target);
+                var name = System.IO.Path.GetFileNameWithoutExtension(file);
+                var ext = System.IO.Path.GetExtension(file);
+                var dest = System.IO.Path.Combine(target, name + ext);
+                for (var n = 2; System.IO.File.Exists(dest); n++) dest = System.IO.Path.Combine(target, $"{name} {n}{ext}");
+                System.IO.File.Copy(file, dest);
+                copies.Add(dest);
+            }
+            catch (Exception ex) { UI.Tell(Window, Loc.T("Kopieren fehlgeschlagen", "Copy failed"), System.IO.Path.GetFileName(file) + ": " + ex.Message); }
+        }
+        Model.Hud.Show(Loc.T($"{copies.Count} kopiert – Live liest sie ein …", $"{copies.Count} copied – Live is scanning …"));
+        // Live scans the User Library on its own (~6 s). Each check makes Live walk its browser, so check sparingly.
+        for (var i = 0; i < 6 && copies.Count > 0; i++)
+        {
+            await System.Threading.Tasks.Task.Delay(3000);
+            try { await Model.Catalog.Refresh(rescan: true); } catch (Exception) { }
+            copies = AddFound(copies);
+        }
+        if (copies.Count > 0)
+            UI.Tell(Window, Loc.T("Noch nicht in Live", "Not in Live yet"),
+                Loc.T($"Live hat {copies.Count} Preset(s) noch nicht eingelesen. Liegt der Ordner außerhalb der User Library, füg ihn in Live unter „Orte“ hinzu. Danach die Liste mit ↻ neu laden.",
+                      $"Live hasn't picked up {copies.Count} preset(s) yet. If the folder is outside the User Library, add it in Live under “Places”. Then reload the list with ↻."));
+        else Model.Hud.Show(Loc.T("Presets sind in Live", "Presets are in Live"));
+    }
+
 
     void Rename(Category category, Entry e)
     {
@@ -597,7 +754,8 @@ sealed class LibraryPage : Page
             .Concat(ColorPalette.All.Select(c => new UI.MenuItem(c.Label, () => SetColor(category, ids, c.Id), Checked: e.ColorID == c.Id, Swatch: Theme.LabelColor(c.Id)))).ToList(), Glyph: ""));
         if (!many && !e.IsFolder && e.Action == null && e.Chain == null)
             items.Add(new(Loc.T("Tastenkürzel …", "Shortcut …"), () => ShortcutDialog.Show(Window, Model, Item(e), e.Title), Glyph: ""));
-        if (!many && e.IsFolder) items.Add(new(Loc.T("Öffnen", "Open"), () => { openFolder = e.Id; selectedEntries.Clear(); Window.Redraw(); }, Glyph: ""));
+        if (!many && e.IsFolder) items.Add(new(Loc.T("Öffnen", "Open"), () => FolderPopover(at, category, e), Glyph: "\uE8DA"));
+        if (!many && e.Chain != null) items.Add(new(Loc.T("Kette bearbeiten …", "Edit chain …"), () => ChainEditor.Edit(Window, Model, category.Id, e), Glyph: "\uE71B"));
         items.Add(UI.Separator);
         var folders = category.Entries.Where(x => x.IsFolder && x.Id != folder?.Id && !ids.Contains(x.Id)).ToList();
         if (!e.IsFolder && folders.Count > 0)

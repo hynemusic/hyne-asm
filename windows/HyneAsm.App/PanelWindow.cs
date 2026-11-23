@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using HyneAsm.Core;
 
 namespace HyneAsm.App;
@@ -22,12 +23,35 @@ sealed class PanelWindow : Overlay
     int? hovered;
     bool pinned;
     public Action? OnOpenSettings;
+    readonly FolderFlyout flyout;
+    Guid? flyoutFolder;
+    FrameworkElement? flyoutAnchor;
+    readonly Dictionary<Guid, FrameworkElement> folderPads = new();
+    readonly DispatcherTimer flyoutHide = new() { Interval = TimeSpan.FromMilliseconds(180) };
+    readonly DispatcherTimer edgeTimer = new();
+    const double LeftStrip = 14;
+    double bodyTop, bodyBottom;
 
     public PanelWindow(AppModel model)
     {
         this.model = model;
         MouseWheel += (_, e) => TurnPage(e.Delta < 0 ? 1 : -1);
+        flyout = new FolderFlyout(this);
+        flyout.MouseEnter += (_, _) => flyoutHide.Stop();
+        flyout.MouseLeave += (_, _) => ScheduleFlyoutHide();
+        flyoutHide.Tick += (_, _) =>
+        {
+            flyoutHide.Stop();
+            Native.GetCursorPos(out var p);
+            if (flyout.Contains(p) || (flyoutAnchor is { IsMouseOver: true })) return;
+            HideFlyout();
+        };
+        IsVisibleChanged += (_, _) => { if (!IsVisible) { HideFlyout(); edgeTimer.Stop(); } };
+        edgeTimer.Tick += (_, _) => EdgeTick();
     }
+
+    /// <summary>The panel or its folder side list.</summary>
+    public new bool Contains(Native.POINT p) => base.Contains(p) || flyout.Contains(p);
 
     int PageCount => state == null ? 1 : Math.Max(1, (state.Rows.Count + layout.Size - 1) / layout.Size);
     bool IsGrid => model.Config.PanelStyle == PanelStyle.Grid;
@@ -67,10 +91,18 @@ sealed class PanelWindow : Overlay
         }
     }
 
+    internal void InsertFromFlyout(PanelRow row) => Insert(row);
+
     void Insert(PanelRow row)
     {
         if (!row.IsAvailable || state == null) return;
-        if (row.FolderID is { } folder) { state.OpenFolder(folder); page = 0; hovered = null; Render(); Reposition(); return; }
+        if (row.FolderID is { } folder)
+        {
+            // Clicking (or Enter on) a folder opens its side list.
+            if (folderPads.TryGetValue(folder, out var anchor)) ShowFlyout(anchor, folder);
+            else { state.OpenFolder(folder); page = 0; hovered = null; Render(); Reposition(); }
+            return;
+        }
         // Pinned mode: with Shift held the panel stays for the next insert.
         if (!Native.IsDown(Native.VK_SHIFT)) Hide();
         model.Insert(row);
@@ -96,6 +128,56 @@ sealed class PanelWindow : Overlay
         Reposition();
     }
 
+    // MARK: Folder side list
+
+    void ShowFlyout(FrameworkElement anchor, Guid folder)
+    {
+        flyoutHide.Stop();
+        if (state == null) return;
+        flyoutAnchor = anchor;
+        if (flyoutFolder == folder && flyout.IsVisible) return;
+        flyoutFolder = folder;
+        // Right beside the folder pad, its first row level with the pad's top, over whatever is there.
+        var corner = anchor.PointToScreen(new Point(anchor.ActualWidth + 4, 0));
+        flyout.Show(state.FolderRows(folder), new Native.POINT { X = (int)corner.X, Y = (int)corner.Y }, model.Config.PanelSize);
+    }
+
+    void ScheduleFlyoutHide()
+    {
+        if (!flyout.IsVisible) return;
+        flyoutHide.Stop();
+        flyoutHide.Start();
+    }
+
+    void HideFlyout()
+    {
+        flyoutHide.Stop();
+        flyoutFolder = null;
+        flyoutAnchor = null;
+        flyout.Hide();
+    }
+
+    // MARK: Page turning at the edges
+
+    void StartEdge()
+    {
+        if (PageCount <= 1 || edgeTimer.IsEnabled) return;
+        edgeTimer.Interval = TimeSpan.FromMilliseconds(150);
+        edgeTimer.Start();
+    }
+
+    /// <summary>While the pointer rests on an edge strip: turn, then keep turning every 380 ms.</summary>
+    void EdgeTick()
+    {
+        var p = Mouse.GetPosition(this);
+        var inBody = p.Y >= bodyTop && p.Y <= bodyBottom;
+        var x0 = model.Config.CategoryPlacement == CategoryPlacement.Left ? 132 + Inset * 2 + 13 : Inset;
+        var direction = !inBody || !IsMouseOver ? 0 : p.X < x0 + LeftStrip ? -1 : p.X > ActualWidth - Inset - EdgeWidth - 4 ? 1 : 0;
+        if (direction == 0) { edgeTimer.Stop(); return; }
+        TurnPage(direction);
+        edgeTimer.Interval = TimeSpan.FromMilliseconds(380);
+    }
+
     // MARK: Drawing
 
     double ItemWidth => IsGrid ? (model.Config.PanelSize.ColumnWidth - PadSpacing * 2) / 3 : model.Config.PanelSize.ColumnWidth;
@@ -112,16 +194,24 @@ sealed class PanelWindow : Overlay
         var root = new StackPanel { Margin = new Thickness(Inset) };
         if (!left || state.Filter.Length > 0 || state.OpenFolderName != null) root.Children.Add(TopRow());
         else root.Children.Add(CategoryHeader());
-        var body = new DockPanel { Width = GridWidth + EdgeWidth + 6, Height = GridHeight, LastChildFill = false };
+        folderPads.Clear();
+        // Edge strips: resting the pointer on the left or right edge turns the page (like the Mac).
+        var body = new DockPanel { Width = LeftStrip + GridWidth + EdgeWidth + 6, Height = GridHeight, LastChildFill = false, Background = Brushes.Transparent };
+        var back = EdgeArrow(page > 0 ? "\uE76B" : "", -1);
+        back.Width = LeftStrip;
+        DockPanel.SetDock(back, Dock.Left);
+        body.Children.Add(back);
         var pads = Pads();
         DockPanel.SetDock(pads, Dock.Left);
         body.Children.Add(pads);
-        if (PageCount > 1 && page < PageCount - 1)
+        var next = EdgeArrow(page < PageCount - 1 ? "\uE76C" : "", 1);
+        DockPanel.SetDock(next, Dock.Right);
+        body.Children.Add(next);
+        body.Loaded += (_, _) =>
         {
-            var next = EdgeArrow("", 1);
-            DockPanel.SetDock(next, Dock.Right);
-            body.Children.Add(next);
-        }
+            var top = body.TranslatePoint(new Point(0, 0), this).Y;
+            (bodyTop, bodyBottom) = (top, top + body.ActualHeight);
+        };
         root.Children.Add(body);
         root.Children.Add(Footer());
         if (!left) { Content = Theme.Chrome(root, 12); return; }
@@ -169,7 +259,7 @@ sealed class PanelWindow : Overlay
         return gear;
     }
 
-    UIElement EdgeArrow(string glyph, int delta)
+    FrameworkElement EdgeArrow(string glyph, int delta)
     {
         var arrow = new TextBlock
         {
@@ -178,6 +268,7 @@ sealed class PanelWindow : Overlay
             Background = Brushes.Transparent, Height = GridHeight, Padding = new Thickness(0, GridHeight / 2 - 9, 0, 0),
         };
         arrow.MouseLeftButtonUp += (_, _) => TurnPage(delta);
+        arrow.MouseEnter += (_, _) => StartEdge();
         return arrow;
     }
 
@@ -300,8 +391,19 @@ sealed class PanelWindow : Overlay
         holder.Child = Plate(row, slot, Lit());
         holder.Opacity = row.IsAvailable ? 1 : 0.5;
         holder.ToolTip = row.IsAvailable ? (row.Path.Count > 0 ? string.Join(" / ", row.Path) : null) : Loc.T("Nicht mehr in Live gefunden", "No longer found in Live");
-        holder.MouseEnter += (_, _) => { hovered = index; holder.Child = Plate(row, slot, true); };
-        holder.MouseLeave += (_, _) => { if (hovered == index) hovered = null; holder.Child = Plate(row, slot, Lit()); };
+        holder.MouseEnter += (_, _) =>
+        {
+            hovered = index;
+            holder.Child = Plate(row, slot, true);
+            if (row.FolderID is { } f) ShowFlyout(holder, f); else ScheduleFlyoutHide();
+        };
+        holder.MouseLeave += (_, _) =>
+        {
+            if (hovered == index) hovered = null;
+            holder.Child = Plate(row, slot, Lit());
+            if (row.FolderID != null) ScheduleFlyoutHide();
+        };
+        if (row.FolderID is { } fid) folderPads[fid] = holder;
         holder.MouseLeftButtonUp += (_, _) => Insert(row);
         holder.MouseRightButtonUp += (_, e) => { e.Handled = true; ShowPadMenu(holder, row); };
         return holder;

@@ -57,7 +57,11 @@ sealed class SettingsWindow : Window
         Content = root;
         model.Changed += OnModelChanged;
         Closed += (_, _) => model.Changed -= OnModelChanged;
-        PreviewKeyDown += (_, e) => { if (Page.Key(e)) e.Handled = true; };
+        PreviewKeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Z && Keyboard.Modifiers == ModifierKeys.Control && Keyboard.FocusedElement is not TextBox) { Undo(); e.Handled = true; return; }
+            if (Page.Key(e)) e.Handled = true;
+        };
         Redraw();
     }
 
@@ -66,6 +70,13 @@ sealed class SettingsWindow : Window
     void OnModelChanged() => Redraw();
 
     public void Select(int index) { current = index; Redraw(); }
+
+    /// <summary>Ctrl+Z / Win+Z: back one change.</summary>
+    public void Undo()
+    {
+        if (model.Undo()) model.Hud.Show(Loc.T("Rückgängig", "Undone"));
+        else model.Hud.Show(Loc.T("Nichts mehr rückgängig zu machen", "Nothing left to undo"));
+    }
 
     /// <summary>Win+G from the keyboard hook (Windows would otherwise open the Game Bar).</summary>
     public void GroupSelection() { if (Page is LibraryPage library) library.GroupSelection(); }
