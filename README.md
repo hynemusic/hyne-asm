@@ -20,6 +20,10 @@ zusammen), und ein eigenes Kürzel öffnet alle Plugin-Fenster der Spur. Auf Mac
 
 <img width="2000" height="400" alt="Untitled-3" src="https://github.com/user-attachments/assets/be17d8a1-90be-4a65-bc95-2fe0d95668f9" />
 
+## Click to open plugins
+
+<img width="2000" height="400" alt="Click the X-Y field of a plugin to open or close its window" src="docs/readme/click-to-open.png" />
+
 ## CTRL + SPACE panel
 
 <img width="2000" height="400" alt="Untitled-4" src="https://github.com/user-attachments/assets/6a139f21-c309-42a2-b1af-ecd53e8674f6" />
