@@ -3,6 +3,18 @@
 Insert plugins, presets and Live commands in seconds: a double right-click in Ableton Live opens your own menu,
 ⌃Space (Mac) or Ctrl+Space (Windows) opens the quick search. Free and open source.
 
+## New in 1.2 (Mac)
+
+- **Click to open plugins:** no more hunting for the tiny wrench. Click anywhere in the big X-Y field on the right of a
+  plugin and its window opens (click again to close it). The X-Y dot stays where it is. Hold ⌥ to use the field as usual.
+  On by default, switch it off under **Settings → Behavior → Plugin Windows**.
+- **Open several at once:** select plugins with ⇧-click on their title bars, then click one X-Y field: all of them open.
+- **Open all plugin windows of the track:** a shortcut you choose under **Settings → Shortcuts → Plugin Windows**.
+  Pressing it again closes them.
+
+*Neu in 1.2 (Mac): Ein Klick ins X-Y-Feld eines Plugins öffnet sein Fenster (mit ⇧ ausgewählte Plugins öffnen sich alle
+zusammen), und ein eigenes Kürzel öffnet alle Plugin-Fenster der Spur.*
+
 ## Right Click Panel
 
 <img width="2000" height="400" alt="Untitled-3" src="https://github.com/user-attachments/assets/be17d8a1-90be-4a65-bc95-2fe0d95668f9" />

@@ -24,7 +24,17 @@ struct ShortcutsPage: View {
                 pluginShortcutsSection
                 section(Loc.t("Plugin-Fenster", "Plugin Windows"), symbol: "macwindow.on.rectangle",
                         note: Loc.t("Kürzel brauchen ⌘, ⌃ oder ⌥.", "Shortcuts need ⌘, ⌃ or ⌥."),
-                        reset: { model.config.shortcuts = .default }) {
+                        reset: {
+                            model.config.shortcuts = .default
+                            model.config.pluginWindows = nil
+                        }) {
+                    row(Loc.t("Alle Plugin-Fenster der Spur öffnen", "Open all plugin windows of the track"),
+                        combos: pluginWindowBinding(\.openAll), maxCount: 2, requireModifier: true)
+                    Text(Loc.t("Öffnet alle Plugins der ausgewählten Spur, auch die in Racks. Sind schon alle offen, schließt dasselbe Kürzel sie wieder.",
+                               "Opens every plugin on the selected track, racks included. If they're all open already, the same shortcut closes them."))
+                        .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    divider
                     row(Loc.t("Fokussiertes Plugin-Fenster schließen", "Close focused plugin window"),
                         combos: Binding(get: { model.config.shortcuts.closeFocused.map { [$0] } ?? [] },
                                         set: { model.config.shortcuts.closeFocused = $0.last }),
@@ -153,6 +163,11 @@ struct ShortcutsPage: View {
                 .plate(lit: false, radius: DS.Radius.l, filled: true)
                 .padding(.top, DS.Space.xs)
         }
+    }
+
+    private func pluginWindowBinding(_ key: WritableKeyPath<PluginWindowSettings, [KeyCombo]>) -> Binding<[KeyCombo]> {
+        Binding(get: { model.config.pluginWindowSettings[keyPath: key] },
+                set: { model.config.pluginWindowSettings[keyPath: key] = $0 })
     }
 
     private func row(_ label: String, combos: Binding<[KeyCombo]>, maxCount: Int, requireModifier: Bool) -> some View {

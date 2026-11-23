@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 import HMLauncherCore
 
-/// Settings page "Behavior": where inserted items land, multi-track inserts, Stats hints and the Stream Deck link.
+/// Settings page "Behavior": opening plugins from their X-Y field, where inserted items land, multi-track inserts, Stats hints and the Stream Deck link.
 struct BehaviorPage: View {
     @ObservedObject var model: AppModel
     @ObservedObject var server: StreamDeckServer
@@ -14,12 +14,30 @@ struct BehaviorPage: View {
                                       "How the panel looks, where plugins land in Live and what other devices can trigger."),
                       maxWidth: 780) { EmptyView() } content: {
             VStack(alignment: .leading, spacing: DS.Space.xl) {
+                pluginWindowsCard
                 panelCard
                 insertCard
                 hintsCard
                 streamDeckCard
             }
             .padding(.bottom, DS.Space.l)
+        }
+    }
+
+    // MARK: Plugin windows
+
+    private var pluginWindowsCard: some View {
+        card(Loc.t("Plugin-Fenster", "Plugin Windows"), symbol: "macwindow.on.rectangle") {
+            Toggle(isOn: Binding(get: { model.config.pluginWindowSettings.xyClick },
+                                 set: { model.config.pluginWindowSettings.xyClick = $0 })) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(Loc.t("Klick ins X-Y-Feld öffnet das Plugin", "Click the X-Y field to open the plugin"))
+                        .font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
+                    caption(Loc.t("Ein Klick ins große Feld rechts in einem Plugin öffnet oder schließt sein Fenster, der X-Y-Punkt bleibt stehen. Sind mehrere Plugins ausgewählt, öffnen sich alle. Mit gedrückter ⌥-Taste bedienst du das Feld wie gewohnt.",
+                                  "A click in the big field on the right of a plugin opens or closes its window, and the X-Y dot stays put. With several plugins selected, all of them open. Hold ⌥ to use the field as usual."))
+                }
+            }
+            .toggleStyle(.switch)
         }
     }
 

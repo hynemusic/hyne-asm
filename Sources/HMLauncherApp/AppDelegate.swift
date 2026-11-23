@@ -39,6 +39,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         #endif
 
         eventTap.onDoubleRightClick = { [weak self] point in self?.quickSearch.hide(); self?.panel.show(at: point) }
+        eventTap.onClick = { [weak self] point, shift in self?.click(at: point, shift: shift) ?? false }
         // While the panel or the quick search is open, keys go to whichever is open.
         eventTap.isPanelVisible = { [weak self] in (self?.panel.isVisible ?? false) || (self?.quickSearch.isVisible ?? false) }
         eventTap.isPointInPanel = { [weak self] in (self?.panel.contains($0) ?? false) || (self?.quickSearch.contains($0) ?? false) }
@@ -64,6 +65,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func handleShortcut(_ keyCode: UInt16, _ mods: ModifierSet) -> Bool {
         guard let pid = monitor.livePID else { return false }
         guard let action = ShortcutMatcher(settings: model.config.shortcuts).match(keyCode: keyCode, modifiers: mods) else {
+            if model.config.isOpenPluginWindowsShortcut(keyCode: keyCode, modifiers: mods) {
+                openPluginWindows(pid: pid)
+                return true
+            }
             guard let item = ShortcutMatcher.itemShortcut(keyCode: keyCode, modifiers: mods, in: model.config.itemShortcuts) else { return false }
             DispatchQueue.main.async { self.insert(item) } // outside the tap callback
             return true
@@ -87,6 +92,50 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
             return true
         }
+    }
+
+    /// Accessibility round trips to Live run here, never in the event-tap callback.
+    private let pluginWindowQueue = DispatchQueue(label: "hyneasm.plugin-windows", qos: .userInteractive)
+
+    private func openPluginWindows(pid: pid_t) {
+        panel.hide()
+        quickSearch.hide()
+        pluginWindowQueue.async {
+            let outcome = PluginWindowOpener.openAll(pid: pid)
+            DispatchQueue.main.async { [weak self] in
+                switch outcome {
+                case .pressed: break
+                case .noDeviceView:
+                    self?.model.showMessage(Loc.t("Gerätansicht von Live einblenden (⇧Tab)", "Show Live's device view (⇧Tab)"))
+                case .noPlugins:
+                    self?.model.showMessage(Loc.t("Keine Plugins auf dieser Spur", "No plugins on this track"))
+                }
+            }
+        }
+    }
+
+    /// Which devices are selected in Live (Live doesn't report it, so the clicks are followed).
+    private var deviceSelection = DeviceSelectionTracker()
+
+    /// A plain click in a plugin's X-Y field opens its window (all selected plugins' when it is one of them) and never
+    /// reaches Live, so the X-Y dot stays put. Every other click passes through and updates the selection.
+    private func click(at point: CGPoint, shift: Bool) -> Bool {
+        guard model.config.pluginWindowSettings.xyClick, let pid = monitor.livePID else { return false }
+        let hit = PluginWindowOpener.element(at: point, pid: pid)
+        if !shift, let hit, let wrench = PluginWindowPlanner.xyButton(for: hit.id),
+           let device = PluginWindowPlanner.devicePath(of: hit.id) {
+            let devices = deviceSelection.devices(forClickOn: device)
+            pluginWindowQueue.async {
+                if devices.count > 1 {
+                    PluginWindowOpener.toggle(devices: devices, pid: pid)
+                } else {
+                    PluginWindowOpener.toggle(PluginWindowOpener.XYTarget(field: hit.element, wrenchID: wrench))
+                }
+            }
+            return true
+        }
+        deviceSelection.click(on: hit?.id, extend: shift)
+        return false
     }
 
     private var streamDeck: StreamDeckServer { model.streamDeck }

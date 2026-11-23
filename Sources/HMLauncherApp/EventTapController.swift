@@ -6,6 +6,9 @@ import HMLauncherCore
 @MainActor
 final class EventTapController {
     var onDoubleRightClick: ((CGPoint) -> Void)?
+    /// A plain or ⇧ left click in Live (screen coordinates, origin top left, and whether ⇧ is held);
+    /// true swallows it, with its drags and mouse-up.
+    var onClick: ((CGPoint, Bool) -> Bool)?
     var isPanelVisible: (() -> Bool)?
     var isPointInPanel: ((CGPoint) -> Bool)?
     var panelKeyHandler: ((PanelKey) -> Bool)?
@@ -15,6 +18,7 @@ final class EventTapController {
     private let monitor: LiveAppMonitor
     private var detector = DoubleRightClickDetector(interval: NSEvent.doubleClickInterval)
     private var swallowNextRightUp = false
+    private var swallowingLeftClick = false
     private var tap: CFMachPort?
 
     init(monitor: LiveAppMonitor) { self.monitor = monitor }
@@ -22,7 +26,7 @@ final class EventTapController {
     /// Fails while the Accessibility permission is missing.
     func start() -> Bool {
         guard tap == nil else { return true }
-        let types: [CGEventType] = [.rightMouseDown, .rightMouseUp, .keyDown]
+        let types: [CGEventType] = [.leftMouseDown, .leftMouseDragged, .leftMouseUp, .rightMouseDown, .rightMouseUp, .keyDown]
         let mask = types.reduce(CGEventMask(0)) { $0 | (1 << $1.rawValue) }
         guard let tap = CGEvent.tapCreate(
             tap: .cgSessionEventTap, place: .headInsertEventTap, options: .defaultTap,
@@ -41,6 +45,14 @@ final class EventTapController {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
             if let tap { CGEvent.tapEnable(tap: tap, enable: true) }
             return false
+        case .leftMouseDown:
+            swallowingLeftClick = leftMouseDown(event)
+            return swallowingLeftClick
+        case .leftMouseDragged:
+            return swallowingLeftClick
+        case .leftMouseUp:
+            defer { swallowingLeftClick = false }
+            return swallowingLeftClick
         case .rightMouseDown:
             return rightMouseDown(event)
         case .rightMouseUp:
@@ -51,6 +63,14 @@ final class EventTapController {
         default:
             return false
         }
+    }
+
+    /// ⌥, ⌘ and ⌃ clicks always reach Live untouched, so its own controls stay usable.
+    private func leftMouseDown(_ event: CGEvent) -> Bool {
+        let mods = Self.modifiers(event.flags)
+        guard mods.isEmpty || mods == [.shift], monitor.isLiveFrontmost,
+              !(isPointInPanel?(NSEvent.mouseLocation) ?? false) else { return false }
+        return onClick?(event.location, mods == [.shift]) ?? false
     }
 
     private func rightMouseDown(_ event: CGEvent) -> Bool {

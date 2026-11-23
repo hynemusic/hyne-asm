@@ -165,6 +165,14 @@ public struct LauncherConfig: Codable, Sendable {
     /// All profiles (named menus); the active one's menu is `categories`.
     public var profiles: [Profile] = []
     public var activeProfileID = UUID()
+    /// Opening plugin windows (shortcuts, title-bar double right-click); nil = defaults, left out of the file.
+    public var pluginWindows: PluginWindowSettings?
+
+    /// `pluginWindows` with its defaults filled in.
+    public var pluginWindowSettings: PluginWindowSettings {
+        get { pluginWindows ?? .default }
+        set { pluginWindows = newValue == .default ? nil : newValue }
+    }
 
     public init(version: Int, categories: [Category], shortcuts: ShortcutSettings, panelKeys: PanelKeyBindings = .default) {
         self.version = version
@@ -199,6 +207,7 @@ public struct LauncherConfig: Codable, Sendable {
         streamDeckToken = try c.decodeIfPresent(String.self, forKey: .streamDeckToken) ?? LauncherConfig.newToken()
         profiles = try c.decodeIfPresent([Profile].self, forKey: .profiles) ?? []
         activeProfileID = try c.decodeIfPresent(UUID.self, forKey: .activeProfileID) ?? UUID()
+        pluginWindows = try? c.decodeIfPresent(PluginWindowSettings.self, forKey: .pluginWindows)
         ensureProfile()
     }
 

@@ -24,6 +24,11 @@ public extension LauncherConfig {
         if let combo { itemShortcuts.append(ItemShortcut(combo: combo, item: item)) }
     }
 
+    /// "Open all plugin windows of the track"; checked after the built-in shortcuts, before item shortcuts.
+    func isOpenPluginWindowsShortcut(keyCode: UInt16, modifiers: ModifierSet) -> Bool {
+        pluginWindowSettings.openAll.contains(KeyCombo(keyCode: keyCode, modifiers: modifiers))
+    }
+
     func itemShortcut(for item: PluginItem) -> ItemShortcut? {
         itemShortcuts.first { $0.uri == item.uri } ?? itemShortcuts.first { $0.name == item.name && $0.source == item.source }
     }
@@ -34,6 +39,7 @@ public extension LauncherConfig {
         if shortcuts.closeAll.contains(combo) { return Loc.t("Alle Plugin-Fenster schließen", "Close all plugin windows") }
         if shortcuts.quickSearch.contains(combo) { return Loc.t("Schnellsuche öffnen", "Open quick search") }
         if shortcuts.nextProfile.contains(combo) { return Loc.t("Nächstes Profil", "Next profile") }
+        if pluginWindowSettings.openAll.contains(combo) { return Loc.t("Alle Plugin-Fenster der Spur öffnen", "Open all plugin windows of the track") }
         return itemShortcuts.first { $0.combo == combo && $0.id != itemID }?.name
     }
 }

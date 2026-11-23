@@ -27,6 +27,7 @@ Every user-facing feature of HYNE ASM with its status on both platforms. The Win
 | Quick search | ✅ | ✅ | default Ctrl+Space (see below) |
 | Item shortcuts | ✅ | ✅ | |
 | Close plugin windows (focused / all), never the main window | ✅ | ✅ | owned, captioned windows of Live's process |
+| Open plugin windows: all of the track (shortcut), double right-click on a title bar, click in the X-Y field | ✅ | ⬜ to do | Mac: presses Live 12's `TrackView.Device[…].TitleBar.PluginEdit` buttons through the Accessibility API; Windows: check whether Live exposes the same ids through UI Automation |
 | Settings: Library (browser tree, drag & drop, multi-select, folders, colours, icon grid, chains, Live commands) | ✅ | ✅ | |
 | Settings: Profiles, versions, LES import | ✅ | ✅ | |
 | Settings: Shortcuts, keyboard overview, conflict warnings | ✅ | ✅ | own Live 12 Windows and Windows tables |
@@ -44,6 +45,10 @@ Every user-facing feature of HYNE ASM with its status on both platforms. The Win
 | Download and install | DMG | setup (about 1 MB), adds the .NET Desktop Runtime when missing | `win-vX.Y.Z` tags, never marked "latest" |
 
 ## Platform-only behaviour and facts learned
+
+- **Plugin-window settings live in an optional `pluginWindows` block** of the config, left out while it holds the
+  defaults, so the shared `config.roundtrip` fixture didn't change. The Windows app ignores the block for now (and drops
+  it when it saves); give it the same block when the feature comes to Windows.
 
 - **Known-shortcut tables differ by design.** `KnownShortcuts.swift` lists Live 12 Mac and macOS defaults;
   `KnownShortcuts.cs` lists Live 12 Windows (from the Live 12 manual's keyboard-shortcut chapter) and Windows defaults
