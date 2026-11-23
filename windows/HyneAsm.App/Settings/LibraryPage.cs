@@ -336,14 +336,22 @@ sealed class LibraryPage : Page
             UI.Menu(row, items);
         };
         // Drop plugins from the left, or pads from the preview (moves them here).
-        row.DragOver += (_, e) => { e.Effects = e.Data.GetDataPresent(ItemsFormat) || e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : e.Data.GetDataPresent(EntriesFormat) || e.Data.GetDataPresent(CategoryFormat) ? DragDropEffects.Move : DragDropEffects.None; row.Background = UI.AccentTint(0.18); e.Handled = true; };
-        row.DragLeave += (_, _) => row.Background = selected ? UI.Raised : Brushes.Transparent;
+        row.DragOver += (_, e) => { e.Effects = e.Data.GetDataPresent(ItemsFormat) || e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : e.Data.GetDataPresent(EntriesFormat) || e.Data.GetDataPresent(CategoryFormat) ? DragDropEffects.Move : DragDropEffects.None; 
+            // A category being moved shows the orange bar where it lands; anything else highlights the target.
+            if (e.Data.GetDataPresent(CategoryFormat)) DropBar.Show(row, e, horizontal: false);
+            else row.Background = UI.AccentTint(0.18);
+            e.Handled = true;
+        };
+        row.DragLeave += (_, _) => { DropBar.Clear(row); row.Background = selected ? UI.Raised : Brushes.Transparent; };
         row.Drop += (_, e) =>
         {
+            DropBar.Clear(row);
             if (e.Data.GetData(CategoryFormat) is Guid moved)
             {
                 var from = Model.Config.Categories.FindIndex(x => x.Id == moved);
-                if (from >= 0 && from != index) { Model.Config.MoveCategory(from, index); Changed(); }
+                var insertAt = DropBar.After(row, e, false) ? index + 1 : index;
+                var to = from < insertAt ? insertAt - 1 : insertAt;
+                if (from >= 0 && to != from) { Model.Config.MoveCategory(from, to); Changed(); }
                 return;
             }
             if (e.Data.GetData(ItemsFormat) is List<object> items) Add(items, c.Id, null);
@@ -563,43 +571,60 @@ sealed class LibraryPage : Page
             if (!selectedEntries.Contains(e.Id)) { selectedEntries.Clear(); selectedEntries.Add(e.Id); entryAnchor = e.Id; }
             EntryMenu(element, category, e, folder);
         };
+        // Onto a pad: the orange bar shows the gap the drop lands in (before or after it). Onto the middle of a
+        // folder: into the folder.
+        var horizontal = Model.Config.PanelStyle == PanelStyle.Grid && padPreview;
+        bool IntoFolder(DragEventArgs ev)
+        {
+            if (!e.IsFolder) return false;
+            var b = element;
+            var p = ev.GetPosition(b);
+            var f = horizontal ? p.X / Math.Max(1, b.ActualWidth) : p.Y / Math.Max(1, b.ActualHeight);
+            return f > 0.25 && f < 0.75;
+        }
         element.DragOver += (_, ev) =>
         {
             ev.Effects = ev.Data.GetDataPresent(ItemsFormat) ? DragDropEffects.Copy : ev.Data.GetDataPresent(EntriesFormat) ? DragDropEffects.Move : DragDropEffects.None;
-            element.Opacity = 0.6;
+            if (ev.Effects != DragDropEffects.None)
+            {
+                if (IntoFolder(ev)) { DropBar.Clear(element); element.Opacity = 0.6; }
+                else { element.Opacity = 1; DropBar.Show(element, ev, horizontal); }
+            }
             ev.Handled = true;
         };
-        element.DragLeave += (_, _) => element.Opacity = 1;
+        element.DragLeave += (_, _) => { element.Opacity = 1; DropBar.Clear(element); };
         element.Drop += (_, ev) =>
         {
             ev.Handled = true;
             element.Opacity = 1;
+            var into = IntoFolder(ev);
+            var insertAt = DropBar.After(element, ev, horizontal) ? index + 1 : index;
+            DropBar.Clear(element);
             if (ev.Data.GetData(ItemsFormat) is List<object> items)
             {
-                if (e.IsFolder) Add(items, category.Id, e.Id);           // onto a folder: into it
-                else Add(items, category.Id, folder?.Id, index);       // onto a pad: in its place
+                if (into) Add(items, category.Id, e.Id);
+                else Add(items, category.Id, folder?.Id, insertAt);
                 return;
             }
             if (ev.Data.GetData(EntriesFormat) is (Guid from, List<Guid> ids))
             {
                 if (from != category.Id) { MoveToCategory(from, ids, category.Id); return; }
-                if (e.IsFolder && !ids.Contains(e.Id))
+                if (into && !ids.Contains(e.Id))
                 {
                     foreach (var id in ids) if (category.Entries.All(x => x.Id != id || !x.IsFolder)) Model.Config.MoveEntry(id, e.Id, category.Id);
                     Changed();
                     return;
                 }
-                // Out of a folder (the folder pop-over) onto a pad: back at the top level, in that place.
+                // Out of a folder (the folder pop-over) onto a pad: back at the top level first.
                 if (folder == null)
                     foreach (var id in ids) if (entries.All(x => x.Id != id)) Model.Config.MoveEntry(id, null, category.Id);
-                // Reorder: the dragged entries take the place of the one dropped on.
-                var target = index;
-                foreach (var id in ids)
+                // Into the gap, keeping the dragged entries in their order.
+                foreach (var id in entries.Where(x => ids.Contains(x.Id)).Select(x => x.Id).ToList())
                 {
                     var current = entries.FindIndex(x => x.Id == id);
                     if (current < 0) continue;
-                    Model.Config.MoveEntry(category.Id, folder?.Id, current, target);
-                    if (current > target) target++;
+                    if (current < insertAt) Model.Config.MoveEntry(category.Id, folder?.Id, current, insertAt - 1);
+                    else { Model.Config.MoveEntry(category.Id, folder?.Id, current, insertAt); insertAt++; }
                 }
                 Changed();
             }
@@ -645,15 +670,14 @@ sealed class LibraryPage : Page
                 popup.IsOpen = false;
                 DragDrop.DoDragDrop(holder, new DataObject(EntriesFormat, (category.Id, new List<Guid> { child.Id })), DragDropEffects.Move);
             };
+            // The same right-click menu as every other entry: name, icon, colour, shortcut, take out, remove.
             holder.MouseRightButtonUp += (_, ev) =>
             {
                 ev.Handled = true;
-                UI.Menu(holder, new List<UI.MenuItem>
-                {
-                    new(Loc.T("Aus dem Ordner nehmen", "Take out of the folder"), () => { popup.IsOpen = false; Model.Config.MoveEntry(child.Id, null, category.Id); Changed(); }, Glyph: ""),
-                    new(Loc.T("Umbenennen …", "Rename …"), () => { popup.IsOpen = false; Rename(category, child); }, Glyph: ""),
-                    new(Loc.T("Entfernen", "Remove"), () => { popup.IsOpen = false; Model.Config.RemoveEntry(child.Id, category.Id); Changed(); }, Glyph: ""),
-                });
+                selectedEntries.Clear();
+                selectedEntries.Add(child.Id);
+                entryAnchor = child.Id;
+                EntryMenu(holder, category, child, folder);
             };
             list.Children.Add(holder);
         }
@@ -682,50 +706,51 @@ sealed class LibraryPage : Page
         popoverAnchor = at;
         box.MouseLeave += (_, _) => SchedulePopoverClose();
         at.MouseLeave += (_, _) => SchedulePopoverClose();
-        box.MouseEnter += (_, _) => popoverTimer.Stop();
+        box.MouseEnter += (_, _) => popoverLeftAt = null;
+        popoverLeftAt = null;
         popup.IsOpen = true;
+        EnsureTimer();
+        popoverTimer.Start();
     }
 
     System.Windows.Controls.Primitives.Popup? openPopover;
     Guid? popoverFolder;
     FrameworkElement? popoverAnchor;
     readonly System.Windows.Threading.DispatcherTimer popoverTimer = new() { Interval = TimeSpan.FromMilliseconds(260) };
-    Action? popoverAction;
 
-    /// <summary>Hovering a folder pad opens its pop-over after a moment (not while a button is held, e.g. dragging).</summary>
+    DateTime? popoverLeftAt;
+
+    /// <summary>Hovering a folder pad opens its pop-over right away (not while a button is held, e.g. dragging).</summary>
     void HoverFolder(FrameworkElement pad, Category category, Entry folder)
     {
-        popoverTimer.Stop();
-        popoverAction = () =>
-        {
-            if (pad.IsMouseOver && Mouse.LeftButton != MouseButtonState.Pressed) FolderPopover(pad, category, folder);
-        };
-        EnsureTimer();
-        popoverTimer.Start();
+        if (Mouse.LeftButton == MouseButtonState.Pressed) return;
+        FolderPopover(pad, category, folder);
     }
 
-    void SchedulePopoverClose()
-    {
-        popoverTimer.Stop();
-        popoverAction = () =>
-        {
-            if (openPopover == null) return;
-            var overBox = openPopover.Child?.IsMouseOver ?? false;
-            if (overBox || (popoverAnchor?.IsMouseOver ?? false) || Mouse.LeftButton == MouseButtonState.Pressed) return;
-            openPopover.IsOpen = false;
-            openPopover = null;
-            popoverFolder = null;
-        };
-        EnsureTimer();
-        popoverTimer.Start();
-    }
+    /// <summary>Leaving starts the grace period; the poll closes the pop-over unless the pointer comes back.</summary>
+    void SchedulePopoverClose() { if (openPopover != null) popoverLeftAt ??= DateTime.UtcNow; }
 
     bool timerWired;
+    /// <summary>While a pop-over is open, check where the pointer really is (leave events don't always arrive):
+    /// outside both the folder pad and the pop-over for 150 ms closes it.</summary>
     void EnsureTimer()
     {
         if (timerWired) return;
         timerWired = true;
-        popoverTimer.Tick += (_, _) => { popoverTimer.Stop(); popoverAction?.Invoke(); };
+        popoverTimer.Interval = TimeSpan.FromMilliseconds(100);
+        popoverTimer.Tick += (_, _) =>
+        {
+            if (openPopover is not { IsOpen: true } popup) { popoverTimer.Stop(); return; }
+            if (Mouse.LeftButton == MouseButtonState.Pressed) { popoverLeftAt = null; return; }
+            Native.GetCursorPos(out var p);
+            if (ScreenRect.Contains(popup.Child as FrameworkElement, p) || ScreenRect.Contains(popoverAnchor, p)) { popoverLeftAt = null; return; }
+            popoverLeftAt ??= DateTime.UtcNow;
+            if (DateTime.UtcNow - popoverLeftAt < TimeSpan.FromMilliseconds(150)) return;
+            popup.IsOpen = false;
+            openPopover = null;
+            popoverFolder = null;
+            popoverTimer.Stop();
+        };
     }
 
     /// <summary>Preset files from Explorer: the ones Live lists are found, the others copied into the preset folder

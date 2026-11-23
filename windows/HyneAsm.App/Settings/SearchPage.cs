@@ -26,8 +26,10 @@ sealed class SearchPage : Page
             Loc.T("Pinne Treffer für einen Suchbegriff nach oben oder blende sie aus. Eine Regel für „ser“ gilt auch für „seru“, „serum“ … – die längste passende gewinnt.",
                   "Pin results for a search term to the top or hide them. A rule for “ser” also applies to “seru”, “serum” … – the longest matching rule wins.")));
         if (field.Parent is Panel old) old.Children.Remove(field);
-        field.MaxWidth = 460;
-        field.HorizontalAlignment = HorizontalAlignment.Left;
+        // A big field: the search is the point of this page.
+        field.HorizontalAlignment = HorizontalAlignment.Stretch;
+        field.MinHeight = 48;
+        query.FontSize = 17;
         panel.Children.Add(field);
         if (results.Parent is Panel oldResults) oldResults.Children.Remove(results);
         results.Margin = new Thickness(0, 14, 0, 0);

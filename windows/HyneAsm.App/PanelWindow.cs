@@ -27,7 +27,8 @@ sealed class PanelWindow : Overlay
     Guid? flyoutFolder;
     FrameworkElement? flyoutAnchor;
     readonly Dictionary<Guid, FrameworkElement> folderPads = new();
-    readonly DispatcherTimer flyoutHide = new() { Interval = TimeSpan.FromMilliseconds(180) };
+    readonly DispatcherTimer flyoutHide = new() { Interval = TimeSpan.FromMilliseconds(100) };
+    DateTime? flyoutLeftAt;
     readonly DispatcherTimer edgeTimer = new();
     const double LeftStrip = 14;
     const string PadFormat = "HyneAsm.PanelPad";
@@ -37,8 +38,10 @@ sealed class PanelWindow : Overlay
     /// <summary>Pads can be dragged in a category (top level), not in search results.</summary>
     bool CanReorder => state is { Filter.Length: 0, OpenFolderID: null } && state.Tabs.Count > 0 && state.Tabs[state.SelectedTab] is PanelTab.Category;
 
-    void Reorder(int from, int to)
+    /// <summary>Moves the pad at <paramref name="from"/> so it lands in the gap before <paramref name="insertAt"/>.</summary>
+    void Reorder(int from, int insertAt)
     {
+        var to = from < insertAt ? insertAt - 1 : insertAt;
         if (from == to || state?.Tabs[state.SelectedTab] is not PanelTab.Category category) return;
         model.Config.MoveEntry(category.Id, null, from, to);
         model.ConfigChanged();
@@ -53,14 +56,17 @@ sealed class PanelWindow : Overlay
         this.model = model;
         MouseWheel += (_, e) => TurnPage(e.Delta < 0 ? 1 : -1);
         flyout = new FolderFlyout(this);
-        flyout.MouseEnter += (_, _) => flyoutHide.Stop();
+        flyout.MouseEnter += (_, _) => flyoutLeftAt = null;
         flyout.MouseLeave += (_, _) => ScheduleFlyoutHide();
+        // While the side list is open, check where the pointer really is (leave events don't always arrive):
+        // outside both the folder pad and the list for 150 ms closes it.
         flyoutHide.Tick += (_, _) =>
         {
-            flyoutHide.Stop();
             Native.GetCursorPos(out var p);
-            if (flyout.Contains(p) || (flyoutAnchor is { IsMouseOver: true })) return;
-            HideFlyout();
+            var anchor = flyoutFolder is { } f && folderPads.TryGetValue(f, out var a) ? a : flyoutAnchor;
+            if (flyout.Contains(p) || ScreenRect.Contains(anchor, p)) { flyoutLeftAt = null; return; }
+            flyoutLeftAt ??= DateTime.UtcNow;
+            if (DateTime.UtcNow - flyoutLeftAt >= TimeSpan.FromMilliseconds(150)) HideFlyout();
         };
         IsVisibleChanged += (_, _) => { if (!IsVisible) { HideFlyout(); edgeTimer.Stop(); } };
         edgeTimer.Tick += (_, _) => EdgeTick();
@@ -148,8 +154,9 @@ sealed class PanelWindow : Overlay
 
     void ShowFlyout(FrameworkElement anchor, Guid folder)
     {
-        flyoutHide.Stop();
         if (state == null) return;
+        flyoutLeftAt = null;
+        flyoutHide.Start();
         flyoutAnchor = anchor;
         if (flyoutFolder == folder && flyout.IsVisible) return;
         flyoutFolder = folder;
@@ -158,12 +165,8 @@ sealed class PanelWindow : Overlay
         flyout.Show(state.FolderRows(folder), new Native.POINT { X = (int)corner.X, Y = (int)corner.Y }, IsGrid, ItemWidth, ItemHeight);
     }
 
-    void ScheduleFlyoutHide()
-    {
-        if (!flyout.IsVisible) return;
-        flyoutHide.Stop();
-        flyoutHide.Start();
-    }
+    /// <summary>Leaving starts the grace period at once (the poll closes it unless the pointer comes back).</summary>
+    void ScheduleFlyoutHide() { if (flyout.IsVisible) flyoutLeftAt ??= DateTime.UtcNow; }
 
     void HideFlyout()
     {
@@ -435,9 +438,18 @@ sealed class PanelWindow : Overlay
             DragDrop.DoDragDrop(holder, new DataObject(PadFormat, index), DragDropEffects.Move);
             dragFrom = null;
         };
-        holder.DragOver += (_, e) => { e.Effects = e.Data.GetDataPresent(PadFormat) ? DragDropEffects.Move : DragDropEffects.None; holder.Opacity = 0.55; e.Handled = true; };
-        holder.DragLeave += (_, _) => holder.Opacity = row.IsAvailable ? 1 : 0.5;
-        holder.Drop += (_, e) => { if (e.Data.GetData(PadFormat) is int from) Reorder(from, index); };
+        holder.DragOver += (_, e) =>
+        {
+            e.Effects = e.Data.GetDataPresent(PadFormat) ? DragDropEffects.Move : DragDropEffects.None;
+            if (e.Data.GetDataPresent(PadFormat)) DropBar.Show(holder, e, horizontal: IsGrid);
+            e.Handled = true;
+        };
+        holder.DragLeave += (_, _) => DropBar.Clear(holder);
+        holder.Drop += (_, e) =>
+        {
+            DropBar.Clear(holder);
+            if (e.Data.GetData(PadFormat) is int from) Reorder(from, DropBar.After(holder, e, IsGrid) ? index + 1 : index);
+        };
         return holder;
     }
 

@@ -74,8 +74,8 @@ sealed class SettingsWindow : Window
     /// <summary>Ctrl+Z / Win+Z: back one change.</summary>
     public void Undo()
     {
-        if (model.Undo()) model.Hud.Show(Loc.T("Rückgängig", "Undone"));
-        else model.Hud.Show(Loc.T("Nichts mehr rückgängig zu machen", "Nothing left to undo"));
+        if (model.Undo()) model.Hud.Show(Loc.T("Rückgängig", "Undone"), 0.6);
+        else model.Hud.Show(Loc.T("Nichts mehr rückgängig zu machen", "Nothing left to undo"), 0.9);
     }
 
     /// <summary>Win+G from the keyboard hook (Windows would otherwise open the Game Bar).</summary>

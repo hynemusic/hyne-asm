@@ -56,6 +56,51 @@ class Overlay : Window
     }
 }
 
+/// <summary>Where an element is on screen, in the mouse hook's physical pixels.</summary>
+static class ScreenRect
+{
+    public static bool Contains(FrameworkElement? e, Native.POINT p)
+    {
+        if (e == null || !e.IsVisible || PresentationSource.FromVisual(e) == null) return false;
+        var a = e.PointToScreen(new Point(0, 0));
+        var b = e.PointToScreen(new Point(e.ActualWidth, e.ActualHeight));
+        return p.X >= Math.Min(a.X, b.X) && p.X <= Math.Max(a.X, b.X) && p.Y >= Math.Min(a.Y, b.Y) && p.Y <= Math.Max(a.Y, b.Y);
+    }
+}
+
+/// <summary>The orange bar that shows where a dragged item will land: before or after the one under the pointer.</summary>
+static class DropBar
+{
+    sealed record Saved(Brush? Brush, Thickness Thickness);
+
+    /// <summary>True = after the element (lower or right half).</summary>
+    public static bool Show(System.Windows.Controls.Border target, DragEventArgs e, bool horizontal)
+    {
+        var p = e.GetPosition(target);
+        var after = horizontal ? p.X > target.ActualWidth / 2 : p.Y > target.ActualHeight / 2;
+        if (target.Tag is not Saved) target.Tag = new Saved(target.BorderBrush, target.BorderThickness);
+        target.BorderBrush = Theme.Accent;
+        target.BorderThickness = horizontal
+            ? (after ? new Thickness(0, 0, 3, 0) : new Thickness(3, 0, 0, 0))
+            : (after ? new Thickness(0, 0, 0, 3) : new Thickness(0, 3, 0, 0));
+        return after;
+    }
+
+    public static bool After(System.Windows.Controls.Border target, DragEventArgs e, bool horizontal)
+    {
+        var p = e.GetPosition(target);
+        return horizontal ? p.X > target.ActualWidth / 2 : p.Y > target.ActualHeight / 2;
+    }
+
+    public static void Clear(System.Windows.Controls.Border target)
+    {
+        if (target.Tag is not Saved s) return;
+        target.BorderBrush = s.Brush;
+        target.BorderThickness = s.Thickness;
+        target.Tag = null;
+    }
+}
+
 /// <summary>Short message near the mouse that never takes focus.</summary>
 sealed class Hud
 {
@@ -63,7 +108,7 @@ sealed class Hud
     System.Windows.Controls.TextBlock? label;
     System.Windows.Threading.DispatcherTimer? timer;
 
-    public void Show(string text)
+    public void Show(string text, double seconds = 1.8)
     {
         if (window == null)
         {
@@ -80,6 +125,7 @@ sealed class Hud
         p.X += 16; p.Y += 20;
         window.ShowAt(p);
         timer!.Stop();
+        timer.Interval = TimeSpan.FromSeconds(seconds);
         timer.Start();
     }
 }
