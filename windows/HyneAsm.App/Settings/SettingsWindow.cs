@@ -76,6 +76,7 @@ sealed class SettingsWindow : Window
         {
             FontFamily = Theme.Font;
             Background = UI.Canvas;
+            UI.ThemeTitleBar(this);
             root.Children.Clear();
             root.Children.Add(Sidebar());
             content.Content = Page.Build();
@@ -88,7 +89,9 @@ sealed class SettingsWindow : Window
     {
         var list = new StackPanel { Margin = new Thickness(10, 16, 10, 10) };
         var brand = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(8, 0, 0, 30) };
-        brand.Children.Add(new Image { Source = TrayIcon.ImageSource(), Width = 38, Height = 38, Margin = new Thickness(0, 0, 12, 0) });
+        var logo = new Image { Source = TrayIcon.ImageSource(), Width = 38, Height = 38, Margin = new Thickness(0, 0, 12, 0) };
+        RenderOptions.SetBitmapScalingMode(logo, BitmapScalingMode.HighQuality);
+        brand.Children.Add(logo);
         var name = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
         name.Children.Add(UI.Text("HYNE ASM", 17, weight: FontWeights.Bold));
         name.Children.Add(UI.Text("Ableton Shortcuts Manager", 12, Theme.TextSecondary));

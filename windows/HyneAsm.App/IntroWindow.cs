@@ -25,6 +25,7 @@ sealed class IntroWindow : Window
         Background = Theme.Background;
         FontFamily = Theme.Font;
         Icon = TrayIcon.ImageSource();
+        Settings.UI.ThemeTitleBar(this);
         var root = new StackPanel { Margin = new Thickness(28, 24, 28, 24) };
         root.Children.Add(new TextBlock { Text = Loc.T("Willkommen bei HYNE ASM", "Welcome to HYNE ASM"), FontSize = 22, FontWeight = FontWeights.SemiBold, Foreground = Theme.Text });
         root.Children.Add(new TextBlock

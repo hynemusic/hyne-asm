@@ -59,6 +59,7 @@ sealed class ShortcutOverview : Window
         Background = UI.Canvas;
         FontFamily = Theme.Font;
         ShowInTaskbar = false;
+        UI.ThemeTitleBar(this);
         all = KnownShortcuts.All.Concat(KnownShortcuts.Hyne(model.Config)).ToList();
         foreach (var s in all) code[s.Id] = s.Pressed.Code ?? (s.Pressed.Char is { } c ? KnownShortcuts.UsLayoutVk(c) : null);
         listScroll = UI.Scroll(list);

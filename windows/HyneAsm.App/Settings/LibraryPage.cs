@@ -589,8 +589,8 @@ sealed class LibraryPage : Page
         if (!many)
         {
             items.Add(new(Loc.T("Umbenennen …", "Rename …"), () => Rename(category, e), Glyph: ""));
-            items.Add(new(Loc.T("Icon", "Icon"), Submenu: IconCatalog.AllIDs.Select(id => new UI.MenuItem(id, () => { Model.Config.SetIcon(id, e.Id, category.Id); Changed(); }, Checked: id == e.IconID, Glyph: IconGlyphs.Glyph(id))).ToList(), Glyph: IconGlyphs.Glyph(e.IconID)));
         }
+        items.Add(new(Loc.T("Icon wählen …", "Choose icon …"), () => IconPicker(at, category, ids, e.IconID), Glyph: IconGlyphs.Glyph(e.IconID)));
         items.Add(new(Loc.T("Farbe", "Colour"), Submenu: new[] { new UI.MenuItem(Loc.T("Keine (Regel folgen)", "None (follow the rules)"), () => SetColor(category, ids, null), Checked: e.ColorID == null) }
             .Concat(ColorPalette.All.Select(c => new UI.MenuItem(c.Label, () => SetColor(category, ids, c.Id), Checked: e.ColorID == c.Id, Swatch: Theme.LabelColor(c.Id)))).ToList(), Glyph: ""));
         if (!many && !e.IsFolder && e.Action == null && e.Chain == null)
@@ -609,6 +609,57 @@ sealed class LibraryPage : Page
         items.Add(UI.Separator);
         items.Add(new(many ? Loc.T($"{ids.Count} entfernen", $"Remove {ids.Count}") : Loc.T("Entfernen", "Remove"), () => RemoveSelected(category), Glyph: ""));
         UI.Menu(at, items);
+    }
+
+    /// <summary>The icon grid of the Mac (icon and name per tile, the current one lit); applies to every selected entry.</summary>
+    void IconPicker(FrameworkElement at, Category category, List<Guid> ids, string current)
+    {
+        var popup = new System.Windows.Controls.Primitives.Popup
+        {
+            PlacementTarget = at, Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint, StaysOpen = false, AllowsTransparency = true,
+        };
+        var grid = new System.Windows.Controls.Primitives.UniformGrid { Columns = 6 };
+        foreach (var id in IconCatalog.AllIDs)
+        {
+            var selected = id == current;
+            var icon = id;
+            var stack = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+            var glyph = Theme.Icon(id, 24, Theme.TextPrimary);
+            glyph.Height = 30;
+            stack.Children.Add(glyph);
+            var label = UI.Text(IconGlyphs.Label(id), 13.5, Theme.TextPrimary, FontWeights.Medium);
+            label.HorizontalAlignment = HorizontalAlignment.Center;
+            label.Margin = new Thickness(0, 6, 0, 0);
+            stack.Children.Add(label);
+            var inner = new Grid();
+            inner.Children.Add(stack);
+            if (selected) inner.Children.Add(new Border { Height = 3, VerticalAlignment = VerticalAlignment.Bottom, Background = Theme.Accent });
+            var tile = new Border
+            {
+                Width = 132, Height = 102, Margin = new Thickness(6), CornerRadius = new CornerRadius(Theme.Radius(8)), Cursor = Cursors.Hand, Child = inner,
+                Background = selected ? UI.AccentTint(0.38) : UI.Raised, ClipToBounds = true,
+            };
+            if (!selected)
+            {
+                tile.MouseEnter += (_, _) => tile.Background = UI.Hover;
+                tile.MouseLeave += (_, _) => tile.Background = UI.Raised;
+            }
+            tile.MouseLeftButtonUp += (_, _) =>
+            {
+                popup.IsOpen = false;
+                foreach (var entry in ids) Model.Config.SetIcon(icon, entry, category.Id);
+                Changed();
+            };
+            grid.Children.Add(tile);
+        }
+        popup.Child = new Border
+        {
+            Background = UI.Surface, BorderBrush = Theme.Stroke, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(Theme.Radius(14)),
+            Padding = new Thickness(8), Margin = new Thickness(0, 0, 14, 14),
+            Effect = new System.Windows.Media.Effects.DropShadowEffect { BlurRadius = 22, ShadowDepth = 5, Opacity = 0.5, Color = Colors.Black },
+            Child = new ScrollViewer { Content = grid, MaxHeight = 620, VerticalScrollBarVisibility = ScrollBarVisibility.Auto },
+        };
+        popup.IsOpen = true;
     }
 
     void SetColor(Category category, List<Guid> ids, string? color)

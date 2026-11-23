@@ -321,6 +321,18 @@ static class UI
         Child = new TextBlock { Text = glyph, FontFamily = Theme.Icons, FontSize = size * 0.45, Foreground = brush, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center },
     };
 
+    /// <summary>Title bar in the theme's colours (no white strip above a dark window).</summary>
+    public static void ThemeTitleBar(Window w)
+    {
+        void Apply()
+        {
+            var hwnd = new System.Windows.Interop.WindowInteropHelper(w).Handle;
+            Native.ThemeTitleBar(hwnd, Theme.Current.IsDark, C.Sidebar, Theme.Current.TextPrimary);
+        }
+        if (new System.Windows.Interop.WindowInteropHelper(w).Handle != IntPtr.Zero) Apply();
+        else w.SourceInitialized += (_, _) => Apply();
+    }
+
     // MARK: Themed menu
 
     /// <summary>One line of a menu: a title with an action, a submenu, a separator ("-"), or a check mark.</summary>

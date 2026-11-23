@@ -162,7 +162,7 @@ static class IconGlyphs
 {
     static readonly Dictionary<string, char> Map = new()
     {
-        ["generic"] = '', ["folder"] = '', ["eq"] = '', ["filter"] = '', ["compressor"] = '',
+        ["generic"] = '', ["folder"] = '', ["eq-curve"] = '\uE9D2', ["eq"] = '', ["filter"] = '', ["compressor"] = '',
         ["glue"] = '', ["limiter"] = '', ["gate"] = '', ["deesser"] = '', ["transient"] = '',
         ["reverb"] = '', ["delay"] = '', ["echo"] = '', ["stereo"] = '', ["space"] = '',
         ["saturation"] = '', ["distortion"] = '', ["bitcrush"] = '', ["tape"] = '', ["console"] = '',
@@ -174,6 +174,67 @@ static class IconGlyphs
         ["headphones"] = '', ["mastering"] = '', ["resonance"] = '', ["sidechain"] = '',
         ["granular"] = '', ["star"] = '', ["heart"] = '', ["sparkles"] = '',
     };
+
+    static readonly Dictionary<string, (string De, string En)> Labels = new()
+    {
+        ["generic"] = ("Plugin", "Plugin"),
+        ["folder"] = ("Ordner", "Folder"),
+        ["eq"] = ("EQ", "EQ"),
+        ["eq-curve"] = ("EQ-Kurve", "EQ curve"),
+        ["filter"] = ("Filter", "Filter"),
+        ["compressor"] = ("Kompressor", "Compressor"),
+        ["glue"] = ("Bus-Comp", "Bus-Comp"),
+        ["limiter"] = ("Limiter", "Limiter"),
+        ["gate"] = ("Gate", "Gate"),
+        ["deesser"] = ("De-Esser", "De-Esser"),
+        ["transient"] = ("Transient", "Transient"),
+        ["reverb"] = ("Reverb", "Reverb"),
+        ["delay"] = ("Delay", "Delay"),
+        ["echo"] = ("Echo", "Echo"),
+        ["stereo"] = ("Stereo", "Stereo"),
+        ["space"] = ("Raum", "Room"),
+        ["saturation"] = ("Sättigung", "Saturation"),
+        ["distortion"] = ("Distortion", "Distortion"),
+        ["bitcrush"] = ("Bitcrush", "Bitcrush"),
+        ["tape"] = ("Tape", "Tape"),
+        ["console"] = ("Konsole", "Console"),
+        ["texture"] = ("Textur", "Texture"),
+        ["modulation"] = ("Modulation", "Modulation"),
+        ["chorus"] = ("Chorus", "Chorus"),
+        ["phaser"] = ("Phaser", "Phaser"),
+        ["pitch"] = ("Pitch", "Pitch"),
+        ["vocal"] = ("Vocal", "Vocal"),
+        ["synth"] = ("Synth", "Synth"),
+        ["sine"] = ("Sinus", "Sine"),
+        ["keys"] = ("Keys", "Keys"),
+        ["sampler"] = ("Sampler", "Sampler"),
+        ["drums"] = ("Drums", "Drums"),
+        ["bass"] = ("Bass", "Bass"),
+        ["strings"] = ("Strings", "Strings"),
+        ["pad"] = ("Pad", "Pad"),
+        ["utility"] = ("Utility", "Utility"),
+        ["meter"] = ("Meter", "Meter"),
+        ["analyzer"] = ("Analyzer", "Analyzer"),
+        ["tuner"] = ("Tuner", "Tuner"),
+        ["midi"] = ("MIDI", "MIDI"),
+        ["arp"] = ("Arp", "Arp"),
+        ["chord"] = ("Chord", "Chord"),
+        ["rack"] = ("Rack", "Rack"),
+        ["amp"] = ("Amp", "Amp"),
+        ["mic"] = ("Mikrofon", "Mic"),
+        ["repair"] = ("Reparatur", "Repair"),
+        ["headphones"] = ("Kopfhörer", "Headphones"),
+        ["mastering"] = ("Mastering", "Mastering"),
+        ["resonance"] = ("Resonanzen", "Resonance"),
+        ["sidechain"] = ("Sidechain", "Sidechain"),
+        ["granular"] = ("Granular", "Granular"),
+        ["star"] = ("Favorit", "Favorite"),
+        ["heart"] = ("Herz", "Heart"),
+        ["sparkles"] = ("Magic", "Magic"),
+    };
+
+    /// <summary>The icon's name as the Mac shows it in the icon picker.</summary>
+    public static string Label(string id) => Labels.TryGetValue(id, out var l) ? Loc.T(l.De, l.En) : id;
 
     public static string Glyph(string id) => (Map.TryGetValue(id, out var c) ? c : Map["generic"]).ToString();
 }

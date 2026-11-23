@@ -228,6 +228,8 @@ sealed class PanelWindow : Overlay
             CornerRadius = new CornerRadius(Theme.Radius(6)), Background = selected ? Theme.Ink(0.06) : Brushes.Transparent,
         };
         tab.MouseLeftButtonUp += (_, _) => SelectTab(index);
+        // Like the Mac: pointing at a category shows it right away.
+        tab.MouseEnter += (_, _) => { if (state != null && state.SelectedTab != index && state.Filter.Length == 0) SelectTab(index); };
         return tab;
     }
 

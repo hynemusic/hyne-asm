@@ -215,6 +215,7 @@ sealed class ShortcutsPage : Page
             Owner = Window, Title = Loc.T("Kürzel hinzufügen", "Add Shortcut"), SizeToContent = SizeToContent.WidthAndHeight, ResizeMode = ResizeMode.NoResize,
             WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = UI.Surface, ShowInTaskbar = false, FontFamily = Theme.Font,
         };
+        UI.ThemeTitleBar(dialog);
         void Fill()
         {
             results.Children.Clear();
@@ -253,6 +254,7 @@ static class ShortcutDialog
             Owner = owner, Title = "HYNE ASM", SizeToContent = SizeToContent.WidthAndHeight, ResizeMode = ResizeMode.NoResize,
             WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = UI.Surface, ShowInTaskbar = false, FontFamily = Theme.Font,
         };
+        UI.ThemeTitleBar(dialog);
         var panel = new StackPanel { Margin = new Thickness(24), Width = 420 };
         void Fill()
         {

@@ -35,7 +35,8 @@ sealed class TrayIcon : IDisposable
     public static ImageSource ImageSource()
     {
         using var s = IconStream();
-        return BitmapFrame.Create(s, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+        var decoder = new IconBitmapDecoder(s, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+        return decoder.Frames.OrderByDescending(f => f.PixelWidth).First();
     }
 
     public void Notify(string title, string text) => icon.ShowBalloonTip(4000, title, text, Forms.ToolTipIcon.Info);

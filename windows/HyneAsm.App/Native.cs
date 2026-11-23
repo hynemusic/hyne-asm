@@ -77,6 +77,20 @@ static class Native
     [DllImport("user32.dll", SetLastError = true)] public static extern uint SendInput(uint count, INPUT[] inputs, int size);
     [DllImport("user32.dll")] public static extern uint GetDpiForWindow(IntPtr hwnd);
 
+    [DllImport("dwmapi.dll")] static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
+
+    /// <summary>Title bar in the theme: dark mode on dark themes, caption and text colour (Windows 11) to match.</summary>
+    public static void ThemeTitleBar(IntPtr hwnd, bool dark, System.Windows.Media.Color caption, System.Windows.Media.Color text)
+    {
+        if (hwnd == IntPtr.Zero) return;
+        var on = dark ? 1 : 0;
+        if (DwmSetWindowAttribute(hwnd, 20, ref on, sizeof(int)) != 0) DwmSetWindowAttribute(hwnd, 19, ref on, sizeof(int));
+        var c = caption.R | caption.G << 8 | caption.B << 16;
+        DwmSetWindowAttribute(hwnd, 35, ref c, sizeof(int));
+        var t = text.R | text.G << 8 | text.B << 16;
+        DwmSetWindowAttribute(hwnd, 36, ref t, sizeof(int));
+    }
+
     public static bool IsDown(int vk) => (GetAsyncKeyState(vk) & 0x8000) != 0;
 
     public static void Tap(ushort vk)
