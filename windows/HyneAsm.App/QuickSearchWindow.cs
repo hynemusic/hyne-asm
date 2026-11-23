@@ -28,6 +28,13 @@ sealed class QuickSearchWindow : Overlay
         ShowAt(p, centerOnScreen: true);
     }
 
+    public void Warm()
+    {
+        state = new QuickSearchState(new QuickSearch(model.Config, model.SearchIndex, model.Usage.Counts));
+        Render();
+        Prewarm();
+    }
+
     public void Handle(PanelKey key)
     {
         if (state == null || !IsVisible) return;

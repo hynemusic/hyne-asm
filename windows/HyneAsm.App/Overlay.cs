@@ -32,6 +32,16 @@ class Overlay : Window
 
     public bool Contains(Native.POINT p) => IsVisible && Native.Contains(Hwnd, p);
 
+    /// <summary>Creates the window and lays it out once off screen, so the first real show is instant.</summary>
+    public void Prewarm()
+    {
+        if (IsVisible) return;
+        Left = -32000; Top = -32000;
+        Show();
+        UpdateLayout();
+        Hide();
+    }
+
     /// <summary>Shows the window with its top-left at <paramref name="p"/>, kept inside that monitor's work area.</summary>
     public void ShowAt(Native.POINT p, bool centerOnScreen = false)
     {

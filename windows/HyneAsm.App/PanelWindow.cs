@@ -90,6 +90,16 @@ sealed class PanelWindow : Overlay
         base.ShowAt(p);
     }
 
+    /// <summary>Draws the panel once off screen at start-up (window, fonts, pads), so the first double right-click is instant.</summary>
+    public void Warm()
+    {
+        state = new PanelState(model.Config, model.SearchIndex, lastTab, model.Usage.Counts);
+        layout = model.Config.PanelPage;
+        Render();
+        Prewarm();
+        flyout.Prewarm();
+    }
+
     public void Handle(PanelKey key)
     {
         if (state == null || !IsVisible) return;

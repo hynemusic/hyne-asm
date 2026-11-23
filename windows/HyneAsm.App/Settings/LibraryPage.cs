@@ -17,7 +17,6 @@ sealed class LibraryPage : Page
     const string ItemsFormat = "HyneAsm.Items", EntriesFormat = "HyneAsm.Entries", CategoryFormat = "HyneAsm.Category";
 
     Guid? selectedCategory;
-    Guid? openFolder;
     string search = "";
     readonly HashSet<string> expanded = new();
     readonly List<object> browserSelection = new();   // PluginItem or LiveActionKind
@@ -219,7 +218,7 @@ sealed class LibraryPage : Page
         row.PreviewMouseLeftButtonDown += (_, e) =>
         {
             dragStart = e.GetPosition(Window);
-            if (e.ClickCount == 2) { e.Handled = true; Add(new List<object> { item }, Selected?.Id, openFolder); return; }
+            if (e.ClickCount == 2) { e.Handled = true; Add(new List<object> { item }, Selected?.Id, null); return; }
             if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) && browserAnchor != null && visible.Contains(browserAnchor))
             {
                 var a = visible.IndexOf(browserAnchor);
@@ -281,7 +280,7 @@ sealed class LibraryPage : Page
         var head = Head(Loc.T("Kategorien", "Categories"), cats.Count.ToString(), UI.IconButton("", () =>
         {
             if (UI.Ask(Window, Loc.T("Neue Kategorie", "New category"), Loc.T("Neue Kategorie", "New category")) is { Length: > 0 } n)
-            { selectedCategory = Model.Config.AddCategory(n); openFolder = null; Changed(); }
+            { selectedCategory = Model.Config.AddCategory(n); Changed(); }
         }, Loc.T("Kategorie hinzufügen", "Add category")));
         var list = new StackPanel();
         var selected = Selected;
@@ -307,7 +306,7 @@ sealed class LibraryPage : Page
             BorderBrush = Brushes.Transparent, AllowDrop = true,
         };
         if (selected) UI.Glow(row);
-        row.MouseLeftButtonUp += (_, _) => { selectedCategory = c.Id; openFolder = null; selectedEntries.Clear(); Window.Redraw(); };
+        row.MouseLeftButtonUp += (_, _) => { selectedCategory = c.Id; selectedEntries.Clear(); Window.Redraw(); };
         // Drag a category onto another to move it there.
         row.PreviewMouseLeftButtonDown += (_, e) => dragStart = e.GetPosition(Window);
         row.MouseMove += (_, e) =>
@@ -382,8 +381,7 @@ sealed class LibraryPage : Page
     {
         var category = Selected;
         if (category == null) return new Border();
-        var folder = openFolder is { } fid ? category.Entries.FirstOrDefault(e => e.Id == fid && e.IsFolder) : null;
-        if (folder == null) openFolder = null;
+        Entry? folder = null;   // folders open as a pop-over beside their pad
         var entries = folder?.Children ?? category.Entries;
 
         var toggle = UI.Link(Loc.T("Panel-Vorschau", "Panel preview"), () => { padPreview = !padPreview; Window.Redraw(); }, padPreview ? "" : "", accent: padPreview);
@@ -394,7 +392,7 @@ sealed class LibraryPage : Page
         }, Loc.T("Neuer Ordner", "New folder"));
         Border? live = null;
         live = UI.IconButton("", () => UI.Menu(live!, Enum.GetValues<LiveActionKind>().Select(k =>
-            new UI.MenuItem(k.Title(), () => Add(new List<object> { k }, category.Id, openFolder), Glyph: IconGlyphs.Glyph(k.IconID()))).ToList(), atMouse: false),
+            new UI.MenuItem(k.Title(), () => Add(new List<object> { k }, category.Id, null), Glyph: IconGlyphs.Glyph(k.IconID()))).ToList(), atMouse: false),
             Loc.T("Live-Befehl hinzufügen", "Add a Live command"));
         var chain = UI.IconButton("", () => ChainEditor.Create(Window, Model, category.Id, browserSelection.OfType<PluginItem>().ToList()), Loc.T("Neue Kette …", "New chain …"));
         var head = new StackPanel();
@@ -410,13 +408,6 @@ sealed class LibraryPage : Page
             hints.Children.Add(h);
         }
         head.Children.Add(hints);
-        if (folder != null)
-        {
-            var back = UI.Link("‹  " + category.Name, () => { openFolder = null; selectedEntries.Clear(); Window.Redraw(); });
-            back.HorizontalAlignment = HorizontalAlignment.Left;
-            back.Margin = new Thickness(0, -6, 0, 10);
-            head.Children.Add(back);
-        }
 
         FrameworkElement body;
         if (entries.Count == 0)
@@ -942,9 +933,7 @@ sealed class LibraryPage : Page
         var ids = category.Entries.Where(x => selectedEntries.Contains(x.Id) && !x.IsFolder).Select(x => x.Id).ToList();
         if (ids.Count == 0)
         {
-            Model.Hud.Show(openFolder != null
-                ? Loc.T("Ordner können keine Ordner enthalten", "Folders can't hold folders")
-                : Loc.T("Erst Einträge markieren (Klick, Umschalt oder Strg)", "Select entries first (click, Shift or Ctrl)"));
+            Model.Hud.Show(Loc.T("Erst Einträge markieren (Klick, Umschalt oder Strg)", "Select entries first (click, Shift or Ctrl)"));
             return;
         }
         if (UI.Ask(Window, Loc.T("Neuer Ordner", "New folder"), Loc.T("Ordner", "Folder")) is not { Length: > 0 } name) return;
@@ -957,15 +946,6 @@ sealed class LibraryPage : Page
         Changed();
     }
 
-    void NewChain(Category category)
-    {
-        var items = browserSelection.OfType<PluginItem>().ToList();
-        if (items.Count < 2) { UI.Tell(Window, Loc.T("Kette", "Chain"), Loc.T("Markier links mehrere Plugins, Geräte oder Presets (Strg+Klick). Sie werden nacheinander eingefügt.", "Select several plugins, devices or presets on the left (Ctrl+click). They are inserted one after the other.")); return; }
-        if (UI.Ask(Window, Loc.T("Name der Kette", "Chain name"), string.Join(" + ", items.Select(i => i.Name).Take(3))) is not { Length: > 0 } name) return;
-        Model.Config.AddChain(name, items, category.Id, openFolder);
-        Changed();
-    }
-
     public override bool Key(KeyEventArgs e)
     {
         if (searchBox?.IsKeyboardFocused == true || Selected is not { } category) return false;
@@ -973,7 +953,7 @@ sealed class LibraryPage : Page
         if (e.Key == System.Windows.Input.Key.G && Keyboard.Modifiers == ModifierKeys.Control) { Group(category); return true; }
         if (e.Key == System.Windows.Input.Key.A && Keyboard.Modifiers == ModifierKeys.Control)
         {
-            var list = (openFolder is { } f ? category.Entries.FirstOrDefault(x => x.Id == f)?.Children : null) ?? category.Entries;
+            var list = category.Entries;
             foreach (var x in list) selectedEntries.Add(x.Id);
             Window.Redraw();
             return true;

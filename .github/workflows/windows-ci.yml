@@ -26,7 +26,7 @@ jobs:
       - name: Bridge tests
         run: python -m unittest discover -s bridge/tests
       - name: Build the app
-        run: dotnet publish windows/HyneAsm.App/HyneAsm.App.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish
+        run: dotnet publish windows/HyneAsm.App/HyneAsm.App.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:PublishReadyToRun=true -o publish
       - name: Upload the test build
         uses: actions/upload-artifact@v4
         with:

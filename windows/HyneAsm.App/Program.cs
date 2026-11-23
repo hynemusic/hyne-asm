@@ -139,6 +139,8 @@ sealed class Shell : IDisposable
         streamDeck.OnCommand = c => ui.BeginInvoke(() => Perform(c));
         streamDeck.SetEnabled(model.Config.StreamDeckEnabled);
         model.Changed += () => { streamDeck.Token = model.Config.StreamDeckToken; streamDeck.SetEnabled(model.Config.StreamDeckEnabled); };
+        // Once the app is idle: lay out the panel and the quick search off screen, so the first use is instant.
+        ui.BeginInvoke(DispatcherPriority.ApplicationIdle, () => { panel.Warm(); quickSearch.Warm(); });
         Program.ListenForForwards(line => ui.BeginInvoke(() => Handle(line)), stop.Token);
         if (Onboarding.ShowOnLaunch(model.ConfigExistedAtLaunch, model.Config.OnboardingDone)) ShowIntro();
         else if (!args.Contains("--background"))
