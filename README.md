@@ -41,7 +41,7 @@ https://www.reddit.com/r/ableton/comments/1y0o0ar/i_built_an_opensource_ableton_
 | | Download | Requirements / Voraussetzungen |
 |---|---|---|
 | **Mac** | **[⬇ HYNE-ASM-….dmg](https://github.com/hynemusic/hyne-asm/releases/latest)** | macOS 13 or later, Ableton Live 12 |
-| **Windows** | **[⬇ HYNE-ASM-Windows-Setup-….exe](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.1.0)** | Windows 10 or 11 (64-bit), Ableton Live 12 |
+| **Windows** | **[⬇ HYNE-ASM-Windows-Setup-….exe](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.2.0)** | Windows 10 or 11 (64-bit), Ableton Live 12 |
 
 
 (Virus Total for Windows: https://www.virustotal.com/gui/file/1770eb95ee8a4a55fdb1a2c6dadfe4a37de73aacd192af290051a2c6a7cbf2a9/detection)
@@ -68,7 +68,7 @@ To update, download the new DMG and replace the app; your settings stay.
 ### Windows
 
 1. Download **HYNE-ASM-Windows-Setup-….exe** from the
-   [Windows release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.1.0) (about 1 MB).
+   [Windows release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.2.0) (about 1 MB).
 2. Start it. The first time, Windows may show "Windows protected your PC" because the app isn't signed with a paid
    certificate: click **More info → Run anyway**.
 3. Click **Install**. If your PC doesn't have Microsoft's free **.NET Desktop Runtime** yet, the setup downloads it from
@@ -104,7 +104,7 @@ Für ein Update lädst du einfach die neue DMG und ersetzt die App; deine Einste
 ### Windows
 
 1. Lade **HYNE-ASM-Windows-Setup-….exe** unter
-   [Windows-Release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.1.0) herunter (etwa 1 MB).
+   [Windows-Release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.2.0) herunter (etwa 1 MB).
 2. Starte sie. Beim ersten Mal zeigt Windows eventuell „Der Computer wurde durch Windows geschützt“, weil die App
    nicht mit einem kostenpflichtigen Zertifikat signiert ist: auf **Weitere Informationen → Trotzdem ausführen** klicken.
 3. Auf **Installieren** klicken. Fehlt auf deinem PC Microsofts kostenlose **.NET Desktop Runtime**, lädt das Setup sie
