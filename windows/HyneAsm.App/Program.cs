@@ -95,6 +95,13 @@ sealed class Shell : IDisposable
             PanelBindings = () => model.Config.PanelKeys,
             OnOverlayKey = key => ui.BeginInvoke(() => { if (quickSearch.IsVisible) quickSearch.Handle(key); else panel.Handle(key); }),
             OnShortcut = Shortcut,
+            // Win+G (the Mac's Cmd+G): group the selected entries in the Library. Mac key code 5 = G, Ctrl flag = Win.
+            OnOwnWindowKey = combo =>
+            {
+                if (settings is not { IsActive: true } s || combo.KeyCode != 5 || combo.Modifiers != ModifierSet.Ctrl) return false;
+                ui.BeginInvoke(s.GroupSelection);
+                return true;
+            },
         };
         monitor.Changed += front => ui.BeginInvoke(() => { if (!front) { panel.Hide(); quickSearch.Hide(); } });
     }

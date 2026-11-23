@@ -374,7 +374,7 @@ sealed class LibraryPage : Page
         var head = new StackPanel();
         head.Children.Add(Head(folder?.Title ?? category.Name, entries.Count.ToString(), toggle, chain, live, folderButton));
         var hints = new WrapPanel { Margin = new Thickness(0, -4, 0, 14) };
-        foreach (var (key, text) in new[] { (Loc.T("Umschalt", "Shift"), Loc.T("Bereich", "range")), (Loc.T("Strg", "Ctrl"), Loc.T("einzeln", "single")), (Loc.T("Strg+G", "Ctrl+G"), Loc.T("Ordner", "group")), (Loc.T("Entf", "Del"), Loc.T("entfernen", "remove")) })
+        foreach (var (key, text) in new[] { (Loc.T("Umschalt", "Shift"), Loc.T("Bereich", "range")), (Loc.T("Strg", "Ctrl"), Loc.T("einzeln", "single")), (Loc.T("Strg/Win+G", "Ctrl/Win+G"), Loc.T("Ordner", "group")), (Loc.T("Entf", "Del"), Loc.T("entfernen", "remove")) })
         {
             var h = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 14, 4) };
             h.Children.Add(KeyChip(key));
@@ -496,6 +496,8 @@ sealed class LibraryPage : Page
         var e = entries[index];
         element.PreviewMouseLeftButtonDown += (_, ev) =>
         {
+            // Take the keyboard from the search field, so Del, Ctrl+G and Ctrl+A act on the pads.
+            Keyboard.Focus(Window);
             dragStart = ev.GetPosition(Window);
             if (ev.ClickCount == 2)
             {
@@ -601,7 +603,7 @@ sealed class LibraryPage : Page
         if (!e.IsFolder && folders.Count > 0)
             items.Add(new(Loc.T("In Ordner", "Into folder"), Submenu: folders.Select(f => new UI.MenuItem(f.Title, () => { foreach (var id in ids) Model.Config.MoveEntry(id, f.Id, category.Id); Changed(); }, Glyph: "")).ToList(), Glyph: ""));
         if (folder != null) items.Add(new(Loc.T("Aus dem Ordner nehmen", "Take out of the folder"), () => { foreach (var id in ids) Model.Config.MoveEntry(id, null, category.Id); Changed(); }, Glyph: ""));
-        if (folder == null && !e.IsFolder) items.Add(new(Loc.T("Als Ordner gruppieren …", "Group into a folder …") + "   Ctrl+G", () => Group(category), Glyph: ""));
+        if (folder == null && !e.IsFolder) items.Add(new(Loc.T("Als Ordner gruppieren …", "Group into a folder …") + Loc.T("   Strg+G", "   Ctrl+G"), () => Group(category), Glyph: ""));
         if (!many && e.IsFolder) items.Add(new(Loc.T("Ordner auflösen", "Dissolve folder"), () => { Model.Config.DissolveFolder(e.Id, category.Id); Changed(); }, Glyph: ""));
         var others = Model.Config.Categories.Where(c => c.Id != category.Id).ToList();
         if (others.Count > 0)
@@ -676,10 +678,18 @@ sealed class LibraryPage : Page
     }
 
     /// <summary>Ctrl+G: the selected entries into a new folder, where the first of them was.</summary>
+    public void GroupSelection() { if (Selected is { } c) Group(c); }
+
     void Group(Category category)
     {
         var ids = category.Entries.Where(x => selectedEntries.Contains(x.Id) && !x.IsFolder).Select(x => x.Id).ToList();
-        if (ids.Count == 0) return;
+        if (ids.Count == 0)
+        {
+            Model.Hud.Show(openFolder != null
+                ? Loc.T("Ordner können keine Ordner enthalten", "Folders can't hold folders")
+                : Loc.T("Erst Einträge markieren (Klick, Umschalt oder Strg)", "Select entries first (click, Shift or Ctrl)"));
+            return;
+        }
         if (UI.Ask(Window, Loc.T("Neuer Ordner", "New folder"), Loc.T("Ordner", "Folder")) is not { Length: > 0 } name) return;
         var first = category.Entries.FindIndex(x => x.Id == ids[0]);
         var folderId = Model.Config.AddFolder(name, category.Id);

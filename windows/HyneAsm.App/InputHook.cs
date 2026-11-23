@@ -25,6 +25,8 @@ sealed class InputHook : IDisposable
     public Action<PanelKey>? OnOverlayKey;
     /// <summary>Mac-format combo of a key pressed in Live; returns true to swallow it.</summary>
     public Func<KeyCombo, bool>? OnShortcut;
+    /// <summary>A Win+key combo while one of our own windows is in front (e.g. Win+G in the settings); true = swallow.</summary>
+    public Func<KeyCombo, bool>? OnOwnWindowKey;
 
     public InputHook(LiveMonitor monitor)
     {
@@ -104,6 +106,8 @@ sealed class InputHook : IDisposable
             var key = (combo != null ? PanelBindings?.Invoke().Key(combo) : null) ?? EditKey(vk, mods) ?? TextKey(info, mods);
             if (key is { } k) { OnOverlayKey?.Invoke(k); return true; }
         }
+        if (combo != null && (mods & WinModifiers.Win) != 0 && Native.ProcessOf(Native.GetForegroundWindow()) == (uint)Environment.ProcessId)
+            return OnOwnWindowKey?.Invoke(combo) ?? false;
         if (!monitor.IsLiveFrontmost || combo == null) return false;
         return OnShortcut?.Invoke(combo) ?? false;
     }

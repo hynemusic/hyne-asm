@@ -423,7 +423,6 @@ static class UI
             Padding = new Thickness(24, 20, 24, 18), Child = content, Margin = new Thickness(16),
             Effect = new DropShadowEffect { BlurRadius = 24, ShadowDepth = 6, Opacity = 0.5, Color = Colors.Black },
         };
-        w.MouseLeftButtonDown += (_, e) => { if (e.ButtonState == MouseButtonState.Pressed) try { w.DragMove(); } catch (InvalidOperationException) { } };
         return w;
     }
 

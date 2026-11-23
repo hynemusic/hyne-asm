@@ -67,6 +67,9 @@ sealed class SettingsWindow : Window
 
     public void Select(int index) { current = index; Redraw(); }
 
+    /// <summary>Win+G from the keyboard hook (Windows would otherwise open the Game Bar).</summary>
+    public void GroupSelection() { if (Page is LibraryPage library) library.GroupSelection(); }
+
     /// <summary>Re-reads the config into the sidebar and the page (pages keep their own state, e.g. a search).</summary>
     public void Redraw()
     {
