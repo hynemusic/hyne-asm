@@ -28,7 +28,7 @@ https://www.reddit.com/r/ableton/comments/1y0o0ar/i_built_an_opensource_ableton_
 | | Download | Voraussetzungen / Requirements |
 |---|---|---|
 | **Mac** | **[⬇ HYNE-ASM-….dmg](https://github.com/hynemusic/hyne-asm/releases/latest)** | macOS 13 or later, Ableton Live 12 |
-| **Windows** | **[⬇ HYNE-ASM-Windows-….zip](https://github.com/hynemusic/hyne-asm/releases?q=win-v&expanded=true)** | Windows 10 or 11 (64-bit), Ableton Live 12 |
+| **Windows** | **[⬇ HYNE-ASM-Windows-….zip](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.0.0)** | Windows 10 or 11 (64-bit), Ableton Live 12 |
 
 Menüs lassen sich zwischen Mac und Windows austauschen (Einstellungen → Profile → Exportieren / Importieren).
 Menus move between Mac and Windows (Settings → Profiles → Export / Import).
@@ -56,8 +56,7 @@ Für ein Update lädst du einfach die neue DMG und ersetzt die App; deine Einste
 ### Windows
 
 1. Lade die Datei **HYNE-ASM-Windows-….zip** unter
-   [Windows-Releases](https://github.com/hynemusic/hyne-asm/releases?q=win-v&expanded=true) herunter (die oberste ist
-   die neueste).
+   [Windows-Release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.0.0) herunter.
 2. Entpacke sie und leg **HYNE ASM.exe** in einen Ordner deiner Wahl, z. B. `Dokumente\HYNE ASM`. Es ist eine einzige
    Datei, eine Installation ist nicht nötig.
 3. Starte **HYNE ASM.exe**. Beim ersten Mal zeigt Windows „Der Computer wurde durch Windows geschützt“, weil die App
@@ -93,7 +92,7 @@ To update, download the new DMG and replace the app; your settings stay.
 ### Windows
 
 1. Download **HYNE-ASM-Windows-….zip** from the
-   [Windows releases](https://github.com/hynemusic/hyne-asm/releases?q=win-v&expanded=true) (the top one is the newest).
+   [Windows release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.0.0).
 2. Unzip it and put **HYNE ASM.exe** in a folder of your choice, e.g. `Documents\HYNE ASM`. It's a single file; there's
    nothing to install.
 3. Start **HYNE ASM.exe**. The first time, Windows shows "Windows protected your PC" because the app isn't signed with
@@ -202,8 +201,9 @@ Every pull request also builds `HYNE ASM.exe` as a downloadable test build (Acti
   fingerprint and architectures with `scripts/verify-release.sh`, packages a DMG with `scripts/make-dmg.sh` and
   publishes it with its SHA-256 checksum on the Releases page.
 - **Windows:** pushing a tag `win-vX.Y.Z` runs `.github/workflows/release-windows.yml`: it tests, builds
-  `HYNE ASM.exe` with that version, zips it and publishes it with its SHA-256 checksum. Windows releases are never
-  marked "latest", so the Mac download link above keeps pointing at the Mac app.
+  `HYNE ASM.exe` with that version, zips it and publishes it with its SHA-256 checksum, then points the README's
+  Windows links at the new release. Windows releases are never marked "latest", so the Mac download link above keeps
+  pointing at the Mac app.
 
 ## License
 

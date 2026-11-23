@@ -62,3 +62,18 @@ jobs:
           gh release create "$TAG" "HYNE-ASM-Windows-$VERSION.zip" "HYNE-ASM-Windows-$VERSION.zip.sha256" \
             --title "HYNE ASM for Windows $VERSION" --latest=false \
             --notes "Windows version. Download the zip, unpack it and start HYNE ASM.exe. The first time, Windows shows \"Windows protected your PC\": click More info → Run anyway. The welcome window walks you through the rest."
+
+      # The README's Windows links point at one release (GitHub's "latest" link is the Mac app's): move them to this one.
+      - name: Point the README at this release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+          sed -i -E "s#releases/tag/win-v[0-9]+\.[0-9]+\.[0-9]+#releases/tag/$TAG#g" README.md
+          if git diff --quiet; then echo "README already points at $TAG"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "docs: Windows download links point at $TAG"
+          git push origin main
