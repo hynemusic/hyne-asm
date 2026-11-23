@@ -6,7 +6,7 @@ using HyneAsm.Core;
 
 namespace HyneAsm.App.Settings;
 
-/// <summary>Page "Behavior" (like the Mac's): the panel (categories placement, grid or list and its size with a live
+/// <summary>Page "Behavior" (like the Mac's): clicking a plugin's X-Y field to open it, the panel (categories placement, grid or list and its size with a live
 /// preview), where items land, hints, the Stream Deck link; plus starting with Windows.</summary>
 sealed class BehaviorPage : Page
 {
@@ -18,6 +18,13 @@ sealed class BehaviorPage : Page
         var panel = new StackPanel();
         panel.Children.Add(UI.PageHeader(Loc.T("Verhalten", "Behavior"),
             Loc.T("Wie das Panel aussieht, wo Plugins in Live landen und was andere Geräte auslösen können.", "How the panel looks, where plugins land in Live and what other devices can trigger.")));
+
+        // Plugin windows
+        panel.Children.Add(UI.GroupHeader("", Loc.T("Plugin-Fenster", "Plugin Windows")));
+        panel.Children.Add(UI.Card(UI.Row(Loc.T("Klick ins X-Y-Feld öffnet das Plugin", "Click the X-Y field to open the plugin"),
+            Loc.T("Ein Klick ins große Feld rechts in einem Plugin öffnet oder schließt sein Fenster, der X-Y-Punkt bleibt stehen. Sind mehrere Plugins ausgewählt (Umschalt-Klick), öffnen sich alle. Mit gedrückter Alt- oder Strg-Taste bedienst du das Feld wie gewohnt.",
+                  "A click in the big field on the right of a plugin opens or closes its window, and the X-Y dot stays put. With several plugins selected (Shift-click), all of them open. Hold Alt or Ctrl to use the field as usual."),
+            UI.Toggle(c.PluginWindowSettings.XyClick, v => { c.PluginWindowSettings = c.PluginWindowSettings with { XyClick = v }; Changed(); }), minHeight: 96)));
 
         // Panel
         panel.Children.Add(UI.GroupHeader("", Loc.T("Panel", "Panel")));

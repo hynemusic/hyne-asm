@@ -14,9 +14,12 @@ sealed class InputHook : IDisposable
     readonly Native.HookProc mouseProc, keyProc;   // kept alive: Windows calls them
     IntPtr mouseHook, keyHook;
     readonly DoubleRightClickDetector detector = new(TimeSpan.FromMilliseconds(Native.GetDoubleClickTime()));
-    bool swallowNextRightUp;
+    bool swallowNextRightUp, swallowingLeftClick;
 
     public Action<Native.POINT>? OnDoubleRightClick;
+    /// <summary>A left click in Live with no modifier or only Shift (point, Shift held); true = Live never gets the click
+    /// (its button-up included).</summary>
+    public Func<Native.POINT, bool, bool>? OnLeftClick;
     /// <summary>A click outside the open windows (they close unless Shift is held).</summary>
     public Action<Native.POINT>? OnClickOutside;
     public Func<bool>? IsOverlayVisible;
@@ -56,6 +59,13 @@ sealed class InputHook : IDisposable
             (IsOverlayVisible?.Invoke() ?? false))
             OnClickOutside?.Invoke(info.pt);
         if (msg == Native.WM_RBUTTONUP && swallowNextRightUp) { swallowNextRightUp = false; return true; }
+        if (msg == Native.WM_LBUTTONUP && swallowingLeftClick) { swallowingLeftClick = false; return true; }
+        if (msg == Native.WM_LBUTTONDOWN && !inOverlay && monitor.IsLiveFrontmost && OnLeftClick != null &&
+            !Native.IsDown(Native.VK_CONTROL) && !Native.IsDown(Native.VK_MENU) && !Native.IsDown(Native.VK_LWIN) && !Native.IsDown(Native.VK_RWIN))
+        {
+            swallowingLeftClick = OnLeftClick(info.pt, Native.IsDown(Native.VK_SHIFT));
+            return swallowingLeftClick;
+        }
         if (msg != Native.WM_RBUTTONDOWN || !monitor.IsLiveFrontmost || inOverlay) return false;
         if (detector.RightMouseDown(DateTime.UtcNow) != ClickVerdict.OpenPanel) return false;
         swallowNextRightUp = true;

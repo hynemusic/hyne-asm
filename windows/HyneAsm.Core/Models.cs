@@ -255,6 +255,17 @@ public sealed partial record LauncherConfig
     /// <summary>All profiles (named menus); the active one's menu is <see cref="Categories"/>.</summary>
     public List<Profile> Profiles { get; set; } = new();
     public Guid ActiveProfileID { get; set; } = Guid.NewGuid();
+    /// <summary>Opening plugin windows (shortcut, X-Y field click); null = defaults, left out of the file.</summary>
+    public PluginWindowSettings? PluginWindows { get; set; }
+
+    /// <summary><see cref="PluginWindows"/> with its defaults filled in. Change it by assigning a changed copy
+    /// (<c>with</c>), so a value equal to the defaults is stored as null again.</summary>
+    [JsonIgnore]
+    public PluginWindowSettings PluginWindowSettings
+    {
+        get => PluginWindows ?? PluginWindowSettings.Default;
+        set => PluginWindows = value == PluginWindowSettings.Default ? null : value;
+    }
 
     public const int CurrentVersion = 4;
 
@@ -307,6 +318,7 @@ public sealed partial record LauncherConfig
                 StreamDeckToken = SwiftJson.IfPresent(c, "streamDeckToken", o, NewToken),
                 Profiles = SwiftJson.IfPresent(c, "profiles", o, () => new List<Profile>()),
                 ActiveProfileID = SwiftJson.IfPresent(c, "activeProfileID", o, Guid.NewGuid),
+                PluginWindows = SwiftJson.Lenient<PluginWindowSettings?>(c, "pluginWindows", o, () => null),
             };
             SwiftJson.RejectNullElements(nameof(LauncherConfig), config.Categories, config.ColorRules.Values,
                 config.SearchRules, config.ItemShortcuts, config.Profiles);

@@ -95,6 +95,7 @@ sealed class Shell : IDisposable
             PanelBindings = () => model.Config.PanelKeys,
             OnOverlayKey = key => ui.BeginInvoke(() => { if (quickSearch.IsVisible) quickSearch.Handle(key); else panel.Handle(key); }),
             OnShortcut = Shortcut,
+            OnLeftClick = LeftClick,
             // Win+G (the Mac's Cmd+G): group the selected entries in the Library. Mac key code 5 = G, Ctrl flag = Win.
             OnOwnWindowKey = combo =>
             {
@@ -104,7 +105,11 @@ sealed class Shell : IDisposable
                 return false;
             },
         };
-        monitor.Changed += front => ui.BeginInvoke(() => { if (!front) { panel.Hide(); quickSearch.Hide(); } });
+        monitor.Changed += front => ui.BeginInvoke(() =>
+        {
+            if (!front) { panel.Hide(); quickSearch.Hide(); return; }
+            if (model.Config.PluginWindowSettings.XyClick && Native.GetCursorPos(out var p)) PluginWindowOpener.Warm(p);
+        });
     }
 
     public static Shell? Create(Dispatcher ui, string[] args)
@@ -198,9 +203,55 @@ sealed class Shell : IDisposable
                 });
                 return true;
         }
+        if (model.Config.IsOpenPluginWindowsShortcut(combo.KeyCode, combo.Modifiers))
+        {
+            OpenPluginWindows(pid);
+            return true;
+        }
         if (ShortcutMatcher.ItemShortcutFor(combo.KeyCode, combo.Modifiers, model.Config.ItemShortcuts) is not { } item) return false;
         ui.BeginInvoke(() => { panel.Hide(); quickSearch.Hide(); model.Insert(item); });
         return true;
+    }
+
+    void OpenPluginWindows(uint pid)
+    {
+        ui.BeginInvoke(() => { panel.Hide(); quickSearch.Hide(); });
+        Task.Run(() =>
+        {
+            var outcome = PluginWindowOpener.OpenAll(pid);
+            ui.BeginInvoke(() =>
+            {
+                if (outcome == PluginWindowOpener.Outcome.NoDeviceView)
+                    model.Hud.Show(Loc.T("Geräteansicht von Live einblenden (Umschalt+Tab)", "Show Live's device view (Shift+Tab)"));
+                else if (outcome == PluginWindowOpener.Outcome.NoPlugins)
+                    model.Hud.Show(Loc.T("Keine Plugins auf dieser Spur", "No plugins on this track"));
+            });
+        });
+    }
+
+    /// <summary>Which devices are selected in Live (Live doesn't report it, so the clicks are followed).</summary>
+    readonly DeviceSelectionTracker deviceSelection = new();
+
+    /// <summary>A plain click in a plugin's X-Y field opens its window (all selected plugins' when it is one of them)
+    /// and never reaches Live, so the X-Y dot stays put. Every other click passes through and updates the selection.
+    /// Runs on the hook thread: one quick UI Automation lookup, the pressing happens later.</summary>
+    bool LeftClick(Native.POINT point, bool shift)
+    {
+        if (!model.Config.PluginWindowSettings.XyClick || monitor.LivePid is not { } pid) return false;
+        var hit = PluginWindowOpener.ElementAt(point);
+        if (!shift && hit != null && PluginWindowPlanner.XyButton(hit.Id) is { } wrench &&
+            PluginWindowPlanner.DevicePath(hit.Id) is { } device)
+        {
+            var devices = deviceSelection.DevicesForClickOn(device);
+            Task.Run(() =>
+            {
+                if (devices.Count > 1) PluginWindowOpener.Toggle(devices, pid);
+                else PluginWindowOpener.Toggle(hit.Element, wrench);
+            });
+            return true;
+        }
+        deviceSelection.Click(hit?.Id, shift);
+        return false;
     }
 
     /// <summary>Runs a command from outside the app (hyneasm:// link or Stream Deck).</summary>

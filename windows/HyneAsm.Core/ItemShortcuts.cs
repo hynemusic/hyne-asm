@@ -56,6 +56,7 @@ public sealed partial record LauncherConfig
         if (Shortcuts.CloseAll.Contains(combo)) return Loc.T("Alle Plugin-Fenster schließen", "Close all plugin windows");
         if (Shortcuts.QuickSearch.Contains(combo)) return Loc.T("Schnellsuche öffnen", "Open quick search");
         if (Shortcuts.NextProfile.Contains(combo)) return Loc.T("Nächstes Profil", "Next profile");
+        if (PluginWindowSettings.OpenAll.Contains(combo)) return Loc.T("Alle Plugin-Fenster der Spur öffnen", "Open all plugin windows of the track");
         return ItemShortcuts.FirstOrDefault(s => s.Combo == combo && s.Id != ignoring)?.Name;
     }
 }

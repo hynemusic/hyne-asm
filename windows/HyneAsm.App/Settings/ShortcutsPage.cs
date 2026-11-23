@@ -139,8 +139,21 @@ sealed class ShortcutsPage : Page
 
         // Plugin windows
         panel.Children.Add(UI.GroupHeader("", Loc.T("Plugin-Fenster", "Plugin Windows"), Loc.T("Kürzel brauchen Strg, Alt oder Win.", "Shortcuts need Ctrl, Alt or Win."),
-            UI.Link(Loc.T("Standard wiederherstellen", "Restore Defaults"), () => { s.CloseFocused = d.CloseFocused; s.CloseAll = d.CloseAll.ToList(); Changed(); }, accent: false)));
+            UI.Link(Loc.T("Standard wiederherstellen", "Restore Defaults"), () =>
+            {
+                s.CloseFocused = d.CloseFocused; s.CloseAll = d.CloseAll.ToList();
+                c.PluginWindowSettings = c.PluginWindowSettings with { OpenAll = new() };
+                Changed();
+            }, accent: false)));
+        var openAll = new StackPanel();
+        openAll.Children.Add(Line(Loc.T("Alle Plugin-Fenster der Spur öffnen", "Open all plugin windows of the track"), c.PluginWindowSettings.OpenAll,
+            l => c.PluginWindowSettings = c.PluginWindowSettings with { OpenAll = l }, max: 2));
+        var openAllNote = UI.Caption(Loc.T("Öffnet alle Plugins der ausgewählten Spur, auch die in Racks. Sind schon alle offen, schließt dasselbe Kürzel sie wieder.",
+            "Opens every plugin on the selected track, racks included. If they're all open already, the same shortcut closes them."));
+        openAllNote.Margin = new Thickness(0, 0, 0, 12);
+        openAll.Children.Add(openAllNote);
         panel.Children.Add(UI.Card(
+            openAll,
             Line(Loc.T("Fokussiertes Plugin-Fenster schließen", "Close focused plugin window"), s.CloseFocused is { } f ? new List<KeyCombo> { f } : new(), l => s.CloseFocused = l.FirstOrDefault(), max: 1),
             Line(Loc.T("Alle Plugin-Fenster schließen", "Close all plugin windows"), s.CloseAll, l => s.CloseAll = l)));
 
