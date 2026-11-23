@@ -98,7 +98,7 @@ sealed class StatsPage : Page
             Grid.SetColumn(n, 1);
             g.Children.Add(n);
             var barLine = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
-            var color = KindColor(s.Kind);
+            var color = Theme.LabelColor(s.ColorID) ?? KindColor(s.Kind);   // the plugin's own colour, else its kind's
             var fill = s.IsAvailable ? color : Color.FromArgb(110, color.R, color.G, color.B);
             var bar = new Border { Height = 20, CornerRadius = new CornerRadius(Theme.Radius(4)), Background = Theme.B(fill), Width = Math.Max(8, 520.0 * s.Count / max), MaxWidth = 520 };
             barLine.Children.Add(bar);
@@ -197,7 +197,7 @@ sealed class StatsPage : Page
         var right = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
         var track = new Grid { Width = 210, Height = 6, VerticalAlignment = VerticalAlignment.Center };
         track.Children.Add(new Border { Background = Theme.Ink(0.08), CornerRadius = new CornerRadius(3) });
-        track.Children.Add(new Border { Background = Theme.B(KindColor(s.Kind)), CornerRadius = new CornerRadius(3), HorizontalAlignment = HorizontalAlignment.Left, Width = 210.0 * s.Count / max });
+        track.Children.Add(new Border { Background = Theme.B(Theme.LabelColor(s.ColorID) ?? KindColor(s.Kind)), CornerRadius = new CornerRadius(3), HorizontalAlignment = HorizontalAlignment.Left, Width = 210.0 * s.Count / max });
         right.Children.Add(track);
         var pct = UI.Text($"{(total == 0 ? 0 : s.Count * 100.0 / total):0} %", 12.5, Theme.TextTertiary);
         pct.Width = 62; pct.TextAlignment = TextAlignment.Right;

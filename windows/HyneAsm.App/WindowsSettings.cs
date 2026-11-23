@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace HyneAsm.App;
@@ -8,12 +10,36 @@ namespace HyneAsm.App;
 /// %APPDATA%\HYNE ASM\windows.json.</summary>
 sealed class WindowsSettings
 {
-    /// <summary>Where dropped preset files are copied. Empty = User Library\Presets\HYNE ASM.</summary>
+    /// <summary>Folders dropped presets can be copied to. Empty = just User Library\Presets\HYNE ASM.</summary>
+    public List<string> PresetFolders { get; set; } = new();
+    /// <summary>The one used without asking (index into <see cref="Folders"/>).</summary>
+    public int DefaultPresetFolder { get; set; }
+    /// <summary>Older single-folder setting, read once and moved into <see cref="PresetFolders"/>.</summary>
     public string? PresetFolderSetting { get; set; }
 
-    public string PresetFolder => string.IsNullOrWhiteSpace(PresetFolderSetting) ? DefaultPresetFolder : PresetFolderSetting!;
+    public static string BuiltInPresetFolder => Path.Combine(ScriptInstaller.UserLibrary, "Presets", "HYNE ASM");
 
-    public static string DefaultPresetFolder => Path.Combine(ScriptInstaller.UserLibrary, "Presets", "HYNE ASM");
+    /// <summary>All preset folders, the built-in one when none was added.</summary>
+    public IReadOnlyList<string> Folders => PresetFolders.Count > 0 ? PresetFolders : new[] { BuiltInPresetFolder };
+
+    public string PresetFolder => Folders[Math.Clamp(DefaultPresetFolder, 0, Folders.Count - 1)];
+
+    public void AddFolder(string path)
+    {
+        if (PresetFolders.Count == 0) PresetFolders.Add(BuiltInPresetFolder);
+        if (!PresetFolders.Any(f => string.Equals(Path.GetFullPath(f), Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase))) PresetFolders.Add(path);
+        Save();
+    }
+
+    public void RemoveFolder(int index)
+    {
+        if (PresetFolders.Count == 0 || index < 0 || index >= PresetFolders.Count) return;
+        PresetFolders.RemoveAt(index);
+        if (DefaultPresetFolder >= index) DefaultPresetFolder = Math.Max(0, DefaultPresetFolder - 1);
+        Save();
+    }
+
+    public void MakeDefault(int index) { DefaultPresetFolder = index; Save(); }
 
     static string FilePath => Path.Combine(Path.GetDirectoryName(HyneAsm.Core.ConfigStore.DefaultPath)!, "windows.json");
 
@@ -22,8 +48,17 @@ sealed class WindowsSettings
 
     static WindowsSettings Load()
     {
-        try { return JsonSerializer.Deserialize<WindowsSettings>(File.ReadAllText(FilePath)) ?? new(); }
-        catch (Exception) { return new(); }
+        WindowsSettings s;
+        try { s = JsonSerializer.Deserialize<WindowsSettings>(File.ReadAllText(FilePath)) ?? new(); }
+        catch (Exception) { s = new(); }
+        if (!string.IsNullOrWhiteSpace(s.PresetFolderSetting))
+        {
+            s.PresetFolders = new() { BuiltInPresetFolder, s.PresetFolderSetting! };
+            s.DefaultPresetFolder = 1;
+            s.PresetFolderSetting = null;
+            s.Save();
+        }
+        return s;
     }
 
     public void Save()

@@ -473,6 +473,39 @@ static class UI
         return result;
     }
 
+    /// <summary>Pick one of several options (null when cancelled). The first highlighted option is <paramref name="preselect"/>.</summary>
+    public static int? Choose(Window owner, string title, string text, IReadOnlyList<(string Title, string Detail)> options, int preselect = 0)
+    {
+        int? result = null;
+        var panel = new StackPanel { Width = 460 };
+        panel.Children.Add(Text(title, 16, weight: FontWeights.Bold, wrap: true));
+        var t = Text(text, 13.5, Theme.TextSecondary, wrap: true);
+        t.Margin = new Thickness(0, 8, 0, 12);
+        panel.Children.Add(t);
+        Window? w = null;
+        for (var i = 0; i < options.Count; i++)
+        {
+            var index = i;
+            var row = new StackPanel();
+            row.Children.Add(Text(options[i].Title, 14, weight: FontWeights.SemiBold));
+            row.Children.Add(Text(options[i].Detail, 12, Theme.TextTertiary));
+            var b = new Border
+            {
+                Child = row, Padding = new Thickness(12, 8, 12, 8), Margin = new Thickness(0, 0, 0, 6), CornerRadius = new CornerRadius(Theme.Radius(8)),
+                Background = Raised, BorderBrush = i == preselect ? Theme.Accent : Theme.Stroke, BorderThickness = new Thickness(1), Cursor = Cursors.Hand,
+            };
+            b.MouseEnter += (_, _) => b.Background = Hover;
+            b.MouseLeave += (_, _) => b.Background = Raised;
+            b.MouseLeftButtonUp += (_, _) => { result = index; w!.Close(); };
+            panel.Children.Add(b);
+        }
+        panel.Children.Add(Buttons(Button(Loc.T("Abbrechen", "Cancel"), () => w!.Close())));
+        w = Dialog(owner, panel);
+        w.KeyDown += (_, e) => { if (e.Key == Key.Escape) w.Close(); if (e.Key == Key.Enter) { result = preselect; w.Close(); } };
+        w.ShowDialog();
+        return result;
+    }
+
     public static void Tell(Window owner, string title, string text)
     {
         var panel = new StackPanel { MaxWidth = 420 };

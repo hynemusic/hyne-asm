@@ -109,32 +109,42 @@ sealed class BehaviorPage : Page
             Loc.T("Dieselben Befehle funktionieren als hyneasm://-Link, z. B. hyneasm://insert?name=Pro-Q%204.", "The same commands work as hyneasm:// links, e.g. hyneasm://insert?name=Pro-Q%204."), null));
         panel.Children.Add(UI.Card(rows.ToArray()));
 
-        // Your presets
+        // Your presets: several folders, one is used without asking
         var ws = WindowsSettings.Current;
-        var folderButtons = new StackPanel { Orientation = Orientation.Horizontal };
-        folderButtons.Children.Add(UI.SmallButton(Loc.T("Ändern …", "Change …"), () =>
-        {
-            using var dialog = new System.Windows.Forms.FolderBrowserDialog { SelectedPath = ws.PresetFolder, UseDescriptionForTitle = true, Description = Loc.T("Ordner für eingefügte Presets", "Folder for dropped presets") };
-            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
-            ws.PresetFolderSetting = dialog.SelectedPath;
-            ws.Save();
-            Window.Redraw();
-        }));
-        folderButtons.Children.Add(UI.IconButton("", () =>
-        {
-            System.IO.Directory.CreateDirectory(ws.PresetFolder);
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", ws.PresetFolder) { UseShellExecute = true });
-        }, Loc.T("Im Explorer öffnen", "Open in Explorer")));
-        if (!string.IsNullOrWhiteSpace(ws.PresetFolderSetting))
-            folderButtons.Children.Add(UI.IconButton("", () => { ws.PresetFolderSetting = null; ws.Save(); Window.Redraw(); }, Loc.T("Standard", "Default")));
-        var inLibrary = PresetImport.IsInside(System.IO.Path.Combine(ws.PresetFolder, "x"), ScriptInstaller.UserLibrary);
         panel.Children.Add(UI.GroupHeader("", Loc.T("Eigene Presets", "Your Presets"),
-            Loc.T("Presets (.adg, .adv, .vstpreset …), die du in die Bibliothek ziehst und die Live noch nicht kennt, werden hierhin kopiert.",
-                  "Presets (.adg, .adv, .vstpreset …) you drop into the Library that Live doesn't know yet are copied here.")));
-        panel.Children.Add(UI.Card(UI.Row(Loc.T("Ordner für eingefügte Presets", "Folder for dropped presets"),
-            ws.PresetFolder + (inLibrary ? "" : "\n" + Loc.T("Liegt außerhalb der User Library: in Live unter „Orte“ hinzufügen, sonst findet Live die Presets nicht.",
-                                                             "Outside the User Library: add it in Live under “Places”, or Live won't find the presets.")),
-            folderButtons)));
+            Loc.T("Presets (.adg, .adv, .vstpreset …), die du in die Bibliothek ziehst und die Live noch nicht kennt, werden in einen dieser Ordner kopiert. Mit mehreren Ordnern fragt HYNE ASM beim Ziehen, wohin.",
+                  "Presets (.adg, .adv, .vstpreset …) you drop into the Library that Live doesn't know yet are copied into one of these folders. With several folders, HYNE ASM asks where when you drop."),
+            UI.Link(Loc.T("Ordner hinzufügen …", "Add folder …"), () =>
+            {
+                using var dialog = new System.Windows.Forms.FolderBrowserDialog { UseDescriptionForTitle = true, Description = Loc.T("Ordner für Presets", "Folder for presets"), SelectedPath = ScriptInstaller.UserLibrary };
+                if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
+                ws.AddFolder(dialog.SelectedPath);
+                Window.Redraw();
+            }, "")));
+        var folderRows = new System.Collections.Generic.List<UIElement>();
+        for (var i = 0; i < ws.Folders.Count; i++)
+        {
+            var index = i;
+            var path = ws.Folders[i];
+            var isDefault = i == Math.Clamp(ws.DefaultPresetFolder, 0, ws.Folders.Count - 1);
+            var inLibrary = PresetImport.IsInside(System.IO.Path.Combine(path, "x"), ScriptInstaller.UserLibrary);
+            var buttons = new StackPanel { Orientation = Orientation.Horizontal };
+            if (isDefault) buttons.Children.Add(UI.Text(Loc.T("Standard", "Default"), 12.5, Theme.Accent, FontWeights.SemiBold));
+            else buttons.Children.Add(UI.SmallButton(Loc.T("Als Standard", "Make default"), () => { ws.MakeDefault(index); Window.Redraw(); }));
+            buttons.Children.Add(UI.IconButton("", () =>
+            {
+                System.IO.Directory.CreateDirectory(path);
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", path) { UseShellExecute = true });
+            }, Loc.T("Im Explorer öffnen", "Open in Explorer")));
+            if (ws.PresetFolders.Count > 1)
+                buttons.Children.Add(UI.IconButton("", () => { ws.RemoveFolder(index); Window.Redraw(); }, Loc.T("Aus der Liste entfernen (der Ordner bleibt)", "Remove from the list (the folder stays)")));
+            var title = System.IO.Path.GetFileName(path.TrimEnd('\\', '/'));
+            folderRows.Add(UI.Row(title.Length > 0 ? title : path,
+                path + (inLibrary ? "" : "\n" + Loc.T("Außerhalb der User Library: in Live unter „Orte“ hinzufügen, sonst findet Live die Presets nicht.",
+                                                     "Outside the User Library: add it in Live under “Places”, or Live won't find the presets.")),
+                buttons, UI.IconTile("", isDefault ? Theme.Accent : Theme.TextSecondary)));
+        }
+        panel.Children.Add(UI.Card(folderRows.ToArray()));
 
         // Windows
         panel.Children.Add(UI.GroupHeader("", "Windows"));

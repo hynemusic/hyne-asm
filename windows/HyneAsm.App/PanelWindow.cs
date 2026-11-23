@@ -30,6 +30,22 @@ sealed class PanelWindow : Overlay
     readonly DispatcherTimer flyoutHide = new() { Interval = TimeSpan.FromMilliseconds(180) };
     readonly DispatcherTimer edgeTimer = new();
     const double LeftStrip = 14;
+    const string PadFormat = "HyneAsm.PanelPad";
+    (int Index, Point At)? dragFrom;
+    bool justDragged;
+
+    /// <summary>Pads can be dragged in a category (top level), not in search results.</summary>
+    bool CanReorder => state is { Filter.Length: 0, OpenFolderID: null } && state.Tabs.Count > 0 && state.Tabs[state.SelectedTab] is PanelTab.Category;
+
+    void Reorder(int from, int to)
+    {
+        if (from == to || state?.Tabs[state.SelectedTab] is not PanelTab.Category category) return;
+        model.Config.MoveEntry(category.Id, null, from, to);
+        model.ConfigChanged();
+        state = new PanelState(model.Config, model.SearchIndex, lastTab, model.Usage.Counts);
+        hovered = null;
+        Render();
+    }
     double bodyTop, bodyBottom;
 
     public PanelWindow(AppModel model)
@@ -139,7 +155,7 @@ sealed class PanelWindow : Overlay
         flyoutFolder = folder;
         // Right beside the folder pad, its first row level with the pad's top, over whatever is there.
         var corner = anchor.PointToScreen(new Point(anchor.ActualWidth + 4, 0));
-        flyout.Show(state.FolderRows(folder), new Native.POINT { X = (int)corner.X, Y = (int)corner.Y }, model.Config.PanelSize);
+        flyout.Show(state.FolderRows(folder), new Native.POINT { X = (int)corner.X, Y = (int)corner.Y }, IsGrid, ItemWidth, ItemHeight);
     }
 
     void ScheduleFlyoutHide()
@@ -404,8 +420,24 @@ sealed class PanelWindow : Overlay
             if (row.FolderID != null) ScheduleFlyoutHide();
         };
         if (row.FolderID is { } fid) folderPads[fid] = holder;
-        holder.MouseLeftButtonUp += (_, _) => Insert(row);
+        holder.MouseLeftButtonUp += (_, _) => { if (justDragged) { justDragged = false; return; } Insert(row); };
         holder.MouseRightButtonUp += (_, e) => { e.Handled = true; ShowPadMenu(holder, row); };
+        // Drag a pad onto another to move it there (in a category, not while searching).
+        holder.AllowDrop = true;
+        holder.PreviewMouseLeftButtonDown += (_, e) => dragFrom = (index, e.GetPosition(this));
+        holder.MouseMove += (_, e) =>
+        {
+            if (e.LeftButton != MouseButtonState.Pressed || dragFrom is not { } d || d.Index != index || !CanReorder) return;
+            var p = e.GetPosition(this);
+            if (Math.Abs(p.X - d.At.X) < 6 && Math.Abs(p.Y - d.At.Y) < 6) return;
+            justDragged = true;
+            HideFlyout();
+            DragDrop.DoDragDrop(holder, new DataObject(PadFormat, index), DragDropEffects.Move);
+            dragFrom = null;
+        };
+        holder.DragOver += (_, e) => { e.Effects = e.Data.GetDataPresent(PadFormat) ? DragDropEffects.Move : DragDropEffects.None; holder.Opacity = 0.55; e.Handled = true; };
+        holder.DragLeave += (_, _) => holder.Opacity = row.IsAvailable ? 1 : 0.5;
+        holder.Drop += (_, e) => { if (e.Data.GetData(PadFormat) is int from) Reorder(from, index); };
         return holder;
     }
 

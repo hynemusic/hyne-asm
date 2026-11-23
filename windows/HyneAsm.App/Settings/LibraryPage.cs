@@ -14,7 +14,7 @@ namespace HyneAsm.App.Settings;
 /// Double-click or drag to add; Shift/Ctrl pick several; drag pads to reorder; right-click for name, icon, colour.</summary>
 sealed class LibraryPage : Page
 {
-    const string ItemsFormat = "HyneAsm.Items", EntriesFormat = "HyneAsm.Entries";
+    const string ItemsFormat = "HyneAsm.Items", EntriesFormat = "HyneAsm.Entries", CategoryFormat = "HyneAsm.Category";
 
     Guid? selectedCategory;
     Guid? openFolder;
@@ -308,6 +308,13 @@ sealed class LibraryPage : Page
         };
         if (selected) UI.Glow(row);
         row.MouseLeftButtonUp += (_, _) => { selectedCategory = c.Id; openFolder = null; selectedEntries.Clear(); Window.Redraw(); };
+        // Drag a category onto another to move it there.
+        row.PreviewMouseLeftButtonDown += (_, e) => dragStart = e.GetPosition(Window);
+        row.MouseMove += (_, e) =>
+        {
+            if (e.LeftButton != MouseButtonState.Pressed || !Far(e.GetPosition(Window))) return;
+            DragDrop.DoDragDrop(row, new DataObject(CategoryFormat, c.Id), DragDropEffects.Move);
+        };
         row.MouseRightButtonUp += (_, e) =>
         {
             e.Handled = true;
@@ -329,10 +336,16 @@ sealed class LibraryPage : Page
             UI.Menu(row, items);
         };
         // Drop plugins from the left, or pads from the preview (moves them here).
-        row.DragOver += (_, e) => { e.Effects = e.Data.GetDataPresent(ItemsFormat) || e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : e.Data.GetDataPresent(EntriesFormat) ? DragDropEffects.Move : DragDropEffects.None; row.Background = UI.AccentTint(0.18); e.Handled = true; };
+        row.DragOver += (_, e) => { e.Effects = e.Data.GetDataPresent(ItemsFormat) || e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : e.Data.GetDataPresent(EntriesFormat) || e.Data.GetDataPresent(CategoryFormat) ? DragDropEffects.Move : DragDropEffects.None; row.Background = UI.AccentTint(0.18); e.Handled = true; };
         row.DragLeave += (_, _) => row.Background = selected ? UI.Raised : Brushes.Transparent;
         row.Drop += (_, e) =>
         {
+            if (e.Data.GetData(CategoryFormat) is Guid moved)
+            {
+                var from = Model.Config.Categories.FindIndex(x => x.Id == moved);
+                if (from >= 0 && from != index) { Model.Config.MoveCategory(from, index); Changed(); }
+                return;
+            }
             if (e.Data.GetData(ItemsFormat) is List<object> items) Add(items, c.Id, null);
             else if (e.Data.GetData(DataFormats.FileDrop) is string[] files) ImportPresets(files, c.Id, null);
             else if (e.Data.GetData(EntriesFormat) is (Guid from, List<Guid> ids) && from != c.Id) MoveToCategory(from, ids, c.Id);
@@ -483,6 +496,7 @@ sealed class LibraryPage : Page
         holder.MouseEnter += (_, _) => holder.Child = PadView.Build(data, isGrid, true, Selected());
         holder.MouseLeave += (_, _) => holder.Child = PadView.Build(data, isGrid, false, Selected());
         WireEntry(holder, category, folder, entries, index);
+        if (e.IsFolder) holder.MouseEnter += (_, _) => HoverFolder(holder, category, e);
         return holder;
     }
 
@@ -598,9 +612,11 @@ sealed class LibraryPage : Page
     /// dragged straight back out, or new ones dropped in.</summary>
     void FolderPopover(FrameworkElement at, Category category, Entry folder)
     {
+        if (openPopover is { IsOpen: true } && popoverFolder == folder.Id) return;
+        if (openPopover != null) openPopover.IsOpen = false;
         var popup = new System.Windows.Controls.Primitives.Popup
         {
-            PlacementTarget = at, Placement = System.Windows.Controls.Primitives.PlacementMode.Right, StaysOpen = false, AllowsTransparency = true,
+            PlacementTarget = at, Placement = System.Windows.Controls.Primitives.PlacementMode.Right, StaysOpen = true, AllowsTransparency = true,
             HorizontalOffset = 6,
         };
         var list = new StackPanel { Width = 280 };
@@ -661,7 +677,55 @@ sealed class LibraryPage : Page
             { foreach (var id in ids) Model.Config.MoveEntry(id, folder.Id, category.Id); Changed(); }
         };
         popup.Child = box;
+        openPopover = popup;
+        popoverFolder = folder.Id;
+        popoverAnchor = at;
+        box.MouseLeave += (_, _) => SchedulePopoverClose();
+        at.MouseLeave += (_, _) => SchedulePopoverClose();
+        box.MouseEnter += (_, _) => popoverTimer.Stop();
         popup.IsOpen = true;
+    }
+
+    System.Windows.Controls.Primitives.Popup? openPopover;
+    Guid? popoverFolder;
+    FrameworkElement? popoverAnchor;
+    readonly System.Windows.Threading.DispatcherTimer popoverTimer = new() { Interval = TimeSpan.FromMilliseconds(260) };
+    Action? popoverAction;
+
+    /// <summary>Hovering a folder pad opens its pop-over after a moment (not while a button is held, e.g. dragging).</summary>
+    void HoverFolder(FrameworkElement pad, Category category, Entry folder)
+    {
+        popoverTimer.Stop();
+        popoverAction = () =>
+        {
+            if (pad.IsMouseOver && Mouse.LeftButton != MouseButtonState.Pressed) FolderPopover(pad, category, folder);
+        };
+        EnsureTimer();
+        popoverTimer.Start();
+    }
+
+    void SchedulePopoverClose()
+    {
+        popoverTimer.Stop();
+        popoverAction = () =>
+        {
+            if (openPopover == null) return;
+            var overBox = openPopover.Child?.IsMouseOver ?? false;
+            if (overBox || (popoverAnchor?.IsMouseOver ?? false) || Mouse.LeftButton == MouseButtonState.Pressed) return;
+            openPopover.IsOpen = false;
+            openPopover = null;
+            popoverFolder = null;
+        };
+        EnsureTimer();
+        popoverTimer.Start();
+    }
+
+    bool timerWired;
+    void EnsureTimer()
+    {
+        if (timerWired) return;
+        timerWired = true;
+        popoverTimer.Tick += (_, _) => { popoverTimer.Stop(); popoverAction?.Invoke(); };
     }
 
     /// <summary>Preset files from Explorer: the ones Live lists are found, the others copied into the preset folder
@@ -690,9 +754,19 @@ sealed class LibraryPage : Page
         try { await Model.Catalog.Refresh(rescan: true); } catch (Exception) { }
         missing = AddFound(missing);
         if (missing.Count == 0) return;
-        var target = WindowsSettings.Current.PresetFolder;
+        var settings = WindowsSettings.Current;
+        var target = settings.PresetFolder;
         var names = string.Join("\n", missing.Select(System.IO.Path.GetFileName).Take(8));
-        if (!UI.Confirm(Window, Loc.T("Presets kopieren?", "Copy the presets?"),
+        if (settings.Folders.Count > 1)
+        {
+            var pick = UI.Choose(Window, Loc.T("Wohin kopieren?", "Copy where?"),
+                Loc.T($"Live kennt diese Presets noch nicht:\n{names}\n\nHYNE ASM kopiert sie in einen deiner Preset-Ordner. Die Originale bleiben, wo sie sind.",
+                      $"Live doesn't know these presets yet:\n{names}\n\nHYNE ASM copies them into one of your preset folders. The originals stay where they are."),
+                settings.Folders.Select(f => (System.IO.Path.GetFileName(f.TrimEnd('\\', '/')), f)).ToList(), Math.Clamp(settings.DefaultPresetFolder, 0, settings.Folders.Count - 1));
+            if (pick is not { } chosen) return;
+            target = settings.Folders[chosen];
+        }
+        else if (!UI.Confirm(Window, Loc.T("Presets kopieren?", "Copy the presets?"),
                 Loc.T($"Live kennt diese Presets noch nicht:\n{names}\n\nHYNE ASM kopiert sie nach „{target}“, damit Live sie laden kann. Die Originale bleiben, wo sie sind.",
                       $"Live doesn't know these presets yet:\n{names}\n\nHYNE ASM copies them to “{target}” so Live can load them. The originals stay where they are."),
                 Loc.T("Kopieren", "Copy"))) return;
