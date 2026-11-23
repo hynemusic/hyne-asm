@@ -26,12 +26,19 @@ jobs:
       - name: Bridge tests
         run: python -m unittest discover -s bridge/tests
       - name: Build the app
-        run: dotnet publish windows/HyneAsm.App/HyneAsm.App.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:PublishReadyToRun=true -o publish
+        run: dotnet publish windows/HyneAsm.App/HyneAsm.App.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish
+      - name: Build the installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
+          & $iscc /Qp /DAppVersion=0.0.0-test windows/installer/HyneAsm.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Upload the test build
         uses: actions/upload-artifact@v4
         with:
-          name: HYNE-ASM-Windows-test-build
-          path: publish/HYNE ASM.exe
+          name: HYNE-ASM-Windows-Setup-test-build
+          path: dist/*.exe
           retention-days: 30
 
   mac-fixtures:

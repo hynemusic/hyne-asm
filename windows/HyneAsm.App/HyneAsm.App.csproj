@@ -17,6 +17,10 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>AppIcon.ico</ApplicationIcon>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- Uses the .NET Desktop Runtime installed on the PC (the installer adds it when missing), so the app stays under
+         1 MB; a newer major version (9, 10 …) works too. -->
+    <RollForward>Major</RollForward>
+    <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
     <!-- Per-monitor DPI comes from app.manifest (WPF owns the windows; WinForms only draws the tray menu). -->
     <NoWarn>$(NoWarn);WFAC010</NoWarn>
   </PropertyGroup>

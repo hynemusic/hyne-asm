@@ -43,25 +43,29 @@ jobs:
         run: |
           VERSION="${TAG#win-v}"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-          dotnet publish windows/HyneAsm.App/HyneAsm.App.csproj -c Release -r win-x64 --self-contained \
-            -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:PublishReadyToRun=true \
-            -p:HM_VERSION="$VERSION" -o publish
+          # Under 1 MB: it uses the .NET Desktop Runtime, which the installer adds when it's missing.
+          dotnet publish windows/HyneAsm.App/HyneAsm.App.csproj -c Release -r win-x64 --self-contained false \
+            -p:PublishSingleFile=true -p:HM_VERSION="$VERSION" -o publish
 
-      - name: Package
+      - name: Build the installer
         shell: pwsh
         run: |
-          $zip = "HYNE-ASM-Windows-$env:VERSION.zip"
-          Compress-Archive -Path "publish/HYNE ASM.exe" -DestinationPath $zip
-          (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower() + "  $zip" | Out-File -Encoding ascii "$zip.sha256"
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
+          & $iscc /Qp "/DAppVersion=$env:VERSION" windows/installer/HyneAsm.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $setup = "HYNE-ASM-Windows-Setup-$env:VERSION.exe"
+          Move-Item "dist/$setup" $setup
+          (Get-FileHash $setup -Algorithm SHA256).Hash.ToLower() + "  $setup" | Out-File -Encoding ascii "$setup.sha256"
 
       - name: Publish
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$TAG" "HYNE-ASM-Windows-$VERSION.zip" "HYNE-ASM-Windows-$VERSION.zip.sha256" \
+          gh release create "$TAG" "HYNE-ASM-Windows-Setup-$VERSION.exe" "HYNE-ASM-Windows-Setup-$VERSION.exe.sha256" \
             --title "HYNE ASM for Windows $VERSION" --latest=false \
-            --notes "Windows version. Download the zip, unpack it and start HYNE ASM.exe. The first time, Windows shows \"Windows protected your PC\": click More info → Run anyway. The welcome window walks you through the rest."
+            --notes "Windows version. Download HYNE-ASM-Windows-Setup-$VERSION.exe, start it and click Install. If Microsoft's .NET Desktop Runtime is missing, the setup downloads and installs it (Windows asks once for admin rights). The first time, Windows may show \"Windows protected your PC\": click More info → Run anyway. To update, run the new setup."
 
       # The README's Windows links point at one release (GitHub's "latest" link is the Mac app's): move them to this one.
       - name: Point the README at this release

@@ -28,7 +28,7 @@ https://www.reddit.com/r/ableton/comments/1y0o0ar/i_built_an_opensource_ableton_
 | | Download | Voraussetzungen / Requirements |
 |---|---|---|
 | **Mac** | **[⬇ HYNE-ASM-….dmg](https://github.com/hynemusic/hyne-asm/releases/latest)** | macOS 13 or later, Ableton Live 12 |
-| **Windows** | **[⬇ HYNE-ASM-Windows-….zip](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.0.0)** | Windows 10 or 11 (64-bit), Ableton Live 12 |
+| **Windows** | **[⬇ HYNE-ASM-Windows-Setup-….exe](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.0.0)** | Windows 10 or 11 (64-bit), Ableton Live 12 |
 
 Menüs lassen sich zwischen Mac und Windows austauschen (Einstellungen → Profile → Exportieren / Importieren).
 Menus move between Mac and Windows (Settings → Profiles → Export / Import).
@@ -55,12 +55,12 @@ Für ein Update lädst du einfach die neue DMG und ersetzt die App; deine Einste
 
 ### Windows
 
-1. Lade die Datei **HYNE-ASM-Windows-….zip** unter
-   [Windows-Release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.0.0) herunter.
-2. Entpacke sie und leg **HYNE ASM.exe** in einen Ordner deiner Wahl, z. B. `Dokumente\HYNE ASM`. Es ist eine einzige
-   Datei, eine Installation ist nicht nötig.
-3. Starte **HYNE ASM.exe**. Beim ersten Mal zeigt Windows „Der Computer wurde durch Windows geschützt“, weil die App
+1. Lade **HYNE-ASM-Windows-Setup-….exe** unter
+   [Windows-Release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.0.0) herunter (etwa 1 MB).
+2. Starte sie. Beim ersten Mal zeigt Windows eventuell „Der Computer wurde durch Windows geschützt“, weil die App
    nicht mit einem kostenpflichtigen Zertifikat signiert ist: auf **Weitere Informationen → Trotzdem ausführen** klicken.
+3. Auf **Installieren** klicken. Fehlt auf deinem PC Microsofts kostenlose **.NET Desktop Runtime**, lädt das Setup sie
+   selbst von Microsoft und installiert sie (Windows fragt dafür einmal nach Admin-Rechten). Am Ende startet HYNE ASM.
 4. Das Willkommensfenster führt durch den Rest:
    - **Live-Script installieren** klicken (es kommt in deine User Library).
    - Live neu starten, dann **Einstellungen → Link, Tempo & MIDI → Control Surface: ASMbridge** wählen
@@ -68,9 +68,9 @@ Für ein Update lädst du einfach die neue DMG und ersetzt die App; deine Einste
    - Ausprobieren: doppelter Rechtsklick auf eine Spur in Live, oder **Strg+Leertaste**.
 5. HYNE ASM läuft im Infobereich rechts unten in der Taskleiste (eventuell hinter dem **^**-Pfeil; zum Anheften das
    Symbol auf die Taskleiste ziehen). Rechtsklick darauf öffnet das Menü, Doppelklick die Einstellungen. Unter
-   **Mit Windows starten** startet es automatisch.
+   **Mit Windows starten** startet es automatisch. Im Startmenü findest du es als **HYNE ASM**.
 
-Für ein Update: HYNE ASM über das Tray-Symbol beenden und die neue **HYNE ASM.exe** über die alte kopieren; deine
+Für ein Update lädst du einfach das neue Setup und startest es; es schließt die laufende App selbst, deine
 Einstellungen bleiben erhalten.
 
 ## Install (English)
@@ -91,21 +91,21 @@ To update, download the new DMG and replace the app; your settings stay.
 
 ### Windows
 
-1. Download **HYNE-ASM-Windows-….zip** from the
-   [Windows release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.0.0).
-2. Unzip it and put **HYNE ASM.exe** in a folder of your choice, e.g. `Documents\HYNE ASM`. It's a single file; there's
-   nothing to install.
-3. Start **HYNE ASM.exe**. The first time, Windows shows "Windows protected your PC" because the app isn't signed with
-   a paid certificate: click **More info → Run anyway**.
+1. Download **HYNE-ASM-Windows-Setup-….exe** from the
+   [Windows release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.0.0) (about 1 MB).
+2. Start it. The first time, Windows may show "Windows protected your PC" because the app isn't signed with a paid
+   certificate: click **More info → Run anyway**.
+3. Click **Install**. If your PC doesn't have Microsoft's free **.NET Desktop Runtime** yet, the setup downloads it from
+   Microsoft and installs it (Windows asks once for admin rights). HYNE ASM starts at the end.
 4. The welcome window walks you through the rest:
    - Click **Install Live Script** (it goes into your User Library).
    - Restart Live, then choose **Settings → Link, Tempo & MIDI → Control Surface: ASMbridge** (Input/Output: None).
    - Try it: double right-click a track in Live, or press **Ctrl+Space**.
 5. HYNE ASM lives in the notification area at the bottom right of the taskbar (maybe behind the **^** arrow; drag the
    icon onto the taskbar to keep it visible). Right-click it for the menu, double-click it for the settings. Turn on
-   **Start with Windows** to have it start by itself.
+   **Start with Windows** to have it start by itself. It's in the Start menu as **HYNE ASM**.
 
-To update: quit HYNE ASM from the tray icon and copy the new **HYNE ASM.exe** over the old one; your settings stay.
+To update, download the new setup and run it; it closes the running app itself and your settings stay.
 
 ---
 
@@ -116,7 +116,8 @@ To update: quit HYNE ASM from the tray icon and copy the new **HYNE ASM.exe** ov
   auf einem privaten Rechner. Unter [Actions](https://github.com/hynemusic/hyne-asm/actions) siehst du zu jeder Version
   den Build, aus dem sie stammt; neben jedem Download liegt seine SHA-256-Prüfsumme.
 - **Mac – Bedienungshilfen:** nötig, damit der doppelte Rechtsklick und die Tastenkürzel in Live funktionieren.
-  **Windows** braucht keine besondere Freigabe. Auf beiden Systemen reagiert die App nur, während Live vorne ist.
+  **Windows** braucht keine besondere Freigabe; das Setup installiert ohne Admin-Rechte in deinen Benutzerordner (nur
+  Microsofts .NET-Laufzeit braucht sie einmal). Auf beiden Systemen reagiert die App nur, während Live vorne ist.
 - **Live-Script (ASMbridge):** ein kleines Python-Script im Ordner *User Library/Remote Scripts*, über das die App
   Plugins in Live einfügt.
 - **Netzwerk:** keine Verbindung ins Internet. Die App spricht nur mit Live auf deinem Rechner (127.0.0.1). Die
@@ -129,7 +130,8 @@ To update: quit HYNE ASM from the tray icon and copy the new **HYNE ASM.exe** ov
   computer. Under [Actions](https://github.com/hynemusic/hyne-asm/actions) you can see the build each release came
   from; every download comes with its SHA-256 checksum.
 - **Mac – Accessibility:** needed for the double right-click and the shortcuts in Live. **Windows** needs no special
-  permission. On both, the app only reacts while Live is in front.
+  permission; the setup installs into your user folder without admin rights (only Microsoft's .NET runtime needs them,
+  once). On both, the app only reacts while Live is in front.
 - **Live script (ASMbridge):** a small Python script in *User Library/Remote Scripts* that the app uses to insert
   plugins in Live.
 - **Network:** no internet connection. The app only talks to Live on your computer (127.0.0.1). The optional Stream
@@ -146,11 +148,10 @@ To update: quit HYNE ASM from the tray icon and copy the new **HYNE ASM.exe** ov
 4. Optional: remove HYNE ASM under System Settings → Privacy & Security → Accessibility.
 
 **Windows**
-1. In the tray menu turn off **Start with Windows**, then **Quit HYNE ASM**, and delete **HYNE ASM.exe**.
+1. Windows Settings → **Apps** → **HYNE ASM** → **Uninstall** (also removes the `hyneasm://` link and Start with Windows).
 2. Delete `%APPDATA%\HYNE ASM` (your menu and settings).
 3. Delete the folder `ASMbridge` in `Documents\Ableton\User Library\Remote Scripts` and, in Live's settings, set the
    Control Surface back to None.
-4. Optional: delete the registry key `HKEY_CURRENT_USER\Software\Classes\hyneasm` (the `hyneasm://` link).
 
 ---
 
@@ -186,13 +187,15 @@ surface (Input/Output: None).
 
 ### Build from source (Windows)
 
-Needs the .NET 8 SDK. The app compiles on macOS and Linux too, but only runs on Windows.
+Needs the .NET 8 SDK. The app compiles on macOS and Linux too, but only runs on Windows. It uses the .NET Desktop
+Runtime installed on the PC, so the exe stays under 1 MB; `windows/installer/HyneAsm.iss` (Inno Setup) wraps it in the
+setup, which adds the runtime when it's missing.
 
 ```bash
-dotnet publish windows/HyneAsm.App/HyneAsm.App.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -o publish
+dotnet publish windows/HyneAsm.App/HyneAsm.App.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish
 ```
 
-Every pull request also builds `HYNE ASM.exe` as a downloadable test build (Actions → the run → Artifacts).
+Every pull request also builds the setup as a downloadable test build (Actions → the run → Artifacts).
 
 ### Releases
 
@@ -201,7 +204,8 @@ Every pull request also builds `HYNE ASM.exe` as a downloadable test build (Acti
   fingerprint and architectures with `scripts/verify-release.sh`, packages a DMG with `scripts/make-dmg.sh` and
   publishes it with its SHA-256 checksum on the Releases page.
 - **Windows:** pushing a tag `win-vX.Y.Z` runs `.github/workflows/release-windows.yml`: it tests, builds
-  `HYNE ASM.exe` with that version, zips it and publishes it with its SHA-256 checksum, then points the README's
+  `HYNE ASM.exe` with that version, wraps it in `HYNE-ASM-Windows-Setup-X.Y.Z.exe` and publishes it with its SHA-256
+  checksum, then points the README's
   Windows links at the new release. Windows releases are never marked "latest", so the Mac download link above keeps
   pointing at the Mac app.
 
