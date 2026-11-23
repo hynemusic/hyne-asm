@@ -1,0 +1,106 @@
+{
+  "area": "loc.resolve",
+  "cases": [
+    {
+      "expected": "de",
+      "input": {
+        "choice": "de",
+        "preferred": [
+          "en-US"
+        ]
+      },
+      "name": "choice_de_wins"
+    },
+    {
+      "expected": "en",
+      "input": {
+        "choice": "en",
+        "preferred": [
+          "de-DE"
+        ]
+      },
+      "name": "choice_en_wins"
+    },
+    {
+      "expected": "de",
+      "input": {
+        "choice": null,
+        "preferred": [
+          "de-DE",
+          "en-US"
+        ]
+      },
+      "name": "system_german"
+    },
+    {
+      "expected": "de",
+      "input": {
+        "choice": null,
+        "preferred": [
+          "de"
+        ]
+      },
+      "name": "system_german_plain"
+    },
+    {
+      "expected": "de",
+      "input": {
+        "choice": null,
+        "preferred": [
+          "de-AT"
+        ]
+      },
+      "name": "system_austrian"
+    },
+    {
+      "expected": "en",
+      "input": {
+        "choice": null,
+        "preferred": [
+          "en-US",
+          "de-DE"
+        ]
+      },
+      "name": "first_preference_only"
+    },
+    {
+      "expected": "en",
+      "input": {
+        "choice": null,
+        "preferred": [
+          "fr-FR",
+          "de-DE"
+        ]
+      },
+      "name": "system_french"
+    },
+    {
+      "expected": "en",
+      "input": {
+        "choice": null,
+        "preferred": []
+      },
+      "name": "no_preference"
+    },
+    {
+      "expected": "en",
+      "input": {
+        "choice": null,
+        "preferred": [
+          "DE-de"
+        ]
+      },
+      "name": "prefix_is_case_sensitive"
+    },
+    {
+      "expected": "en",
+      "input": {
+        "choice": null,
+        "preferred": [
+          ""
+        ]
+      },
+      "name": "empty_name"
+    }
+  ]
+}

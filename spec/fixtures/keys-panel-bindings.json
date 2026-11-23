@@ -1,0 +1,781 @@
+{
+  "area": "keys.panel_bindings",
+  "cases": [
+    {
+      "expected": {
+        "bindings": {
+          "close": [
+            {
+              "keyCode": 53,
+              "modifiers": 0
+            }
+          ],
+          "down": [
+            {
+              "keyCode": 125,
+              "modifiers": 0
+            }
+          ],
+          "insert": [
+            {
+              "keyCode": 36,
+              "modifiers": 0
+            },
+            {
+              "keyCode": 76,
+              "modifiers": 0
+            }
+          ],
+          "nextTab": [
+            {
+              "keyCode": 124,
+              "modifiers": 0
+            },
+            {
+              "keyCode": 48,
+              "modifiers": 0
+            }
+          ],
+          "prevTab": [
+            {
+              "keyCode": 123,
+              "modifiers": 0
+            }
+          ],
+          "up": [
+            {
+              "keyCode": 126,
+              "modifiers": 0
+            }
+          ]
+        },
+        "keys": [
+          "left",
+          "right",
+          "right",
+          "up",
+          "down",
+          "return",
+          "return",
+          "escape",
+          null,
+          null,
+          null
+        ],
+        "labels": {
+          "close": "Panel schließen",
+          "down": "Nach unten",
+          "insert": "Markiertes Plugin einfügen",
+          "nextTab": "Nächster Tab",
+          "prevTab": "Vorheriger Tab",
+          "up": "Nach oben"
+        }
+      },
+      "input": {
+        "probes": [
+          {
+            "keyCode": 123,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 124,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 48,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 126,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 125,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 36,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 76,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 53,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 0,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 123,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 49,
+            "modifiers": 0
+          }
+        ]
+      },
+      "name": "defaults"
+    },
+    {
+      "expected": {
+        "bindings": {
+          "close": [
+            {
+              "keyCode": 53,
+              "modifiers": 1
+            }
+          ],
+          "down": [
+            {
+              "keyCode": 125,
+              "modifiers": 0
+            }
+          ],
+          "insert": [
+            {
+              "keyCode": 36,
+              "modifiers": 0
+            },
+            {
+              "keyCode": 76,
+              "modifiers": 0
+            }
+          ],
+          "nextTab": [
+            {
+              "keyCode": 124,
+              "modifiers": 0
+            },
+            {
+              "keyCode": 48,
+              "modifiers": 0
+            }
+          ],
+          "prevTab": [
+            {
+              "keyCode": 123,
+              "modifiers": 0
+            }
+          ],
+          "up": [
+            {
+              "keyCode": 126,
+              "modifiers": 0
+            }
+          ]
+        },
+        "keys": [
+          "left",
+          "right",
+          "right",
+          "up",
+          "down",
+          "return",
+          "return",
+          null,
+          null,
+          null,
+          null,
+          "escape"
+        ],
+        "labels": {
+          "close": "Panel schließen",
+          "down": "Nach unten",
+          "insert": "Markiertes Plugin einfügen",
+          "nextTab": "Nächster Tab",
+          "prevTab": "Vorheriger Tab",
+          "up": "Nach oben"
+        }
+      },
+      "input": {
+        "json": {
+          "bindings": {
+            "close": [
+              {
+                "keyCode": 53,
+                "modifiers": 1
+              }
+            ]
+          }
+        },
+        "probes": [
+          {
+            "keyCode": 123,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 124,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 48,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 126,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 125,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 36,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 76,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 53,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 0,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 123,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 49,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 53,
+            "modifiers": 1
+          }
+        ]
+      },
+      "name": "older config with only some actions falls back to defaults"
+    },
+    {
+      "expected": {
+        "bindings": {
+          "close": [
+            {
+              "keyCode": 53,
+              "modifiers": 0
+            },
+            {
+              "keyCode": 12,
+              "modifiers": 1
+            }
+          ],
+          "down": [
+            {
+              "keyCode": 38,
+              "modifiers": 0
+            }
+          ],
+          "insert": [
+            {
+              "keyCode": 36,
+              "modifiers": 1
+            }
+          ],
+          "nextTab": [
+            {
+              "keyCode": 37,
+              "modifiers": 0
+            }
+          ],
+          "prevTab": [
+            {
+              "keyCode": 4,
+              "modifiers": 0
+            }
+          ],
+          "up": [
+            {
+              "keyCode": 40,
+              "modifiers": 0
+            },
+            {
+              "keyCode": 126,
+              "modifiers": 0
+            }
+          ]
+        },
+        "keys": [
+          null,
+          null,
+          null,
+          "up",
+          null,
+          null,
+          null,
+          "escape",
+          null,
+          null,
+          null,
+          "left",
+          "right",
+          "up",
+          "down",
+          "return",
+          "escape"
+        ],
+        "labels": {
+          "close": "Panel schließen",
+          "down": "Nach unten",
+          "insert": "Markiertes Plugin einfügen",
+          "nextTab": "Nächster Tab",
+          "prevTab": "Vorheriger Tab",
+          "up": "Nach oben"
+        }
+      },
+      "input": {
+        "json": {
+          "bindings": {
+            "close": [
+              {
+                "keyCode": 53,
+                "modifiers": 0
+              },
+              {
+                "keyCode": 12,
+                "modifiers": 1
+              }
+            ],
+            "down": [
+              {
+                "keyCode": 38,
+                "modifiers": 0
+              }
+            ],
+            "insert": [
+              {
+                "keyCode": 36,
+                "modifiers": 1
+              }
+            ],
+            "nextTab": [
+              {
+                "keyCode": 37,
+                "modifiers": 0
+              }
+            ],
+            "prevTab": [
+              {
+                "keyCode": 4,
+                "modifiers": 0
+              }
+            ],
+            "up": [
+              {
+                "keyCode": 40,
+                "modifiers": 0
+              },
+              {
+                "keyCode": 126,
+                "modifiers": 0
+              }
+            ]
+          }
+        },
+        "probes": [
+          {
+            "keyCode": 123,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 124,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 48,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 126,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 125,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 36,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 76,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 53,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 0,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 123,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 49,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 4,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 37,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 40,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 38,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 36,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 12,
+            "modifiers": 1
+          }
+        ]
+      },
+      "name": "rebound actions"
+    },
+    {
+      "expected": {
+        "bindings": {
+          "close": [
+            {
+              "keyCode": 53,
+              "modifiers": 0
+            }
+          ],
+          "down": [
+            {
+              "keyCode": 125,
+              "modifiers": 0
+            }
+          ],
+          "insert": [],
+          "nextTab": [
+            {
+              "keyCode": 124,
+              "modifiers": 0
+            },
+            {
+              "keyCode": 48,
+              "modifiers": 0
+            }
+          ],
+          "prevTab": [
+            {
+              "keyCode": 123,
+              "modifiers": 0
+            }
+          ],
+          "up": [
+            {
+              "keyCode": 126,
+              "modifiers": 0
+            }
+          ]
+        },
+        "keys": [
+          "left",
+          "right",
+          "right",
+          "up",
+          "down",
+          null,
+          null,
+          "escape",
+          null,
+          null,
+          null
+        ],
+        "labels": {
+          "close": "Panel schließen",
+          "down": "Nach unten",
+          "insert": "Markiertes Plugin einfügen",
+          "nextTab": "Nächster Tab",
+          "prevTab": "Vorheriger Tab",
+          "up": "Nach oben"
+        }
+      },
+      "input": {
+        "json": {
+          "bindings": {
+            "insert": []
+          }
+        },
+        "probes": [
+          {
+            "keyCode": 123,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 124,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 48,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 126,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 125,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 36,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 76,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 53,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 0,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 123,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 49,
+            "modifiers": 0
+          }
+        ]
+      },
+      "name": "explicitly empty action stays empty"
+    },
+    {
+      "expected": {
+        "bindings": {
+          "close": [
+            {
+              "keyCode": 5,
+              "modifiers": 0
+            }
+          ],
+          "down": [
+            {
+              "keyCode": 125,
+              "modifiers": 0
+            }
+          ],
+          "insert": [
+            {
+              "keyCode": 36,
+              "modifiers": 0
+            },
+            {
+              "keyCode": 76,
+              "modifiers": 0
+            }
+          ],
+          "nextTab": [
+            {
+              "keyCode": 5,
+              "modifiers": 0
+            }
+          ],
+          "prevTab": [
+            {
+              "keyCode": 5,
+              "modifiers": 0
+            }
+          ],
+          "up": [
+            {
+              "keyCode": 126,
+              "modifiers": 0
+            }
+          ]
+        },
+        "keys": [
+          "left"
+        ],
+        "labels": {
+          "close": "Panel schließen",
+          "down": "Nach unten",
+          "insert": "Markiertes Plugin einfügen",
+          "nextTab": "Nächster Tab",
+          "prevTab": "Vorheriger Tab",
+          "up": "Nach oben"
+        }
+      },
+      "input": {
+        "json": {
+          "bindings": {
+            "close": [
+              {
+                "keyCode": 5,
+                "modifiers": 0
+              }
+            ],
+            "nextTab": [
+              {
+                "keyCode": 5,
+                "modifiers": 0
+              }
+            ],
+            "prevTab": [
+              {
+                "keyCode": 5,
+                "modifiers": 0
+              }
+            ]
+          }
+        },
+        "probes": [
+          {
+            "keyCode": 5,
+            "modifiers": 0
+          }
+        ]
+      },
+      "name": "same combo on two actions: first action in order wins"
+    },
+    {
+      "expected": {
+        "bindings": {
+          "close": [
+            {
+              "keyCode": 53,
+              "modifiers": 0
+            }
+          ],
+          "down": [
+            {
+              "keyCode": 125,
+              "modifiers": 0
+            }
+          ],
+          "insert": [
+            {
+              "keyCode": 36,
+              "modifiers": 0
+            },
+            {
+              "keyCode": 76,
+              "modifiers": 0
+            }
+          ],
+          "nextTab": [
+            {
+              "keyCode": 124,
+              "modifiers": 0
+            },
+            {
+              "keyCode": 48,
+              "modifiers": 0
+            }
+          ],
+          "prevTab": [
+            {
+              "keyCode": 123,
+              "modifiers": 0
+            }
+          ],
+          "up": [
+            {
+              "keyCode": 126,
+              "modifiers": 0
+            }
+          ]
+        },
+        "keys": [
+          null,
+          "escape"
+        ],
+        "labels": {
+          "close": "Panel schließen",
+          "down": "Nach unten",
+          "insert": "Markiertes Plugin einfügen",
+          "nextTab": "Nächster Tab",
+          "prevTab": "Vorheriger Tab",
+          "up": "Nach oben"
+        }
+      },
+      "input": {
+        "json": {
+          "bindings": {
+            "close": [
+              {
+                "keyCode": 53,
+                "modifiers": 0
+              }
+            ],
+            "zoom": [
+              {
+                "keyCode": 5,
+                "modifiers": 0
+              }
+            ]
+          }
+        },
+        "probes": [
+          {
+            "keyCode": 5,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 53,
+            "modifiers": 0
+          }
+        ]
+      },
+      "name": "unknown actions are ignored"
+    },
+    {
+      "expected": {
+        "error": true
+      },
+      "input": {
+        "json": {},
+        "probes": []
+      },
+      "name": "no bindings key is damage"
+    },
+    {
+      "expected": {
+        "error": true
+      },
+      "input": {
+        "json": {
+          "bindings": {
+            "close": [
+              {
+                "keyCode": 53
+              }
+            ]
+          }
+        },
+        "probes": []
+      },
+      "name": "combo without modifiers is damage"
+    }
+  ]
+}

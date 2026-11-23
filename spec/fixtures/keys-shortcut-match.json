@@ -1,0 +1,443 @@
+{
+  "area": "keys.shortcut_match",
+  "cases": [
+    {
+      "expected": [
+        {
+          "action": "closeFocused",
+          "item": null
+        },
+        {
+          "action": "closeAll",
+          "item": null
+        },
+        {
+          "action": "closeAll",
+          "item": null
+        },
+        {
+          "action": "quickSearch",
+          "item": null
+        },
+        {
+          "action": null,
+          "item": null
+        },
+        {
+          "action": null,
+          "item": null
+        },
+        {
+          "action": null,
+          "item": null
+        },
+        {
+          "action": null,
+          "item": null
+        },
+        {
+          "action": null,
+          "item": null
+        },
+        {
+          "action": null,
+          "item": null
+        }
+      ],
+      "input": {
+        "probes": [
+          {
+            "keyCode": 13,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 13,
+            "modifiers": 9
+          },
+          {
+            "keyCode": 53,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 49,
+            "modifiers": 8
+          },
+          {
+            "keyCode": 13,
+            "modifiers": 3
+          },
+          {
+            "keyCode": 13,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 13,
+            "modifiers": 5
+          },
+          {
+            "keyCode": 53,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 49,
+            "modifiers": 0
+          },
+          {
+            "keyCode": 49,
+            "modifiers": 1
+          }
+        ]
+      },
+      "name": "defaults"
+    },
+    {
+      "expected": [
+        {
+          "action": "closeFocused",
+          "item": null
+        },
+        {
+          "action": "closeAll",
+          "item": null
+        },
+        {
+          "action": "closeAll",
+          "item": null
+        },
+        {
+          "action": "quickSearch",
+          "item": null
+        },
+        {
+          "action": "quickSearch",
+          "item": null
+        },
+        {
+          "action": "nextProfile",
+          "item": null
+        },
+        {
+          "action": null,
+          "item": null
+        },
+        {
+          "action": null,
+          "item": null
+        }
+      ],
+      "input": {
+        "probes": [
+          {
+            "keyCode": 14,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 14,
+            "modifiers": 9
+          },
+          {
+            "keyCode": 53,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 49,
+            "modifiers": 8
+          },
+          {
+            "keyCode": 40,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 35,
+            "modifiers": 3
+          },
+          {
+            "keyCode": 13,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 35,
+            "modifiers": 1
+          }
+        ],
+        "settings": {
+          "closeAll": [
+            {
+              "keyCode": 14,
+              "modifiers": 9
+            },
+            {
+              "keyCode": 53,
+              "modifiers": 1
+            }
+          ],
+          "closeFocused": {
+            "keyCode": 14,
+            "modifiers": 1
+          },
+          "nextProfile": [
+            {
+              "keyCode": 35,
+              "modifiers": 3
+            }
+          ],
+          "quickSearch": [
+            {
+              "keyCode": 49,
+              "modifiers": 8
+            },
+            {
+              "keyCode": 40,
+              "modifiers": 1
+            }
+          ]
+        }
+      },
+      "name": "custom settings with next profile"
+    },
+    {
+      "expected": [
+        {
+          "action": null,
+          "item": null
+        },
+        {
+          "action": null,
+          "item": null
+        },
+        {
+          "action": null,
+          "item": null
+        }
+      ],
+      "input": {
+        "probes": [
+          {
+            "keyCode": 13,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 49,
+            "modifiers": 8
+          },
+          {
+            "keyCode": 53,
+            "modifiers": 1
+          }
+        ],
+        "settings": {
+          "closeAll": [],
+          "quickSearch": []
+        }
+      },
+      "name": "everything disabled"
+    },
+    {
+      "expected": [
+        {
+          "action": "closeFocused",
+          "item": null
+        },
+        {
+          "action": "quickSearch",
+          "item": null
+        },
+        {
+          "action": null,
+          "item": null
+        }
+      ],
+      "input": {
+        "probes": [
+          {
+            "keyCode": 13,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 49,
+            "modifiers": 8
+          },
+          {
+            "keyCode": 53,
+            "modifiers": 1
+          }
+        ],
+        "settings": {
+          "closeFocused": {
+            "keyCode": 13,
+            "modifiers": 1
+          }
+        }
+      },
+      "name": "settings missing keys fall back like older configs"
+    },
+    {
+      "expected": [
+        {
+          "action": "closeFocused",
+          "item": null
+        },
+        {
+          "action": "closeAll",
+          "item": null
+        },
+        {
+          "action": "quickSearch",
+          "item": null
+        }
+      ],
+      "input": {
+        "probes": [
+          {
+            "keyCode": 13,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 7,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 8,
+            "modifiers": 1
+          }
+        ],
+        "settings": {
+          "closeAll": [
+            {
+              "keyCode": 13,
+              "modifiers": 1
+            },
+            {
+              "keyCode": 7,
+              "modifiers": 1
+            }
+          ],
+          "closeFocused": {
+            "keyCode": 13,
+            "modifiers": 1
+          },
+          "nextProfile": [
+            {
+              "keyCode": 8,
+              "modifiers": 1
+            }
+          ],
+          "quickSearch": [
+            {
+              "keyCode": 7,
+              "modifiers": 1
+            },
+            {
+              "keyCode": 8,
+              "modifiers": 1
+            }
+          ]
+        }
+      },
+      "name": "same combo twice: closeFocused wins over closeAll over quickSearch"
+    },
+    {
+      "expected": [
+        {
+          "action": null,
+          "item": "serum2"
+        },
+        {
+          "action": null,
+          "item": "pq4"
+        },
+        {
+          "action": null,
+          "item": null
+        },
+        {
+          "action": null,
+          "item": "dup-first"
+        },
+        {
+          "action": "closeFocused",
+          "item": null
+        }
+      ],
+      "input": {
+        "items": [
+          {
+            "keyCode": 1,
+            "modifiers": 3,
+            "uri": "serum2"
+          },
+          {
+            "keyCode": 12,
+            "modifiers": 12,
+            "uri": "pq4"
+          },
+          {
+            "keyCode": 2,
+            "modifiers": 1,
+            "uri": "dup-first"
+          },
+          {
+            "keyCode": 2,
+            "modifiers": 1,
+            "uri": "dup-second"
+          }
+        ],
+        "probes": [
+          {
+            "keyCode": 1,
+            "modifiers": 3
+          },
+          {
+            "keyCode": 12,
+            "modifiers": 12
+          },
+          {
+            "keyCode": 1,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 2,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 13,
+            "modifiers": 1
+          }
+        ]
+      },
+      "name": "item shortcuts come from their own list"
+    },
+    {
+      "expected": [
+        {
+          "action": "closeFocused",
+          "item": "clash"
+        },
+        {
+          "action": null,
+          "item": null
+        }
+      ],
+      "input": {
+        "items": [
+          {
+            "keyCode": 13,
+            "modifiers": 1,
+            "uri": "clash"
+          }
+        ],
+        "probes": [
+          {
+            "keyCode": 13,
+            "modifiers": 1
+          },
+          {
+            "keyCode": 13,
+            "modifiers": 3
+          }
+        ]
+      },
+      "name": "an item combo that is also built in reports both"
+    }
+  ]
+}

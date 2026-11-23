@@ -1,0 +1,140 @@
+{
+  "area": "search.popularity",
+  "cases": [
+    {
+      "expected": 96,
+      "input": "Pro-C 2",
+      "name": "'Pro-C 2'"
+    },
+    {
+      "expected": 0,
+      "input": "Squeezer 9",
+      "name": "'Squeezer 9'"
+    },
+    {
+      "expected": 98,
+      "input": "Serum 2",
+      "name": "'Serum 2'"
+    },
+    {
+      "expected": 0,
+      "input": "Some Unknown Thing",
+      "name": "'Some Unknown Thing'"
+    },
+    {
+      "expected": 100,
+      "input": "Pro-Q 4",
+      "name": "'Pro-Q 4'"
+    },
+    {
+      "expected": 0,
+      "input": "FabFilter Pro-Q 3",
+      "name": "'FabFilter Pro-Q 3'"
+    },
+    {
+      "expected": 78,
+      "input": "Pro-R 2",
+      "name": "'Pro-R 2'"
+    },
+    {
+      "expected": 92,
+      "input": "ValhallaVintageVerb",
+      "name": "'ValhallaVintageVerb'"
+    },
+    {
+      "expected": 90,
+      "input": "ValhallaRoom",
+      "name": "'ValhallaRoom'"
+    },
+    {
+      "expected": 92,
+      "input": "EQ Eight",
+      "name": "'EQ Eight'"
+    },
+    {
+      "expected": 90,
+      "input": "Glue Compressor",
+      "name": "'Glue Compressor'"
+    },
+    {
+      "expected": 88,
+      "input": "Compressor",
+      "name": "'Compressor'"
+    },
+    {
+      "expected": 80,
+      "input": "OTT",
+      "name": "'OTT'"
+    },
+    {
+      "expected": 80,
+      "input": "RC-20 Retro Color",
+      "name": "'RC-20 Retro Color'"
+    },
+    {
+      "expected": 76,
+      "input": "1176 Classic",
+      "name": "'1176 Classic'"
+    },
+    {
+      "expected": 76,
+      "input": "LA-2A",
+      "name": "'LA-2A'"
+    },
+    {
+      "expected": 76,
+      "input": "CLA-76",
+      "name": "'CLA-76'"
+    },
+    {
+      "expected": 72,
+      "input": "Little AlterBoy",
+      "name": "'Little AlterBoy'"
+    },
+    {
+      "expected": 0,
+      "input": "",
+      "name": "''"
+    },
+    {
+      "expected": 78,
+      "input": "proR",
+      "name": "'proR'"
+    },
+    {
+      "expected": 78,
+      "input": "ProMB",
+      "name": "'ProMB'"
+    },
+    {
+      "expected": 0,
+      "input": "Ötzi Delay",
+      "name": "'Ötzi Delay'"
+    },
+    {
+      "expected": 79,
+      "input": "Delay",
+      "name": "'Delay'"
+    },
+    {
+      "expected": 79,
+      "input": "Auto Filter",
+      "name": "'Auto Filter'"
+    },
+    {
+      "expected": 85,
+      "input": "Drum Rack",
+      "name": "'Drum Rack'"
+    },
+    {
+      "expected": 76,
+      "input": "SSL Bus",
+      "name": "'SSL Bus'"
+    },
+    {
+      "expected": 85,
+      "input": "Kontakt 7",
+      "name": "'Kontakt 7'"
+    }
+  ]
+}

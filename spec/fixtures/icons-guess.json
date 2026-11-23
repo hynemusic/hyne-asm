@@ -1,0 +1,1942 @@
+{
+  "area": "icons.guess",
+  "cases": [
+    {
+      "expected": [
+        "sidechain",
+        "limiter",
+        "eq",
+        "compressor",
+        "compressor",
+        "compressor",
+        "limiter",
+        "reverb",
+        "delay",
+        "saturation",
+        "synth",
+        "synth",
+        "sampler",
+        "pitch",
+        "stereo"
+      ],
+      "input": [
+        {
+          "name": "Kickstart 2",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Kickstart 2"
+        },
+        {
+          "name": "Pro-L 2",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Pro-L 2"
+        },
+        {
+          "name": "FabFilter Pro-Q 3",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:FabFilter Pro-Q 3"
+        },
+        {
+          "name": "FabFilter Pro-C 2",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:FabFilter Pro-C 2"
+        },
+        {
+          "name": "CLA-76",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:CLA-76"
+        },
+        {
+          "name": "OTT",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:OTT"
+        },
+        {
+          "name": "L2 Ultramaximizer",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:L2 Ultramaximizer"
+        },
+        {
+          "name": "ValhallaVintageVerb",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:ValhallaVintageVerb"
+        },
+        {
+          "name": "EchoBoy",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:EchoBoy"
+        },
+        {
+          "name": "Decapitator",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Decapitator"
+        },
+        {
+          "name": "Serum",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Serum"
+        },
+        {
+          "name": "ANA 2",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:ANA 2"
+        },
+        {
+          "name": "Kontakt 7",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Kontakt 7"
+        },
+        {
+          "name": "Auto-Tune Pro",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Auto-Tune Pro"
+        },
+        {
+          "name": "Ozone Imager",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Ozone Imager"
+        }
+      ],
+      "name": "plugin names"
+    },
+    {
+      "expected": [
+        "eq",
+        "compressor",
+        "compressor",
+        "limiter",
+        "saturation",
+        "utility",
+        "reverb",
+        "filter",
+        "drums",
+        "sampler",
+        "arp"
+      ],
+      "input": [
+        {
+          "name": "EQ Eight",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "u:EQ Eight"
+        },
+        {
+          "name": "Glue Compressor",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "u:Glue Compressor"
+        },
+        {
+          "name": "Multiband Dynamics",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "u:Multiband Dynamics"
+        },
+        {
+          "name": "Limiter",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "u:Limiter"
+        },
+        {
+          "name": "Saturator",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "u:Saturator"
+        },
+        {
+          "name": "Utility",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "u:Utility"
+        },
+        {
+          "name": "Hybrid Reverb",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "u:Hybrid Reverb"
+        },
+        {
+          "name": "Auto Filter",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "u:Auto Filter"
+        },
+        {
+          "name": "Drum Rack",
+          "path": [],
+          "source": "instruments",
+          "uri": "u:Drum Rack"
+        },
+        {
+          "name": "Simpler",
+          "path": [],
+          "source": "instruments",
+          "uri": "u:Simpler"
+        },
+        {
+          "name": "Arpeggiator",
+          "path": [],
+          "source": "midi_effects",
+          "uri": "u:Arpeggiator"
+        }
+      ],
+      "name": "live devices"
+    },
+    {
+      "expected": [
+        "synth",
+        "synth",
+        "midi",
+        "generic",
+        "generic",
+        "generic"
+      ],
+      "input": [
+        {
+          "name": "Drift",
+          "path": [],
+          "source": "instruments",
+          "uri": "u:Drift"
+        },
+        {
+          "name": "Zzyzx",
+          "path": [],
+          "source": "instruments",
+          "uri": "u:Zzyzx"
+        },
+        {
+          "name": "Zzyzx",
+          "path": [],
+          "source": "midi_effects",
+          "uri": "u:Zzyzx"
+        },
+        {
+          "name": "Zzyzx",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "u:Zzyzx"
+        },
+        {
+          "name": "Zzyzx",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Zzyzx"
+        },
+        {
+          "name": "Zzyzx",
+          "path": [],
+          "source": "max_for_live",
+          "uri": "u:Zzyzx"
+        }
+      ],
+      "name": "fallbacks by source"
+    },
+    {
+      "expected": [
+        "generic"
+      ],
+      "input": [
+        {
+          "name": "Sequencer Thing",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Sequencer Thing"
+        }
+      ],
+      "name": "short keywords need whole words"
+    },
+    {
+      "expected": [
+        "amp",
+        "amp",
+        "amp",
+        "amp",
+        "mic",
+        "mic",
+        "mic",
+        "mic",
+        "repair",
+        "repair",
+        "repair",
+        "repair",
+        "repair",
+        "headphones",
+        "headphones",
+        "mastering",
+        "mastering",
+        "mastering",
+        "mastering",
+        "resonance",
+        "resonance",
+        "resonance",
+        "resonance",
+        "sidechain",
+        "sidechain",
+        "granular",
+        "granular",
+        "granular",
+        "reverb",
+        "reverb",
+        "reverb",
+        "reverb",
+        "compressor",
+        "compressor",
+        "compressor",
+        "compressor",
+        "compressor",
+        "delay",
+        "delay",
+        "delay",
+        "delay",
+        "tape",
+        "tape",
+        "tape",
+        "eq",
+        "eq",
+        "eq",
+        "eq",
+        "eq",
+        "stereo",
+        "stereo",
+        "stereo",
+        "stereo",
+        "stereo",
+        "limiter",
+        "limiter",
+        "limiter",
+        "limiter",
+        "modulation",
+        "modulation",
+        "vocal",
+        "vocal",
+        "vocal",
+        "sparkles",
+        "sparkles",
+        "sparkles",
+        "console",
+        "console",
+        "console",
+        "console",
+        "synth",
+        "synth",
+        "synth",
+        "synth",
+        "synth",
+        "synth",
+        "filter",
+        "filter",
+        "drums",
+        "saturation",
+        "distortion",
+        "distortion",
+        "distortion",
+        "transient",
+        "transient",
+        "analyzer",
+        "tuner",
+        "pitch",
+        "vocal",
+        "vocal",
+        "eq",
+        "eq",
+        "eq",
+        "eq",
+        "distortion",
+        "distortion",
+        "distortion",
+        "distortion",
+        "distortion",
+        "distortion",
+        "distortion",
+        "synth",
+        "synth",
+        "chorus",
+        "saturation",
+        "console",
+        "console",
+        "compressor",
+        "compressor",
+        "reverb",
+        "stereo",
+        "bitcrush",
+        "sine",
+        "sine",
+        "utility",
+        "utility",
+        "utility",
+        "utility",
+        "utility",
+        "keys",
+        "keys",
+        "rack",
+        "rack",
+        "eq",
+        "eq",
+        "console",
+        "compressor",
+        "compressor",
+        "filter",
+        "strings",
+        "bass",
+        "eq",
+        "limiter",
+        "reverb",
+        "synth",
+        "synth"
+      ],
+      "input": [
+        {
+          "name": "UAD Ampeg SVTVR",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Ampeg SVTVR"
+        },
+        {
+          "name": "UAD Friedman BE100",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Friedman BE100"
+        },
+        {
+          "name": "GTR Stomp 4 (m->s)",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:GTR Stomp 4 (m->s)"
+        },
+        {
+          "name": "UAD Chandler GAV19T",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Chandler GAV19T"
+        },
+        {
+          "name": "UAD Ocean Way Mic Collection",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Ocean Way Mic Collection"
+        },
+        {
+          "name": "Mic Mod",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Mic Mod"
+        },
+        {
+          "name": "UAD UA 610-B",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD UA 610-B"
+        },
+        {
+          "name": "UAD Manley Reference Mic Preamp",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Manley Reference Mic Preamp"
+        },
+        {
+          "name": "RX 10 De-click",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:RX 10 De-click"
+        },
+        {
+          "name": "RX 10 Spectral De-noise",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:RX 10 Spectral De-noise"
+        },
+        {
+          "name": "AUSoundIsolation",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:AUSoundIsolation"
+        },
+        {
+          "name": "Goyo",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Goyo"
+        },
+        {
+          "name": "Clear",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Clear"
+        },
+        {
+          "name": "Abbey Road Studio 3 (6->2)",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Abbey Road Studio 3 (6->2)"
+        },
+        {
+          "name": "HEADPHONE LAB",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:HEADPHONE LAB"
+        },
+        {
+          "name": "Ozone 12",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Ozone 12"
+        },
+        {
+          "name": "bx_masterdesk",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:bx_masterdesk"
+        },
+        {
+          "name": "The God Particle",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:The God Particle"
+        },
+        {
+          "name": "UAD elysia alpha master",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD elysia alpha master"
+        },
+        {
+          "name": "Ozone 12 Clarity",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Ozone 12 Clarity"
+        },
+        {
+          "name": "soothe3",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:soothe3"
+        },
+        {
+          "name": "Gullfoss",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Gullfoss"
+        },
+        {
+          "name": "Ozone 12 Spectral Shaper",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Ozone 12 Spectral Shaper"
+        },
+        {
+          "name": "MULTISTAGE SIDECHAIN",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:MULTISTAGE SIDECHAIN"
+        },
+        {
+          "name": "PML Volume Ducker",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:PML Volume Ducker"
+        },
+        {
+          "name": "Il Granello",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Il Granello"
+        },
+        {
+          "name": "Quanta 2",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Quanta 2"
+        },
+        {
+          "name": "Cymatics Dark Sky",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Cymatics Dark Sky"
+        },
+        {
+          "name": "UAD EMT 140",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD EMT 140"
+        },
+        {
+          "name": "UAD Lexicon 480L",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Lexicon 480L"
+        },
+        {
+          "name": "UAD AKG BX 20",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD AKG BX 20"
+        },
+        {
+          "name": "IR-L (m->s)",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:IR-L (m->s)"
+        },
+        {
+          "name": "UAD Fairchild 670",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Fairchild 670"
+        },
+        {
+          "name": "UAD Teletronix LA-2",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Teletronix LA-2"
+        },
+        {
+          "name": "UAD dbx 160",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD dbx 160"
+        },
+        {
+          "name": "UAD Manley Variable Mu",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Manley Variable Mu"
+        },
+        {
+          "name": "UAD elysia mpressor",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD elysia mpressor"
+        },
+        {
+          "name": "UAD Roland RE-201",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Roland RE-201"
+        },
+        {
+          "name": "UAD Cooper Time Cube",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Cooper Time Cube"
+        },
+        {
+          "name": "SuperTap 2-Taps (m->s)",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:SuperTap 2-Taps (m->s)"
+        },
+        {
+          "name": "UAD Korg SDD-3000",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Korg SDD-3000"
+        },
+        {
+          "name": "UAD Studer A800",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Studer A800"
+        },
+        {
+          "name": "UAD Ampex ATR-102",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Ampex ATR-102"
+        },
+        {
+          "name": "Cassette",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Cassette"
+        },
+        {
+          "name": "AUGraphicEQ",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:AUGraphicEQ"
+        },
+        {
+          "name": "AUParametricEQ",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:AUParametricEQ"
+        },
+        {
+          "name": "Maag EQ4",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Maag EQ4"
+        },
+        {
+          "name": "UAD Tonelux Tilt",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Tonelux Tilt"
+        },
+        {
+          "name": "SieQ",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:SieQ"
+        },
+        {
+          "name": "Doubler2 (m->s)",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Doubler2 (m->s)"
+        },
+        {
+          "name": "Reel ADT (m->s)",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Reel ADT (m->s)"
+        },
+        {
+          "name": "MicroShift",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:MicroShift"
+        },
+        {
+          "name": "Sidewidener II",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Sidewidener II"
+        },
+        {
+          "name": "PanMan",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:PanMan"
+        },
+        {
+          "name": "StandardCLIP",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:StandardCLIP"
+        },
+        {
+          "name": "FreeClip",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:FreeClip"
+        },
+        {
+          "name": "Gold Clip",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Gold Clip"
+        },
+        {
+          "name": "Newfangled Elevate",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Newfangled Elevate"
+        },
+        {
+          "name": "Tremolator",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Tremolator"
+        },
+        {
+          "name": "MondoMod (m->s)",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:MondoMod (m->s)"
+        },
+        {
+          "name": "Morphoder (m->s)",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Morphoder (m->s)"
+        },
+        {
+          "name": "AVOX THROAT",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:AVOX THROAT"
+        },
+        {
+          "name": "Evoke",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Evoke"
+        },
+        {
+          "name": "Fresh Air",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Fresh Air"
+        },
+        {
+          "name": "Ozone 12 Exciter",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Ozone 12 Exciter"
+        },
+        {
+          "name": "UAD Precision Enhancer kHz",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Precision Enhancer kHz"
+        },
+        {
+          "name": "UAD Harrison 32C",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Harrison 32C"
+        },
+        {
+          "name": "UAD Trident A-Range",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Trident A-Range"
+        },
+        {
+          "name": "NEOLD WUNDERLICH",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:NEOLD WUNDERLICH"
+        },
+        {
+          "name": "UAD Avalon VT-737sp",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Avalon VT-737sp"
+        },
+        {
+          "name": "M1",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:M1"
+        },
+        {
+          "name": "BA-1",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:BA-1"
+        },
+        {
+          "name": "AX73",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:AX73"
+        },
+        {
+          "name": "Twin 3",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Twin 3"
+        },
+        {
+          "name": "RAV3",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:RAV3"
+        },
+        {
+          "name": "Current",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Current"
+        },
+        {
+          "name": "Micro",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Micro"
+        },
+        {
+          "name": "MComb",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:MComb"
+        },
+        {
+          "name": "KNOCK",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:KNOCK"
+        },
+        {
+          "name": "DELTA",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:DELTA"
+        },
+        {
+          "name": "Rift",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Rift"
+        },
+        {
+          "name": "Thermal",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Thermal"
+        },
+        {
+          "name": "Corrosion",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Corrosion"
+        },
+        {
+          "name": "Newfangled Punctuate",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Newfangled Punctuate"
+        },
+        {
+          "name": "UAD Oxford Envolution",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Oxford Envolution"
+        },
+        {
+          "name": "Mixed In Key SE",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Mixed In Key SE"
+        },
+        {
+          "name": "Auto-Key 2",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Auto-Key 2"
+        },
+        {
+          "name": "HalfTime",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:HalfTime"
+        },
+        {
+          "name": "AVOX DUO",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:AVOX DUO"
+        },
+        {
+          "name": "Formant",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Formant"
+        },
+        {
+          "name": "bx_digital V3",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:bx_digital V3"
+        },
+        {
+          "name": "bx_hybrid V2",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:bx_hybrid V2"
+        },
+        {
+          "name": "UAD Cambridge",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Cambridge"
+        },
+        {
+          "name": "Newfangled EQuivocate",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Newfangled EQuivocate"
+        },
+        {
+          "name": "bx_greenscreamer",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:bx_greenscreamer"
+        },
+        {
+          "name": "bx_distorange",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:bx_distorange"
+        },
+        {
+          "name": "bx_metal2",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:bx_metal2"
+        },
+        {
+          "name": "bx_blackdist2",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:bx_blackdist2"
+        },
+        {
+          "name": "UAD Bermuda Triangle",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Bermuda Triangle"
+        },
+        {
+          "name": "UAD Raw",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Raw"
+        },
+        {
+          "name": "Rift Feedback Lite",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Rift Feedback Lite"
+        },
+        {
+          "name": "bx_oberhausen",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:bx_oberhausen"
+        },
+        {
+          "name": "RaveGenerator3",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:RaveGenerator3"
+        },
+        {
+          "name": "UAD Roland CE-1",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Roland CE-1"
+        },
+        {
+          "name": "UAD Vertigo VSM-3",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Vertigo VSM-3"
+        },
+        {
+          "name": "UAD CS-1",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD CS-1"
+        },
+        {
+          "name": "BA-1 FX Strip",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:BA-1 FX Strip"
+        },
+        {
+          "name": "UAD C-Suite C-Max",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD C-Suite C-Max"
+        },
+        {
+          "name": "MRatio",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:MRatio"
+        },
+        {
+          "name": "UAD Ocean Way Studios",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Ocean Way Studios"
+        },
+        {
+          "name": "MSpectralPan",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:MSpectralPan"
+        },
+        {
+          "name": "MBitFun",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:MBitFun"
+        },
+        {
+          "name": "MOscillator",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:MOscillator"
+        },
+        {
+          "name": "MNoiseGenerator",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:MNoiseGenerator"
+        },
+        {
+          "name": "MMetronome",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:MMetronome"
+        },
+        {
+          "name": "MRecorder",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:MRecorder"
+        },
+        {
+          "name": "kHs Channel Mixer",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:kHs Channel Mixer"
+        },
+        {
+          "name": "Splice Bridge",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Splice Bridge"
+        },
+        {
+          "name": "AURogerBeep",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:AURogerBeep"
+        },
+        {
+          "name": "ROLI Studio Player",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:ROLI Studio Player"
+        },
+        {
+          "name": "DLSMusicDevice",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:DLSMusicDevice"
+        },
+        {
+          "name": "Reason Rack Plugin",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Reason Rack Plugin"
+        },
+        {
+          "name": "EffectRack",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:EffectRack"
+        },
+        {
+          "name": "REQ 2 Stereo",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:REQ 2 Stereo"
+        },
+        {
+          "name": "REQ 6 Mono",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:REQ 6 Mono"
+        },
+        {
+          "name": "REDD17 Stereo",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:REDD17 Stereo"
+        },
+        {
+          "name": "Renaissance Axx Stereo",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Renaissance Axx Stereo"
+        },
+        {
+          "name": "CLA-76 Mono",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:CLA-76 Mono"
+        },
+        {
+          "name": "kHs Resonator",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:kHs Resonator"
+        },
+        {
+          "name": "UAD Sound Machine Wood Works",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:UAD Sound Machine Wood Works"
+        },
+        {
+          "name": "bx_boom",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:bx_boom"
+        },
+        {
+          "name": "Pro-Q 4",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Pro-Q 4"
+        },
+        {
+          "name": "Pro-L 2",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Pro-L 2"
+        },
+        {
+          "name": "ValhallaRoom",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:ValhallaRoom"
+        },
+        {
+          "name": "Serum 2",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Serum 2"
+        },
+        {
+          "name": "Omnisphere",
+          "path": [
+            "VST3",
+            "X"
+          ],
+          "source": "plugins",
+          "uri": "u:Omnisphere"
+        }
+      ],
+      "name": "researched names"
+    },
+    {
+      "expected": [
+        "compressor",
+        "drums",
+        "synth",
+        "midi",
+        "rack",
+        "rack",
+        "generic",
+        "generic",
+        "drums",
+        "rack"
+      ],
+      "input": [
+        {
+          "format": "adg",
+          "name": "Bus Glue",
+          "path": [
+            "Presets",
+            "Audio Effects"
+          ],
+          "source": "user_library",
+          "uri": "u:Bus Glue"
+        },
+        {
+          "format": "adg",
+          "name": "Zzz",
+          "path": [
+            "Presets",
+            "Drums"
+          ],
+          "source": "user_library",
+          "uri": "u:Zzz"
+        },
+        {
+          "format": "adg",
+          "name": "Zzz",
+          "path": [
+            "Presets",
+            "Instruments",
+            "Instrument Rack"
+          ],
+          "source": "user_library",
+          "uri": "u:Zzz"
+        },
+        {
+          "format": "adg",
+          "name": "Zzz",
+          "path": [
+            "My MIDI"
+          ],
+          "source": "user_folders",
+          "uri": "u:Zzz"
+        },
+        {
+          "format": "adg",
+          "name": "Zzz",
+          "path": [
+            "Mine"
+          ],
+          "source": "user_folders",
+          "uri": "u:Zzz"
+        },
+        {
+          "format": "ADG",
+          "name": "Zzz",
+          "path": [
+            "Mine"
+          ],
+          "source": "user_folders",
+          "uri": "u:Zzz"
+        },
+        {
+          "format": "vstpreset",
+          "name": "Zzz",
+          "path": [
+            "Mine"
+          ],
+          "source": "user_folders",
+          "uri": "u:Zzz"
+        },
+        {
+          "name": "Zzz",
+          "path": [],
+          "source": "user_library",
+          "uri": "u:Zzz"
+        },
+        {
+          "format": "fxp",
+          "name": "Lead",
+          "path": [
+            "Drum Stuff"
+          ],
+          "source": "user_folders",
+          "uri": "u:Lead"
+        },
+        {
+          "format": "adg",
+          "name": "Zzz",
+          "path": [
+            "Drüms"
+          ],
+          "source": "user_folders",
+          "uri": "u:Zzz"
+        }
+      ],
+      "name": "presets"
+    },
+    {
+      "expected": [
+        "generic",
+        "generic",
+        "generic",
+        "reverb",
+        "generic",
+        "saturation",
+        "generic",
+        "generic",
+        "generic",
+        "eq",
+        "stereo",
+        "reverb",
+        "generic",
+        "eq",
+        "repair",
+        "synth",
+        "synth",
+        "filter",
+        "synth",
+        "deesser",
+        "pitch",
+        "deesser",
+        "mic",
+        "compressor",
+        "delay",
+        "echo",
+        "bitcrush",
+        "reverb"
+      ],
+      "input": [
+        {
+          "name": "Kompressör",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Kompressör"
+        },
+        {
+          "name": "Kompressör",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Kompressör"
+        },
+        {
+          "name": "Hällraum",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Hällraum"
+        },
+        {
+          "name": "REVERB",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:REVERB"
+        },
+        {
+          "name": "İmager",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:İmager"
+        },
+        {
+          "name": "TUBE Drive",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:TUBE Drive"
+        },
+        {
+          "name": "Sequencer Thing",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Sequencer Thing"
+        },
+        {
+          "name": "Monö Thing",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Monö Thing"
+        },
+        {
+          "name": "Eq́ Thing",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Eq́ Thing"
+        },
+        {
+          "name": "Tilt EQ",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Tilt EQ"
+        },
+        {
+          "name": "ＥＱ Fullwidth",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:ＥＱ Fullwidth"
+        },
+        {
+          "name": "🔥 Verb",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:🔥 Verb"
+        },
+        {
+          "name": "Gaté",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Gaté"
+        },
+        {
+          "name": "REQ 2 Stereo",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:REQ 2 Stereo"
+        },
+        {
+          "name": "Clear Mono",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Clear Mono"
+        },
+        {
+          "name": "ONE",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:ONE"
+        },
+        {
+          "name": "Twin 3 Stereo",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Twin 3 Stereo"
+        },
+        {
+          "name": "Micro (s)",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Micro (s)"
+        },
+        {
+          "name": "BA-1",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:BA-1"
+        },
+        {
+          "name": "Pro-DS",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Pro-DS"
+        },
+        {
+          "name": "AutoTune",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:AutoTune"
+        },
+        {
+          "name": "De-Esser",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:De-Esser"
+        },
+        {
+          "name": "Mic",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Mic"
+        },
+        {
+          "name": "Multiband Comp",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Multiband Comp"
+        },
+        {
+          "name": "Delay Echo",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Delay Echo"
+        },
+        {
+          "name": "Chorus Echo",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Chorus Echo"
+        },
+        {
+          "name": "8 Bit Crusher",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:8 Bit Crusher"
+        },
+        {
+          "name": "Space Echo",
+          "path": [],
+          "source": "plugins",
+          "uri": "u:Space Echo"
+        }
+      ],
+      "name": "unicode and rule order"
+    }
+  ]
+}

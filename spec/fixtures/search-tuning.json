@@ -1,0 +1,528 @@
+{
+  "area": "search.tuning",
+  "cases": [
+    {
+      "expected": "ser um",
+      "input": {
+        "normalize": "  Ser  UM "
+      },
+      "name": "normalize '  Ser  UM '"
+    },
+    {
+      "expected": "serum",
+      "input": {
+        "normalize": "SERUM"
+      },
+      "name": "normalize 'SERUM'"
+    },
+    {
+      "expected": "",
+      "input": {
+        "normalize": ""
+      },
+      "name": "normalize ''"
+    },
+    {
+      "expected": "a b c",
+      "input": {
+        "normalize": "a\tb\nc"
+      },
+      "name": "normalize 'a\tb\nc'"
+    },
+    {
+      "expected": "über verb",
+      "input": {
+        "normalize": "Über  Verb"
+      },
+      "name": "normalize 'Über  Verb'"
+    },
+    {
+      "expected": "ser",
+      "input": {
+        "rule": "serum",
+        "rules": [
+          "se",
+          "Ser "
+        ]
+      },
+      "name": "longest prefix wins"
+    },
+    {
+      "expected": null,
+      "input": {
+        "rule": "sa",
+        "rules": [
+          "se",
+          "Ser "
+        ]
+      },
+      "name": "no rule matches"
+    },
+    {
+      "expected": null,
+      "input": {
+        "rule": "  ",
+        "rules": [
+          "se",
+          "Ser "
+        ]
+      },
+      "name": "blank search"
+    },
+    {
+      "expected": "ser",
+      "input": {
+        "rule": "serum",
+        "rules": [
+          "ser",
+          "ser",
+          "se"
+        ]
+      },
+      "name": "first of equal length"
+    },
+    {
+      "expected": null,
+      "input": {
+        "rule": "se",
+        "rules": [
+          "ser"
+        ]
+      },
+      "name": "rule not a word prefix"
+    },
+    {
+      "expected": "über",
+      "input": {
+        "rule": "über verb",
+        "rules": [
+          "über"
+        ]
+      },
+      "name": "NFD search, NFC rule"
+    },
+    {
+      "expected": "serum 2",
+      "input": {
+        "rule": "  SERUM  2",
+        "rules": [
+          "serum 2",
+          "serum"
+        ]
+      },
+      "name": "upper search"
+    },
+    {
+      "expected": [
+        "c",
+        "z",
+        "a",
+        "d"
+      ],
+      "input": {
+        "apply": [
+          "a",
+          "b",
+          "c",
+          "d"
+        ],
+        "inject": [
+          "z"
+        ],
+        "rule": {
+          "hidden": [
+            "b"
+          ],
+          "pinned": [
+            "c",
+            "z",
+            "a"
+          ],
+          "query": "x"
+        }
+      },
+      "name": "apply pins hides injects"
+    },
+    {
+      "expected": [
+        "a",
+        "b"
+      ],
+      "input": {
+        "apply": [
+          "a",
+          "b"
+        ],
+        "inject": [],
+        "rule": null
+      },
+      "name": "apply no rule"
+    },
+    {
+      "expected": [
+        "c",
+        "a"
+      ],
+      "input": {
+        "apply": [
+          "a",
+          "b",
+          "c"
+        ],
+        "inject": [
+          "b"
+        ],
+        "rule": {
+          "hidden": [
+            "b"
+          ],
+          "pinned": [
+            "b",
+            "q",
+            "c",
+            "c"
+          ],
+          "query": "x"
+        }
+      },
+      "name": "apply hidden pin skipped"
+    },
+    {
+      "expected": [
+        "a",
+        "b"
+      ],
+      "input": {
+        "apply": [
+          "a",
+          "b",
+          "a"
+        ],
+        "inject": [],
+        "rule": {
+          "hidden": [],
+          "pinned": [
+            "a"
+          ],
+          "query": "x"
+        }
+      },
+      "name": "apply duplicates"
+    },
+    {
+      "expected": [
+        "plugins|über",
+        "plugins|b"
+      ],
+      "input": {
+        "apply": [
+          "plugins|über",
+          "plugins|b"
+        ],
+        "inject": [],
+        "rule": {
+          "hidden": [],
+          "pinned": [
+            "plugins|über"
+          ],
+          "query": "x"
+        }
+      },
+      "name": "apply NFD keys"
+    },
+    {
+      "expected": [
+        {
+          "hidden": [
+            "a"
+          ],
+          "pinned": [
+            "b"
+          ],
+          "query": "ser"
+        }
+      ],
+      "input": {
+        "edit": [
+          {
+            "key": "a",
+            "op": "pin",
+            "query": "Ser"
+          },
+          {
+            "key": "b",
+            "op": "pin",
+            "query": "ser"
+          },
+          {
+            "by": -1,
+            "key": "b",
+            "op": "move",
+            "query": "ser"
+          },
+          {
+            "key": "a",
+            "op": "hide",
+            "query": "ser"
+          }
+        ]
+      },
+      "name": "edit create move drop"
+    },
+    {
+      "expected": [],
+      "input": {
+        "edit": [
+          {
+            "key": "a",
+            "op": "pin",
+            "query": "Ser"
+          },
+          {
+            "key": "c",
+            "op": "hide",
+            "query": "ser"
+          },
+          {
+            "key": "c",
+            "op": "unhide",
+            "query": "ser"
+          },
+          {
+            "key": "a",
+            "op": "unpin",
+            "query": "ser"
+          }
+        ]
+      },
+      "name": "edit empty rules disappear"
+    },
+    {
+      "expected": [
+        {
+          "hidden": [
+            "h"
+          ],
+          "pinned": [
+            "a"
+          ],
+          "query": "ser"
+        },
+        {
+          "hidden": [
+            "h"
+          ],
+          "pinned": [
+            "a",
+            "b"
+          ],
+          "query": "serum"
+        }
+      ],
+      "input": {
+        "edit": [
+          {
+            "key": "a",
+            "op": "pin",
+            "query": "ser"
+          },
+          {
+            "key": "h",
+            "op": "hide",
+            "query": "ser"
+          },
+          {
+            "key": "b",
+            "op": "pin",
+            "query": "serum"
+          }
+        ]
+      },
+      "name": "edit longer search inherits"
+    },
+    {
+      "expected": [
+        {
+          "hidden": [],
+          "pinned": [
+            "b"
+          ],
+          "query": "alpha"
+        },
+        {
+          "hidden": [],
+          "pinned": [
+            "e"
+          ],
+          "query": "beta"
+        },
+        {
+          "hidden": [],
+          "pinned": [
+            "d"
+          ],
+          "query": "ubik"
+        },
+        {
+          "hidden": [],
+          "pinned": [
+            "a"
+          ],
+          "query": "zeta"
+        },
+        {
+          "hidden": [],
+          "pinned": [
+            "c"
+          ],
+          "query": "über"
+        },
+        {
+          "hidden": [],
+          "pinned": [
+            "g"
+          ],
+          "query": "～ tilde"
+        },
+        {
+          "hidden": [],
+          "pinned": [
+            "f"
+          ],
+          "query": "😀 emoji"
+        }
+      ],
+      "input": {
+        "edit": [
+          {
+            "key": "a",
+            "op": "pin",
+            "query": "zeta"
+          },
+          {
+            "key": "b",
+            "op": "pin",
+            "query": "alpha"
+          },
+          {
+            "key": "c",
+            "op": "pin",
+            "query": "über"
+          },
+          {
+            "key": "d",
+            "op": "pin",
+            "query": "ubik"
+          },
+          {
+            "key": "e",
+            "op": "pin",
+            "query": "Beta"
+          },
+          {
+            "key": "f",
+            "op": "pin",
+            "query": "😀 emoji"
+          },
+          {
+            "key": "g",
+            "op": "pin",
+            "query": "～ tilde"
+          }
+        ]
+      },
+      "name": "edit sorted by query"
+    },
+    {
+      "expected": [
+        {
+          "hidden": [],
+          "pinned": [
+            "c",
+            "b",
+            "a"
+          ],
+          "query": "x"
+        }
+      ],
+      "input": {
+        "edit": [
+          {
+            "key": "a",
+            "op": "pin",
+            "query": "x"
+          },
+          {
+            "key": "b",
+            "op": "pin",
+            "query": "x"
+          },
+          {
+            "key": "c",
+            "op": "pin",
+            "query": "x"
+          },
+          {
+            "by": 5,
+            "key": "a",
+            "op": "move",
+            "query": "x"
+          },
+          {
+            "by": -9,
+            "key": "c",
+            "op": "move",
+            "query": "x"
+          },
+          {
+            "by": 1,
+            "key": "zz",
+            "op": "move",
+            "query": "x"
+          }
+        ]
+      },
+      "name": "edit move clamps"
+    },
+    {
+      "expected": [],
+      "input": {
+        "edit": [
+          {
+            "key": "a",
+            "op": "pin",
+            "query": "   "
+          }
+        ]
+      },
+      "name": "edit blank query ignored"
+    },
+    {
+      "expected": [
+        {
+          "hidden": [],
+          "pinned": [
+            "a",
+            "b"
+          ],
+          "query": "über"
+        }
+      ],
+      "input": {
+        "edit": [
+          {
+            "key": "a",
+            "op": "pin",
+            "query": "über"
+          },
+          {
+            "key": "b",
+            "op": "pin",
+            "query": "Über"
+          }
+        ]
+      },
+      "name": "edit NFD query hits NFC rule"
+    }
+  ]
+}

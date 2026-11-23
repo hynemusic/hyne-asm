@@ -1,0 +1,3678 @@
+{
+  "area": "keys.translation",
+  "cases": [
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 65
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 0,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter A"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 0,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 65
+        }
+      },
+      "name": "from windows: letter A"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 66
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 11,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter B"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 11,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 66
+        }
+      },
+      "name": "from windows: letter B"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 67
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 8,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter C"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 8,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 67
+        }
+      },
+      "name": "from windows: letter C"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 68
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 2,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter D"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 2,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 68
+        }
+      },
+      "name": "from windows: letter D"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 69
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 14,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter E"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 14,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 69
+        }
+      },
+      "name": "from windows: letter E"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 70
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 3,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter F"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 3,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 70
+        }
+      },
+      "name": "from windows: letter F"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 71
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 5,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter G"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 5,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 71
+        }
+      },
+      "name": "from windows: letter G"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 72
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 4,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter H"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 4,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 72
+        }
+      },
+      "name": "from windows: letter H"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 73
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 34,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter I"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 34,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 73
+        }
+      },
+      "name": "from windows: letter I"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 74
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 38,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter J"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 38,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 74
+        }
+      },
+      "name": "from windows: letter J"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 75
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 40,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter K"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 40,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 75
+        }
+      },
+      "name": "from windows: letter K"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 76
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 37,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter L"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 37,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 76
+        }
+      },
+      "name": "from windows: letter L"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 77
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 46,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter M"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 46,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 77
+        }
+      },
+      "name": "from windows: letter M"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 78
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 45,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter N"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 45,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 78
+        }
+      },
+      "name": "from windows: letter N"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 79
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 31,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter O"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 31,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 79
+        }
+      },
+      "name": "from windows: letter O"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 80
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 35,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter P"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 35,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 80
+        }
+      },
+      "name": "from windows: letter P"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 81
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 12,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter Q"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 12,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 81
+        }
+      },
+      "name": "from windows: letter Q"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 82
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 15,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter R"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 15,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 82
+        }
+      },
+      "name": "from windows: letter R"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 83
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 1,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter S"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 1,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 83
+        }
+      },
+      "name": "from windows: letter S"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 84
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 17,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter T"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 17,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 84
+        }
+      },
+      "name": "from windows: letter T"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 85
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 32,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter U"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 32,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 85
+        }
+      },
+      "name": "from windows: letter U"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 86
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 9,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter V"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 9,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 86
+        }
+      },
+      "name": "from windows: letter V"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 87
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter W"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 87
+        }
+      },
+      "name": "from windows: letter W"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 88
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 7,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter X"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 7,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 88
+        }
+      },
+      "name": "from windows: letter X"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 89
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 16,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter Y"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 16,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 89
+        }
+      },
+      "name": "from windows: letter Y"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 90
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 6,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: letter Z"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 6,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 90
+        }
+      },
+      "name": "from windows: letter Z"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 48
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 29,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: digit 0"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 29,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 48
+        }
+      },
+      "name": "from windows: digit 0"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 49
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 18,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: digit 1"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 18,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 49
+        }
+      },
+      "name": "from windows: digit 1"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 50
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 19,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: digit 2"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 19,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 50
+        }
+      },
+      "name": "from windows: digit 2"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 51
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 20,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: digit 3"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 20,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 51
+        }
+      },
+      "name": "from windows: digit 3"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 52
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 21,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: digit 4"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 21,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 52
+        }
+      },
+      "name": "from windows: digit 4"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 53
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 23,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: digit 5"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 23,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 53
+        }
+      },
+      "name": "from windows: digit 5"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 54
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 22,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: digit 6"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 22,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 54
+        }
+      },
+      "name": "from windows: digit 6"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 55
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 26,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: digit 7"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 26,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 55
+        }
+      },
+      "name": "from windows: digit 7"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 56
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 28,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: digit 8"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 28,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 56
+        }
+      },
+      "name": "from windows: digit 8"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 57
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 25,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: digit 9"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 25,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 57
+        }
+      },
+      "name": "from windows: digit 9"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 187
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 24,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: punctuation equal"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 24,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 187
+        }
+      },
+      "name": "from windows: punctuation equal"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 189
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 27,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: punctuation minus"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 27,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 189
+        }
+      },
+      "name": "from windows: punctuation minus"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 221
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 30,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: punctuation right bracket"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 30,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 221
+        }
+      },
+      "name": "from windows: punctuation right bracket"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 219
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 33,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: punctuation left bracket"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 33,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 219
+        }
+      },
+      "name": "from windows: punctuation left bracket"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 222
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 39,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: punctuation quote"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 39,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 222
+        }
+      },
+      "name": "from windows: punctuation quote"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 186
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 41,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: punctuation semicolon"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 41,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 186
+        }
+      },
+      "name": "from windows: punctuation semicolon"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 220
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 42,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: punctuation backslash"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 42,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 220
+        }
+      },
+      "name": "from windows: punctuation backslash"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 188
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 43,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: punctuation comma"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 43,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 188
+        }
+      },
+      "name": "from windows: punctuation comma"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 191
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 44,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: punctuation slash"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 44,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 191
+        }
+      },
+      "name": "from windows: punctuation slash"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 190
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 47,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: punctuation period"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 47,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 190
+        }
+      },
+      "name": "from windows: punctuation period"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 192
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 50,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: punctuation grave"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 50,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 192
+        }
+      },
+      "name": "from windows: punctuation grave"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 13
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 36,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key return"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 36,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 13
+        }
+      },
+      "name": "from windows: key return"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 9
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 48,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key tab"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 48,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 9
+        }
+      },
+      "name": "from windows: key tab"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 32
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 49,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key space"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 49,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 32
+        }
+      },
+      "name": "from windows: key space"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 8
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 51,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key delete (backspace)"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 51,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 8
+        }
+      },
+      "name": "from windows: key delete (backspace)"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 27
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 53,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key escape"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 53,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 27
+        }
+      },
+      "name": "from windows: key escape"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 46
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 117,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key forward delete"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 117,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 46
+        }
+      },
+      "name": "from windows: key forward delete"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 45
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 114,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key help (insert position)"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 114,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 45
+        }
+      },
+      "name": "from windows: key help (insert position)"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 36
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 115,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key home"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 115,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 36
+        }
+      },
+      "name": "from windows: key home"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 35
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 119,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key end"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 119,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 35
+        }
+      },
+      "name": "from windows: key end"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 33
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 116,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key page up"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 116,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 33
+        }
+      },
+      "name": "from windows: key page up"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 34
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 121,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key page down"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 121,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 34
+        }
+      },
+      "name": "from windows: key page down"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 37
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 123,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key left"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 123,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 37
+        }
+      },
+      "name": "from windows: key left"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 38
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 126,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key up"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 126,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 38
+        }
+      },
+      "name": "from windows: key up"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 39
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 124,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key right"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 124,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 39
+        }
+      },
+      "name": "from windows: key right"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 40
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 125,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: key down"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 125,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 40
+        }
+      },
+      "name": "from windows: key down"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 112
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 122,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F1"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 122,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 112
+        }
+      },
+      "name": "from windows: F1"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 113
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 120,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F2"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 120,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 113
+        }
+      },
+      "name": "from windows: F2"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 114
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 99,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F3"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 99,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 114
+        }
+      },
+      "name": "from windows: F3"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 115
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 118,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F4"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 118,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 115
+        }
+      },
+      "name": "from windows: F4"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 116
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 96,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F5"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 96,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 116
+        }
+      },
+      "name": "from windows: F5"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 117
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 97,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F6"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 97,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 117
+        }
+      },
+      "name": "from windows: F6"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 118
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 98,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F7"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 98,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 118
+        }
+      },
+      "name": "from windows: F7"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 119
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 100,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F8"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 100,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 119
+        }
+      },
+      "name": "from windows: F8"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 120
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 101,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F9"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 101,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 120
+        }
+      },
+      "name": "from windows: F9"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 121
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 109,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F10"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 109,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 121
+        }
+      },
+      "name": "from windows: F10"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 122
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 103,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F11"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 103,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 122
+        }
+      },
+      "name": "from windows: F11"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 123
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 111,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F12"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 111,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 123
+        }
+      },
+      "name": "from windows: F12"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 124
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 105,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F13"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 105,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 124
+        }
+      },
+      "name": "from windows: F13"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 125
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 107,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F14"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 107,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 125
+        }
+      },
+      "name": "from windows: F14"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 126
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 113,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F15"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 113,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 126
+        }
+      },
+      "name": "from windows: F15"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 127
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 106,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F16"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 106,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 127
+        }
+      },
+      "name": "from windows: F16"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 128
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 64,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F17"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 64,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 128
+        }
+      },
+      "name": "from windows: F17"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 129
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 79,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F18"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 79,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 129
+        }
+      },
+      "name": "from windows: F18"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 130
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 80,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F19"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 80,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 130
+        }
+      },
+      "name": "from windows: F19"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 131
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 90,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: F20"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 90,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 131
+        }
+      },
+      "name": "from windows: F20"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 96
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 82,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad 0"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 82,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 96
+        }
+      },
+      "name": "from windows: keypad 0"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 97
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 83,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad 1"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 83,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 97
+        }
+      },
+      "name": "from windows: keypad 1"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 98
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 84,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad 2"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 84,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 98
+        }
+      },
+      "name": "from windows: keypad 2"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 99
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 85,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad 3"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 85,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 99
+        }
+      },
+      "name": "from windows: keypad 3"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 100
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 86,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad 4"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 86,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 100
+        }
+      },
+      "name": "from windows: keypad 4"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 101
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 87,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad 5"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 87,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 101
+        }
+      },
+      "name": "from windows: keypad 5"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 102
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 88,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad 6"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 88,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 102
+        }
+      },
+      "name": "from windows: keypad 6"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 103
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 89,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad 7"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 89,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 103
+        }
+      },
+      "name": "from windows: keypad 7"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 104
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 91,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad 8"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 91,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 104
+        }
+      },
+      "name": "from windows: keypad 8"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 105
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 92,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad 9"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 92,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 105
+        }
+      },
+      "name": "from windows: keypad 9"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 106
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 67,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad multiply"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 67,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 106
+        }
+      },
+      "name": "from windows: keypad multiply"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 107
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 69,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad plus"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 69,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 107
+        }
+      },
+      "name": "from windows: keypad plus"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 109
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 78,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad minus"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 78,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 109
+        }
+      },
+      "name": "from windows: keypad minus"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 110
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 65,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad decimal"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 65,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 110
+        }
+      },
+      "name": "from windows: keypad decimal"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 111
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 75,
+          "modifiers": 0
+        }
+      },
+      "name": "to windows: keypad divide"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 75,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 111
+        }
+      },
+      "name": "from windows: keypad divide"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 1,
+          "vk": 87
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 1
+        }
+      },
+      "name": "default: default closeFocused Cmd+W"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 1
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 1,
+          "vk": 87
+        }
+      },
+      "name": "default back: default closeFocused Cmd+W"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 9,
+          "vk": 87
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 9
+        }
+      },
+      "name": "default: default closeAll Cmd+Ctrl+W"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 9
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 9,
+          "vk": 87
+        }
+      },
+      "name": "default back: default closeAll Cmd+Ctrl+W"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 1,
+          "vk": 27
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 53,
+          "modifiers": 1
+        }
+      },
+      "name": "default: default closeAll Cmd+Esc"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 53,
+          "modifiers": 1
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 1,
+          "vk": 27
+        }
+      },
+      "name": "default back: default closeAll Cmd+Esc"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 8,
+          "vk": 32
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 49,
+          "modifiers": 8
+        }
+      },
+      "name": "default: default quickSearch Ctrl+Space"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 49,
+          "modifiers": 8
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 8,
+          "vk": 32
+        }
+      },
+      "name": "default back: default quickSearch Ctrl+Space"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 37
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 123,
+          "modifiers": 0
+        }
+      },
+      "name": "default: default panel prevTab Left"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 123,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 37
+        }
+      },
+      "name": "default back: default panel prevTab Left"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 39
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 124,
+          "modifiers": 0
+        }
+      },
+      "name": "default: default panel nextTab Right"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 124,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 39
+        }
+      },
+      "name": "default back: default panel nextTab Right"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 9
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 48,
+          "modifiers": 0
+        }
+      },
+      "name": "default: default panel nextTab Tab"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 48,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 9
+        }
+      },
+      "name": "default back: default panel nextTab Tab"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 38
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 126,
+          "modifiers": 0
+        }
+      },
+      "name": "default: default panel up"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 126,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 38
+        }
+      },
+      "name": "default back: default panel up"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 40
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 125,
+          "modifiers": 0
+        }
+      },
+      "name": "default: default panel down"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 125,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 40
+        }
+      },
+      "name": "default back: default panel down"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 13
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 36,
+          "modifiers": 0
+        }
+      },
+      "name": "default: default panel insert Return"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 36,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 13
+        }
+      },
+      "name": "default back: default panel insert Return"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 27
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 53,
+          "modifiers": 0
+        }
+      },
+      "name": "default: default panel close Esc"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 53,
+          "modifiers": 0
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 27
+        }
+      },
+      "name": "default back: default panel close Esc"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 2,
+          "vk": 87
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 2
+        }
+      },
+      "name": "modifiers Alt on W"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 2
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 2,
+          "vk": 87
+        }
+      },
+      "name": "modifiers back Alt on W"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 4,
+          "vk": 87
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 4
+        }
+      },
+      "name": "modifiers Shift on W"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 4
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 4,
+          "vk": 87
+        }
+      },
+      "name": "modifiers back Shift on W"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 5,
+          "vk": 87
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 5
+        }
+      },
+      "name": "modifiers Cmd+Shift on W"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 5
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 5,
+          "vk": 87
+        }
+      },
+      "name": "modifiers back Cmd+Shift on W"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 3,
+          "vk": 87
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 3
+        }
+      },
+      "name": "modifiers Cmd+Alt on W"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 3
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 3,
+          "vk": 87
+        }
+      },
+      "name": "modifiers back Cmd+Alt on W"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 6,
+          "vk": 87
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 6
+        }
+      },
+      "name": "modifiers Alt+Shift on W"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 6
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 6,
+          "vk": 87
+        }
+      },
+      "name": "modifiers back Alt+Shift on W"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 12,
+          "vk": 87
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 12
+        }
+      },
+      "name": "modifiers Ctrl+Shift on W"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 12
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 12,
+          "vk": 87
+        }
+      },
+      "name": "modifiers back Ctrl+Shift on W"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 15,
+          "vk": 87
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 15
+        }
+      },
+      "name": "modifiers Cmd+Alt+Shift+Ctrl on W"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 15
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 15,
+          "vk": 87
+        }
+      },
+      "name": "modifiers back Cmd+Alt+Shift+Ctrl on W"
+    },
+    {
+      "expected": {
+        "windows": {
+          "modifiers": 10,
+          "vk": 87
+        }
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 10
+        }
+      },
+      "name": "modifiers Ctrl+Alt on W"
+    },
+    {
+      "expected": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 10
+        }
+      },
+      "input": {
+        "windows": {
+          "modifiers": 10,
+          "vk": 87
+        }
+      },
+      "name": "modifiers back Ctrl+Alt on W"
+    },
+    {
+      "expected": {
+        "windows": null
+      },
+      "input": {
+        "mac": {
+          "keyCode": 76,
+          "modifiers": 0
+        }
+      },
+      "name": "no counterpart: keypad enter"
+    },
+    {
+      "expected": {
+        "windows": null
+      },
+      "input": {
+        "mac": {
+          "keyCode": 81,
+          "modifiers": 0
+        }
+      },
+      "name": "no counterpart: keypad equals"
+    },
+    {
+      "expected": {
+        "windows": null
+      },
+      "input": {
+        "mac": {
+          "keyCode": 71,
+          "modifiers": 0
+        }
+      },
+      "name": "no counterpart: keypad clear"
+    },
+    {
+      "expected": {
+        "windows": null
+      },
+      "input": {
+        "mac": {
+          "keyCode": 10,
+          "modifiers": 0
+        }
+      },
+      "name": "no counterpart: ISO section"
+    },
+    {
+      "expected": {
+        "windows": null
+      },
+      "input": {
+        "mac": {
+          "keyCode": 72,
+          "modifiers": 0
+        }
+      },
+      "name": "no counterpart: volume up"
+    },
+    {
+      "expected": {
+        "windows": null
+      },
+      "input": {
+        "mac": {
+          "keyCode": 63,
+          "modifiers": 0
+        }
+      },
+      "name": "no counterpart: function key"
+    },
+    {
+      "expected": {
+        "windows": null
+      },
+      "input": {
+        "mac": {
+          "keyCode": 57,
+          "modifiers": 0
+        }
+      },
+      "name": "no counterpart: caps lock"
+    },
+    {
+      "expected": {
+        "mac": null
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 1
+        }
+      },
+      "name": "no counterpart: VK_LBUTTON"
+    },
+    {
+      "expected": {
+        "mac": null
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 16
+        }
+      },
+      "name": "no counterpart: VK_SHIFT"
+    },
+    {
+      "expected": {
+        "mac": null
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 20
+        }
+      },
+      "name": "no counterpart: VK_CAPITAL"
+    },
+    {
+      "expected": {
+        "mac": null
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 91
+        }
+      },
+      "name": "no counterpart: VK_LWIN"
+    },
+    {
+      "expected": {
+        "mac": null
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 135
+        }
+      },
+      "name": "no counterpart: VK_F24"
+    },
+    {
+      "expected": {
+        "mac": null
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 226
+        }
+      },
+      "name": "no counterpart: VK_OEM_102"
+    },
+    {
+      "expected": {
+        "mac": null
+      },
+      "input": {
+        "windows": {
+          "modifiers": 0,
+          "vk": 255
+        }
+      },
+      "name": "no counterpart: 0xFF"
+    },
+    {
+      "expected": {
+        "windows": null
+      },
+      "input": {
+        "mac": {
+          "keyCode": 13,
+          "modifiers": 16
+        }
+      },
+      "name": "unknown modifier bits are refused (mac)"
+    },
+    {
+      "expected": {
+        "mac": null
+      },
+      "input": {
+        "windows": {
+          "modifiers": 16,
+          "vk": 87
+        }
+      },
+      "name": "unknown modifier bits are refused (windows)"
+    }
+  ],
+  "reference": "hand"
+}

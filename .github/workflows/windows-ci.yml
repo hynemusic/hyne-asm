@@ -1,0 +1,44 @@
+# Proves the C# core equals the Swift core via the shared fixtures in spec/fixtures, and builds the Windows app as a
+# downloadable test build (an Actions artifact). Never publishes a release.
+name: Windows
+
+# One run per commit: pull requests run here; pushes only for main (a PR branch would otherwise run twice).
+on:
+  push:
+    branches: [main]
+    paths: ['windows/**', 'spec/**', 'bridge/**', 'Sources/HMLauncherCore/**', 'Tests/**', '.github/workflows/windows-ci.yml']
+  pull_request:
+    paths: ['windows/**', 'spec/**', 'bridge/**', 'Sources/HMLauncherCore/**', 'Tests/**', '.github/workflows/windows-ci.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: .NET tests
+        run: dotnet test windows/HyneAsm.sln
+      - name: Bridge tests
+        run: python -m unittest discover -s bridge/tests
+      - name: Build the app
+        run: dotnet publish windows/HyneAsm.App/HyneAsm.App.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:PublishReadyToRun=true -o publish
+      - name: Upload the test build
+        uses: actions/upload-artifact@v4
+        with:
+          name: HYNE-ASM-Windows-test-build
+          path: publish/HYNE ASM.exe
+          retention-days: 30
+
+  mac-fixtures:
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use the newest Xcode
+        run: sudo xcode-select -s "$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)"
+      - name: Swift fixture tests
+        run: swift test --filter SharedFixtureTests

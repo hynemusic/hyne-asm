@@ -1,0 +1,230 @@
+{
+  "area": "les.query",
+  "cases": [
+    {
+      "expected": {
+        "format": "vst3",
+        "isPreset": false,
+        "text": "valhallaroom"
+      },
+      "input": "ValhallaRoom vst3",
+      "name": "ValhallaRoom vst3"
+    },
+    {
+      "expected": {
+        "format": "vst3",
+        "isPreset": false,
+        "text": "cla-76 stereo"
+      },
+      "input": "\"CLA-76 Stereo\" vst3",
+      "name": "\"CLA-76 Stereo\" vst3"
+    },
+    {
+      "expected": {
+        "format": "au",
+        "isPreset": false,
+        "text": "ns1 (s)"
+      },
+      "input": "NS1 (s) au",
+      "name": "NS1 (s) au"
+    },
+    {
+      "expected": {
+        "format": "vst2",
+        "isPreset": false,
+        "text": "visco"
+      },
+      "input": "Visco vst",
+      "name": "Visco vst"
+    },
+    {
+      "expected": {
+        "format": "vst3",
+        "isPreset": false,
+        "text": "prophet-5 v"
+      },
+      "input": "prophet-5  V vst3",
+      "name": "prophet-5  V vst3"
+    },
+    {
+      "expected": {
+        "format": "maxForLive",
+        "isPreset": false,
+        "text": "swiss army meter"
+      },
+      "input": "Swiss Army Meter.amxd",
+      "name": "Swiss Army Meter.amxd"
+    },
+    {
+      "expected": {
+        "format": "maxForLive",
+        "isPreset": false,
+        "text": "granulator ii"
+      },
+      "input": "\"Granulator II\" amxd",
+      "name": "\"Granulator II\" amxd"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": true,
+        "text": "ott"
+      },
+      "input": "ott.adv",
+      "name": "ott.adv"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": false,
+        "text": "utility"
+      },
+      "input": "Utility",
+      "name": "Utility"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": false,
+        "text": "vst3"
+      },
+      "input": "vst3",
+      "name": "vst3"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": true,
+        "text": "my rack"
+      },
+      "input": "My Rack.adg",
+      "name": "My Rack.adg"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": true,
+        "text": "bass"
+      },
+      "input": "Bass.FXP",
+      "name": "Bass.FXP"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": true,
+        "text": "song"
+      },
+      "input": "Song.als",
+      "name": "Song.als"
+    },
+    {
+      "expected": {
+        "format": "vst3",
+        "isPreset": true,
+        "text": "pad"
+      },
+      "input": "Pad.aupreset vst3",
+      "name": "Pad.aupreset vst3"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": true,
+        "text": "lead"
+      },
+      "input": "Lead.vstpreset",
+      "name": "Lead.vstpreset"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": true,
+        "text": "kit"
+      },
+      "input": "Kit.alc",
+      "name": "Kit.alc"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": true,
+        "text": "bank"
+      },
+      "input": "Bank.fxb",
+      "name": "Bank.fxb"
+    },
+    {
+      "expected": {
+        "format": "au",
+        "isPreset": true,
+        "text": "clip"
+      },
+      "input": "Clip.adv au",
+      "name": "Clip.adv au"
+    },
+    {
+      "expected": {
+        "format": "vst3",
+        "isPreset": false,
+        "text": "serum"
+      },
+      "input": "Serum VST3",
+      "name": "Serum VST3"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": false,
+        "text": "spaced out"
+      },
+      "input": "  Spaced   Out  ",
+      "name": "  Spaced   Out  "
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": false,
+        "text": "café del mar"
+      },
+      "input": "Café Del Mar",
+      "name": "Café Del Mar"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": false,
+        "text": ""
+      },
+      "input": "",
+      "name": ""
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": false,
+        "text": "a b"
+      },
+      "input": "a\tb",
+      "name": "a\tb"
+    },
+    {
+      "expected": {
+        "format": "maxForLive",
+        "isPreset": false,
+        "text": "x"
+      },
+      "input": "x.AMXD",
+      "name": "x.AMXD"
+    },
+    {
+      "expected": {
+        "format": null,
+        "isPreset": true,
+        "text": ""
+      },
+      "input": ".adg",
+      "name": ".adg"
+    }
+  ]
+}

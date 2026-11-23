@@ -1,0 +1,14 @@
+{
+  "area": "smoke.echo",
+  "cases": [
+    {
+      "expected": {
+        "a": 1
+      },
+      "input": {
+        "a": 1
+      },
+      "name": "echoes_object"
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "area": "variants.channel",
+  "cases": [
+    {
+      "expected": {
+        "base": "REDD17",
+        "label": "Mono"
+      },
+      "input": "REDD17 Mono",
+      "name": "'REDD17 Mono'"
+    },
+    {
+      "expected": {
+        "base": "REDD17",
+        "label": "Stereo"
+      },
+      "input": "REDD17 Stereo",
+      "name": "'REDD17 Stereo'"
+    },
+    {
+      "expected": {
+        "base": "CLA-76",
+        "label": "Mono"
+      },
+      "input": "CLA-76 (m)",
+      "name": "'CLA-76 (m)'"
+    },
+    {
+      "expected": {
+        "base": "CLA-76",
+        "label": "Stereo"
+      },
+      "input": "CLA-76 (s)",
+      "name": "'CLA-76 (s)'"
+    },
+    {
+      "expected": {
+        "base": "Reel ADT",
+        "label": "m->s"
+      },
+      "input": "Reel ADT (m->s)",
+      "name": "'Reel ADT (m->s)'"
+    },
+    {
+      "expected": {
+        "base": "Reel ADT Live",
+        "label": null
+      },
+      "input": "Reel ADT Live",
+      "name": "'Reel ADT Live'"
+    },
+    {
+      "expected": {
+        "base": "Reel ADT Live",
+        "label": "Mono/Stereo"
+      },
+      "input": "Reel ADT Live Mono/Stereo",
+      "name": "'Reel ADT Live Mono/Stereo'"
+    },
+    {
+      "expected": {
+        "base": "Abbey Road Studio 3",
+        "label": "6->2"
+      },
+      "input": "Abbey Road Studio 3 (6->2)",
+      "name": "'Abbey Road Studio 3 (6->2)'"
+    },
+    {
+      "expected": {
+        "base": "Abbey Road Studio 3",
+        "label": "8->2"
+      },
+      "input": "Abbey Road Studio 3 (8->2)",
+      "name": "'Abbey Road Studio 3 (8->2)'"
+    },
+    {
+      "expected": {
+        "base": "Surround",
+        "label": "5.1->2"
+      },
+      "input": "Surround (5.1->2)",
+      "name": "'Surround (5.1->2)'"
+    },
+    {
+      "expected": {
+        "base": "Odd (m->x)",
+        "label": null
+      },
+      "input": "Odd (m->x)",
+      "name": "'Odd (m->x)'"
+    },
+    {
+      "expected": {
+        "base": "Weird",
+        "label": "->"
+      },
+      "input": "Weird (->)",
+      "name": "'Weird (->)'"
+    },
+    {
+      "expected": {
+        "base": "Numbers (12)",
+        "label": null
+      },
+      "input": "Numbers (12)",
+      "name": "'Numbers (12)'"
+    },
+    {
+      "expected": {
+        "base": "Padded",
+        "label": "Mono"
+      },
+      "input": "  Padded MONO  ",
+      "name": "'  Padded MONO  '"
+    },
+    {
+      "expected": {
+        "base": "Stereo",
+        "label": null
+      },
+      "input": "Stereo",
+      "name": "'Stereo'"
+    },
+    {
+      "expected": {
+        "base": "Mono",
+        "label": null
+      },
+      "input": "Mono",
+      "name": "'Mono'"
+    },
+    {
+      "expected": {
+        "base": "X",
+        "label": "Stereo"
+      },
+      "input": "X (S->S)",
+      "name": "'X (S->S)'"
+    },
+    {
+      "expected": {
+        "base": "X",
+        "label": "Mono"
+      },
+      "input": "X (m->m)",
+      "name": "'X (m->m)'"
+    },
+    {
+      "expected": {
+        "base": "Tab\tMono",
+        "label": null
+      },
+      "input": "Tab\tMono",
+      "name": "'Tab\tMono'"
+    },
+    {
+      "expected": {
+        "base": "Name",
+        "label": "6->2"
+      },
+      "input": "Name (6->2) ",
+      "name": "'Name (6->2) '"
+    },
+    {
+      "expected": {
+        "base": "Plugin",
+        "label": "٣->٢"
+      },
+      "input": "Plugin (٣->٢)",
+      "name": "'Plugin (٣->٢)'"
+    },
+    {
+      "expected": {
+        "base": "Über",
+        "label": "Mono"
+      },
+      "input": "Über Mono",
+      "name": "'Über Mono'"
+    },
+    {
+      "expected": {
+        "base": "Paren ( 6->2)",
+        "label": null
+      },
+      "input": "Paren ( 6->2)",
+      "name": "'Paren ( 6->2)'"
+    },
+    {
+      "expected": {
+        "base": "Nested (a",
+        "label": "6->2"
+      },
+      "input": "Nested (a(6->2)",
+      "name": "'Nested (a(6->2)'"
+    },
+    {
+      "expected": {
+        "base": "İ",
+        "label": "Mono"
+      },
+      "input": "İ Mono",
+      "name": "'İ Mono'"
+    },
+    {
+      "expected": {
+        "base": "",
+        "label": null
+      },
+      "input": "",
+      "name": "''"
+    },
+    {
+      "expected": {
+        "base": "Monophonic",
+        "label": null
+      },
+      "input": "Monophonic",
+      "name": "'Monophonic'"
+    },
+    {
+      "expected": {
+        "base": "x",
+        "label": "Mono/Stereo"
+      },
+      "input": "x mono/stereo",
+      "name": "'x mono/stereo'"
+    }
+  ]
+}

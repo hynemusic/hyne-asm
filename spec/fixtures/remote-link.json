@@ -1,0 +1,460 @@
+{
+  "area": "remote.link",
+  "cases": [
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/insert?name=Vocal%20Basic",
+        "parsed": {
+          "insert": "Vocal Basic"
+        }
+      },
+      "input": {
+        "command": {
+          "insert": "Vocal Basic"
+        },
+        "http": true
+      },
+      "name": "http insert"
+    },
+    {
+      "expected": {
+        "link": "hyneasm://insert?name=Vocal%20Basic",
+        "parsed": {
+          "insert": "Vocal Basic"
+        }
+      },
+      "input": {
+        "command": {
+          "insert": "Vocal Basic"
+        },
+        "http": false
+      },
+      "name": "scheme insert"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/insert?name=Serum%202&token=abc123",
+        "parsed": {
+          "insert": "Serum 2"
+        }
+      },
+      "input": {
+        "command": {
+          "insert": "Serum 2"
+        },
+        "http": true,
+        "token": "abc123"
+      },
+      "name": "http insert token"
+    },
+    {
+      "expected": {
+        "link": "hyneasm://insert?name=Serum%202",
+        "parsed": {
+          "insert": "Serum 2"
+        }
+      },
+      "input": {
+        "command": {
+          "insert": "Serum 2"
+        },
+        "http": false,
+        "token": "abc123"
+      },
+      "name": "scheme ignores token"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/insert?name=Rock%20%26%20Roll&token=abc123",
+        "parsed": {
+          "insert": "Rock & Roll"
+        }
+      },
+      "input": {
+        "command": {
+          "insert": "Rock & Roll"
+        },
+        "http": true,
+        "token": "abc123"
+      },
+      "name": "ampersand"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/insert?name=a+b%3Dc",
+        "parsed": {
+          "insert": "a+b=c"
+        }
+      },
+      "input": {
+        "command": {
+          "insert": "a+b=c"
+        },
+        "http": true
+      },
+      "name": "plus and equals"
+    },
+    {
+      "expected": {
+        "link": "hyneasm://insert?name=50%25%20Wet",
+        "parsed": {
+          "insert": "50% Wet"
+        }
+      },
+      "input": {
+        "command": {
+          "insert": "50% Wet"
+        },
+        "http": false
+      },
+      "name": "percent"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/insert?name=Pro-Q%204/Mid?%23",
+        "parsed": {
+          "insert": "Pro-Q 4/Mid?#"
+        }
+      },
+      "input": {
+        "command": {
+          "insert": "Pro-Q 4/Mid?#"
+        },
+        "http": true
+      },
+      "name": "slash question hash"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/insert?name=%C3%89chos%20%C3%BC",
+        "parsed": {
+          "insert": "Échos ü"
+        }
+      },
+      "input": {
+        "command": {
+          "insert": "Échos ü"
+        },
+        "http": true
+      },
+      "name": "unicode"
+    },
+    {
+      "expected": {
+        "link": "hyneasm://action?name=set_tempo&value=174",
+        "parsed": {
+          "action": {
+            "kind": "set_tempo",
+            "value": 174
+          }
+        }
+      },
+      "input": {
+        "command": {
+          "action": {
+            "kind": "set_tempo",
+            "value": 174
+          }
+        },
+        "http": false
+      },
+      "name": "tempo scheme"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/action?name=set_tempo&value=128.5&token=abc123",
+        "parsed": {
+          "action": {
+            "kind": "set_tempo",
+            "value": 128.5
+          }
+        }
+      },
+      "input": {
+        "command": {
+          "action": {
+            "kind": "set_tempo",
+            "value": 128.5
+          }
+        },
+        "http": true,
+        "token": "abc123"
+      },
+      "name": "tempo fraction"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/action?name=set_tempo&value=0.1",
+        "parsed": {
+          "action": {
+            "kind": "set_tempo",
+            "value": 0.1
+          }
+        }
+      },
+      "input": {
+        "command": {
+          "action": {
+            "kind": "set_tempo",
+            "value": 0.1
+          }
+        },
+        "http": true
+      },
+      "name": "tempo small"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/action?name=set_tempo",
+        "parsed": {
+          "action": {
+            "kind": "set_tempo",
+            "value": 120
+          }
+        }
+      },
+      "input": {
+        "command": {
+          "action": {
+            "kind": "set_tempo"
+          }
+        },
+        "http": true
+      },
+      "name": "tempo no value"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/action?name=set_time_signature&value=7&value2=8&token=abc123",
+        "parsed": {
+          "action": {
+            "kind": "set_time_signature",
+            "value": 7,
+            "value2": 8
+          }
+        }
+      },
+      "input": {
+        "command": {
+          "action": {
+            "kind": "set_time_signature",
+            "value": 7,
+            "value2": 8
+          }
+        },
+        "http": true,
+        "token": "abc123"
+      },
+      "name": "time signature"
+    },
+    {
+      "expected": {
+        "link": "hyneasm://action?name=toggle_loop",
+        "parsed": {
+          "action": {
+            "kind": "toggle_loop"
+          }
+        }
+      },
+      "input": {
+        "command": {
+          "action": {
+            "kind": "toggle_loop"
+          }
+        },
+        "http": false
+      },
+      "name": "toggle"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/quicksearch?token=abc123",
+        "parsed": "quickSearch"
+      },
+      "input": {
+        "command": "quickSearch",
+        "http": true,
+        "token": "abc123"
+      },
+      "name": "quick search token"
+    },
+    {
+      "expected": {
+        "link": "hyneasm://quicksearch",
+        "parsed": "quickSearch"
+      },
+      "input": {
+        "command": "quickSearch",
+        "http": false
+      },
+      "name": "quick search scheme"
+    },
+    {
+      "expected": {
+        "link": "hyneasm://panel",
+        "parsed": "panel"
+      },
+      "input": {
+        "command": "panel",
+        "http": false
+      },
+      "name": "panel"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/panel",
+        "parsed": "panel"
+      },
+      "input": {
+        "command": "panel",
+        "http": true
+      },
+      "name": "panel http"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/profile?name=Mixing%20%26%20Mastering",
+        "parsed": {
+          "profile": "Mixing & Mastering"
+        }
+      },
+      "input": {
+        "command": {
+          "profile": "Mixing & Mastering"
+        },
+        "http": true
+      },
+      "name": "profile"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/profile/next?token=t",
+        "parsed": "nextProfile"
+      },
+      "input": {
+        "command": "nextProfile",
+        "http": true,
+        "token": "t"
+      },
+      "name": "next profile http"
+    },
+    {
+      "expected": {
+        "link": "hyneasm://profile/next",
+        "parsed": "nextProfile"
+      },
+      "input": {
+        "command": "nextProfile",
+        "http": false
+      },
+      "name": "next profile scheme"
+    },
+    {
+      "expected": {
+        "link": "hyneasm://close-plugin-windows",
+        "parsed": "closePluginWindows"
+      },
+      "input": {
+        "command": "closePluginWindows",
+        "http": false
+      },
+      "name": "close plugin windows"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/close-plugin-windows?token=abc123",
+        "parsed": "closePluginWindows"
+      },
+      "input": {
+        "command": "closePluginWindows",
+        "http": true,
+        "token": "abc123"
+      },
+      "name": "close plugin windows http"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/panel?token=",
+        "parsed": "panel"
+      },
+      "input": {
+        "command": "panel",
+        "http": true,
+        "token": ""
+      },
+      "name": "empty token"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/insert?name=!$'()*,;:@~%5B%5D%7B%7D%7C%5C%5E%60%22%3C%3E%20-._",
+        "parsed": {
+          "insert": "!$'()*,;:@~[]{}|\\^`\"<> -._"
+        }
+      },
+      "input": {
+        "command": {
+          "insert": "!$'()*,;:@~[]{}|\\^`\"<> -._"
+        },
+        "http": true
+      },
+      "name": "ascii punctuation"
+    },
+    {
+      "expected": {
+        "link": "hyneasm://profile?name=!$'()*,;:@~%5B%5D%7B%7D%7C%5C%5E%60%22%3C%3E%20-._",
+        "parsed": {
+          "profile": "!$'()*,;:@~[]{}|\\^`\"<> -._"
+        }
+      },
+      "input": {
+        "command": {
+          "profile": "!$'()*,;:@~[]{}|\\^`\"<> -._"
+        },
+        "http": false
+      },
+      "name": "ascii punctuation scheme"
+    },
+    {
+      "expected": {
+        "link": "http://127.0.0.1:47821/action?name=set_tempo&value=1e-05",
+        "parsed": {
+          "action": {
+            "kind": "set_tempo",
+            "value": 1e-05
+          }
+        }
+      },
+      "input": {
+        "command": {
+          "action": {
+            "kind": "set_tempo",
+            "value": 1e-05
+          }
+        },
+        "http": true
+      },
+      "name": "tempo tiny"
+    },
+    {
+      "expected": {
+        "link": "hyneasm://action?name=set_tempo&value=-3.25",
+        "parsed": {
+          "action": {
+            "kind": "set_tempo",
+            "value": -3.25
+          }
+        }
+      },
+      "input": {
+        "command": {
+          "action": {
+            "kind": "set_tempo",
+            "value": -3.25
+          }
+        },
+        "http": false
+      },
+      "name": "tempo negative"
+    }
+  ]
+}

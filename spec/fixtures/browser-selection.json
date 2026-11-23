@@ -1,0 +1,1234 @@
+{
+  "area": "browser.selection",
+  "cases": [
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-3",
+                    "name": "Glue",
+                    "path": [],
+                    "source": "user_library",
+                    "uri": "g"
+                  },
+                  {
+                    "iconID": "console",
+                    "id": "NEW-4",
+                    "name": "Bus",
+                    "path": [],
+                    "source": "user_library",
+                    "uri": "b"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-5",
+                "name": "Demo Chains",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "iconID": "eq",
+                "id": "NEW-6",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq"
+              }
+            ],
+            "id": "NEW-7",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          {
+            "isEmpty": false,
+            "pluginCount": 3
+          }
+        ]
+      },
+      "input": {
+        "items": {
+          "bus": {
+            "name": "Bus",
+            "source": "user_library",
+            "uri": "b"
+          },
+          "glue": {
+            "name": "Glue",
+            "source": "user_library",
+            "uri": "g"
+          },
+          "proL": {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pl"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          }
+        },
+        "ops": [
+          {
+            "actions": [],
+            "cat": 2,
+            "folders": [
+              {
+                "items": [
+                  "glue",
+                  "bus"
+                ],
+                "title": "Demo Chains"
+              }
+            ],
+            "items": [
+              "proQ",
+              "glue"
+            ],
+            "op": "addSelection"
+          }
+        ]
+      },
+      "name": "folders become folders and items go loose"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "iconID": "eq",
+                    "id": "NEW-3",
+                    "name": "Pro-Q 4",
+                    "path": [
+                      "VST3",
+                      "FabFilter"
+                    ],
+                    "source": "plugins",
+                    "uri": "pq"
+                  },
+                  {
+                    "iconID": "limiter",
+                    "id": "NEW-4",
+                    "name": "Pro-L 2",
+                    "path": [
+                      "VST3",
+                      "FabFilter"
+                    ],
+                    "source": "plugins",
+                    "uri": "pl"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-5",
+                "name": "FabFilter",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          {
+            "isEmpty": false,
+            "pluginCount": 1
+          },
+          {
+            "isEmpty": false,
+            "pluginCount": 2
+          }
+        ]
+      },
+      "input": {
+        "items": {
+          "bus": {
+            "name": "Bus",
+            "source": "user_library",
+            "uri": "b"
+          },
+          "glue": {
+            "name": "Glue",
+            "source": "user_library",
+            "uri": "g"
+          },
+          "proL": {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pl"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          }
+        },
+        "ops": [
+          {
+            "actions": [],
+            "cat": 2,
+            "folders": [
+              {
+                "items": [
+                  "proQ"
+                ],
+                "title": "FabFilter"
+              }
+            ],
+            "items": [],
+            "op": "addSelection"
+          },
+          {
+            "actions": [],
+            "cat": 2,
+            "folders": [
+              {
+                "items": [
+                  "proQ",
+                  "proL"
+                ],
+                "title": "FabFilter"
+              }
+            ],
+            "items": [],
+            "op": "addSelection"
+          }
+        ]
+      },
+      "name": "existing folder is reused and duplicates skipped"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "iconID": "eq",
+                    "id": "NEW-1",
+                    "name": "Pro-Q 4",
+                    "path": [
+                      "VST3",
+                      "FabFilter"
+                    ],
+                    "source": "plugins",
+                    "uri": "pq"
+                  },
+                  {
+                    "iconID": "limiter",
+                    "id": "NEW-2",
+                    "name": "Pro-L 2",
+                    "path": [
+                      "VST3",
+                      "FabFilter"
+                    ],
+                    "source": "plugins",
+                    "uri": "pl"
+                  },
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-3",
+                    "name": "Glue",
+                    "path": [],
+                    "source": "user_library",
+                    "uri": "g"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-4",
+                "name": "Mine",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-5",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-7",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq"
+              },
+              {
+                "iconID": "limiter",
+                "id": "NEW-8",
+                "name": "Pro-L 2",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pl"
+              },
+              {
+                "iconID": "compressor",
+                "id": "NEW-9",
+                "name": "Glue",
+                "path": [],
+                "source": "user_library",
+                "uri": "g"
+              }
+            ],
+            "id": "NEW-10",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          {
+            "isEmpty": false,
+            "pluginCount": 3
+          },
+          "NEW-4",
+          {
+            "isEmpty": false,
+            "pluginCount": 3
+          }
+        ]
+      },
+      "input": {
+        "items": {
+          "bus": {
+            "name": "Bus",
+            "source": "user_library",
+            "uri": "b"
+          },
+          "glue": {
+            "name": "Glue",
+            "source": "user_library",
+            "uri": "g"
+          },
+          "proL": {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pl"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          }
+        },
+        "ops": [
+          {
+            "actions": [],
+            "asFolders": false,
+            "cat": 2,
+            "folders": [
+              {
+                "items": [
+                  "proQ",
+                  "proL"
+                ],
+                "title": "FabFilter"
+              }
+            ],
+            "items": [
+              "glue"
+            ],
+            "op": "addSelection"
+          },
+          {
+            "as": "t",
+            "cat": "favorites",
+            "name": "Mine",
+            "op": "addFolder"
+          },
+          {
+            "actions": [],
+            "cat": "favorites",
+            "folder": "$t",
+            "folders": [
+              {
+                "items": [
+                  "proQ",
+                  "proL"
+                ],
+                "title": "FabFilter"
+              }
+            ],
+            "items": [
+              "glue"
+            ],
+            "op": "addSelection"
+          }
+        ]
+      },
+      "name": "loose and into existing folder"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "eq",
+                "id": "NEW-3",
+                "name": "Pro-Q 4",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pq"
+              },
+              {
+                "action": {
+                  "kind": "tap_tempo"
+                },
+                "iconID": "meter",
+                "id": "NEW-4",
+                "name": "Tap Tempo",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "action": {
+                  "kind": "set_tempo",
+                  "value": 120
+                },
+                "iconID": "meter",
+                "id": "NEW-5",
+                "name": "Tempo 120",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          {
+            "isEmpty": false,
+            "pluginCount": 3
+          },
+          {
+            "isEmpty": false,
+            "pluginCount": 3
+          }
+        ]
+      },
+      "input": {
+        "items": {
+          "bus": {
+            "name": "Bus",
+            "source": "user_library",
+            "uri": "b"
+          },
+          "glue": {
+            "name": "Glue",
+            "source": "user_library",
+            "uri": "g"
+          },
+          "proL": {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pl"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          }
+        },
+        "ops": [
+          {
+            "actions": [
+              {
+                "kind": "tap_tempo"
+              },
+              {
+                "kind": "set_tempo",
+                "value": 120
+              }
+            ],
+            "cat": 2,
+            "folders": [],
+            "items": [
+              "proQ"
+            ],
+            "op": "addSelection"
+          },
+          {
+            "actions": [
+              {
+                "kind": "tap_tempo"
+              },
+              {
+                "kind": "set_tempo",
+                "value": 120
+              }
+            ],
+            "cat": 2,
+            "folders": [],
+            "items": [
+              "proQ"
+            ],
+            "op": "addSelection"
+          }
+        ]
+      },
+      "name": "live actions join the selection"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "action": {
+                      "kind": "toggle_metronome"
+                    },
+                    "iconID": "tuner",
+                    "id": "NEW-1",
+                    "name": "Metronom an/aus",
+                    "path": [],
+                    "source": "plugins",
+                    "uri": ""
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-2",
+                "name": "Transport",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "action": {
+                  "kind": "toggle_metronome"
+                },
+                "iconID": "tuner",
+                "id": "NEW-3",
+                "name": "Metronom an/aus",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-4",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-5",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          "NEW-2",
+          {
+            "isEmpty": false,
+            "pluginCount": 1
+          },
+          {
+            "isEmpty": false,
+            "pluginCount": 1
+          }
+        ]
+      },
+      "input": {
+        "items": {
+          "bus": {
+            "name": "Bus",
+            "source": "user_library",
+            "uri": "b"
+          },
+          "glue": {
+            "name": "Glue",
+            "source": "user_library",
+            "uri": "g"
+          },
+          "proL": {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pl"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          }
+        },
+        "ops": [
+          {
+            "as": "f",
+            "cat": "favorites",
+            "name": "Transport",
+            "op": "addFolder"
+          },
+          {
+            "actions": [
+              {
+                "kind": "toggle_metronome"
+              }
+            ],
+            "cat": "favorites",
+            "folder": "$f",
+            "folders": [],
+            "items": [],
+            "op": "addSelection"
+          },
+          {
+            "actions": [
+              {
+                "kind": "toggle_metronome"
+              }
+            ],
+            "asFolders": false,
+            "cat": "favorites",
+            "folders": [],
+            "items": [],
+            "op": "addSelection"
+          }
+        ]
+      },
+      "name": "live actions go into a target folder"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          {
+            "isEmpty": true,
+            "pluginCount": 0
+          }
+        ]
+      },
+      "input": {
+        "items": {
+          "bus": {
+            "name": "Bus",
+            "source": "user_library",
+            "uri": "b"
+          },
+          "glue": {
+            "name": "Glue",
+            "source": "user_library",
+            "uri": "g"
+          },
+          "proL": {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pl"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          }
+        },
+        "ops": [
+          {
+            "actions": [],
+            "cat": 2,
+            "folders": [],
+            "items": [],
+            "op": "addSelection"
+          }
+        ]
+      },
+      "name": "empty selection"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-3",
+                    "name": "Glue",
+                    "path": [],
+                    "source": "user_library",
+                    "uri": "g"
+                  },
+                  {
+                    "iconID": "console",
+                    "id": "NEW-4",
+                    "name": "Bus",
+                    "path": [],
+                    "source": "user_library",
+                    "uri": "b"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-5",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "console",
+                    "id": "NEW-6",
+                    "name": "Bus",
+                    "path": [],
+                    "source": "user_library",
+                    "uri": "b"
+                  },
+                  {
+                    "iconID": "eq",
+                    "id": "NEW-7",
+                    "name": "Pro-Q 4",
+                    "path": [
+                      "VST3",
+                      "FabFilter"
+                    ],
+                    "source": "plugins",
+                    "uri": "pq"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-8",
+                "name": "B",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              },
+              {
+                "iconID": "limiter",
+                "id": "NEW-9",
+                "name": "Pro-L 2",
+                "path": [
+                  "VST3",
+                  "FabFilter"
+                ],
+                "source": "plugins",
+                "uri": "pl"
+              }
+            ],
+            "id": "NEW-10",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          {
+            "isEmpty": false,
+            "pluginCount": 4
+          }
+        ]
+      },
+      "input": {
+        "items": {
+          "bus": {
+            "name": "Bus",
+            "source": "user_library",
+            "uri": "b"
+          },
+          "glue": {
+            "name": "Glue",
+            "source": "user_library",
+            "uri": "g"
+          },
+          "proL": {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pl"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          }
+        },
+        "ops": [
+          {
+            "actions": [],
+            "cat": 2,
+            "folders": [
+              {
+                "items": [
+                  "glue",
+                  "bus"
+                ],
+                "title": "A"
+              },
+              {
+                "items": [
+                  "bus",
+                  "proQ"
+                ],
+                "title": "B"
+              }
+            ],
+            "items": [
+              "proQ",
+              "proL"
+            ],
+            "op": "addSelection"
+          }
+        ]
+      },
+      "name": "plugin count counts folder items once"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "children": [
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-3",
+                    "name": "Glue",
+                    "path": [],
+                    "source": "user_library",
+                    "uri": "g"
+                  },
+                  {
+                    "iconID": "console",
+                    "id": "NEW-4",
+                    "name": "Bus",
+                    "path": [],
+                    "source": "user_library",
+                    "uri": "b"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-5",
+                "name": "A",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          {
+            "isEmpty": false,
+            "pluginCount": 2
+          }
+        ]
+      },
+      "input": {
+        "items": {
+          "bus": {
+            "name": "Bus",
+            "source": "user_library",
+            "uri": "b"
+          },
+          "glue": {
+            "name": "Glue",
+            "source": "user_library",
+            "uri": "g"
+          },
+          "proL": {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pl"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          }
+        },
+        "ops": [
+          {
+            "actions": [],
+            "cat": 2,
+            "folders": [
+              {
+                "items": [
+                  "glue"
+                ],
+                "title": "A"
+              },
+              {
+                "items": [
+                  "bus"
+                ],
+                "title": "A"
+              }
+            ],
+            "items": [],
+            "op": "addSelection"
+          }
+        ]
+      },
+      "name": "same folder title twice in one selection"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [
+              {
+                "iconID": "compressor",
+                "id": "NEW-3",
+                "name": "Glue",
+                "path": [],
+                "source": "plugins",
+                "uri": "x"
+              },
+              {
+                "children": [
+                  {
+                    "iconID": "compressor",
+                    "id": "NEW-4",
+                    "name": "Glue",
+                    "path": [],
+                    "source": "user_library",
+                    "uri": "g"
+                  }
+                ],
+                "iconID": "folder",
+                "id": "NEW-5",
+                "name": "Glue",
+                "path": [],
+                "source": "plugins",
+                "uri": ""
+              }
+            ],
+            "id": "NEW-6",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          null,
+          {
+            "isEmpty": false,
+            "pluginCount": 1
+          }
+        ]
+      },
+      "input": {
+        "items": {
+          "bus": {
+            "name": "Bus",
+            "source": "user_library",
+            "uri": "b"
+          },
+          "glue": {
+            "name": "Glue",
+            "source": "user_library",
+            "uri": "g"
+          },
+          "proL": {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pl"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          }
+        },
+        "ops": [
+          {
+            "cat": 2,
+            "item": {
+              "name": "Glue",
+              "uri": "x"
+            },
+            "op": "addEntry"
+          },
+          {
+            "actions": [],
+            "cat": 2,
+            "folders": [
+              {
+                "items": [
+                  "glue"
+                ],
+                "title": "Glue"
+              }
+            ],
+            "items": [],
+            "op": "addSelection"
+          }
+        ]
+      },
+      "name": "folder title matching a plugin entry makes a new folder"
+    },
+    {
+      "expected": {
+        "categories": [
+          {
+            "entries": [],
+            "id": "NEW-1",
+            "isFavorites": true,
+            "name": "Favorites"
+          },
+          {
+            "entries": [],
+            "id": "NEW-2",
+            "isFavorites": false,
+            "name": "Instruments"
+          },
+          {
+            "entries": [],
+            "id": "NEW-3",
+            "isFavorites": false,
+            "name": "Effects"
+          }
+        ],
+        "results": [
+          {
+            "isEmpty": false,
+            "pluginCount": 3
+          }
+        ]
+      },
+      "input": {
+        "items": {
+          "bus": {
+            "name": "Bus",
+            "source": "user_library",
+            "uri": "b"
+          },
+          "glue": {
+            "name": "Glue",
+            "source": "user_library",
+            "uri": "g"
+          },
+          "proL": {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pl"
+          },
+          "proQ": {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "uri": "pq"
+          }
+        },
+        "ops": [
+          {
+            "actions": [
+              {
+                "kind": "undo"
+              }
+            ],
+            "cat": 2,
+            "folder": "00000000-0000-0000-0000-000000000000",
+            "folders": [
+              {
+                "items": [
+                  "glue"
+                ],
+                "title": "A"
+              }
+            ],
+            "items": [
+              "proQ"
+            ],
+            "op": "addSelection"
+          }
+        ]
+      },
+      "name": "unknown target folder adds nothing"
+    }
+  ]
+}

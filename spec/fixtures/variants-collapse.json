@@ -1,0 +1,829 @@
+{
+  "area": "variants.collapse",
+  "cases": [
+    {
+      "expected": {
+        "groups": [
+          {
+            "channels": [],
+            "formats": [
+              "VST3",
+              "AU",
+              "VST2"
+            ],
+            "labels": [
+              "VST3",
+              "AU",
+              "VST2"
+            ],
+            "variants": [
+              "pl-v3",
+              "pl-au",
+              "pl-v2a"
+            ]
+          },
+          {
+            "channels": [
+              "Stereo",
+              "Mono"
+            ],
+            "formats": [
+              "VST3",
+              "AU"
+            ],
+            "labels": [
+              "VST3 · Stereo",
+              "AU · Stereo",
+              "VST3 · Mono",
+              "AU · Mono"
+            ],
+            "variants": [
+              "cla-v3-s",
+              "cla-au-s",
+              "cla-v3-m",
+              "cla-au-m"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "AU"
+            ],
+            "labels": [
+              "AU"
+            ],
+            "variants": [
+              "rx"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "VST2"
+            ],
+            "labels": [
+              "VST2"
+            ],
+            "variants": [
+              "serum-v2"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "Live"
+            ],
+            "labels": [
+              "Live"
+            ],
+            "variants": [
+              "util-live"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "VST3"
+            ],
+            "labels": [
+              "VST3"
+            ],
+            "variants": [
+              "util-plug"
+            ]
+          }
+        ],
+        "keys": [
+          "plugins|pro-l 2",
+          "plugins|pro-l 2",
+          "plugins|pro-l 2",
+          "plugins|pro-l 2",
+          "plugins|cla-76",
+          "plugins|cla-76",
+          "plugins|cla-76",
+          "plugins|cla-76",
+          "plugins|rx 10 de-ess",
+          "plugins|serum",
+          "audio_effects|utility",
+          "plugins|utility"
+        ]
+      },
+      "input": [
+        {
+          "name": "Pro-L 2",
+          "path": [
+            "AUv2",
+            "FabFilter"
+          ],
+          "source": "plugins",
+          "uri": "pl-au"
+        },
+        {
+          "name": "FabFilter Pro-L 2",
+          "path": [
+            "VST",
+            "Local"
+          ],
+          "source": "plugins",
+          "uri": "pl-v2a"
+        },
+        {
+          "name": "FabFilter Pro-L 2",
+          "path": [
+            "VST",
+            "Custom",
+            "VST"
+          ],
+          "source": "plugins",
+          "uri": "pl-v2b"
+        },
+        {
+          "name": "Pro-L 2",
+          "path": [
+            "VST3",
+            "FabFilter"
+          ],
+          "source": "plugins",
+          "uri": "pl-v3"
+        },
+        {
+          "name": "CLA-76 (m)",
+          "path": [
+            "AUv2",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "cla-au-m"
+        },
+        {
+          "name": "CLA-76 (s)",
+          "path": [
+            "AUv2",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "cla-au-s"
+        },
+        {
+          "name": "CLA-76 Mono",
+          "path": [
+            "VST3",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "cla-v3-m"
+        },
+        {
+          "name": "CLA-76 Stereo",
+          "path": [
+            "VST3",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "cla-v3-s"
+        },
+        {
+          "name": "RX 10 De-ess",
+          "path": [
+            "AUv2",
+            "iZotope"
+          ],
+          "source": "plugins",
+          "uri": "rx"
+        },
+        {
+          "name": "Serum",
+          "path": [
+            "VST",
+            "Local"
+          ],
+          "source": "plugins",
+          "uri": "serum-v2"
+        },
+        {
+          "name": "Utility",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "util-live"
+        },
+        {
+          "name": "Utility",
+          "path": [
+            "VST3",
+            "Someone"
+          ],
+          "source": "plugins",
+          "uri": "util-plug"
+        }
+      ],
+      "name": "plugin variants test"
+    },
+    {
+      "expected": {
+        "groups": [
+          {
+            "channels": [
+              "Stereo",
+              "Mono"
+            ],
+            "formats": [
+              "VST3"
+            ],
+            "labels": [
+              "VST3 · Stereo",
+              "VST3 · Mono"
+            ],
+            "variants": [
+              "r17s",
+              "r17m"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "VST3"
+            ],
+            "labels": [
+              "VST3 · m->s"
+            ],
+            "variants": [
+              "adt"
+            ]
+          },
+          {
+            "channels": [
+              "Stereo",
+              "Mono/Stereo",
+              "Mono"
+            ],
+            "formats": [
+              "VST3"
+            ],
+            "labels": [
+              "VST3 · Stereo",
+              "VST3 · Mono/Stereo",
+              "VST3 · Mono"
+            ],
+            "variants": [
+              "adtls",
+              "adtlms",
+              "adtlm"
+            ]
+          },
+          {
+            "channels": [
+              "6->2",
+              "8->2"
+            ],
+            "formats": [
+              "VST3"
+            ],
+            "labels": [
+              "VST3 · 6->2",
+              "VST3 · 8->2"
+            ],
+            "variants": [
+              "ar62",
+              "ar82"
+            ]
+          }
+        ],
+        "keys": [
+          "plugins|redd17",
+          "plugins|redd17",
+          "plugins|reel adt",
+          "plugins|reel adt live",
+          "plugins|reel adt live",
+          "plugins|reel adt live",
+          "plugins|abbey road studio 3",
+          "plugins|abbey road studio 3"
+        ]
+      },
+      "input": [
+        {
+          "name": "REDD17 Mono",
+          "path": [
+            "VST3",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "r17m"
+        },
+        {
+          "name": "REDD17 Stereo",
+          "path": [
+            "VST3",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "r17s"
+        },
+        {
+          "name": "Reel ADT (m->s)",
+          "path": [
+            "VST3",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "adt"
+        },
+        {
+          "name": "Reel ADT Live Mono",
+          "path": [
+            "VST3",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "adtlm"
+        },
+        {
+          "name": "Reel ADT Live Mono/Stereo",
+          "path": [
+            "VST3",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "adtlms"
+        },
+        {
+          "name": "Reel ADT Live Stereo",
+          "path": [
+            "VST3",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "adtls"
+        },
+        {
+          "name": "Abbey Road Studio 3 (6->2)",
+          "path": [
+            "VST3",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "ar62"
+        },
+        {
+          "name": "Abbey Road Studio 3 (8->2)",
+          "path": [
+            "VST3",
+            "Waves"
+          ],
+          "source": "plugins",
+          "uri": "ar82"
+        }
+      ],
+      "name": "library examples"
+    },
+    {
+      "expected": {
+        "groups": [
+          {
+            "channels": [],
+            "formats": [
+              "VST3",
+              "AU",
+              "VST2"
+            ],
+            "labels": [
+              "VST3",
+              "AU",
+              "VST2"
+            ],
+            "variants": [
+              "u-v3",
+              "u-au",
+              "u-v2"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "Live"
+            ],
+            "labels": [
+              "Live"
+            ],
+            "variants": [
+              "o-live"
+            ]
+          }
+        ],
+        "keys": [
+          "plugins|über comp",
+          "plugins|über comp",
+          "plugins|über comp",
+          "plugins|über comp",
+          "plugins|über comp",
+          "audio_effects|ölfilter",
+          "audio_effects|ölfilter"
+        ]
+      },
+      "input": [
+        {
+          "name": "Über Comp",
+          "path": [
+            "VST3",
+            "Überwerk"
+          ],
+          "source": "plugins",
+          "uri": "u-v3"
+        },
+        {
+          "name": "Über Comp",
+          "path": [
+            "AUv2",
+            "Überwerk"
+          ],
+          "source": "plugins",
+          "uri": "u-au"
+        },
+        {
+          "name": "Überwerk Über Comp",
+          "path": [
+            "VST",
+            "Local"
+          ],
+          "source": "plugins",
+          "uri": "u-v2"
+        },
+        {
+          "name": "überwerk über comp",
+          "path": [
+            "VST",
+            "Other"
+          ],
+          "source": "plugins",
+          "uri": "u-v2b"
+        },
+        {
+          "name": "ÜBER COMP",
+          "path": [
+            "VST3",
+            "Elsewhere"
+          ],
+          "source": "plugins",
+          "uri": "u-caps"
+        },
+        {
+          "name": "Ölfilter",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "o-live"
+        },
+        {
+          "name": "Ölfilter",
+          "path": [],
+          "source": "audio_effects",
+          "uri": "o-live2"
+        }
+      ],
+      "name": "unicode names"
+    },
+    {
+      "expected": {
+        "groups": [
+          {
+            "channels": [],
+            "formats": [
+              "VST3",
+              "AU",
+              "VST2",
+              "CLAP"
+            ],
+            "labels": [
+              "VST3",
+              "AU",
+              "VST2",
+              "CLAP"
+            ],
+            "variants": [
+              "pq-v3",
+              "pq-au",
+              "pq-sp",
+              "pq-clap"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "Rack"
+            ],
+            "labels": [
+              "Rack"
+            ],
+            "variants": [
+              "pre1"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "Rack"
+            ],
+            "labels": [
+              "Rack"
+            ],
+            "variants": [
+              "pre2"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "Live"
+            ],
+            "labels": [
+              "Live"
+            ],
+            "variants": [
+              "drift"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "Live"
+            ],
+            "labels": [
+              "Live"
+            ],
+            "variants": [
+              "drift-m4l"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "VST2"
+            ],
+            "labels": [
+              "VST2"
+            ],
+            "variants": [
+              "nospace"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "VST2"
+            ],
+            "labels": [
+              "VST2"
+            ],
+            "variants": [
+              "fab2"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "VST3"
+            ],
+            "labels": [
+              "VST3"
+            ],
+            "variants": [
+              "fabx"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "VST3"
+            ],
+            "labels": [
+              "VST3 · Stereo"
+            ],
+            "variants": [
+              "lone"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "VST3"
+            ],
+            "labels": [
+              "VST3 · 5.1->2"
+            ],
+            "variants": [
+              "s51"
+            ]
+          },
+          {
+            "channels": [],
+            "formats": [
+              "VST3"
+            ],
+            "labels": [
+              "VST3"
+            ],
+            "variants": [
+              "odd"
+            ]
+          },
+          {
+            "channels": [
+              "Stereo",
+              "Mono"
+            ],
+            "formats": [
+              "AU",
+              "VST3"
+            ],
+            "labels": [
+              "AU · Stereo",
+              "VST3 · Mono"
+            ],
+            "variants": [
+              "pad2",
+              "pad"
+            ]
+          }
+        ],
+        "keys": [
+          "plugins|pro-q 4",
+          "plugins|pro-q 4",
+          "plugins|pro-q 4",
+          "plugins|pro-q 4",
+          "plugins|pro-q 4",
+          "plugins|pro-q 4",
+          "preset|pre1",
+          "preset|pre2",
+          "instruments|drift",
+          "max_for_live|drift",
+          "plugins|fabfilterpro-l 2",
+          "plugins|pro-l 2",
+          "plugins|fab filter x",
+          "plugins|lone",
+          "plugins|surround",
+          "plugins|odd (m->x)",
+          "plugins|padded",
+          "plugins|padded"
+        ]
+      },
+      "input": [
+        {
+          "name": "Pro-Q 4",
+          "path": [
+            "VST3",
+            "FabFilter"
+          ],
+          "source": "plugins",
+          "uri": "pq-v3"
+        },
+        {
+          "name": "Pro-Q 4",
+          "path": [
+            "AUv2",
+            "FabFilter"
+          ],
+          "source": "plugins",
+          "uri": "pq-au"
+        },
+        {
+          "name": "Pro-Q 4",
+          "path": [
+            "AUv3",
+            "FabFilter"
+          ],
+          "source": "plugins",
+          "uri": "pq-auv3"
+        },
+        {
+          "name": "Pro-Q 4",
+          "path": [
+            "CLAP",
+            "FabFilter"
+          ],
+          "source": "plugins",
+          "uri": "pq-clap"
+        },
+        {
+          "name": "Pro-Q  4",
+          "path": [
+            "VST",
+            "Local"
+          ],
+          "source": "plugins",
+          "uri": "pq-sp"
+        },
+        {
+          "name": "pro-q 4",
+          "path": [
+            "VST3",
+            "Other"
+          ],
+          "source": "plugins",
+          "uri": "pq-lc"
+        },
+        {
+          "format": "adg",
+          "name": "Bus Glue",
+          "path": [
+            "Presets",
+            "Audio Effects"
+          ],
+          "source": "user_library",
+          "uri": "pre1"
+        },
+        {
+          "format": "adg",
+          "name": "Bus Glue",
+          "path": [
+            "My Racks"
+          ],
+          "source": "user_folders",
+          "uri": "pre2"
+        },
+        {
+          "name": "Drift",
+          "path": [],
+          "source": "instruments",
+          "uri": "drift"
+        },
+        {
+          "name": "Drift",
+          "path": [],
+          "source": "max_for_live",
+          "uri": "drift-m4l"
+        },
+        {
+          "name": "FabFilterPro-L 2",
+          "path": [
+            "VST",
+            "Local"
+          ],
+          "source": "plugins",
+          "uri": "nospace"
+        },
+        {
+          "name": "Fab Filter Pro-L 2",
+          "path": [
+            "VST",
+            "Local"
+          ],
+          "source": "plugins",
+          "uri": "fab2"
+        },
+        {
+          "name": "Fab Filter X",
+          "path": [
+            "VST3",
+            "Fab Filter"
+          ],
+          "source": "plugins",
+          "uri": "fabx"
+        },
+        {
+          "name": "Lone Stereo",
+          "path": [
+            "VST3",
+            "Y"
+          ],
+          "source": "plugins",
+          "uri": "lone"
+        },
+        {
+          "name": "Surround (5.1->2)",
+          "path": [
+            "VST3",
+            "Y"
+          ],
+          "source": "plugins",
+          "uri": "s51"
+        },
+        {
+          "name": "Odd (m->x)",
+          "path": [
+            "VST3",
+            "Y"
+          ],
+          "source": "plugins",
+          "uri": "odd"
+        },
+        {
+          "name": " Padded Mono ",
+          "path": [
+            "VST3",
+            "Y"
+          ],
+          "source": "plugins",
+          "uri": "pad"
+        },
+        {
+          "name": "Padded Stereo",
+          "path": [
+            "AUv2",
+            "Y"
+          ],
+          "source": "plugins",
+          "uri": "pad2"
+        }
+      ],
+      "name": "formats and odd names"
+    }
+  ]
+}

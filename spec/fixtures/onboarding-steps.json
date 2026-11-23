@@ -1,0 +1,691 @@
+{
+  "area": "onboarding.steps",
+  "cases": [
+    {
+      "expected": {
+        "done": [
+          "welcome"
+        ],
+        "showOnLaunch": true,
+        "steps": [
+          "welcome",
+          "permission",
+          "connect",
+          "menu",
+          "tryIt"
+        ]
+      },
+      "input": {
+        "configExisted": false,
+        "done": false,
+        "status": {}
+      },
+      "name": "fresh"
+    },
+    {
+      "expected": {
+        "done": [
+          "welcome",
+          "connect"
+        ],
+        "showOnLaunch": false,
+        "steps": [
+          "welcome",
+          "permission",
+          "connect",
+          "menu",
+          "tryIt"
+        ]
+      },
+      "input": {
+        "configExisted": true,
+        "done": false,
+        "status": {
+          "connected": true
+        }
+      },
+      "name": "connected"
+    },
+    {
+      "expected": {
+        "done": [
+          "welcome"
+        ],
+        "showOnLaunch": false,
+        "steps": [
+          "welcome",
+          "permission",
+          "connect",
+          "menu",
+          "tryIt"
+        ]
+      },
+      "input": {
+        "configExisted": false,
+        "done": true,
+        "status": {
+          "scriptInstalled": true
+        }
+      },
+      "name": "script installed only"
+    },
+    {
+      "expected": {
+        "done": [
+          "welcome",
+          "permission",
+          "menu"
+        ],
+        "showOnLaunch": false,
+        "steps": [
+          "welcome",
+          "permission",
+          "connect",
+          "menu",
+          "tryIt"
+        ]
+      },
+      "input": {
+        "configExisted": true,
+        "done": true,
+        "status": {
+          "menuChosen": true,
+          "permission": true
+        }
+      },
+      "name": "permission and menu"
+    },
+    {
+      "expected": {
+        "done": [
+          "welcome",
+          "permission",
+          "connect",
+          "menu",
+          "tryIt"
+        ],
+        "showOnLaunch": true,
+        "steps": [
+          "welcome",
+          "permission",
+          "connect",
+          "menu",
+          "tryIt"
+        ]
+      },
+      "input": {
+        "configExisted": false,
+        "done": false,
+        "status": {
+          "connected": true,
+          "menuChosen": true,
+          "panelOpened": true,
+          "permission": true,
+          "scriptInstalled": true
+        }
+      },
+      "name": "all"
+    },
+    {
+      "expected": {
+        "added": 3,
+        "again": 0,
+        "categories": [
+          {
+            "icons": [],
+            "name": "Favorites",
+            "titles": []
+          },
+          {
+            "icons": [
+              "synth"
+            ],
+            "name": "Instruments",
+            "titles": [
+              "Drift"
+            ]
+          },
+          {
+            "icons": [
+              "eq",
+              "reverb"
+            ],
+            "name": "Effects",
+            "titles": [
+              "EQ Eight",
+              "Reverb"
+            ]
+          }
+        ]
+      },
+      "input": {
+        "starter": [
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          {
+            "name": "Reverb",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "rv"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "dr"
+          },
+          {
+            "name": "Serum",
+            "path": [],
+            "source": "plugins",
+            "uri": "se"
+          }
+        ]
+      },
+      "name": "starter default menu"
+    },
+    {
+      "expected": {
+        "added": 12,
+        "again": 0,
+        "categories": [
+          {
+            "icons": [],
+            "name": "Favorites",
+            "titles": []
+          },
+          {
+            "icons": [
+              "synth",
+              "synth",
+              "sampler",
+              "drums"
+            ],
+            "name": "Instruments",
+            "titles": [
+              "Drift",
+              "Operator",
+              "Simpler",
+              "Drum Rack"
+            ]
+          },
+          {
+            "icons": [
+              "eq",
+              "compressor",
+              "compressor",
+              "reverb",
+              "delay",
+              "utility",
+              "saturation",
+              "limiter"
+            ],
+            "name": "Effects",
+            "titles": [
+              "EQ Eight",
+              "Compressor",
+              "Glue Compressor",
+              "Reverb",
+              "Delay",
+              "Utility",
+              "Saturator",
+              "Limiter"
+            ]
+          }
+        ]
+      },
+      "input": {
+        "starter": [
+          {
+            "name": "Utility",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "q:Utility"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "q:EQ Eight"
+          },
+          {
+            "name": "Compressor",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "q:Compressor"
+          },
+          {
+            "name": "Glue Compressor",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "q:Glue Compressor"
+          },
+          {
+            "name": "Reverb",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "q:Reverb"
+          },
+          {
+            "name": "Delay",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "q:Delay"
+          },
+          {
+            "name": "Saturator",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "q:Saturator"
+          },
+          {
+            "name": "Limiter",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "q:Limiter"
+          },
+          {
+            "name": "Drum Rack",
+            "path": [],
+            "source": "instruments",
+            "uri": "q:Drum Rack"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "q:Drift"
+          },
+          {
+            "name": "Operator",
+            "path": [],
+            "source": "instruments",
+            "uri": "q:Operator"
+          },
+          {
+            "name": "Simpler",
+            "path": [],
+            "source": "instruments",
+            "uri": "q:Simpler"
+          }
+        ]
+      },
+      "name": "starter all known"
+    },
+    {
+      "expected": {
+        "added": 0,
+        "again": 0,
+        "categories": [
+          {
+            "icons": [],
+            "name": "Favorites",
+            "titles": []
+          },
+          {
+            "icons": [],
+            "name": "Instruments",
+            "titles": []
+          },
+          {
+            "icons": [],
+            "name": "Effects",
+            "titles": []
+          }
+        ]
+      },
+      "input": {
+        "starter": [
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "plugins",
+            "uri": "eq"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "dr"
+          }
+        ]
+      },
+      "name": "starter wrong source"
+    },
+    {
+      "expected": {
+        "added": 0,
+        "again": 0,
+        "categories": [
+          {
+            "icons": [],
+            "name": "Favorites",
+            "titles": []
+          }
+        ]
+      },
+      "input": {
+        "config": {
+          "categories": [
+            {
+              "entries": [],
+              "id": "00000000-0000-0000-0000-00000000000F",
+              "isFavorites": true,
+              "name": "Favorites"
+            }
+          ],
+          "version": 4
+        },
+        "starter": [
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          {
+            "name": "Reverb",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "rv"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "dr"
+          },
+          {
+            "name": "Serum",
+            "path": [],
+            "source": "plugins",
+            "uri": "se"
+          }
+        ]
+      },
+      "name": "starter only favorites"
+    },
+    {
+      "expected": {
+        "added": 3,
+        "again": 0,
+        "categories": [
+          {
+            "icons": [],
+            "name": "Favorites",
+            "titles": []
+          },
+          {
+            "icons": [
+              "synth"
+            ],
+            "name": "Synths",
+            "titles": [
+              "Drift"
+            ]
+          },
+          {
+            "icons": [
+              "eq",
+              "reverb"
+            ],
+            "name": "Mixing",
+            "titles": [
+              "EQ Eight",
+              "Reverb"
+            ]
+          }
+        ]
+      },
+      "input": {
+        "config": {
+          "categories": [
+            {
+              "entries": [],
+              "id": "00000000-0000-0000-0000-00000000000F",
+              "isFavorites": true,
+              "name": "Favorites"
+            },
+            {
+              "entries": [],
+              "id": "00000000-0000-0000-0000-000000000001",
+              "isFavorites": false,
+              "name": "Synths"
+            },
+            {
+              "entries": [],
+              "id": "00000000-0000-0000-0000-000000000002",
+              "isFavorites": false,
+              "name": "Mixing"
+            }
+          ],
+          "version": 4
+        },
+        "starter": [
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          {
+            "name": "Reverb",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "rv"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "dr"
+          },
+          {
+            "name": "Serum",
+            "path": [],
+            "source": "plugins",
+            "uri": "se"
+          }
+        ]
+      },
+      "name": "starter custom categories"
+    },
+    {
+      "expected": {
+        "added": 3,
+        "again": 0,
+        "categories": [
+          {
+            "icons": [],
+            "name": "Favorites",
+            "titles": []
+          },
+          {
+            "icons": [
+              "eq",
+              "reverb",
+              "synth"
+            ],
+            "name": "Everything",
+            "titles": [
+              "EQ Eight",
+              "Reverb",
+              "Drift"
+            ]
+          }
+        ]
+      },
+      "input": {
+        "config": {
+          "categories": [
+            {
+              "entries": [],
+              "id": "00000000-0000-0000-0000-00000000000F",
+              "isFavorites": true,
+              "name": "Favorites"
+            },
+            {
+              "entries": [],
+              "id": "00000000-0000-0000-0000-000000000001",
+              "isFavorites": false,
+              "name": "Everything"
+            }
+          ],
+          "version": 4
+        },
+        "starter": [
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          {
+            "name": "Reverb",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "rv"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "dr"
+          },
+          {
+            "name": "Serum",
+            "path": [],
+            "source": "plugins",
+            "uri": "se"
+          }
+        ]
+      },
+      "name": "starter one custom category"
+    },
+    {
+      "expected": {
+        "added": 2,
+        "again": 0,
+        "categories": [
+          {
+            "icons": [],
+            "name": "Favorites",
+            "titles": []
+          },
+          {
+            "icons": [
+              "synth"
+            ],
+            "name": "Instruments",
+            "titles": [
+              "Drift"
+            ]
+          },
+          {
+            "icons": [
+              "space",
+              "eq"
+            ],
+            "name": "Effects",
+            "titles": [
+              "Reverb",
+              "EQ Eight"
+            ]
+          }
+        ]
+      },
+      "input": {
+        "config": {
+          "categories": [
+            {
+              "entries": [],
+              "id": "00000000-0000-0000-0000-00000000000F",
+              "isFavorites": true,
+              "name": "Favorites"
+            },
+            {
+              "entries": [],
+              "id": "00000000-0000-0000-0000-000000000001",
+              "isFavorites": false,
+              "name": "Instruments"
+            },
+            {
+              "entries": [
+                {
+                  "iconID": "space",
+                  "id": "00000000-0000-0000-0000-0000000000E1",
+                  "name": "Reverb",
+                  "path": [],
+                  "source": "audio_effects",
+                  "uri": "rv"
+                }
+              ],
+              "id": "00000000-0000-0000-0000-000000000002",
+              "isFavorites": false,
+              "name": "Effects"
+            }
+          ],
+          "version": 4
+        },
+        "starter": [
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq"
+          },
+          {
+            "name": "Reverb",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "rv"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "dr"
+          },
+          {
+            "name": "Serum",
+            "path": [],
+            "source": "plugins",
+            "uri": "se"
+          }
+        ]
+      },
+      "name": "starter existing entry"
+    },
+    {
+      "expected": {
+        "added": 0,
+        "again": 0,
+        "categories": [
+          {
+            "icons": [],
+            "name": "Favorites",
+            "titles": []
+          },
+          {
+            "icons": [],
+            "name": "Instruments",
+            "titles": []
+          },
+          {
+            "icons": [],
+            "name": "Effects",
+            "titles": []
+          }
+        ]
+      },
+      "input": {
+        "starter": []
+      },
+      "name": "starter no items"
+    }
+  ]
+}

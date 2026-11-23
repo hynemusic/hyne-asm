@@ -1,0 +1,501 @@
+{
+  "area": "presets.match",
+  "cases": [
+    {
+      "expected": "u:a",
+      "input": {
+        "file": "/Users/me/Music/Ableton/User Library/Presets/Audio Effects/Bus.adg",
+        "items": [
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [
+              "Presets",
+              "Old"
+            ],
+            "source": "user_library",
+            "uri": "u:b"
+          },
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [
+              "Presets",
+              "Audio Effects"
+            ],
+            "source": "user_library",
+            "uri": "u:a"
+          }
+        ],
+        "library": "/Users/me/Music/Ableton/User Library",
+        "op": "match"
+      },
+      "name": "user library file matched by folders"
+    },
+    {
+      "expected": "u:place",
+      "input": {
+        "file": "/Volumes/Data/My Racks/Mix/Bus.adg",
+        "items": [
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [],
+            "source": "user_library",
+            "uri": "u:root"
+          },
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [
+              "Mix"
+            ],
+            "source": "user_folders",
+            "uri": "u:short"
+          },
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [
+              "My Racks",
+              "Mix"
+            ],
+            "source": "user_folders",
+            "uri": "u:place"
+          },
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [
+              "My Racks",
+              "Mix"
+            ],
+            "source": "user_folders",
+            "uri": "u:same"
+          }
+        ],
+        "library": "/Users/me/Music/Ableton/User Library",
+        "op": "match"
+      },
+      "name": "places folder, longest path wins"
+    },
+    {
+      "expected": null,
+      "input": {
+        "file": "/Users/me/Downloads/Bus.adg",
+        "items": [
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [],
+            "source": "user_library",
+            "uri": "u:root"
+          }
+        ],
+        "library": "/Users/me/Music/Ableton/User Library",
+        "op": "match"
+      },
+      "name": "same-named file elsewhere is not the library root preset"
+    },
+    {
+      "expected": "u:root",
+      "input": {
+        "file": "/Users/me/Music/Ableton/User Library/Bus.adg",
+        "items": [
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [],
+            "source": "user_library",
+            "uri": "u:root"
+          }
+        ],
+        "library": "/Users/me/Music/Ableton/User Library",
+        "op": "match"
+      },
+      "name": "library root preset"
+    },
+    {
+      "expected": null,
+      "input": {
+        "file": "/Users/x/Bus.adg",
+        "items": [
+          {
+            "format": "adv",
+            "name": "Bus",
+            "path": [],
+            "source": "user_library",
+            "uri": "u:a"
+          }
+        ],
+        "library": "/Users/me/Music/Ableton/User Library",
+        "op": "match"
+      },
+      "name": "other type is no match"
+    },
+    {
+      "expected": "u:a",
+      "input": {
+        "file": "/Users/me/Music/Ableton/User Library/Presets/Bus.ADG",
+        "items": [
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [
+              "Presets"
+            ],
+            "source": "user_library",
+            "uri": "u:a"
+          },
+          {
+            "format": "adg",
+            "name": "bus",
+            "path": [
+              "Presets"
+            ],
+            "source": "user_library",
+            "uri": "u:b"
+          }
+        ],
+        "library": "/Users/me/Music/Ableton/User Library",
+        "op": "match"
+      },
+      "name": "extension case is ignored, name case is not"
+    },
+    {
+      "expected": "u:a",
+      "input": {
+        "file": "/Users/me/Music/Ableton/User Library/Presets/Old/../Audio Effects/Bus.adg",
+        "items": [
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [
+              "Presets",
+              "Audio Effects"
+            ],
+            "source": "user_library",
+            "uri": "u:a"
+          }
+        ],
+        "library": "/Users/me/Music/Ableton/User Library",
+        "op": "match"
+      },
+      "name": "dot-dot in the path is resolved"
+    },
+    {
+      "expected": null,
+      "input": {
+        "file": "/Volumes/Data/Bus.adg",
+        "items": [
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [],
+            "source": "user_folders",
+            "uri": "u:a"
+          }
+        ],
+        "library": "/Users/me/Music/Ableton/User Library",
+        "op": "match"
+      },
+      "name": "places preset with empty path never matches"
+    },
+    {
+      "expected": null,
+      "input": {
+        "file": "/Users/me/Music/Ableton/User Library/Bus.adg",
+        "items": [
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [],
+            "source": "plugins",
+            "uri": "u:a"
+          }
+        ],
+        "library": "/Users/me/Music/Ableton/User Library",
+        "op": "match"
+      },
+      "name": "plugins are never matched"
+    },
+    {
+      "expected": "u:a",
+      "input": {
+        "file": "/Users/me/Music/Ableton/User Library/Presets/Mélodie/Bus.adg",
+        "items": [
+          {
+            "format": "adg",
+            "name": "Bus",
+            "path": [
+              "Presets",
+              "Mélodie"
+            ],
+            "source": "user_library",
+            "uri": "u:a"
+          }
+        ],
+        "library": "/Users/me/Music/Ableton/User Library",
+        "op": "match"
+      },
+      "name": "NFD folder name matches NFC path"
+    },
+    {
+      "expected": [
+        true,
+        false,
+        false,
+        true,
+        false
+      ],
+      "input": {
+        "files": [
+          "/Users/me/Music/Ableton/User Library/Presets/X.adg",
+          "/Users/me/Downloads/X.adg",
+          "/Users/me/Music/Ableton/User Library",
+          "/Users/me/Music/Ableton/User Library/X.adg",
+          "/Users/me/Music/Ableton/User Library Backup/X.adg"
+        ],
+        "folder": "/Users/me/Music/Ableton/User Library",
+        "op": "isInside"
+      },
+      "name": "isInside"
+    },
+    {
+      "expected": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "input": {
+        "files": [
+          "/a/Bus.adg",
+          "/a/Bus.ADV",
+          "/a/x.vstpreset",
+          "/a/x.aupreset",
+          "/a/x.fxp",
+          "/a/x.fxb",
+          "/a/x.amxd",
+          "/a/x.als",
+          "/a/.adg",
+          "/a/x.",
+          "/a/x.tar.adg",
+          "/a/x"
+        ],
+        "op": "isPresetFile"
+      },
+      "name": "isPresetFile"
+    },
+    {
+      "expected": [
+        {
+          "fallbackIcon": "drums",
+          "group": "Presets · Drums",
+          "label": "Rack"
+        },
+        {
+          "fallbackIcon": "generic",
+          "group": "Presets · User Library",
+          "label": "Preset"
+        },
+        {
+          "fallbackIcon": "synth",
+          "group": "Presets · Instruments",
+          "label": "VST3"
+        },
+        {
+          "fallbackIcon": "midi",
+          "group": "Presets · My Racks",
+          "label": "AU"
+        },
+        {
+          "fallbackIcon": "generic",
+          "group": "Presets · Mine",
+          "label": "VST2"
+        },
+        {
+          "fallbackIcon": "generic",
+          "group": "Presets · User Library",
+          "label": "VST2"
+        },
+        {
+          "fallbackIcon": "generic",
+          "group": "Presets · Clips",
+          "label": "M4L"
+        },
+        {
+          "fallbackIcon": "rack",
+          "group": "Presets · Rack",
+          "label": "Rack"
+        },
+        {
+          "fallbackIcon": "generic",
+          "group": "Presets · presets",
+          "label": "Preset"
+        },
+        {
+          "fallbackIcon": "drums",
+          "group": "Presets · Drum Hits",
+          "label": "Preset"
+        }
+      ],
+      "input": {
+        "items": [
+          {
+            "format": "adg",
+            "name": "Kit",
+            "path": [
+              "Presets",
+              "Drums"
+            ],
+            "source": "user_library",
+            "uri": "u:1"
+          },
+          {
+            "format": "ADV",
+            "name": "X",
+            "path": [
+              "Presets"
+            ],
+            "source": "user_library",
+            "uri": "u:2"
+          },
+          {
+            "format": "vstpreset",
+            "name": "X",
+            "path": [
+              "Presets",
+              "Instruments",
+              "Pads"
+            ],
+            "source": "user_library",
+            "uri": "u:3"
+          },
+          {
+            "format": "aupreset",
+            "name": "X",
+            "path": [
+              "My Racks",
+              "MIDI"
+            ],
+            "source": "user_folders",
+            "uri": "u:4"
+          },
+          {
+            "format": "fxp",
+            "name": "X",
+            "path": [
+              "Mine"
+            ],
+            "source": "user_folders",
+            "uri": "u:5"
+          },
+          {
+            "format": "fxb",
+            "name": "X",
+            "path": [],
+            "source": "user_library",
+            "uri": "u:6"
+          },
+          {
+            "format": "amxd",
+            "name": "X",
+            "path": [
+              "Clips"
+            ],
+            "source": "user_library",
+            "uri": "u:7"
+          },
+          {
+            "format": "adg",
+            "name": "X",
+            "path": [
+              "Rack"
+            ],
+            "source": "user_library",
+            "uri": "u:8"
+          },
+          {
+            "name": "X",
+            "path": [
+              "presets"
+            ],
+            "source": "user_library",
+            "uri": "u:9"
+          },
+          {
+            "format": "wav",
+            "name": "X",
+            "path": [
+              "Presets",
+              "Drum Hits"
+            ],
+            "source": "user_library",
+            "uri": "u:10"
+          }
+        ],
+        "op": "describe"
+      },
+      "name": "labels, group titles and fallback icons"
+    },
+    {
+      "expected": {
+        "folder": [
+          "Presets",
+          "HYNE ASM"
+        ],
+        "name": "Bus.adg"
+      },
+      "input": {
+        "existing": [],
+        "file": "/Users/me/Downloads/Bus.adg",
+        "op": "copyDestination"
+      },
+      "name": "copy destination"
+    },
+    {
+      "expected": {
+        "folder": [
+          "Presets",
+          "HYNE ASM"
+        ],
+        "name": "Bus 3.adg"
+      },
+      "input": {
+        "existing": [
+          "Bus.adg",
+          "Bus 2.adg"
+        ],
+        "file": "/Users/me/Downloads/Bus.adg",
+        "op": "copyDestination"
+      },
+      "name": "copy destination numbered"
+    },
+    {
+      "expected": {
+        "folder": [
+          "Presets",
+          "HYNE ASM"
+        ],
+        "name": "Bus 2"
+      },
+      "input": {
+        "existing": [
+          "Bus"
+        ],
+        "file": "/Users/me/Downloads/Bus",
+        "op": "copyDestination"
+      },
+      "name": "copy destination without extension"
+    }
+  ]
+}

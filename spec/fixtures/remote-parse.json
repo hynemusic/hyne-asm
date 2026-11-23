@@ -1,0 +1,476 @@
+{
+  "area": "remote.parse",
+  "cases": [
+    {
+      "expected": {
+        "insert": "Serum 2"
+      },
+      "input": "hyneasm://insert?name=Serum%202",
+      "name": "scheme insert"
+    },
+    {
+      "expected": {
+        "insert": "Pro-Q 4"
+      },
+      "input": "http://127.0.0.1:47821/insert?name=Pro-Q%204",
+      "name": "http insert"
+    },
+    {
+      "expected": {
+        "insert": "Pro-Q 4"
+      },
+      "input": "http://localhost:47821/insert?name=Pro-Q%204",
+      "name": "localhost insert"
+    },
+    {
+      "expected": null,
+      "input": "http://LOCALHOST:47821/panel",
+      "name": "uppercase localhost"
+    },
+    {
+      "expected": null,
+      "input": "http://example.com:47821/panel",
+      "name": "other host"
+    },
+    {
+      "expected": null,
+      "input": "http://[::1]:47821/panel",
+      "name": "ipv6 loopback"
+    },
+    {
+      "expected": null,
+      "input": "https://example.com/insert?name=x",
+      "name": "https refused"
+    },
+    {
+      "expected": null,
+      "input": "https://127.0.0.1:47821/panel",
+      "name": "https loopback refused"
+    },
+    {
+      "expected": null,
+      "input": "HYNEASM://panel",
+      "name": "uppercase scheme"
+    },
+    {
+      "expected": "panel",
+      "input": "http://127.0.0.1/panel",
+      "name": "http without port"
+    },
+    {
+      "expected": "panel",
+      "input": "http://user@127.0.0.1:47821/panel",
+      "name": "http user info"
+    },
+    {
+      "expected": {
+        "insert": "x"
+      },
+      "input": "http://127.0.0.1:47821//insert?name=x",
+      "name": "http double slash"
+    },
+    {
+      "expected": null,
+      "input": "http://127.0.0.1:47821/",
+      "name": "http root"
+    },
+    {
+      "expected": "panel",
+      "input": "http://127.0.0.1:47821/PANEL",
+      "name": "http uppercase path"
+    },
+    {
+      "expected": "quickSearch",
+      "input": "hyneasm://quicksearch",
+      "name": "quicksearch"
+    },
+    {
+      "expected": "quickSearch",
+      "input": "hyneasm://quick-search",
+      "name": "quick-search"
+    },
+    {
+      "expected": "quickSearch",
+      "input": "http://127.0.0.1:47821/quick-search",
+      "name": "http quick-search"
+    },
+    {
+      "expected": "panel",
+      "input": "hyneasm://panel",
+      "name": "panel"
+    },
+    {
+      "expected": "panel",
+      "input": "hyneasm://PANEL",
+      "name": "uppercase command"
+    },
+    {
+      "expected": "panel",
+      "input": "hyneasm:panel",
+      "name": "no slashes"
+    },
+    {
+      "expected": "panel",
+      "input": "hyneasm:///panel",
+      "name": "empty host"
+    },
+    {
+      "expected": "panel",
+      "input": "hyneasm://panel/extra",
+      "name": "extra path"
+    },
+    {
+      "expected": "panel",
+      "input": "hyneasm://panel#frag",
+      "name": "fragment"
+    },
+    {
+      "expected": {
+        "insert": "Serum 2"
+      },
+      "input": "hyneasm://insert?name=Serum%202#x",
+      "name": "insert with fragment"
+    },
+    {
+      "expected": {
+        "profile": "Mixing"
+      },
+      "input": "hyneasm://profile?name=Mixing",
+      "name": "profile"
+    },
+    {
+      "expected": "nextProfile",
+      "input": "hyneasm://profile/next",
+      "name": "profile next"
+    },
+    {
+      "expected": "nextProfile",
+      "input": "hyneasm://Profile/NEXT",
+      "name": "profile NEXT"
+    },
+    {
+      "expected": "nextProfile",
+      "input": "hyneasm://profile/next?name=Mixing",
+      "name": "profile next ignores name"
+    },
+    {
+      "expected": {
+        "profile": "Mixing"
+      },
+      "input": "hyneasm://profile/other?name=Mixing",
+      "name": "profile other path"
+    },
+    {
+      "expected": null,
+      "input": "hyneasm://profile",
+      "name": "profile without name"
+    },
+    {
+      "expected": "nextProfile",
+      "input": "http://127.0.0.1:47821/profile/next",
+      "name": "http profile next"
+    },
+    {
+      "expected": "closePluginWindows",
+      "input": "hyneasm://close-plugin-windows",
+      "name": "close plugin windows"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_tempo",
+          "value": 128
+        }
+      },
+      "input": "http://127.0.0.1:47821/action?name=set_tempo&value=128",
+      "name": "tempo"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_time_signature",
+          "value": 7,
+          "value2": 8
+        }
+      },
+      "input": "hyneasm://action?name=set_time_signature&value=7&value2=8",
+      "name": "time signature"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_tempo",
+          "value": 120
+        }
+      },
+      "input": "hyneasm://action?name=set_tempo",
+      "name": "tempo default"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_tempo",
+          "value": 128.5
+        }
+      },
+      "input": "hyneasm://action?name=set_tempo&value=128.5",
+      "name": "tempo fraction"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_tempo",
+          "value": 100
+        }
+      },
+      "input": "hyneasm://action?name=set_tempo&value=1e2",
+      "name": "tempo exponent"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_tempo",
+          "value": 90
+        }
+      },
+      "input": "hyneasm://action?name=set_tempo&value=%2B90",
+      "name": "tempo plus sign"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_tempo",
+          "value": 0.5
+        }
+      },
+      "input": "hyneasm://action?name=set_tempo&value=.5",
+      "name": "tempo leading dot"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_tempo",
+          "value": 90
+        }
+      },
+      "input": "hyneasm://action?name=set_tempo&value=90.",
+      "name": "tempo trailing dot"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_tempo",
+          "value": 16
+        }
+      },
+      "input": "hyneasm://action?name=set_tempo&value=0x10",
+      "name": "tempo hex"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_tempo",
+          "value": 120
+        }
+      },
+      "input": "hyneasm://action?name=set_tempo&value=fast",
+      "name": "tempo not a number"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_tempo",
+          "value": 120
+        }
+      },
+      "input": "hyneasm://action?name=set_tempo&value=",
+      "name": "tempo empty value"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_tempo",
+          "value": 120
+        }
+      },
+      "input": "hyneasm://action?name=set_tempo&value=%2090",
+      "name": "tempo space value"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_time_signature",
+          "value": 6,
+          "value2": 4
+        }
+      },
+      "input": "hyneasm://action?name=set_time_signature&value=6&value2=8.0",
+      "name": "value2 decimal"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_time_signature",
+          "value": 6,
+          "value2": 8
+        }
+      },
+      "input": "hyneasm://action?name=set_time_signature&value=6&value2=%2B8",
+      "name": "value2 plus"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "set_time_signature",
+          "value": 6,
+          "value2": -8
+        }
+      },
+      "input": "hyneasm://action?name=set_time_signature&value=6&value2=-8",
+      "name": "value2 negative"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "toggle_metronome"
+        }
+      },
+      "input": "hyneasm://action?name=toggle_metronome",
+      "name": "toggle"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "toggle_loop",
+          "value": 3
+        }
+      },
+      "input": "hyneasm://action?name=toggle_loop&value=3",
+      "name": "toggle with value"
+    },
+    {
+      "expected": {
+        "action": {
+          "kind": "undo"
+        }
+      },
+      "input": "hyneasm://action?name=%20undo%20",
+      "name": "action name padded"
+    },
+    {
+      "expected": null,
+      "input": "hyneasm://action?name=UNDO",
+      "name": "action name uppercase"
+    },
+    {
+      "expected": null,
+      "input": "hyneasm://action?name=launch_rocket",
+      "name": "action unknown"
+    },
+    {
+      "expected": null,
+      "input": "hyneasm://action",
+      "name": "action without name"
+    },
+    {
+      "expected": null,
+      "input": "hyneasm://insert",
+      "name": "insert without name"
+    },
+    {
+      "expected": null,
+      "input": "hyneasm://insert?name",
+      "name": "insert name without value"
+    },
+    {
+      "expected": null,
+      "input": "hyneasm://insert?name=%20%20",
+      "name": "insert blank name"
+    },
+    {
+      "expected": {
+        "insert": "Serum 2"
+      },
+      "input": "hyneasm://insert?name=%20Serum%202%09",
+      "name": "insert trimmed"
+    },
+    {
+      "expected": {
+        "insert": "Serum"
+      },
+      "input": "hyneasm://insert?name=%E2%80%83Serum",
+      "name": "insert em space trimmed"
+    },
+    {
+      "expected": {
+        "insert": "Serum\n"
+      },
+      "input": "hyneasm://insert?name=Serum%0A",
+      "name": "insert newline kept"
+    },
+    {
+      "expected": {
+        "insert": "a+b"
+      },
+      "input": "hyneasm://insert?name=a+b",
+      "name": "insert plus kept"
+    },
+    {
+      "expected": {
+        "insert": "Rock & Roll"
+      },
+      "input": "hyneasm://insert?name=Rock%20%26%20Roll",
+      "name": "insert ampersand"
+    },
+    {
+      "expected": {
+        "insert": "Échos ü"
+      },
+      "input": "hyneasm://insert?name=%C3%89chos%20%C3%BC",
+      "name": "insert unicode"
+    },
+    {
+      "expected": {
+        "insert": "b"
+      },
+      "input": "hyneasm://insert?name=a&name=b",
+      "name": "insert last name wins"
+    },
+    {
+      "expected": null,
+      "input": "hyneasm://insert?NAME=x",
+      "name": "insert name case"
+    },
+    {
+      "expected": {
+        "insert": "x"
+      },
+      "input": "hyneasm://insert/extra?name=x",
+      "name": "insert extra path"
+    },
+    {
+      "expected": {
+        "insert": "x"
+      },
+      "input": "hyneasm://insert?&&name=x&",
+      "name": "insert empty items"
+    },
+    {
+      "expected": {
+        "insert": "a=b"
+      },
+      "input": "hyneasm://insert?name=a=b",
+      "name": "insert equals in value"
+    },
+    {
+      "expected": null,
+      "input": "hyneasm://dance",
+      "name": "unknown"
+    },
+    {
+      "expected": null,
+      "input": "hyneasm://",
+      "name": "empty"
+    }
+  ]
+}

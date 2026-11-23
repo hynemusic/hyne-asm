@@ -1,0 +1,650 @@
+{
+  "area": "guards.main_window",
+  "cases": [
+    {
+      "expected": {
+        "isMain": [
+          true,
+          false,
+          true,
+          true,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true
+        ],
+        "main": [
+          {
+            "frame": [
+              0,
+              30,
+              2560,
+              1410
+            ],
+            "title": "Untitled"
+          }
+        ]
+      },
+      "input": {
+        "probes": [
+          {
+            "frame": [
+              0,
+              30,
+              2560,
+              1410
+            ],
+            "isAXMain": false,
+            "title": "Untitled"
+          },
+          {
+            "frame": [
+              54,
+              84,
+              1190,
+              759
+            ],
+            "isAXMain": false,
+            "title": "Serum 2/inst1"
+          },
+          {
+            "isAXMain": true,
+            "title": "x"
+          },
+          {
+            "isAXMain": false,
+            "title": "Song - Ableton Live 12 Suite"
+          },
+          {
+            "isAXMain": false,
+            "title": "Untitled"
+          },
+          {
+            "frame": [
+              2,
+              33,
+              2557,
+              1406
+            ],
+            "isAXMain": false,
+            "title": "other"
+          },
+          {
+            "frame": [
+              5,
+              30,
+              2560,
+              1410
+            ],
+            "isAXMain": false,
+            "title": "Untitled"
+          },
+          {
+            "frame": [
+              0,
+              940,
+              500,
+              500
+            ],
+            "isAXMain": false,
+            "title": ""
+          },
+          {
+            "isAXMain": false
+          },
+          {
+            "frame": [
+              0,
+              30,
+              2560,
+              1410
+            ],
+            "isAXMain": false
+          }
+        ],
+        "screen": [
+          {
+            "frame": [
+              54,
+              84,
+              1190,
+              759
+            ],
+            "layer": 3,
+            "title": "Serum 2/inst1"
+          },
+          {
+            "frame": [
+              0,
+              940,
+              500,
+              500
+            ],
+            "layer": 0,
+            "title": ""
+          },
+          {
+            "frame": [
+              0,
+              30,
+              2560,
+              1410
+            ],
+            "layer": 0,
+            "title": "Untitled"
+          },
+          {
+            "frame": [
+              -2056,
+              111,
+              2056,
+              39
+            ],
+            "layer": 0,
+            "title": ""
+          }
+        ]
+      },
+      "name": "live 12 layout"
+    },
+    {
+      "expected": {
+        "isMain": [
+          true
+        ],
+        "main": [
+          {
+            "frame": [
+              0,
+              30,
+              2560,
+              1410
+            ],
+            "title": "Untitled"
+          },
+          {
+            "frame": [
+              2560,
+              0,
+              1920,
+              1080
+            ],
+            "title": "Untitled"
+          }
+        ]
+      },
+      "input": {
+        "probes": [
+          {
+            "frame": [
+              2560,
+              0,
+              1920,
+              1080
+            ],
+            "isAXMain": false,
+            "title": "Untitled"
+          }
+        ],
+        "screen": [
+          {
+            "frame": [
+              54,
+              84,
+              1190,
+              759
+            ],
+            "layer": 3,
+            "title": "Serum 2/inst1"
+          },
+          {
+            "frame": [
+              0,
+              940,
+              500,
+              500
+            ],
+            "layer": 0,
+            "title": ""
+          },
+          {
+            "frame": [
+              0,
+              30,
+              2560,
+              1410
+            ],
+            "layer": 0,
+            "title": "Untitled"
+          },
+          {
+            "frame": [
+              -2056,
+              111,
+              2056,
+              39
+            ],
+            "layer": 0,
+            "title": ""
+          },
+          {
+            "frame": [
+              2560,
+              0,
+              1920,
+              1080
+            ],
+            "layer": 0,
+            "title": "Untitled"
+          }
+        ]
+      },
+      "name": "second window same title"
+    },
+    {
+      "expected": {
+        "isMain": [
+          false
+        ],
+        "main": [
+          {
+            "frame": [
+              0,
+              30,
+              2560,
+              1410
+            ],
+            "title": "Untitled"
+          }
+        ]
+      },
+      "input": {
+        "probes": [
+          {
+            "frame": [
+              2560,
+              0,
+              1920,
+              1080
+            ],
+            "isAXMain": false,
+            "title": "Other"
+          }
+        ],
+        "screen": [
+          {
+            "frame": [
+              54,
+              84,
+              1190,
+              759
+            ],
+            "layer": 3,
+            "title": "Serum 2/inst1"
+          },
+          {
+            "frame": [
+              0,
+              940,
+              500,
+              500
+            ],
+            "layer": 0,
+            "title": ""
+          },
+          {
+            "frame": [
+              0,
+              30,
+              2560,
+              1410
+            ],
+            "layer": 0,
+            "title": "Untitled"
+          },
+          {
+            "frame": [
+              -2056,
+              111,
+              2056,
+              39
+            ],
+            "layer": 0,
+            "title": ""
+          },
+          {
+            "frame": [
+              2560,
+              0,
+              1920,
+              1080
+            ],
+            "layer": 0,
+            "title": "Other"
+          }
+        ]
+      },
+      "name": "second window other title"
+    },
+    {
+      "expected": {
+        "isMain": [
+          true,
+          false
+        ],
+        "main": [
+          {
+            "frame": [
+              0,
+              0,
+              1000,
+              800
+            ],
+            "title": ""
+          }
+        ]
+      },
+      "input": {
+        "probes": [
+          {
+            "frame": [
+              0,
+              0,
+              1000,
+              800
+            ],
+            "isAXMain": false,
+            "title": ""
+          },
+          {
+            "frame": [
+              1000,
+              0,
+              800,
+              600
+            ],
+            "isAXMain": false,
+            "title": ""
+          }
+        ],
+        "screen": [
+          {
+            "frame": [
+              0,
+              0,
+              1000,
+              800
+            ],
+            "layer": 0,
+            "title": ""
+          },
+          {
+            "frame": [
+              1000,
+              0,
+              800,
+              600
+            ],
+            "layer": 0,
+            "title": ""
+          }
+        ]
+      },
+      "name": "untitled largest"
+    },
+    {
+      "expected": {
+        "isMain": [
+          true,
+          false
+        ],
+        "main": [
+          {
+            "frame": [
+              0,
+              0,
+              400,
+              400
+            ],
+            "title": "A"
+          }
+        ]
+      },
+      "input": {
+        "probes": [
+          {
+            "frame": [
+              0,
+              0,
+              400,
+              400
+            ],
+            "isAXMain": false,
+            "title": "A"
+          },
+          {
+            "frame": [
+              500,
+              0,
+              400,
+              400
+            ],
+            "isAXMain": false,
+            "title": "B"
+          }
+        ],
+        "screen": [
+          {
+            "frame": [
+              0,
+              0,
+              400,
+              400
+            ],
+            "layer": 0,
+            "title": "A"
+          },
+          {
+            "frame": [
+              500,
+              0,
+              400,
+              400
+            ],
+            "layer": 0,
+            "title": "B"
+          }
+        ]
+      },
+      "name": "equal areas first wins"
+    },
+    {
+      "expected": {
+        "isMain": [
+          false,
+          true
+        ],
+        "main": [
+          {
+            "frame": [
+              0,
+              0,
+              300,
+              300
+            ],
+            "title": "Min"
+          }
+        ]
+      },
+      "input": {
+        "probes": [
+          {
+            "frame": [
+              0,
+              0,
+              299,
+              2000
+            ],
+            "isAXMain": false,
+            "title": "Tall"
+          },
+          {
+            "frame": [
+              0,
+              0,
+              300,
+              300
+            ],
+            "isAXMain": false,
+            "title": "Min"
+          }
+        ],
+        "screen": [
+          {
+            "frame": [
+              0,
+              0,
+              299,
+              2000
+            ],
+            "layer": 0,
+            "title": "Tall"
+          },
+          {
+            "frame": [
+              0,
+              0,
+              300,
+              300
+            ],
+            "layer": 0,
+            "title": "Min"
+          }
+        ]
+      },
+      "name": "small windows ignored"
+    },
+    {
+      "expected": {
+        "isMain": [
+          false
+        ],
+        "main": []
+      },
+      "input": {
+        "probes": [
+          {
+            "frame": [
+              0,
+              0,
+              1000,
+              1000
+            ],
+            "isAXMain": false,
+            "title": "Plug"
+          }
+        ],
+        "screen": [
+          {
+            "frame": [
+              0,
+              0,
+              1000,
+              1000
+            ],
+            "layer": 3,
+            "title": "Plug"
+          }
+        ]
+      },
+      "name": "only floating"
+    },
+    {
+      "expected": {
+        "isMain": [
+          false,
+          true
+        ],
+        "main": []
+      },
+      "input": {
+        "probes": [
+          {
+            "frame": [
+              0,
+              0,
+              100,
+              100
+            ],
+            "isAXMain": false,
+            "title": "x"
+          },
+          {
+            "isAXMain": false,
+            "title": "Ableton Live"
+          }
+        ],
+        "screen": []
+      },
+      "name": "empty screen"
+    },
+    {
+      "expected": {
+        "isMain": [
+          true,
+          false
+        ],
+        "main": [
+          {
+            "frame": [
+              0.5,
+              10.25,
+              1200.5,
+              800.75
+            ],
+            "title": "Set"
+          }
+        ]
+      },
+      "input": {
+        "probes": [
+          {
+            "frame": [
+              4.5,
+              14.25,
+              1196.5,
+              796.75
+            ],
+            "isAXMain": false,
+            "title": "Set"
+          },
+          {
+            "frame": [
+              4.75,
+              10.25,
+              1200.5,
+              800.75
+            ],
+            "isAXMain": false,
+            "title": "Set"
+          }
+        ],
+        "screen": [
+          {
+            "frame": [
+              0.5,
+              10.25,
+              1200.5,
+              800.75
+            ],
+            "layer": 0,
+            "title": "Set"
+          }
+        ]
+      },
+      "name": "fractional frames"
+    }
+  ]
+}

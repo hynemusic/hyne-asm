@@ -1,0 +1,702 @@
+{
+  "area": "panel.grid",
+  "cases": [
+    {
+      "expected": [
+        0,
+        2,
+        3,
+        1,
+        4
+      ],
+      "input": {
+        "order": [
+          5,
+          1,
+          3
+        ]
+      },
+      "name": "order moves one entry forward"
+    },
+    {
+      "expected": [
+        4,
+        0,
+        1,
+        2,
+        3
+      ],
+      "input": {
+        "order": [
+          5,
+          4,
+          0
+        ]
+      },
+      "name": "order moves the last to the front"
+    },
+    {
+      "expected": [
+        0,
+        1,
+        2
+      ],
+      "input": {
+        "order": [
+          3,
+          1,
+          1
+        ]
+      },
+      "name": "order without a move"
+    },
+    {
+      "expected": [
+        0,
+        1,
+        2
+      ],
+      "input": {
+        "order": [
+          3,
+          5,
+          0
+        ]
+      },
+      "name": "order ignores out of range"
+    },
+    {
+      "expected": [
+        0,
+        1,
+        2
+      ],
+      "input": {
+        "order": [
+          3,
+          0,
+          3
+        ]
+      },
+      "name": "order ignores out of range target"
+    },
+    {
+      "expected": [],
+      "input": {
+        "order": [
+          0,
+          0,
+          0
+        ]
+      },
+      "name": "order of nothing"
+    },
+    {
+      "expected": {
+        "columnWidth": 400,
+        "itemHeight": 52
+      },
+      "input": {
+        "size": [
+          400,
+          52
+        ]
+      },
+      "name": "size within limits"
+    },
+    {
+      "expected": {
+        "columnWidth": 560,
+        "itemHeight": 34
+      },
+      "input": {
+        "size": [
+          2000,
+          5
+        ]
+      },
+      "name": "size clamps high width low height"
+    },
+    {
+      "expected": {
+        "columnWidth": 240,
+        "itemHeight": 64
+      },
+      "input": {
+        "size": [
+          10,
+          100
+        ]
+      },
+      "name": "size clamps low width high height"
+    },
+    {
+      "expected": {
+        "columnWidth": 316.5,
+        "itemHeight": 42.25
+      },
+      "input": {
+        "size": [
+          316.5,
+          42.25
+        ]
+      },
+      "name": "size keeps fractions"
+    },
+    {
+      "expected": {
+        "columns": 3,
+        "pageSize": 9,
+        "rows": 3
+      },
+      "input": {
+        "grid": [
+          3,
+          3
+        ]
+      },
+      "name": "grid default size"
+    },
+    {
+      "expected": {
+        "columns": 2,
+        "pageSize": 16,
+        "rows": 8
+      },
+      "input": {
+        "grid": [
+          1,
+          20
+        ]
+      },
+      "name": "grid clamps to 2..8"
+    },
+    {
+      "expected": {
+        "columns": 2,
+        "pageSize": 4,
+        "rows": 2
+      },
+      "input": {
+        "grid": [
+          -4,
+          0
+        ]
+      },
+      "name": "grid clamps negative"
+    },
+    {
+      "expected": {
+        "columns": 3,
+        "pageSize": 24,
+        "rows": 8
+      },
+      "input": {
+        "grid": [
+          3,
+          3
+        ],
+        "set": {
+          "rows": 20
+        }
+      },
+      "name": "grid setter clamps rows"
+    },
+    {
+      "expected": {
+        "columns": 2,
+        "pageSize": 6,
+        "rows": 3
+      },
+      "input": {
+        "grid": [
+          3,
+          3
+        ],
+        "set": {
+          "columns": 1
+        }
+      },
+      "name": "grid setter clamps columns"
+    },
+    {
+      "expected": {
+        "columns": 2,
+        "pageSize": 18,
+        "rows": 9
+      },
+      "input": {
+        "list": [
+          2,
+          9
+        ]
+      },
+      "name": "list default size"
+    },
+    {
+      "expected": {
+        "columns": 1,
+        "pageSize": 9,
+        "rows": 9
+      },
+      "input": {
+        "list": [
+          0,
+          12
+        ]
+      },
+      "name": "list clamps columns 1..4 rows 2..9"
+    },
+    {
+      "expected": {
+        "columns": 4,
+        "pageSize": 8,
+        "rows": 2
+      },
+      "input": {
+        "list": [
+          7,
+          1
+        ]
+      },
+      "name": "list clamps high columns low rows"
+    },
+    {
+      "expected": {
+        "columns": 1,
+        "pageSize": 9,
+        "rows": 9
+      },
+      "input": {
+        "list": [
+          2,
+          9
+        ],
+        "set": {
+          "columns": 0,
+          "rows": 12
+        }
+      },
+      "name": "list setters clamp"
+    },
+    {
+      "expected": {
+        "columnMajor": false,
+        "columns": 3,
+        "positions": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "rows": 2,
+        "size": 6,
+        "slots": [
+          3,
+          2,
+          5
+        ]
+      },
+      "input": {
+        "page": {
+          "columnMajor": false,
+          "columns": 3,
+          "rows": 2
+        },
+        "positions": [
+          0,
+          4,
+          5,
+          6,
+          10
+        ],
+        "slots": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      "name": "grid page fills row by row"
+    },
+    {
+      "expected": {
+        "columnMajor": true,
+        "columns": 2,
+        "positions": [
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            8,
+            1
+          ]
+        ],
+        "rows": 9,
+        "size": 18,
+        "slots": [
+          9,
+          8,
+          12
+        ]
+      },
+      "input": {
+        "page": {
+          "columnMajor": true,
+          "columns": 2,
+          "rows": 9
+        },
+        "positions": [
+          10,
+          21,
+          0,
+          17
+        ],
+        "slots": [
+          [
+            0,
+            1
+          ],
+          [
+            8,
+            0
+          ],
+          [
+            3,
+            1
+          ]
+        ]
+      },
+      "name": "list page fills column by column"
+    },
+    {
+      "expected": {
+        "columnMajor": false,
+        "columns": 1,
+        "positions": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "rows": 1,
+        "size": 1,
+        "slots": [
+          0,
+          5
+        ]
+      },
+      "input": {
+        "page": {
+          "columnMajor": false,
+          "columns": 0,
+          "rows": -2
+        },
+        "positions": [
+          0,
+          5
+        ],
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      "name": "page keeps at least one row and column"
+    },
+    {
+      "expected": {
+        "columnMajor": false,
+        "columns": 4,
+        "positions": [
+          [
+            1,
+            3
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "rows": 2,
+        "size": 8,
+        "slots": [
+          5
+        ]
+      },
+      "input": {
+        "page": {
+          "grid": [
+            4,
+            2
+          ],
+          "list": [
+            2,
+            9
+          ],
+          "style": "grid"
+        },
+        "positions": [
+          7,
+          8
+        ],
+        "slots": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "name": "page from grid style"
+    },
+    {
+      "expected": {
+        "columnMajor": true,
+        "columns": 3,
+        "positions": [
+          [
+            2,
+            1
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "rows": 5,
+        "size": 15,
+        "slots": [
+          6
+        ]
+      },
+      "input": {
+        "page": {
+          "grid": [
+            4,
+            2
+          ],
+          "list": [
+            3,
+            5
+          ],
+          "style": "list"
+        },
+        "positions": [
+          7,
+          15
+        ],
+        "slots": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "name": "page from list style"
+    },
+    {
+      "expected": {
+        "categoryPlacement": "top",
+        "panelGrid": {
+          "columns": 3,
+          "pageSize": 9,
+          "rows": 3
+        },
+        "panelList": {
+          "columns": 2,
+          "pageSize": 18,
+          "rows": 9
+        },
+        "panelPage": {
+          "columnMajor": false,
+          "columns": 3,
+          "rows": 3,
+          "size": 9
+        },
+        "panelSize": {
+          "columnWidth": 316,
+          "itemHeight": 42
+        },
+        "panelStyle": "grid"
+      },
+      "input": {
+        "config": {
+          "categories": [],
+          "version": 4
+        }
+      },
+      "name": "config defaults"
+    },
+    {
+      "expected": {
+        "categoryPlacement": "left",
+        "panelGrid": {
+          "columns": 2,
+          "pageSize": 12,
+          "rows": 6
+        },
+        "panelList": {
+          "columns": 1,
+          "pageSize": 9,
+          "rows": 9
+        },
+        "panelPage": {
+          "columnMajor": true,
+          "columns": 1,
+          "rows": 9,
+          "size": 9
+        },
+        "panelSize": {
+          "columnWidth": 560,
+          "itemHeight": 34
+        },
+        "panelStyle": "list"
+      },
+      "input": {
+        "config": {
+          "categories": [],
+          "categoryPlacement": "left",
+          "panelGrid": {
+            "columns": 1,
+            "rows": 6
+          },
+          "panelList": {
+            "columns": 0,
+            "rows": 12
+          },
+          "panelSize": {
+            "columnWidth": 2000,
+            "itemHeight": 5
+          },
+          "panelStyle": "list",
+          "version": 4
+        }
+      },
+      "name": "config list style"
+    },
+    {
+      "expected": {
+        "categoryPlacement": "top",
+        "panelGrid": {
+          "columns": 8,
+          "pageSize": 32,
+          "rows": 4
+        },
+        "panelList": {
+          "columns": 2,
+          "pageSize": 18,
+          "rows": 9
+        },
+        "panelPage": {
+          "columnMajor": false,
+          "columns": 8,
+          "rows": 4,
+          "size": 32
+        },
+        "panelSize": {
+          "columnWidth": 316,
+          "itemHeight": 42
+        },
+        "panelStyle": "grid"
+      },
+      "input": {
+        "config": {
+          "categories": [],
+          "panelGrid": {
+            "columns": 9,
+            "rows": 4
+          },
+          "panelStyle": "grid",
+          "version": 4
+        }
+      },
+      "name": "config grid style clamps"
+    },
+    {
+      "expected": {
+        "categoryPlacement": "top",
+        "panelGrid": {
+          "columns": 3,
+          "pageSize": 9,
+          "rows": 3
+        },
+        "panelList": {
+          "columns": 2,
+          "pageSize": 18,
+          "rows": 9
+        },
+        "panelPage": {
+          "columnMajor": false,
+          "columns": 3,
+          "rows": 3,
+          "size": 9
+        },
+        "panelSize": {
+          "columnWidth": 316,
+          "itemHeight": 42
+        },
+        "panelStyle": "grid"
+      },
+      "input": {
+        "config": {
+          "categories": [],
+          "categoryPlacement": "bottom",
+          "panelGrid": {
+            "columns": "x"
+          },
+          "panelList": {
+            "rows": 3
+          },
+          "panelSize": {
+            "columnWidth": 300
+          },
+          "panelStyle": "tiles",
+          "version": 4
+        }
+      },
+      "name": "config damaged layout falls back"
+    }
+  ]
+}

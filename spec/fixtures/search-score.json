@@ -1,0 +1,641 @@
+{
+  "area": "search.score",
+  "cases": [
+    {
+      "expected": 100,
+      "input": {
+        "name": "Pro-Q 4",
+        "query": "pro-q 4"
+      },
+      "name": "Pro-Q 4 | pro-q 4"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "Pro-Q 4",
+        "query": "pro q 4"
+      },
+      "name": "Pro-Q 4 | pro q 4"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "Pro-Q 4",
+        "query": "proq4"
+      },
+      "name": "Pro-Q 4 | proq4"
+    },
+    {
+      "expected": 85,
+      "input": {
+        "name": "Pro-Q 4",
+        "query": "pro 4"
+      },
+      "name": "Pro-Q 4 | pro 4"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "Pro-Q 4",
+        "query": "pro-q"
+      },
+      "name": "Pro-Q 4 | pro-q"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "Pro-Q 4",
+        "query": "PRO Q"
+      },
+      "name": "Pro-Q 4 | PRO Q"
+    },
+    {
+      "expected": 80,
+      "input": {
+        "name": "Pro-Q 4",
+        "query": "q 4"
+      },
+      "name": "Pro-Q 4 | q 4"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Pro-L 2",
+        "query": "pro 4"
+      },
+      "name": "Pro-L 2 | pro 4"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Pro-Q 3",
+        "query": "pro q 4"
+      },
+      "name": "Pro-Q 3 | pro q 4"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Serum",
+        "query": "pro"
+      },
+      "name": "Serum | pro"
+    },
+    {
+      "expected": 80,
+      "input": {
+        "name": "FabFilter Pro-Q 4",
+        "query": "pro q 4"
+      },
+      "name": "FabFilter Pro-Q 4 | pro q 4"
+    },
+    {
+      "expected": 80,
+      "input": {
+        "name": "UAD Pro Channel 4",
+        "query": "pro 4"
+      },
+      "name": "UAD Pro Channel 4 | pro 4"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "EQ Eight",
+        "query": "eq"
+      },
+      "name": "EQ Eight | eq"
+    },
+    {
+      "expected": 80,
+      "input": {
+        "name": "Channel EQ",
+        "query": "eq"
+      },
+      "name": "Channel EQ | eq"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "ValhallaVintageVerb",
+        "query": "valhalla vin"
+      },
+      "name": "ValhallaVintageVerb | valhalla vin"
+    },
+    {
+      "expected": 80,
+      "input": {
+        "name": "ValhallaVintageVerb",
+        "query": "vintage verb"
+      },
+      "name": "ValhallaVintageVerb | vintage verb"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "ValhallaVintageVerb",
+        "query": "vvv"
+      },
+      "name": "ValhallaVintageVerb | vvv"
+    },
+    {
+      "expected": 80,
+      "input": {
+        "name": "ValhallaVintageVerb",
+        "query": "verb"
+      },
+      "name": "ValhallaVintageVerb | verb"
+    },
+    {
+      "expected": 85,
+      "input": {
+        "name": "Glue Compressor",
+        "query": "glu comp"
+      },
+      "name": "Glue Compressor | glu comp"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Glue Compressor",
+        "query": "xyz"
+      },
+      "name": "Glue Compressor | xyz"
+    },
+    {
+      "expected": 70,
+      "input": {
+        "name": "Glue Compressor",
+        "query": "compressor glue"
+      },
+      "name": "Glue Compressor | compressor glue"
+    },
+    {
+      "expected": 60,
+      "input": {
+        "name": "Glue Compressor",
+        "query": "ecompr"
+      },
+      "name": "Glue Compressor | ecompr"
+    },
+    {
+      "expected": 0,
+      "input": {
+        "name": "Anything",
+        "query": ""
+      },
+      "name": "empty query"
+    },
+    {
+      "expected": 0,
+      "input": {
+        "name": "Anything",
+        "query": "  "
+      },
+      "name": "blank query"
+    },
+    {
+      "expected": 0,
+      "input": {
+        "name": "Anything",
+        "query": "-- "
+      },
+      "name": "punctuation query"
+    },
+    {
+      "expected": 40,
+      "input": {
+        "name": "Serum 2",
+        "query": "serm"
+      },
+      "name": "Serum 2 | serm"
+    },
+    {
+      "expected": 40,
+      "input": {
+        "name": "Serum 2",
+        "query": "sreum"
+      },
+      "name": "Serum 2 | sreum"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "Serum 2",
+        "query": "seru"
+      },
+      "name": "Serum 2 | seru"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Pro-Q 4",
+        "query": "prx"
+      },
+      "name": "Pro-Q 4 | prx"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Serum 2",
+        "query": "xyzq"
+      },
+      "name": "Serum 2 | xyzq"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Plugin 1234",
+        "query": "plugin 1239"
+      },
+      "name": "Plugin 1234 | plugin 1239"
+    },
+    {
+      "expected": 40,
+      "input": {
+        "name": "Omnisphere",
+        "query": "omnisfere"
+      },
+      "name": "Omnisphere | omnisfere"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Omnisphere",
+        "query": "omnixxxere"
+      },
+      "name": "Omnisphere | omnixxxere"
+    },
+    {
+      "expected": 60,
+      "input": {
+        "name": "Omnisphere",
+        "query": "mnisphere"
+      },
+      "name": "Omnisphere | mnisphere"
+    },
+    {
+      "expected": 30,
+      "input": {
+        "iconID": "compressor",
+        "name": "Squeezer 9",
+        "query": "comp"
+      },
+      "name": "tag hit"
+    },
+    {
+      "expected": null,
+      "input": {
+        "iconID": "eq",
+        "name": "Squeezer 9",
+        "query": "comp"
+      },
+      "name": "tag miss"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "iconID": "compressor",
+        "name": "Compressor",
+        "query": "comp"
+      },
+      "name": "name beats tag"
+    },
+    {
+      "expected": null,
+      "input": {
+        "iconID": "compressor",
+        "name": "Squeezer 9",
+        "query": "pro q"
+      },
+      "name": "no tag word"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "Über Comp",
+        "query": "über"
+      },
+      "name": "NFC name, NFC query"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "Über Comp",
+        "query": "über"
+      },
+      "name": "NFD name, NFC query"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "Über Comp",
+        "query": "über"
+      },
+      "name": "NFC name, NFD query"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "Über Comp",
+        "query": "über comp"
+      },
+      "name": "NFD name, NFD query"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Über Comp",
+        "query": "uber"
+      },
+      "name": "NFD name, plain u"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Über Comp",
+        "query": "uber"
+      },
+      "name": "NFC name, plain u"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Kompressör XL",
+        "query": "kompresör"
+      },
+      "name": "NFD name, NFC typo"
+    },
+    {
+      "expected": 40,
+      "input": {
+        "name": "Kompressör XL",
+        "query": "kompresör"
+      },
+      "name": "NFC name, NFC typo"
+    },
+    {
+      "expected": 40,
+      "input": {
+        "name": "Kompressör XL",
+        "query": "kompresör"
+      },
+      "name": "NFD name, NFD typo"
+    },
+    {
+      "expected": 80,
+      "input": {
+        "name": "ÜberVerb",
+        "query": "verb"
+      },
+      "name": "NFD camelCase"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "ÜberVerb",
+        "query": "über verb"
+      },
+      "name": "NFD camelCase words"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "Großraum Hall",
+        "query": "groß"
+      },
+      "name": "Großraum Hall | groß"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Großraum Hall",
+        "query": "gross"
+      },
+      "name": "Großraum Hall | gross"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Großraum Hall",
+        "query": "GROSS"
+      },
+      "name": "Großraum Hall | GROSS"
+    },
+    {
+      "expected": 40,
+      "input": {
+        "name": "Großraum Hall",
+        "query": "grossraum"
+      },
+      "name": "Großraum Hall | grossraum"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Grossraum Hall",
+        "query": "groß"
+      },
+      "name": "Grossraum Hall | groß"
+    },
+    {
+      "expected": 40,
+      "input": {
+        "name": "İstanbul Verb",
+        "query": "istanbul"
+      },
+      "name": "İstanbul Verb | istanbul"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "ISTANBUL Verb",
+        "query": "istanbul"
+      },
+      "name": "ISTANBUL Verb | istanbul"
+    },
+    {
+      "expected": 40,
+      "input": {
+        "name": "Istanbul Verb",
+        "query": "İstanbul"
+      },
+      "name": "Istanbul Verb | İstanbul"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "ıvory Keys",
+        "query": "ivory"
+      },
+      "name": "ıvory Keys | ivory"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "🔥 Fire Comp",
+        "query": "fire"
+      },
+      "name": "🔥 Fire Comp | fire"
+    },
+    {
+      "expected": 0,
+      "input": {
+        "name": "🔥 Fire Comp",
+        "query": "🔥"
+      },
+      "name": "🔥 Fire Comp | 🔥"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "🔥 Fire Comp",
+        "query": "🔥 fire"
+      },
+      "name": "🔥 Fire Comp | 🔥 fire"
+    },
+    {
+      "expected": 0,
+      "input": {
+        "name": "👍🏽 Thumbs",
+        "query": "👍"
+      },
+      "name": "👍🏽 Thumbs | 👍"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "Thumbs👍🏽Up",
+        "query": "thumbs up"
+      },
+      "name": "Thumbs👍🏽Up | thumbs up"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Pro-Q́ 4",
+        "query": "pro-q"
+      },
+      "name": "combining mark on q"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "Café Verb",
+        "query": "café"
+      },
+      "name": "NFD query on NFC name"
+    },
+    {
+      "expected": 40,
+      "input": {
+        "name": "Café Verb",
+        "query": "cafe"
+      },
+      "name": "plain query, NFD name"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "bx_digital V3",
+        "query": "bx digital"
+      },
+      "name": "bx_digital V3 | bx digital"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "bx_digital V3",
+        "query": "bxdigital v3"
+      },
+      "name": "bx_digital V3 | bxdigital v3"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "L1+ Ultramaximizer",
+        "query": "l1 ultra"
+      },
+      "name": "L1+ Ultramaximizer | l1 ultra"
+    },
+    {
+      "expected": 60,
+      "input": {
+        "name": "AUGraphicEQ",
+        "query": "graphic eq"
+      },
+      "name": "AUGraphicEQ | graphic eq"
+    },
+    {
+      "expected": 85,
+      "input": {
+        "name": "SSL G-Master Buss Compressor",
+        "query": "ssl buss"
+      },
+      "name": "SSL G-Master Buss Compressor | ssl buss"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "Kickstart 2",
+        "query": "kick start"
+      },
+      "name": "Kickstart 2 | kick start"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "RC-20 Retro Color",
+        "query": "rc20"
+      },
+      "name": "RC-20 Retro Color | rc20"
+    },
+    {
+      "expected": 40,
+      "input": {
+        "name": "RC-20 Retro Color",
+        "query": "retro colour"
+      },
+      "name": "RC-20 Retro Color | retro colour"
+    },
+    {
+      "expected": 85,
+      "input": {
+        "name": "Abbey Road Studio 3 (6->2)",
+        "query": "abbey 3"
+      },
+      "name": "Abbey Road Studio 3 (6->2) | abbey 3"
+    },
+    {
+      "expected": 90,
+      "input": {
+        "name": "CLA-76 (m)",
+        "query": "cla 76 m"
+      },
+      "name": "CLA-76 (m) | cla 76 m"
+    },
+    {
+      "expected": null,
+      "input": {
+        "name": "Ｆｕｌｌｗｉｄｔｈ Comp",
+        "query": "fullwidth"
+      },
+      "name": "Ｆｕｌｌｗｉｄｔｈ Comp | fullwidth"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "Pro-Q 4",
+        "query": "  pro-q  "
+      },
+      "name": "query with spaces"
+    },
+    {
+      "expected": 100,
+      "input": {
+        "name": "Pro-Q 4",
+        "query": "\tpro"
+      },
+      "name": "query with tab"
+    }
+  ]
+}

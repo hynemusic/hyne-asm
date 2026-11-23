@@ -1,0 +1,1447 @@
+{
+  "area": "les.parse",
+  "cases": [
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            },
+            {
+              "display": "EQ Eight",
+              "query": "EQ Eight"
+            },
+            {
+              "display": "Pro-Q 3",
+              "query": "\"FabFilter Pro-Q 3\" vst3"
+            },
+            {
+              "display": "Auto Filter",
+              "query": "Auto Filter"
+            }
+          ],
+          "name": "Effects",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Hybrid Reverb",
+              "query": "Hybrid Reverb"
+            },
+            {
+              "display": "Reverb",
+              "query": "Reverb"
+            },
+            {
+              "display": "Valhalla Room",
+              "query": "ValhallaRoom vst3"
+            },
+            {
+              "display": "Valhalla VintageVerb",
+              "query": "ValhallaVintageVerb vst3"
+            },
+            {
+              "display": "Valhalla Supermassive",
+              "query": "ValhallaSupermassive vst3"
+            },
+            {
+              "display": "Pro-R 2",
+              "query": "\"FabFilter Pro-R 2\" vst3"
+            },
+            {
+              "display": "Raum",
+              "query": "Raum vst3"
+            },
+            {
+              "display": "Convolution Reverb",
+              "query": "\"Convolution Reverb\" amxd"
+            },
+            {
+              "display": "Echo",
+              "query": "Echo"
+            },
+            {
+              "display": "Delay",
+              "query": "Delay"
+            }
+          ],
+          "name": "Reverb",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Compressor",
+              "query": "Compressor"
+            },
+            {
+              "display": "Glue Compressor",
+              "query": "Glue Compressor"
+            },
+            {
+              "display": "Limiter",
+              "query": "Limiter"
+            },
+            {
+              "display": "Multiband Dynamics",
+              "query": "Multiband Dynamics"
+            },
+            {
+              "display": "Pro-C 2",
+              "query": "\"FabFilter Pro-C 2\" vst3"
+            },
+            {
+              "display": "Pro-L 2",
+              "query": "\"FabFilter Pro-L 2\" vst3"
+            },
+            {
+              "display": "Gate",
+              "query": "Gate"
+            },
+            {
+              "display": "OTT",
+              "query": "ott.adv"
+            }
+          ],
+          "name": "Dynamics",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Saturator",
+              "query": "Saturator"
+            },
+            {
+              "display": "Roar",
+              "query": "Roar"
+            },
+            {
+              "display": "Pedal",
+              "query": "Pedal"
+            },
+            {
+              "display": "Drum Buss",
+              "query": "Drum Buss"
+            },
+            {
+              "display": "Decapitator",
+              "query": "Decapitator vst3"
+            },
+            {
+              "display": "Saturn 2",
+              "query": "\"FabFilter Saturn 2\" vst3"
+            },
+            {
+              "display": "Redux",
+              "query": "Redux"
+            }
+          ],
+          "name": "Saturation",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Analog Lab",
+              "query": "\"Analog Lab V\" vst3"
+            },
+            {
+              "display": "Pigments",
+              "query": "Pigments vst3"
+            },
+            {
+              "display": "Serum",
+              "query": "Serum vst3"
+            },
+            {
+              "display": "Vital",
+              "query": "Vital vst3"
+            },
+            {
+              "display": "Kontakt",
+              "query": "Kontakt vst3"
+            }
+          ],
+          "name": "Instruments",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Drift",
+              "query": "Drift"
+            },
+            {
+              "display": "Wavetable",
+              "query": "Wavetable"
+            },
+            {
+              "display": "Operator",
+              "query": "Operator"
+            },
+            {
+              "display": "Meld",
+              "query": "Meld"
+            },
+            {
+              "display": "Analog",
+              "query": "Analog"
+            },
+            {
+              "display": "Collision",
+              "query": "Collision"
+            },
+            {
+              "display": "Electric",
+              "query": "Electric"
+            },
+            {
+              "display": "Tension",
+              "query": "Tension"
+            }
+          ],
+          "name": "Synths",
+          "parent": 4
+        },
+        {
+          "items": [
+            {
+              "display": "Instrument Rack",
+              "query": "Instrument Rack"
+            },
+            {
+              "display": "Audio Effect Rack",
+              "query": "Audio Effect Rack"
+            },
+            {
+              "display": "Drum Rack",
+              "query": "Drum Rack"
+            },
+            {
+              "display": "MIDI Effect Rack",
+              "query": "MIDI Effect Rack"
+            },
+            {
+              "display": "Spectrum",
+              "query": "Spectrum"
+            },
+            {
+              "display": "Tuner",
+              "query": "Tuner"
+            },
+            {
+              "display": "Arpeggiator",
+              "query": "Arpeggiator"
+            },
+            {
+              "display": "Chord",
+              "query": "Chord"
+            },
+            {
+              "display": "Scale",
+              "query": "Scale"
+            },
+            {
+              "display": "Note Echo",
+              "query": "Note Echo"
+            },
+            {
+              "display": "Random",
+              "query": "Random"
+            },
+            {
+              "display": "Velocity",
+              "query": "Velocity"
+            }
+          ],
+          "name": "Racks",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Sampler",
+              "query": "Sampler"
+            },
+            {
+              "display": "Drum Rack",
+              "query": "Drum Rack"
+            },
+            {
+              "display": "Granulator III",
+              "query": "\"Granulator III\" amxd"
+            }
+          ],
+          "name": "Sonstiges",
+          "parent": null
+        }
+      ],
+      "input": "; menu items are added in pairs of two as follows:\n; [menu display name]\n; [search query]\n\n; categories for menu items are added with /[category name]\n; add submenus within submenus by using more // at the start of the line when creating a new category.\n; go back one directory with ..\n; add a divider line with --\n; Please don't make any folders without any actual items (or only other folders) in it. This can confuse the program.\n\n; you can remove \"Readme\" at the bottom this file to remove it from your menu!\n\n; The configuration below is an example, demonstrating a variety of features. Please configure it to your liking!!\n; More information on menu configuration can be found at https://docs.enhancementsuite.me/\n\n; If you get an autohotkey error, please try to check your file for empty lines with spaces on it.\n; Alternatively, some non alpha-numeric characters will trip up the parser. Emoji support should enable itself when you use them!\n\n;============================================================================================================================\n\n/Effects\n\nUtility\nUtility\n\nEQ Eight\nEQ Eight\n--\n\nPro-Q 3\n\"FabFilter Pro-Q 3\" vst3\n\nAuto Filter\nAuto Filter\n\n//Reverb\n\nHybrid Reverb\nHybrid Reverb\n\nReverb\nReverb\n\nValhalla Room\nValhallaRoom vst3\n\nValhalla VintageVerb\nValhallaVintageVerb vst3\n\nValhalla Supermassive\nValhallaSupermassive vst3\n\nPro-R 2\n\"FabFilter Pro-R 2\" vst3\n\nRaum\nRaum vst3\n\nConvolution Reverb\n\"Convolution Reverb\" amxd\n\nEcho\nEcho\n\nDelay\nDelay\n..\n\n//Dynamics\n\nCompressor\nCompressor\n\nGlue Compressor\nGlue Compressor\n\nLimiter\nLimiter\n\nMultiband Dynamics\nMultiband Dynamics\n\nPro-C 2\n\"FabFilter Pro-C 2\" vst3\n\nPro-L 2\n\"FabFilter Pro-L 2\" vst3\n\nGate\nGate\n\nOTT\nott.adv\n..\n\n//Saturation\n\nSaturator\nSaturator\n\nRoar\nRoar\n\nPedal\nPedal\n\nDrum Buss\nDrum Buss\n\nDecapitator\nDecapitator vst3\n\nSaturn 2\n\"FabFilter Saturn 2\" vst3\n\nRedux\nRedux\n..\n\n/Instruments\n\nAnalog Lab\n\"Analog Lab V\" vst3\n\nPigments\nPigments vst3\n\nSerum\nSerum vst3\n\nVital\nVital vst3\n\nKontakt\nKontakt vst3\n\n//Synths\n\nDrift\nDrift\n\nWavetable\nWavetable\n\nOperator\nOperator\n\nMeld\nMeld\n\nAnalog\nAnalog\n\nCollision\nCollision\n\nElectric\nElectric\n\nTension\nTension\n..\n\n--\n\n/Racks\n\nInstrument Rack\nInstrument Rack\n\nAudio Effect Rack\nAudio Effect Rack\n\nDrum Rack\nDrum Rack\n\nMIDI Effect Rack\nMIDI Effect Rack\n\nSpectrum\nSpectrum\n\nTuner\nTuner\n\nArpeggiator\nArpeggiator\n\nChord\nChord\n\nScale\nScale\n\nNote Echo\nNote Echo\n\nRandom\nRandom\n\nVelocity\nVelocity\n--\n/nocategory\n--\n\nSampler\nSampler\n\nDrum Rack\nDrum Rack\n\nGranulator III\n\"Granulator III\" amxd\n\n;V DONT REMOVE THIS OR THE PROGRAM WILL NOT WORK V\nEnd",
+      "name": "sample menuconfig.ini LF"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            },
+            {
+              "display": "EQ Eight",
+              "query": "EQ Eight"
+            },
+            {
+              "display": "Pro-Q 3",
+              "query": "\"FabFilter Pro-Q 3\" vst3"
+            },
+            {
+              "display": "Auto Filter",
+              "query": "Auto Filter"
+            }
+          ],
+          "name": "Effects",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Hybrid Reverb",
+              "query": "Hybrid Reverb"
+            },
+            {
+              "display": "Reverb",
+              "query": "Reverb"
+            },
+            {
+              "display": "Valhalla Room",
+              "query": "ValhallaRoom vst3"
+            },
+            {
+              "display": "Valhalla VintageVerb",
+              "query": "ValhallaVintageVerb vst3"
+            },
+            {
+              "display": "Valhalla Supermassive",
+              "query": "ValhallaSupermassive vst3"
+            },
+            {
+              "display": "Pro-R 2",
+              "query": "\"FabFilter Pro-R 2\" vst3"
+            },
+            {
+              "display": "Raum",
+              "query": "Raum vst3"
+            },
+            {
+              "display": "Convolution Reverb",
+              "query": "\"Convolution Reverb\" amxd"
+            },
+            {
+              "display": "Echo",
+              "query": "Echo"
+            },
+            {
+              "display": "Delay",
+              "query": "Delay"
+            }
+          ],
+          "name": "Reverb",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Compressor",
+              "query": "Compressor"
+            },
+            {
+              "display": "Glue Compressor",
+              "query": "Glue Compressor"
+            },
+            {
+              "display": "Limiter",
+              "query": "Limiter"
+            },
+            {
+              "display": "Multiband Dynamics",
+              "query": "Multiband Dynamics"
+            },
+            {
+              "display": "Pro-C 2",
+              "query": "\"FabFilter Pro-C 2\" vst3"
+            },
+            {
+              "display": "Pro-L 2",
+              "query": "\"FabFilter Pro-L 2\" vst3"
+            },
+            {
+              "display": "Gate",
+              "query": "Gate"
+            },
+            {
+              "display": "OTT",
+              "query": "ott.adv"
+            }
+          ],
+          "name": "Dynamics",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Saturator",
+              "query": "Saturator"
+            },
+            {
+              "display": "Roar",
+              "query": "Roar"
+            },
+            {
+              "display": "Pedal",
+              "query": "Pedal"
+            },
+            {
+              "display": "Drum Buss",
+              "query": "Drum Buss"
+            },
+            {
+              "display": "Decapitator",
+              "query": "Decapitator vst3"
+            },
+            {
+              "display": "Saturn 2",
+              "query": "\"FabFilter Saturn 2\" vst3"
+            },
+            {
+              "display": "Redux",
+              "query": "Redux"
+            }
+          ],
+          "name": "Saturation",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Analog Lab",
+              "query": "\"Analog Lab V\" vst3"
+            },
+            {
+              "display": "Pigments",
+              "query": "Pigments vst3"
+            },
+            {
+              "display": "Serum",
+              "query": "Serum vst3"
+            },
+            {
+              "display": "Vital",
+              "query": "Vital vst3"
+            },
+            {
+              "display": "Kontakt",
+              "query": "Kontakt vst3"
+            }
+          ],
+          "name": "Instruments",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Drift",
+              "query": "Drift"
+            },
+            {
+              "display": "Wavetable",
+              "query": "Wavetable"
+            },
+            {
+              "display": "Operator",
+              "query": "Operator"
+            },
+            {
+              "display": "Meld",
+              "query": "Meld"
+            },
+            {
+              "display": "Analog",
+              "query": "Analog"
+            },
+            {
+              "display": "Collision",
+              "query": "Collision"
+            },
+            {
+              "display": "Electric",
+              "query": "Electric"
+            },
+            {
+              "display": "Tension",
+              "query": "Tension"
+            }
+          ],
+          "name": "Synths",
+          "parent": 4
+        },
+        {
+          "items": [
+            {
+              "display": "Instrument Rack",
+              "query": "Instrument Rack"
+            },
+            {
+              "display": "Audio Effect Rack",
+              "query": "Audio Effect Rack"
+            },
+            {
+              "display": "Drum Rack",
+              "query": "Drum Rack"
+            },
+            {
+              "display": "MIDI Effect Rack",
+              "query": "MIDI Effect Rack"
+            },
+            {
+              "display": "Spectrum",
+              "query": "Spectrum"
+            },
+            {
+              "display": "Tuner",
+              "query": "Tuner"
+            },
+            {
+              "display": "Arpeggiator",
+              "query": "Arpeggiator"
+            },
+            {
+              "display": "Chord",
+              "query": "Chord"
+            },
+            {
+              "display": "Scale",
+              "query": "Scale"
+            },
+            {
+              "display": "Note Echo",
+              "query": "Note Echo"
+            },
+            {
+              "display": "Random",
+              "query": "Random"
+            },
+            {
+              "display": "Velocity",
+              "query": "Velocity"
+            }
+          ],
+          "name": "Racks",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Sampler",
+              "query": "Sampler"
+            },
+            {
+              "display": "Drum Rack",
+              "query": "Drum Rack"
+            },
+            {
+              "display": "Granulator III",
+              "query": "\"Granulator III\" amxd"
+            }
+          ],
+          "name": "Sonstiges",
+          "parent": null
+        }
+      ],
+      "input": "; menu items are added in pairs of two as follows:\r\n; [menu display name]\r\n; [search query]\r\n\r\n; categories for menu items are added with /[category name]\r\n; add submenus within submenus by using more // at the start of the line when creating a new category.\r\n; go back one directory with ..\r\n; add a divider line with --\r\n; Please don't make any folders without any actual items (or only other folders) in it. This can confuse the program.\r\n\r\n; you can remove \"Readme\" at the bottom this file to remove it from your menu!\r\n\r\n; The configuration below is an example, demonstrating a variety of features. Please configure it to your liking!!\r\n; More information on menu configuration can be found at https://docs.enhancementsuite.me/\r\n\r\n; If you get an autohotkey error, please try to check your file for empty lines with spaces on it.\r\n; Alternatively, some non alpha-numeric characters will trip up the parser. Emoji support should enable itself when you use them!\r\n\r\n;============================================================================================================================\r\n\r\n/Effects\r\n\r\nUtility\r\nUtility\r\n\r\nEQ Eight\r\nEQ Eight\r\n--\r\n\r\nPro-Q 3\r\n\"FabFilter Pro-Q 3\" vst3\r\n\r\nAuto Filter\r\nAuto Filter\r\n\r\n//Reverb\r\n\r\nHybrid Reverb\r\nHybrid Reverb\r\n\r\nReverb\r\nReverb\r\n\r\nValhalla Room\r\nValhallaRoom vst3\r\n\r\nValhalla VintageVerb\r\nValhallaVintageVerb vst3\r\n\r\nValhalla Supermassive\r\nValhallaSupermassive vst3\r\n\r\nPro-R 2\r\n\"FabFilter Pro-R 2\" vst3\r\n\r\nRaum\r\nRaum vst3\r\n\r\nConvolution Reverb\r\n\"Convolution Reverb\" amxd\r\n\r\nEcho\r\nEcho\r\n\r\nDelay\r\nDelay\r\n..\r\n\r\n//Dynamics\r\n\r\nCompressor\r\nCompressor\r\n\r\nGlue Compressor\r\nGlue Compressor\r\n\r\nLimiter\r\nLimiter\r\n\r\nMultiband Dynamics\r\nMultiband Dynamics\r\n\r\nPro-C 2\r\n\"FabFilter Pro-C 2\" vst3\r\n\r\nPro-L 2\r\n\"FabFilter Pro-L 2\" vst3\r\n\r\nGate\r\nGate\r\n\r\nOTT\r\nott.adv\r\n..\r\n\r\n//Saturation\r\n\r\nSaturator\r\nSaturator\r\n\r\nRoar\r\nRoar\r\n\r\nPedal\r\nPedal\r\n\r\nDrum Buss\r\nDrum Buss\r\n\r\nDecapitator\r\nDecapitator vst3\r\n\r\nSaturn 2\r\n\"FabFilter Saturn 2\" vst3\r\n\r\nRedux\r\nRedux\r\n..\r\n\r\n/Instruments\r\n\r\nAnalog Lab\r\n\"Analog Lab V\" vst3\r\n\r\nPigments\r\nPigments vst3\r\n\r\nSerum\r\nSerum vst3\r\n\r\nVital\r\nVital vst3\r\n\r\nKontakt\r\nKontakt vst3\r\n\r\n//Synths\r\n\r\nDrift\r\nDrift\r\n\r\nWavetable\r\nWavetable\r\n\r\nOperator\r\nOperator\r\n\r\nMeld\r\nMeld\r\n\r\nAnalog\r\nAnalog\r\n\r\nCollision\r\nCollision\r\n\r\nElectric\r\nElectric\r\n\r\nTension\r\nTension\r\n..\r\n\r\n--\r\n\r\n/Racks\r\n\r\nInstrument Rack\r\nInstrument Rack\r\n\r\nAudio Effect Rack\r\nAudio Effect Rack\r\n\r\nDrum Rack\r\nDrum Rack\r\n\r\nMIDI Effect Rack\r\nMIDI Effect Rack\r\n\r\nSpectrum\r\nSpectrum\r\n\r\nTuner\r\nTuner\r\n\r\nArpeggiator\r\nArpeggiator\r\n\r\nChord\r\nChord\r\n\r\nScale\r\nScale\r\n\r\nNote Echo\r\nNote Echo\r\n\r\nRandom\r\nRandom\r\n\r\nVelocity\r\nVelocity\r\n--\r\n/nocategory\r\n--\r\n\r\nSampler\r\nSampler\r\n\r\nDrum Rack\r\nDrum Rack\r\n\r\nGranulator III\r\n\"Granulator III\" amxd\r\n\r\n;V DONT REMOVE THIS OR THE PROGRAM WILL NOT WORK V\r\nEnd",
+      "name": "sample menuconfig.ini CRLF"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            },
+            {
+              "display": "EQ Eight",
+              "query": "EQ Eight"
+            },
+            {
+              "display": "Pro-Q 3",
+              "query": "\"FabFilter Pro-Q 3\" vst3"
+            },
+            {
+              "display": "Auto Filter",
+              "query": "Auto Filter"
+            }
+          ],
+          "name": "Effects",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Hybrid Reverb",
+              "query": "Hybrid Reverb"
+            },
+            {
+              "display": "Reverb",
+              "query": "Reverb"
+            },
+            {
+              "display": "Valhalla Room",
+              "query": "ValhallaRoom vst3"
+            },
+            {
+              "display": "Valhalla VintageVerb",
+              "query": "ValhallaVintageVerb vst3"
+            },
+            {
+              "display": "Valhalla Supermassive",
+              "query": "ValhallaSupermassive vst3"
+            },
+            {
+              "display": "Pro-R 2",
+              "query": "\"FabFilter Pro-R 2\" vst3"
+            },
+            {
+              "display": "Raum",
+              "query": "Raum vst3"
+            },
+            {
+              "display": "Convolution Reverb",
+              "query": "\"Convolution Reverb\" amxd"
+            },
+            {
+              "display": "Echo",
+              "query": "Echo"
+            },
+            {
+              "display": "Delay",
+              "query": "Delay"
+            }
+          ],
+          "name": "Reverb",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Compressor",
+              "query": "Compressor"
+            },
+            {
+              "display": "Glue Compressor",
+              "query": "Glue Compressor"
+            },
+            {
+              "display": "Limiter",
+              "query": "Limiter"
+            },
+            {
+              "display": "Multiband Dynamics",
+              "query": "Multiband Dynamics"
+            },
+            {
+              "display": "Pro-C 2",
+              "query": "\"FabFilter Pro-C 2\" vst3"
+            },
+            {
+              "display": "Pro-L 2",
+              "query": "\"FabFilter Pro-L 2\" vst3"
+            },
+            {
+              "display": "Gate",
+              "query": "Gate"
+            },
+            {
+              "display": "OTT",
+              "query": "ott.adv"
+            }
+          ],
+          "name": "Dynamics",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Saturator",
+              "query": "Saturator"
+            },
+            {
+              "display": "Roar",
+              "query": "Roar"
+            },
+            {
+              "display": "Pedal",
+              "query": "Pedal"
+            },
+            {
+              "display": "Drum Buss",
+              "query": "Drum Buss"
+            },
+            {
+              "display": "Decapitator",
+              "query": "Decapitator vst3"
+            },
+            {
+              "display": "Saturn 2",
+              "query": "\"FabFilter Saturn 2\" vst3"
+            },
+            {
+              "display": "Redux",
+              "query": "Redux"
+            }
+          ],
+          "name": "Saturation",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Analog Lab",
+              "query": "\"Analog Lab V\" vst3"
+            },
+            {
+              "display": "Pigments",
+              "query": "Pigments vst3"
+            },
+            {
+              "display": "Serum",
+              "query": "Serum vst3"
+            },
+            {
+              "display": "Vital",
+              "query": "Vital vst3"
+            },
+            {
+              "display": "Kontakt",
+              "query": "Kontakt vst3"
+            }
+          ],
+          "name": "Instruments",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Drift",
+              "query": "Drift"
+            },
+            {
+              "display": "Wavetable",
+              "query": "Wavetable"
+            },
+            {
+              "display": "Operator",
+              "query": "Operator"
+            },
+            {
+              "display": "Meld",
+              "query": "Meld"
+            },
+            {
+              "display": "Analog",
+              "query": "Analog"
+            },
+            {
+              "display": "Collision",
+              "query": "Collision"
+            },
+            {
+              "display": "Electric",
+              "query": "Electric"
+            },
+            {
+              "display": "Tension",
+              "query": "Tension"
+            }
+          ],
+          "name": "Synths",
+          "parent": 4
+        },
+        {
+          "items": [
+            {
+              "display": "Instrument Rack",
+              "query": "Instrument Rack"
+            },
+            {
+              "display": "Audio Effect Rack",
+              "query": "Audio Effect Rack"
+            },
+            {
+              "display": "Drum Rack",
+              "query": "Drum Rack"
+            },
+            {
+              "display": "MIDI Effect Rack",
+              "query": "MIDI Effect Rack"
+            },
+            {
+              "display": "Spectrum",
+              "query": "Spectrum"
+            },
+            {
+              "display": "Tuner",
+              "query": "Tuner"
+            },
+            {
+              "display": "Arpeggiator",
+              "query": "Arpeggiator"
+            },
+            {
+              "display": "Chord",
+              "query": "Chord"
+            },
+            {
+              "display": "Scale",
+              "query": "Scale"
+            },
+            {
+              "display": "Note Echo",
+              "query": "Note Echo"
+            },
+            {
+              "display": "Random",
+              "query": "Random"
+            },
+            {
+              "display": "Velocity",
+              "query": "Velocity"
+            }
+          ],
+          "name": "Racks",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Sampler",
+              "query": "Sampler"
+            },
+            {
+              "display": "Drum Rack",
+              "query": "Drum Rack"
+            },
+            {
+              "display": "Granulator III",
+              "query": "\"Granulator III\" amxd"
+            }
+          ],
+          "name": "Sonstiges",
+          "parent": null
+        }
+      ],
+      "input": "﻿; menu items are added in pairs of two as follows:\n; [menu display name]\n; [search query]\n\n; categories for menu items are added with /[category name]\n; add submenus within submenus by using more // at the start of the line when creating a new category.\n; go back one directory with ..\n; add a divider line with --\n; Please don't make any folders without any actual items (or only other folders) in it. This can confuse the program.\n\n; you can remove \"Readme\" at the bottom this file to remove it from your menu!\n\n; The configuration below is an example, demonstrating a variety of features. Please configure it to your liking!!\n; More information on menu configuration can be found at https://docs.enhancementsuite.me/\n\n; If you get an autohotkey error, please try to check your file for empty lines with spaces on it.\n; Alternatively, some non alpha-numeric characters will trip up the parser. Emoji support should enable itself when you use them!\n\n;============================================================================================================================\n\n/Effects\n\nUtility\nUtility\n\nEQ Eight\nEQ Eight\n--\n\nPro-Q 3\n\"FabFilter Pro-Q 3\" vst3\n\nAuto Filter\nAuto Filter\n\n//Reverb\n\nHybrid Reverb\nHybrid Reverb\n\nReverb\nReverb\n\nValhalla Room\nValhallaRoom vst3\n\nValhalla VintageVerb\nValhallaVintageVerb vst3\n\nValhalla Supermassive\nValhallaSupermassive vst3\n\nPro-R 2\n\"FabFilter Pro-R 2\" vst3\n\nRaum\nRaum vst3\n\nConvolution Reverb\n\"Convolution Reverb\" amxd\n\nEcho\nEcho\n\nDelay\nDelay\n..\n\n//Dynamics\n\nCompressor\nCompressor\n\nGlue Compressor\nGlue Compressor\n\nLimiter\nLimiter\n\nMultiband Dynamics\nMultiband Dynamics\n\nPro-C 2\n\"FabFilter Pro-C 2\" vst3\n\nPro-L 2\n\"FabFilter Pro-L 2\" vst3\n\nGate\nGate\n\nOTT\nott.adv\n..\n\n//Saturation\n\nSaturator\nSaturator\n\nRoar\nRoar\n\nPedal\nPedal\n\nDrum Buss\nDrum Buss\n\nDecapitator\nDecapitator vst3\n\nSaturn 2\n\"FabFilter Saturn 2\" vst3\n\nRedux\nRedux\n..\n\n/Instruments\n\nAnalog Lab\n\"Analog Lab V\" vst3\n\nPigments\nPigments vst3\n\nSerum\nSerum vst3\n\nVital\nVital vst3\n\nKontakt\nKontakt vst3\n\n//Synths\n\nDrift\nDrift\n\nWavetable\nWavetable\n\nOperator\nOperator\n\nMeld\nMeld\n\nAnalog\nAnalog\n\nCollision\nCollision\n\nElectric\nElectric\n\nTension\nTension\n..\n\n--\n\n/Racks\n\nInstrument Rack\nInstrument Rack\n\nAudio Effect Rack\nAudio Effect Rack\n\nDrum Rack\nDrum Rack\n\nMIDI Effect Rack\nMIDI Effect Rack\n\nSpectrum\nSpectrum\n\nTuner\nTuner\n\nArpeggiator\nArpeggiator\n\nChord\nChord\n\nScale\nScale\n\nNote Echo\nNote Echo\n\nRandom\nRandom\n\nVelocity\nVelocity\n--\n/nocategory\n--\n\nSampler\nSampler\n\nDrum Rack\nDrum Rack\n\nGranulator III\n\"Granulator III\" amxd\n\n;V DONT REMOVE THIS OR THE PROGRAM WILL NOT WORK V\nEnd",
+      "name": "sample menuconfig.ini UTF-8 BOM"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            },
+            {
+              "display": "EQ Eight",
+              "query": "EQ Eight"
+            },
+            {
+              "display": "Pro-Q 3",
+              "query": "\"FabFilter Pro-Q 3\" vst3"
+            },
+            {
+              "display": "Auto Filter",
+              "query": "Auto Filter"
+            }
+          ],
+          "name": "Effects",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Hybrid Reverb",
+              "query": "Hybrid Reverb"
+            },
+            {
+              "display": "Reverb",
+              "query": "Reverb"
+            },
+            {
+              "display": "Valhalla Room",
+              "query": "ValhallaRoom vst3"
+            },
+            {
+              "display": "Valhalla VintageVerb",
+              "query": "ValhallaVintageVerb vst3"
+            },
+            {
+              "display": "Valhalla Supermassive",
+              "query": "ValhallaSupermassive vst3"
+            },
+            {
+              "display": "Pro-R 2",
+              "query": "\"FabFilter Pro-R 2\" vst3"
+            },
+            {
+              "display": "Raum",
+              "query": "Raum vst3"
+            },
+            {
+              "display": "Convolution Reverb",
+              "query": "\"Convolution Reverb\" amxd"
+            },
+            {
+              "display": "Echo",
+              "query": "Echo"
+            },
+            {
+              "display": "Delay",
+              "query": "Delay"
+            }
+          ],
+          "name": "Reverb",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Compressor",
+              "query": "Compressor"
+            },
+            {
+              "display": "Glue Compressor",
+              "query": "Glue Compressor"
+            },
+            {
+              "display": "Limiter",
+              "query": "Limiter"
+            },
+            {
+              "display": "Multiband Dynamics",
+              "query": "Multiband Dynamics"
+            },
+            {
+              "display": "Pro-C 2",
+              "query": "\"FabFilter Pro-C 2\" vst3"
+            },
+            {
+              "display": "Pro-L 2",
+              "query": "\"FabFilter Pro-L 2\" vst3"
+            },
+            {
+              "display": "Gate",
+              "query": "Gate"
+            },
+            {
+              "display": "OTT",
+              "query": "ott.adv"
+            }
+          ],
+          "name": "Dynamics",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Saturator",
+              "query": "Saturator"
+            },
+            {
+              "display": "Roar",
+              "query": "Roar"
+            },
+            {
+              "display": "Pedal",
+              "query": "Pedal"
+            },
+            {
+              "display": "Drum Buss",
+              "query": "Drum Buss"
+            },
+            {
+              "display": "Decapitator",
+              "query": "Decapitator vst3"
+            },
+            {
+              "display": "Saturn 2",
+              "query": "\"FabFilter Saturn 2\" vst3"
+            },
+            {
+              "display": "Redux",
+              "query": "Redux"
+            }
+          ],
+          "name": "Saturation",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Analog Lab",
+              "query": "\"Analog Lab V\" vst3"
+            },
+            {
+              "display": "Pigments",
+              "query": "Pigments vst3"
+            },
+            {
+              "display": "Serum",
+              "query": "Serum vst3"
+            },
+            {
+              "display": "Vital",
+              "query": "Vital vst3"
+            },
+            {
+              "display": "Kontakt",
+              "query": "Kontakt vst3"
+            }
+          ],
+          "name": "Instruments",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Drift",
+              "query": "Drift"
+            },
+            {
+              "display": "Wavetable",
+              "query": "Wavetable"
+            },
+            {
+              "display": "Operator",
+              "query": "Operator"
+            },
+            {
+              "display": "Meld",
+              "query": "Meld"
+            },
+            {
+              "display": "Analog",
+              "query": "Analog"
+            },
+            {
+              "display": "Collision",
+              "query": "Collision"
+            },
+            {
+              "display": "Electric",
+              "query": "Electric"
+            },
+            {
+              "display": "Tension",
+              "query": "Tension"
+            }
+          ],
+          "name": "Synths",
+          "parent": 4
+        },
+        {
+          "items": [
+            {
+              "display": "Instrument Rack",
+              "query": "Instrument Rack"
+            },
+            {
+              "display": "Audio Effect Rack",
+              "query": "Audio Effect Rack"
+            },
+            {
+              "display": "Drum Rack",
+              "query": "Drum Rack"
+            },
+            {
+              "display": "MIDI Effect Rack",
+              "query": "MIDI Effect Rack"
+            },
+            {
+              "display": "Spectrum",
+              "query": "Spectrum"
+            },
+            {
+              "display": "Tuner",
+              "query": "Tuner"
+            },
+            {
+              "display": "Arpeggiator",
+              "query": "Arpeggiator"
+            },
+            {
+              "display": "Chord",
+              "query": "Chord"
+            },
+            {
+              "display": "Scale",
+              "query": "Scale"
+            },
+            {
+              "display": "Note Echo",
+              "query": "Note Echo"
+            },
+            {
+              "display": "Random",
+              "query": "Random"
+            },
+            {
+              "display": "Velocity",
+              "query": "Velocity"
+            }
+          ],
+          "name": "Racks",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Sampler",
+              "query": "Sampler"
+            },
+            {
+              "display": "Drum Rack",
+              "query": "Drum Rack"
+            },
+            {
+              "display": "Granulator III",
+              "query": "\"Granulator III\" amxd"
+            }
+          ],
+          "name": "Sonstiges",
+          "parent": null
+        }
+      ],
+      "input": "﻿; menu items are added in pairs of two as follows:\r\n; [menu display name]\r\n; [search query]\r\n\r\n; categories for menu items are added with /[category name]\r\n; add submenus within submenus by using more // at the start of the line when creating a new category.\r\n; go back one directory with ..\r\n; add a divider line with --\r\n; Please don't make any folders without any actual items (or only other folders) in it. This can confuse the program.\r\n\r\n; you can remove \"Readme\" at the bottom this file to remove it from your menu!\r\n\r\n; The configuration below is an example, demonstrating a variety of features. Please configure it to your liking!!\r\n; More information on menu configuration can be found at https://docs.enhancementsuite.me/\r\n\r\n; If you get an autohotkey error, please try to check your file for empty lines with spaces on it.\r\n; Alternatively, some non alpha-numeric characters will trip up the parser. Emoji support should enable itself when you use them!\r\n\r\n;============================================================================================================================\r\n\r\n/Effects\r\n\r\nUtility\r\nUtility\r\n\r\nEQ Eight\r\nEQ Eight\r\n--\r\n\r\nPro-Q 3\r\n\"FabFilter Pro-Q 3\" vst3\r\n\r\nAuto Filter\r\nAuto Filter\r\n\r\n//Reverb\r\n\r\nHybrid Reverb\r\nHybrid Reverb\r\n\r\nReverb\r\nReverb\r\n\r\nValhalla Room\r\nValhallaRoom vst3\r\n\r\nValhalla VintageVerb\r\nValhallaVintageVerb vst3\r\n\r\nValhalla Supermassive\r\nValhallaSupermassive vst3\r\n\r\nPro-R 2\r\n\"FabFilter Pro-R 2\" vst3\r\n\r\nRaum\r\nRaum vst3\r\n\r\nConvolution Reverb\r\n\"Convolution Reverb\" amxd\r\n\r\nEcho\r\nEcho\r\n\r\nDelay\r\nDelay\r\n..\r\n\r\n//Dynamics\r\n\r\nCompressor\r\nCompressor\r\n\r\nGlue Compressor\r\nGlue Compressor\r\n\r\nLimiter\r\nLimiter\r\n\r\nMultiband Dynamics\r\nMultiband Dynamics\r\n\r\nPro-C 2\r\n\"FabFilter Pro-C 2\" vst3\r\n\r\nPro-L 2\r\n\"FabFilter Pro-L 2\" vst3\r\n\r\nGate\r\nGate\r\n\r\nOTT\r\nott.adv\r\n..\r\n\r\n//Saturation\r\n\r\nSaturator\r\nSaturator\r\n\r\nRoar\r\nRoar\r\n\r\nPedal\r\nPedal\r\n\r\nDrum Buss\r\nDrum Buss\r\n\r\nDecapitator\r\nDecapitator vst3\r\n\r\nSaturn 2\r\n\"FabFilter Saturn 2\" vst3\r\n\r\nRedux\r\nRedux\r\n..\r\n\r\n/Instruments\r\n\r\nAnalog Lab\r\n\"Analog Lab V\" vst3\r\n\r\nPigments\r\nPigments vst3\r\n\r\nSerum\r\nSerum vst3\r\n\r\nVital\r\nVital vst3\r\n\r\nKontakt\r\nKontakt vst3\r\n\r\n//Synths\r\n\r\nDrift\r\nDrift\r\n\r\nWavetable\r\nWavetable\r\n\r\nOperator\r\nOperator\r\n\r\nMeld\r\nMeld\r\n\r\nAnalog\r\nAnalog\r\n\r\nCollision\r\nCollision\r\n\r\nElectric\r\nElectric\r\n\r\nTension\r\nTension\r\n..\r\n\r\n--\r\n\r\n/Racks\r\n\r\nInstrument Rack\r\nInstrument Rack\r\n\r\nAudio Effect Rack\r\nAudio Effect Rack\r\n\r\nDrum Rack\r\nDrum Rack\r\n\r\nMIDI Effect Rack\r\nMIDI Effect Rack\r\n\r\nSpectrum\r\nSpectrum\r\n\r\nTuner\r\nTuner\r\n\r\nArpeggiator\r\nArpeggiator\r\n\r\nChord\r\nChord\r\n\r\nScale\r\nScale\r\n\r\nNote Echo\r\nNote Echo\r\n\r\nRandom\r\nRandom\r\n\r\nVelocity\r\nVelocity\r\n--\r\n/nocategory\r\n--\r\n\r\nSampler\r\nSampler\r\n\r\nDrum Rack\r\nDrum Rack\r\n\r\nGranulator III\r\n\"Granulator III\" amxd\r\n\r\n;V DONT REMOVE THIS OR THE PROGRAM WILL NOT WORK V\r\nEnd",
+      "name": "sample menuconfig.ini CRLF and BOM"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            },
+            {
+              "display": "EQ Eight",
+              "query": "EQ Eight"
+            }
+          ],
+          "name": "Effects",
+          "parent": null
+        }
+      ],
+      "input": "/Effects\nUtility\nUtility\nEQ Eight\nEQ Eight\n",
+      "name": "category and pairs"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            }
+          ],
+          "name": "Effects",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Hybrid Reverb",
+              "query": "Hybrid Reverb"
+            }
+          ],
+          "name": "Reverb",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Echo",
+              "query": "Echo"
+            }
+          ],
+          "name": "Deep",
+          "parent": 0
+        }
+      ],
+      "input": "/Effects\nUtility\nUtility\n//Reverb\nHybrid Reverb\nHybrid Reverb\n///Deep\nEcho\nEcho\n",
+      "name": "subfolder links to its top-level category"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            },
+            {
+              "display": "Gate",
+              "query": "Gate"
+            }
+          ],
+          "name": "Effects",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Reverb",
+              "query": "Reverb"
+            }
+          ],
+          "name": "Reverb",
+          "parent": 0
+        }
+      ],
+      "input": "/Effects\n//Reverb\nReverb\nReverb\n..\nUtility\nUtility\n..\n..\nGate\nGate\n",
+      "name": "back up with .."
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            },
+            {
+              "display": "Gate",
+              "query": "Gate"
+            }
+          ],
+          "name": "A",
+          "parent": null
+        }
+      ],
+      "input": "/A\n--\nUtility\nUtility\n--\nGate\n--\nGate\n",
+      "name": "dividers are dropped"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            }
+          ],
+          "name": "A",
+          "parent": null
+        }
+      ],
+      "input": "; a comment\n/A\n   ; indented comment\n\n  Utility  \n\tUtility\t\n",
+      "name": "comments and blank lines"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Sampler",
+              "query": "Sampler"
+            },
+            {
+              "display": "Drift",
+              "query": "Drift"
+            }
+          ],
+          "name": "Sonstiges",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Gate",
+              "query": "Gate"
+            }
+          ],
+          "name": "Effects",
+          "parent": null
+        }
+      ],
+      "input": "/nocategory\nSampler\nSampler\n/Effects\nGate\nGate\n/NoCategory\nDrift\nDrift\n",
+      "name": "nocategory becomes Sonstiges and repeats merge"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            }
+          ],
+          "name": "Sonstiges",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Gate",
+              "query": "Gate"
+            }
+          ],
+          "name": "A",
+          "parent": null
+        }
+      ],
+      "input": "Utility\nUtility\n/A\nGate\nGate\n",
+      "name": "items before any category go to Sonstiges"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            }
+          ],
+          "name": "A",
+          "parent": null
+        }
+      ],
+      "input": "/A\nUtility\nUtility\n;V DONT REMOVE THIS\nEnd",
+      "name": "trailing End is not an item"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            }
+          ],
+          "name": "A",
+          "parent": null
+        }
+      ],
+      "input": "/A\nReadme\nreadme\nUtility\nUtility\n",
+      "name": "readme pair is skipped"
+    },
+    {
+      "expected": [
+        {
+          "items": [],
+          "name": "Parent",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            }
+          ],
+          "name": "Child",
+          "parent": 0
+        },
+        {
+          "items": [
+            {
+              "display": "Gate",
+              "query": "Gate"
+            }
+          ],
+          "name": "Other",
+          "parent": null
+        }
+      ],
+      "input": "/Empty\n/Parent\n//Child\nUtility\nUtility\n..\n/Other\n//EmptyChild\n..\nGate\nGate\n",
+      "name": "empty folders are dropped, parent with only folders stays"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            }
+          ],
+          "name": "B",
+          "parent": null
+        }
+      ],
+      "input": "/A\nDangling\n/B\nUtility\nUtility\n",
+      "name": "category line resets a pending display"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Utility",
+              "query": "Utility"
+            }
+          ],
+          "name": "A",
+          "parent": null
+        }
+      ],
+      "input": "/A\rUtility\rUtility\r",
+      "name": "old Mac line endings"
+    },
+    {
+      "expected": [
+        {
+          "items": [
+            {
+              "display": "Gate",
+              "query": "Gate"
+            }
+          ],
+          "name": "FX",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Drift",
+              "query": "Drift"
+            }
+          ],
+          "name": "Synths",
+          "parent": null
+        },
+        {
+          "items": [
+            {
+              "display": "Reverb",
+              "query": "Reverb"
+            }
+          ],
+          "name": "Rev",
+          "parent": 0
+        }
+      ],
+      "input": "/FX\nGate\nGate\n/Synths\nDrift\nDrift\n/FX\n//Rev\nReverb\nReverb\n",
+      "name": "repeated top-level names merge, subfolders follow"
+    },
+    {
+      "expected": [],
+      "input": "",
+      "name": "empty text"
+    }
+  ]
+}

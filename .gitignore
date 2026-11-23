@@ -11,3 +11,6 @@ PRODUCT.md
 *.p12
 release-secrets/
 .impeccable/
+
+windows/**/bin/
+windows/**/obj/

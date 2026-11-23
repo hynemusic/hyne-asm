@@ -1,0 +1,219 @@
+{
+  "area": "search.vocabulary",
+  "cases": [
+    {
+      "expected": [
+        "compressor",
+        "glue"
+      ],
+      "input": "comp",
+      "name": "'comp'"
+    },
+    {
+      "expected": [
+        "reverb",
+        "space"
+      ],
+      "input": "Verb",
+      "name": "'Verb'"
+    },
+    {
+      "expected": [
+        "compressor",
+        "glue"
+      ],
+      "input": "kompressor",
+      "name": "'kompressor'"
+    },
+    {
+      "expected": [],
+      "input": "pro q",
+      "name": "'pro q'"
+    },
+    {
+      "expected": [
+        "eq",
+        "eq-curve"
+      ],
+      "input": "  eq ",
+      "name": "'  eq '"
+    },
+    {
+      "expected": [],
+      "input": "e",
+      "name": "'e'"
+    },
+    {
+      "expected": [],
+      "input": "co",
+      "name": "'co'"
+    },
+    {
+      "expected": [
+        "compressor",
+        "glue"
+      ],
+      "input": "comp ",
+      "name": "'comp '"
+    },
+    {
+      "expected": [
+        "compressor",
+        "glue"
+      ],
+      "input": "bus comp",
+      "name": "'bus comp'"
+    },
+    {
+      "expected": [],
+      "input": "bus",
+      "name": "'bus'"
+    },
+    {
+      "expected": [
+        "distortion",
+        "saturation",
+        "tape"
+      ],
+      "input": "satu",
+      "name": "'satu'"
+    },
+    {
+      "expected": [
+        "distortion",
+        "saturation",
+        "tape"
+      ],
+      "input": "Satur",
+      "name": "'Satur'"
+    },
+    {
+      "expected": [
+        "bitcrush",
+        "tape"
+      ],
+      "input": "lo-fi",
+      "name": "'lo-fi'"
+    },
+    {
+      "expected": [
+        "bitcrush",
+        "tape"
+      ],
+      "input": "LOFI",
+      "name": "'LOFI'"
+    },
+    {
+      "expected": [
+        "arp",
+        "chord",
+        "midi"
+      ],
+      "input": "midi",
+      "name": "'midi'"
+    },
+    {
+      "expected": [
+        "chorus",
+        "modulation",
+        "phaser"
+      ],
+      "input": "mod",
+      "name": "'mod'"
+    },
+    {
+      "expected": [
+        "chorus",
+        "modulation",
+        "phaser"
+      ],
+      "input": "modu",
+      "name": "'modu'"
+    },
+    {
+      "expected": [
+        "rack"
+      ],
+      "input": "rack",
+      "name": "'rack'"
+    },
+    {
+      "expected": [
+        "rack"
+      ],
+      "input": "chain",
+      "name": "'chain'"
+    },
+    {
+      "expected": [],
+      "input": "",
+      "name": "''"
+    },
+    {
+      "expected": [
+        "reverb",
+        "space"
+      ],
+      "input": "hall",
+      "name": "'hall'"
+    },
+    {
+      "expected": [
+        "transient"
+      ],
+      "input": "trans",
+      "name": "'trans'"
+    },
+    {
+      "expected": [
+        "pitch",
+        "tuner"
+      ],
+      "input": "tuning",
+      "name": "'tuning'"
+    },
+    {
+      "expected": [
+        "bass",
+        "keys",
+        "pad",
+        "sine",
+        "synth"
+      ],
+      "input": "inst",
+      "name": "'inst'"
+    },
+    {
+      "expected": [
+        "reverb",
+        "space"
+      ],
+      "input": "space",
+      "name": "'space'"
+    },
+    {
+      "expected": [
+        "deesser"
+      ],
+      "input": "deess",
+      "name": "'deess'"
+    },
+    {
+      "expected": [],
+      "input": "COMPRESSORS",
+      "name": "'COMPRESSORS'"
+    },
+    {
+      "expected": [
+        "vocal"
+      ],
+      "input": "stimme",
+      "name": "'stimme'"
+    },
+    {
+      "expected": [],
+      "input": "İnstrument",
+      "name": "'İnstrument'"
+    }
+  ]
+}

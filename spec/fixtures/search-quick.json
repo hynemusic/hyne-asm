@@ -1,0 +1,2701 @@
+{
+  "area": "search.quick",
+  "cases": [
+    {
+      "expected": [
+        {
+          "query": "",
+          "results": [
+            {
+              "colorID": "blue",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-C 2",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "place": "Mixing",
+              "title": "Pro-C 2",
+              "uri": "pc2",
+              "usageKey": "plugins|pro-c 2"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Über Comp",
+              "path": [
+                "VST3",
+                "Überwerk"
+              ],
+              "place": "Mixing",
+              "title": "Über Comp",
+              "uri": "uber-v3",
+              "usageKey": "plugins|über comp"
+            },
+            {
+              "colorID": "blue",
+              "iconID": "eq",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-Q 4",
+              "path": [
+                "AUv2",
+                "FabFilter"
+              ],
+              "place": "Favorites",
+              "title": "Pro-Q 4",
+              "uri": "pq4-au",
+              "usageKey": "plugins|pro-q 4"
+            },
+            {
+              "iconID": "synth",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Serum 2",
+              "path": [
+                "VST3",
+                "Xfer Records"
+              ],
+              "place": "Favorites",
+              "title": "Serum 2",
+              "uri": "serum2-v3",
+              "usageKey": "plugins|serum 2"
+            },
+            {
+              "chain": [
+                "pq4-v3",
+                "cla-v3-s"
+              ],
+              "iconID": "rack",
+              "isAvailable": false,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Vocal Chain",
+              "path": [],
+              "place": "Favorites",
+              "title": "Vocal Chain",
+              "uri": "",
+              "usageKey": "chain|vocal chain"
+            },
+            {
+              "colorID": "green",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Glue Compressor",
+              "path": [],
+              "place": "Mixing",
+              "title": "Glue Compressor",
+              "uri": "glue",
+              "usageKey": "audio_effects|glue compressor"
+            },
+            {
+              "action": "Tempo 128",
+              "iconID": "meter",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Tempo 128",
+              "path": [],
+              "place": "Favorites",
+              "title": "Tempo 128",
+              "uri": "",
+              "usageKey": "action|tempo 128"
+            },
+            {
+              "iconID": "drums",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "808 Kit",
+              "path": [
+                "Presets",
+                "Instruments",
+                "Drum Rack"
+              ],
+              "title": "808 Kit",
+              "uri": "pre-808",
+              "usageKey": "preset|pre-808"
+            }
+          ]
+        },
+        {
+          "query": "comp",
+          "results": [
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Über Comp",
+              "path": [
+                "VST3",
+                "Überwerk"
+              ],
+              "place": "Mixing",
+              "title": "Über Comp",
+              "uri": "uber-v3",
+              "usageKey": "plugins|über comp"
+            },
+            {
+              "colorID": "green",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Glue Compressor",
+              "path": [],
+              "place": "Mixing",
+              "title": "Glue Compressor",
+              "uri": "glue",
+              "usageKey": "audio_effects|glue compressor"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": false,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Old Comp",
+              "path": [
+                "VST3",
+                "Nobody"
+              ],
+              "place": "Mixing",
+              "title": "Old Comp",
+              "uri": "gone",
+              "usageKey": "gone"
+            },
+            {
+              "colorID": "blue",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-C 2",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "place": "Mixing",
+              "title": "Pro-C 2",
+              "uri": "pc2",
+              "usageKey": "plugins|pro-c 2"
+            },
+            {
+              "colorID": "red",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "CLA-76 Stereo",
+              "path": [
+                "VST3",
+                "Waves"
+              ],
+              "place": "Mixing",
+              "title": "CLA-76 Stereo",
+              "uri": "cla-v3-s",
+              "usageKey": "plugins|cla-76"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "UAD Teletronix LA-2",
+              "path": [
+                "VST3",
+                "Universal Audio"
+              ],
+              "place": "Mixing / UAD",
+              "title": "UAD Teletronix LA-2",
+              "uri": "la2",
+              "usageKey": "plugins|uad teletronix la-2"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "UAD Fairchild 670",
+              "path": [
+                "VST3",
+                "Universal Audio"
+              ],
+              "place": "Mixing / UAD",
+              "title": "UAD Fairchild 670",
+              "uri": "fc670",
+              "usageKey": "plugins|uad fairchild 670"
+            },
+            {
+              "colorID": "green",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Compressor",
+              "path": [],
+              "title": "Compressor",
+              "uri": "comp",
+              "usageKey": "audio_effects|compressor"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "OTT",
+              "path": [
+                "VST3",
+                "Xfer Records"
+              ],
+              "title": "OTT",
+              "uri": "ott",
+              "usageKey": "plugins|ott"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Bus Glue",
+              "path": [
+                "Presets",
+                "Audio Effects",
+                "Audio Effect Rack"
+              ],
+              "title": "Bus Glue",
+              "uri": "pre-bus",
+              "usageKey": "preset|pre-bus"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Renaissance Axx Stereo",
+              "path": [
+                "VST3",
+                "Waves"
+              ],
+              "title": "Renaissance Axx Stereo",
+              "uri": "axx",
+              "usageKey": "plugins|renaissance axx"
+            }
+          ]
+        },
+        {
+          "query": "verb",
+          "results": [
+            {
+              "iconID": "reverb",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "ValhallaRoom",
+              "path": [
+                "VST3",
+                "Valhalla DSP"
+              ],
+              "place": "Mixing",
+              "title": "My Verb",
+              "uri": "vroom",
+              "usageKey": "plugins|valhallaroom"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "OTT",
+              "path": [
+                "VST3",
+                "Xfer Records"
+              ],
+              "title": "OTT",
+              "uri": "ott",
+              "usageKey": "plugins|ott"
+            },
+            {
+              "iconID": "reverb",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "ValhallaVintageVerb",
+              "path": [
+                "VST3",
+                "Valhalla DSP"
+              ],
+              "title": "ValhallaVintageVerb",
+              "uri": "vvv-v3",
+              "usageKey": "plugins|valhallavintageverb"
+            },
+            {
+              "colorID": "green",
+              "iconID": "reverb",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Reverb",
+              "path": [],
+              "title": "Reverb",
+              "uri": "reverb",
+              "usageKey": "audio_effects|reverb"
+            },
+            {
+              "colorID": "green",
+              "iconID": "reverb",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Hybrid Reverb",
+              "path": [],
+              "title": "Hybrid Reverb",
+              "uri": "hreverb",
+              "usageKey": "audio_effects|hybrid reverb"
+            },
+            {
+              "iconID": "reverb",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "ValhallaSupermassive",
+              "path": [
+                "VST3",
+                "Valhalla DSP"
+              ],
+              "title": "ValhallaSupermassive",
+              "uri": "vsm",
+              "usageKey": "plugins|valhallasupermassive"
+            },
+            {
+              "colorID": "blue",
+              "iconID": "reverb",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Pro-R 2",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "title": "Pro-R 2",
+              "uri": "pr2",
+              "usageKey": "plugins|pro-r 2"
+            }
+          ]
+        },
+        {
+          "query": "pro",
+          "results": [
+            {
+              "colorID": "blue",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-C 2",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "place": "Mixing",
+              "title": "Pro-C 2",
+              "uri": "pc2",
+              "usageKey": "plugins|pro-c 2"
+            },
+            {
+              "colorID": "blue",
+              "iconID": "eq",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-Q 4",
+              "path": [
+                "AUv2",
+                "FabFilter"
+              ],
+              "place": "Favorites",
+              "title": "Pro-Q 4",
+              "uri": "pq4-au",
+              "usageKey": "plugins|pro-q 4"
+            },
+            {
+              "colorID": "blue",
+              "iconID": "limiter",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-L 2",
+              "path": [
+                "AUv2",
+                "FabFilter"
+              ],
+              "place": "Mixing",
+              "title": "Pro-L 2",
+              "uri": "pl2-au",
+              "usageKey": "plugins|pro-l 2"
+            },
+            {
+              "colorID": "blue",
+              "iconID": "eq",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Pro-Q 3",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "title": "Pro-Q 3",
+              "uri": "pq3",
+              "usageKey": "plugins|pro-q 3"
+            },
+            {
+              "colorID": "blue",
+              "iconID": "reverb",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Pro-R 2",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "title": "Pro-R 2",
+              "uri": "pr2",
+              "usageKey": "plugins|pro-r 2"
+            }
+          ]
+        },
+        {
+          "query": "ser",
+          "results": [
+            {
+              "iconID": "delay",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Sermon Delay",
+              "path": [
+                "VST3",
+                "X"
+              ],
+              "title": "Sermon Delay",
+              "uri": "sermon",
+              "usageKey": "plugins|sermon delay"
+            },
+            {
+              "iconID": "synth",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Serum 2",
+              "path": [
+                "VST3",
+                "Xfer Records"
+              ],
+              "place": "Favorites",
+              "title": "Serum 2",
+              "uri": "serum2-v3",
+              "usageKey": "plugins|serum 2"
+            },
+            {
+              "iconID": "synth",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Serum",
+              "path": [
+                "VST",
+                "Local"
+              ],
+              "title": "Serum",
+              "uri": "serum1",
+              "usageKey": "plugins|serum"
+            },
+            {
+              "iconID": "synth",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Serum Lead",
+              "path": [
+                "My Sounds"
+              ],
+              "title": "Serum Lead",
+              "uri": "pre-lead",
+              "usageKey": "preset|pre-lead"
+            }
+          ]
+        },
+        {
+          "query": "seR",
+          "results": [
+            {
+              "iconID": "delay",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Sermon Delay",
+              "path": [
+                "VST3",
+                "X"
+              ],
+              "title": "Sermon Delay",
+              "uri": "sermon",
+              "usageKey": "plugins|sermon delay"
+            },
+            {
+              "iconID": "synth",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Serum 2",
+              "path": [
+                "VST3",
+                "Xfer Records"
+              ],
+              "place": "Favorites",
+              "title": "Serum 2",
+              "uri": "serum2-v3",
+              "usageKey": "plugins|serum 2"
+            },
+            {
+              "iconID": "synth",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Serum",
+              "path": [
+                "VST",
+                "Local"
+              ],
+              "title": "Serum",
+              "uri": "serum1",
+              "usageKey": "plugins|serum"
+            },
+            {
+              "iconID": "synth",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Serum Lead",
+              "path": [
+                "My Sounds"
+              ],
+              "title": "Serum Lead",
+              "uri": "pre-lead",
+              "usageKey": "preset|pre-lead"
+            }
+          ]
+        },
+        {
+          "query": "serm",
+          "results": [
+            {
+              "iconID": "delay",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Sermon Delay",
+              "path": [
+                "VST3",
+                "X"
+              ],
+              "title": "Sermon Delay",
+              "uri": "sermon",
+              "usageKey": "plugins|sermon delay"
+            },
+            {
+              "iconID": "synth",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Serum 2",
+              "path": [
+                "VST3",
+                "Xfer Records"
+              ],
+              "place": "Favorites",
+              "title": "Serum 2",
+              "uri": "serum2-v3",
+              "usageKey": "plugins|serum 2"
+            },
+            {
+              "iconID": "synth",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Serum",
+              "path": [
+                "VST",
+                "Local"
+              ],
+              "title": "Serum",
+              "uri": "serum1",
+              "usageKey": "plugins|serum"
+            },
+            {
+              "iconID": "synth",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Serum Lead",
+              "path": [
+                "My Sounds"
+              ],
+              "title": "Serum Lead",
+              "uri": "pre-lead",
+              "usageKey": "preset|pre-lead"
+            }
+          ]
+        },
+        {
+          "query": "mixing",
+          "results": [
+            {
+              "iconID": "console",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Mixing Bus",
+              "path": [
+                "VST3",
+                "Someone"
+              ],
+              "title": "Mixing Bus",
+              "uri": "mixbus",
+              "usageKey": "plugins|mixing bus"
+            }
+          ]
+        },
+        {
+          "query": "uad",
+          "results": [
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "UAD Teletronix LA-2",
+              "path": [
+                "VST3",
+                "Universal Audio"
+              ],
+              "place": "Mixing / UAD",
+              "title": "UAD Teletronix LA-2",
+              "uri": "la2",
+              "usageKey": "plugins|uad teletronix la-2"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "UAD Fairchild 670",
+              "path": [
+                "VST3",
+                "Universal Audio"
+              ],
+              "place": "Mixing / UAD",
+              "title": "UAD Fairchild 670",
+              "uri": "fc670",
+              "usageKey": "plugins|uad fairchild 670"
+            },
+            {
+              "iconID": "amp",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "UAD Ampeg SVTVR",
+              "path": [
+                "VST3",
+                "Universal Audio"
+              ],
+              "title": "UAD Ampeg SVTVR",
+              "uri": "svt",
+              "usageKey": "plugins|uad ampeg svtvr"
+            }
+          ]
+        },
+        {
+          "query": "über",
+          "results": [
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Über Comp",
+              "path": [
+                "VST3",
+                "Überwerk"
+              ],
+              "place": "Mixing",
+              "title": "Über Comp",
+              "uri": "uber-v3",
+              "usageKey": "plugins|über comp"
+            }
+          ]
+        },
+        {
+          "query": "über",
+          "results": [
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Über Comp",
+              "path": [
+                "VST3",
+                "Überwerk"
+              ],
+              "place": "Mixing",
+              "title": "Über Comp",
+              "uri": "uber-v3",
+              "usageKey": "plugins|über comp"
+            }
+          ]
+        },
+        {
+          "query": "la 2",
+          "results": [
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "UAD Teletronix LA-2",
+              "path": [
+                "VST3",
+                "Universal Audio"
+              ],
+              "place": "Mixing / UAD",
+              "title": "UAD Teletronix LA-2",
+              "uri": "la2",
+              "usageKey": "plugins|uad teletronix la-2"
+            }
+          ]
+        },
+        {
+          "query": "inflator",
+          "results": [
+            {
+              "iconID": "saturation",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "INFLATOR",
+              "path": [
+                "VST3",
+                "Sonnox"
+              ],
+              "title": "INFLATOR",
+              "uri": "inflator",
+              "usageKey": "plugins|inflator"
+            }
+          ]
+        },
+        {
+          "query": "imager",
+          "results": [
+            {
+              "iconID": "stereo",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Ozone 12 Imager",
+              "path": [
+                "VST3",
+                "iZotope"
+              ],
+              "title": "Ozone 12 Imager",
+              "uri": "ozim",
+              "usageKey": "plugins|ozone 12 imager"
+            }
+          ]
+        },
+        {
+          "query": "zzz",
+          "results": []
+        },
+        {
+          "query": "kick",
+          "results": [
+            {
+              "iconID": "sidechain",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Kickstart 2",
+              "path": [
+                "VST3",
+                "Nicky Romero"
+              ],
+              "title": "Kickstart 2",
+              "uri": "kick",
+              "usageKey": "plugins|kickstart 2"
+            },
+            {
+              "iconID": "drums",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "808 Kit",
+              "path": [
+                "Presets",
+                "Instruments",
+                "Drum Rack"
+              ],
+              "title": "808 Kit",
+              "uri": "pre-808",
+              "usageKey": "preset|pre-808"
+            },
+            {
+              "colorID": "green",
+              "iconID": "drums",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Drum Rack",
+              "path": [],
+              "title": "Drum Rack",
+              "uri": "drumrack",
+              "usageKey": "instruments|drum rack"
+            }
+          ]
+        },
+        {
+          "query": "tempo",
+          "results": [
+            {
+              "action": "Tempo 128",
+              "iconID": "meter",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Tempo 128",
+              "path": [],
+              "place": "Favorites",
+              "title": "Tempo 128",
+              "uri": "",
+              "usageKey": "action|tempo 128"
+            }
+          ]
+        },
+        {
+          "query": "vocal",
+          "results": [
+            {
+              "chain": [
+                "pq4-v3",
+                "cla-v3-s"
+              ],
+              "iconID": "rack",
+              "isAvailable": false,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Vocal Chain",
+              "path": [],
+              "place": "Favorites",
+              "title": "Vocal Chain",
+              "uri": "",
+              "usageKey": "chain|vocal chain"
+            },
+            {
+              "iconID": "vocal",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Vox Chain",
+              "path": [
+                "My Sounds"
+              ],
+              "title": "Vox Chain",
+              "uri": "pre-vox",
+              "usageKey": "preset|pre-vox"
+            }
+          ]
+        },
+        {
+          "query": "pro l",
+          "results": []
+        },
+        {
+          "query": "chain",
+          "results": [
+            {
+              "chain": [
+                "pq4-v3",
+                "cla-v3-s"
+              ],
+              "iconID": "rack",
+              "isAvailable": false,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Vocal Chain",
+              "path": [],
+              "place": "Favorites",
+              "title": "Vocal Chain",
+              "uri": "",
+              "usageKey": "chain|vocal chain"
+            },
+            {
+              "chain": [
+                "glue",
+                "pl2-v3"
+              ],
+              "iconID": "rack",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Bus Chain",
+              "path": [],
+              "place": "Favorites",
+              "title": "Mix Bus Chain",
+              "uri": "",
+              "usageKey": "chain|mix bus chain"
+            },
+            {
+              "iconID": "rack",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Bus Glue",
+              "path": [
+                "Presets",
+                "Audio Effects",
+                "Audio Effect Rack"
+              ],
+              "place": "Favorites",
+              "title": "Bus Glue",
+              "uri": "pre-bus",
+              "usageKey": "preset|pre-bus"
+            },
+            {
+              "iconID": "vocal",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Vox Chain",
+              "path": [
+                "My Sounds"
+              ],
+              "title": "Vox Chain",
+              "uri": "pre-vox",
+              "usageKey": "preset|pre-vox"
+            }
+          ]
+        },
+        {
+          "query": "  ",
+          "results": [
+            {
+              "colorID": "blue",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-C 2",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "place": "Mixing",
+              "title": "Pro-C 2",
+              "uri": "pc2",
+              "usageKey": "plugins|pro-c 2"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Über Comp",
+              "path": [
+                "VST3",
+                "Überwerk"
+              ],
+              "place": "Mixing",
+              "title": "Über Comp",
+              "uri": "uber-v3",
+              "usageKey": "plugins|über comp"
+            },
+            {
+              "colorID": "blue",
+              "iconID": "eq",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-Q 4",
+              "path": [
+                "AUv2",
+                "FabFilter"
+              ],
+              "place": "Favorites",
+              "title": "Pro-Q 4",
+              "uri": "pq4-au",
+              "usageKey": "plugins|pro-q 4"
+            },
+            {
+              "iconID": "synth",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Serum 2",
+              "path": [
+                "VST3",
+                "Xfer Records"
+              ],
+              "place": "Favorites",
+              "title": "Serum 2",
+              "uri": "serum2-v3",
+              "usageKey": "plugins|serum 2"
+            },
+            {
+              "chain": [
+                "pq4-v3",
+                "cla-v3-s"
+              ],
+              "iconID": "rack",
+              "isAvailable": false,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Vocal Chain",
+              "path": [],
+              "place": "Favorites",
+              "title": "Vocal Chain",
+              "uri": "",
+              "usageKey": "chain|vocal chain"
+            },
+            {
+              "colorID": "green",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Glue Compressor",
+              "path": [],
+              "place": "Mixing",
+              "title": "Glue Compressor",
+              "uri": "glue",
+              "usageKey": "audio_effects|glue compressor"
+            },
+            {
+              "action": "Tempo 128",
+              "iconID": "meter",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Tempo 128",
+              "path": [],
+              "place": "Favorites",
+              "title": "Tempo 128",
+              "uri": "",
+              "usageKey": "action|tempo 128"
+            },
+            {
+              "iconID": "drums",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "808 Kit",
+              "path": [
+                "Presets",
+                "Instruments",
+                "Drum Rack"
+              ],
+              "title": "808 Kit",
+              "uri": "pre-808",
+              "usageKey": "preset|pre-808"
+            }
+          ]
+        },
+        {
+          "query": "808",
+          "results": [
+            {
+              "iconID": "drums",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "808 Kit",
+              "path": [
+                "Presets",
+                "Instruments",
+                "Drum Rack"
+              ],
+              "title": "808 Kit",
+              "uri": "pre-808",
+              "usageKey": "preset|pre-808"
+            }
+          ]
+        },
+        {
+          "query": "drum",
+          "results": [
+            {
+              "colorID": "green",
+              "iconID": "drums",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Drum Rack",
+              "path": [],
+              "title": "Drum Rack",
+              "uri": "drumrack",
+              "usageKey": "instruments|drum rack"
+            },
+            {
+              "iconID": "drums",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "808 Kit",
+              "path": [
+                "Presets",
+                "Instruments",
+                "Drum Rack"
+              ],
+              "title": "808 Kit",
+              "uri": "pre-808",
+              "usageKey": "preset|pre-808"
+            }
+          ]
+        },
+        {
+          "query": "eq",
+          "results": [
+            {
+              "colorID": "green",
+              "iconID": "eq",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "EQ Eight",
+              "path": [],
+              "place": "Favorites",
+              "title": "EQ Eight",
+              "uri": "eq8",
+              "usageKey": "audio_effects|eq eight"
+            },
+            {
+              "colorID": "blue",
+              "iconID": "eq",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-Q 4",
+              "path": [
+                "AUv2",
+                "FabFilter"
+              ],
+              "place": "Favorites",
+              "title": "Pro-Q 4",
+              "uri": "pq4-au",
+              "usageKey": "plugins|pro-q 4"
+            },
+            {
+              "colorID": "blue",
+              "iconID": "eq",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Pro-Q 3",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "title": "Pro-Q 3",
+              "uri": "pq3",
+              "usageKey": "plugins|pro-q 3"
+            }
+          ]
+        },
+        {
+          "query": "glue",
+          "results": [
+            {
+              "colorID": "green",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Glue Compressor",
+              "path": [],
+              "place": "Mixing",
+              "title": "Glue Compressor",
+              "uri": "glue",
+              "usageKey": "audio_effects|glue compressor"
+            },
+            {
+              "iconID": "rack",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Bus Glue",
+              "path": [
+                "Presets",
+                "Audio Effects",
+                "Audio Effect Rack"
+              ],
+              "place": "Favorites",
+              "title": "Bus Glue",
+              "uri": "pre-bus",
+              "usageKey": "preset|pre-bus"
+            },
+            {
+              "colorID": "blue",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-C 2",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "place": "Mixing",
+              "title": "Pro-C 2",
+              "uri": "pc2",
+              "usageKey": "plugins|pro-c 2"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Über Comp",
+              "path": [
+                "VST3",
+                "Überwerk"
+              ],
+              "place": "Mixing",
+              "title": "Über Comp",
+              "uri": "uber-v3",
+              "usageKey": "plugins|über comp"
+            },
+            {
+              "colorID": "red",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "CLA-76 Stereo",
+              "path": [
+                "VST3",
+                "Waves"
+              ],
+              "place": "Mixing",
+              "title": "CLA-76 Stereo",
+              "uri": "cla-v3-s",
+              "usageKey": "plugins|cla-76"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "UAD Teletronix LA-2",
+              "path": [
+                "VST3",
+                "Universal Audio"
+              ],
+              "place": "Mixing / UAD",
+              "title": "UAD Teletronix LA-2",
+              "uri": "la2",
+              "usageKey": "plugins|uad teletronix la-2"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "UAD Fairchild 670",
+              "path": [
+                "VST3",
+                "Universal Audio"
+              ],
+              "place": "Mixing / UAD",
+              "title": "UAD Fairchild 670",
+              "uri": "fc670",
+              "usageKey": "plugins|uad fairchild 670"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": false,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Old Comp",
+              "path": [
+                "VST3",
+                "Nobody"
+              ],
+              "place": "Mixing",
+              "title": "Old Comp",
+              "uri": "gone",
+              "usageKey": "gone"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "OTT",
+              "path": [
+                "VST3",
+                "Xfer Records"
+              ],
+              "title": "OTT",
+              "uri": "ott",
+              "usageKey": "plugins|ott"
+            },
+            {
+              "colorID": "green",
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Compressor",
+              "path": [],
+              "title": "Compressor",
+              "uri": "comp",
+              "usageKey": "audio_effects|compressor"
+            },
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "Renaissance Axx Stereo",
+              "path": [
+                "VST3",
+                "Waves"
+              ],
+              "title": "Renaissance Axx Stereo",
+              "uri": "axx",
+              "usageKey": "plugins|renaissance axx"
+            }
+          ]
+        }
+      ],
+      "input": {
+        "config": {
+          "categories": [
+            {
+              "entries": [
+                {
+                  "iconID": "eq",
+                  "id": "00000000-0000-0000-0000-000000000001",
+                  "name": "EQ Eight",
+                  "path": [],
+                  "source": "audio_effects",
+                  "uri": "eq8"
+                },
+                {
+                  "iconID": "eq",
+                  "id": "00000000-0000-0000-0000-000000000002",
+                  "name": "Pro-Q 4",
+                  "path": [
+                    "AUv2",
+                    "FabFilter"
+                  ],
+                  "source": "plugins",
+                  "uri": "pq4-au"
+                },
+                {
+                  "iconID": "synth",
+                  "id": "00000000-0000-0000-0000-000000000003",
+                  "name": "Serum 2",
+                  "path": [
+                    "VST3",
+                    "Xfer Records"
+                  ],
+                  "source": "plugins",
+                  "uri": "serum2-v3"
+                },
+                {
+                  "action": {
+                    "kind": "set_tempo",
+                    "value": 128
+                  },
+                  "iconID": "meter",
+                  "id": "00000000-0000-0000-0000-000000000004",
+                  "name": "Tempo 128",
+                  "path": [],
+                  "source": "plugins",
+                  "uri": ""
+                },
+                {
+                  "chain": [
+                    {
+                      "name": "Pro-Q 4",
+                      "path": [
+                        "VST3",
+                        "FabFilter"
+                      ],
+                      "source": "plugins",
+                      "uri": "pq4-v3"
+                    },
+                    {
+                      "name": "CLA-76 Stereo",
+                      "path": [
+                        "VST3",
+                        "Waves"
+                      ],
+                      "source": "plugins",
+                      "uri": "cla-v3-s"
+                    },
+                    {
+                      "name": "Old Comp",
+                      "path": [
+                        "VST3",
+                        "Nobody"
+                      ],
+                      "source": "plugins",
+                      "uri": "gone"
+                    }
+                  ],
+                  "iconID": "rack",
+                  "id": "00000000-0000-0000-0000-000000000005",
+                  "name": "Vocal Chain",
+                  "path": [],
+                  "source": "plugins",
+                  "uri": ""
+                },
+                {
+                  "chain": [
+                    {
+                      "name": "Glue Compressor",
+                      "path": [],
+                      "source": "audio_effects",
+                      "uri": "glue"
+                    },
+                    {
+                      "name": "Pro-L 2",
+                      "path": [
+                        "VST3",
+                        "FabFilter"
+                      ],
+                      "source": "plugins",
+                      "uri": "other-uri"
+                    }
+                  ],
+                  "displayName": "Mix Bus Chain",
+                  "iconID": "rack",
+                  "id": "00000000-0000-0000-0000-000000000006",
+                  "name": "Bus Chain",
+                  "path": [],
+                  "source": "plugins",
+                  "uri": ""
+                },
+                {
+                  "iconID": "rack",
+                  "id": "00000000-0000-0000-0000-000000000007",
+                  "name": "Bus Glue",
+                  "path": [
+                    "Presets",
+                    "Audio Effects",
+                    "Audio Effect Rack"
+                  ],
+                  "source": "user_library",
+                  "uri": "pre-bus"
+                }
+              ],
+              "id": "00000000-0000-0000-0000-0000000000C1",
+              "isFavorites": true,
+              "name": "Favorites"
+            },
+            {
+              "entries": [
+                {
+                  "iconID": "limiter",
+                  "id": "00000000-0000-0000-0000-00000000000B",
+                  "name": "Pro-L 2",
+                  "path": [
+                    "AUv2",
+                    "FabFilter"
+                  ],
+                  "source": "plugins",
+                  "uri": "pl2-au"
+                },
+                {
+                  "children": [
+                    {
+                      "iconID": "compressor",
+                      "id": "00000000-0000-0000-0000-00000000000D",
+                      "name": "UAD Teletronix LA-2",
+                      "path": [
+                        "VST3",
+                        "Universal Audio"
+                      ],
+                      "source": "plugins",
+                      "uri": "la2"
+                    },
+                    {
+                      "iconID": "compressor",
+                      "id": "00000000-0000-0000-0000-00000000000E",
+                      "name": "UAD Fairchild 670",
+                      "path": [
+                        "VST3",
+                        "Universal Audio"
+                      ],
+                      "source": "plugins",
+                      "uri": "fc670"
+                    },
+                    {
+                      "iconID": "limiter",
+                      "id": "00000000-0000-0000-0000-00000000000F",
+                      "name": "Pro-L 2",
+                      "path": [
+                        "VST3",
+                        "FabFilter"
+                      ],
+                      "source": "plugins",
+                      "uri": "pl2-v3"
+                    }
+                  ],
+                  "iconID": "folder",
+                  "id": "00000000-0000-0000-0000-00000000000C",
+                  "name": "UAD",
+                  "path": [],
+                  "source": "plugins",
+                  "uri": ""
+                },
+                {
+                  "iconID": "compressor",
+                  "id": "00000000-0000-0000-0000-000000000010",
+                  "name": "Glue Compressor",
+                  "path": [],
+                  "source": "audio_effects",
+                  "uri": "glue"
+                },
+                {
+                  "iconID": "compressor",
+                  "id": "00000000-0000-0000-0000-000000000011",
+                  "name": "Old Comp",
+                  "path": [
+                    "VST3",
+                    "Nobody"
+                  ],
+                  "source": "plugins",
+                  "uri": "gone"
+                },
+                {
+                  "displayName": "My Verb",
+                  "iconID": "reverb",
+                  "id": "00000000-0000-0000-0000-000000000012",
+                  "name": "ValhallaRoom",
+                  "path": [
+                    "VST3",
+                    "Valhalla DSP"
+                  ],
+                  "source": "plugins",
+                  "uri": "vroom"
+                },
+                {
+                  "colorID": "red",
+                  "iconID": "compressor",
+                  "id": "00000000-0000-0000-0000-000000000013",
+                  "name": "CLA-76 Stereo",
+                  "path": [
+                    "VST3",
+                    "Waves"
+                  ],
+                  "source": "plugins",
+                  "uri": "cla-v3-s"
+                },
+                {
+                  "colorID": "none",
+                  "iconID": "eq",
+                  "id": "00000000-0000-0000-0000-000000000014",
+                  "name": "EQ Eight",
+                  "path": [],
+                  "source": "audio_effects",
+                  "uri": "eq8"
+                },
+                {
+                  "iconID": "compressor",
+                  "id": "00000000-0000-0000-0000-000000000015",
+                  "name": "Pro-C 2",
+                  "path": [
+                    "VST3",
+                    "FabFilter"
+                  ],
+                  "source": "plugins",
+                  "uri": "stale-uri"
+                },
+                {
+                  "iconID": "compressor",
+                  "id": "00000000-0000-0000-0000-000000000016",
+                  "name": "Über Comp",
+                  "path": [
+                    "VST3",
+                    "Überwerk"
+                  ],
+                  "source": "plugins",
+                  "uri": "stale-uri-2"
+                },
+                {
+                  "children": [],
+                  "iconID": "folder",
+                  "id": "00000000-0000-0000-0000-000000000017",
+                  "name": "Empty",
+                  "path": [],
+                  "source": "plugins",
+                  "uri": ""
+                }
+              ],
+              "id": "00000000-0000-0000-0000-0000000000C2",
+              "isFavorites": false,
+              "name": "Mixing"
+            }
+          ],
+          "colorRules": {
+            "live": "green",
+            "vendor:FabFilter": "blue"
+          },
+          "searchRules": [
+            {
+              "hidden": [
+                "plugins|serato sample"
+              ],
+              "id": "00000000-0000-0000-0000-000000000051",
+              "pinned": [
+                "plugins|sermon delay",
+                "plugins|not installed"
+              ],
+              "query": "ser"
+            },
+            {
+              "hidden": [],
+              "id": "00000000-0000-0000-0000-000000000052",
+              "pinned": [
+                "plugins|valhallaroom",
+                "plugins|ott"
+              ],
+              "query": "verb"
+            },
+            {
+              "hidden": [
+                "plugins|pro-l 2"
+              ],
+              "id": "00000000-0000-0000-0000-000000000053",
+              "pinned": [],
+              "query": "pro l"
+            }
+          ],
+          "version": 4
+        },
+        "items": [
+          {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "pq4-v3"
+          },
+          {
+            "name": "Pro-Q 4",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "pq4-au"
+          },
+          {
+            "name": "FabFilter Pro-Q 4",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "pq4-v2"
+          },
+          {
+            "name": "Pro-Q 3",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "pq3"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "pl2-v3"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "AUv2",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "pl2-au"
+          },
+          {
+            "name": "Pro-C 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "pc2"
+          },
+          {
+            "name": "Pro-R 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "pr2"
+          },
+          {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "source": "plugins",
+            "uri": "serum2-v3"
+          },
+          {
+            "name": "Serum 2",
+            "path": [
+              "AUv2",
+              "Xfer Records"
+            ],
+            "source": "plugins",
+            "uri": "serum2-au"
+          },
+          {
+            "name": "Serum",
+            "path": [
+              "VST",
+              "Local"
+            ],
+            "source": "plugins",
+            "uri": "serum1"
+          },
+          {
+            "name": "OTT",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "source": "plugins",
+            "uri": "ott"
+          },
+          {
+            "name": "Serato Sample",
+            "path": [
+              "VST3",
+              "Serato"
+            ],
+            "source": "plugins",
+            "uri": "serato"
+          },
+          {
+            "name": "Sermon Delay",
+            "path": [
+              "VST3",
+              "X"
+            ],
+            "source": "plugins",
+            "uri": "sermon"
+          },
+          {
+            "name": "ValhallaVintageVerb",
+            "path": [
+              "VST3",
+              "Valhalla DSP"
+            ],
+            "source": "plugins",
+            "uri": "vvv-v3"
+          },
+          {
+            "name": "ValhallaVintageVerb",
+            "path": [
+              "AUv2",
+              "Valhalla DSP"
+            ],
+            "source": "plugins",
+            "uri": "vvv-au"
+          },
+          {
+            "name": "ValhallaRoom",
+            "path": [
+              "VST3",
+              "Valhalla DSP"
+            ],
+            "source": "plugins",
+            "uri": "vroom"
+          },
+          {
+            "name": "ValhallaSupermassive",
+            "path": [
+              "VST3",
+              "Valhalla DSP"
+            ],
+            "source": "plugins",
+            "uri": "vsm"
+          },
+          {
+            "name": "CLA-76 Mono",
+            "path": [
+              "VST3",
+              "Waves"
+            ],
+            "source": "plugins",
+            "uri": "cla-v3-m"
+          },
+          {
+            "name": "CLA-76 Stereo",
+            "path": [
+              "VST3",
+              "Waves"
+            ],
+            "source": "plugins",
+            "uri": "cla-v3-s"
+          },
+          {
+            "name": "CLA-76 (m)",
+            "path": [
+              "AUv2",
+              "Waves"
+            ],
+            "source": "plugins",
+            "uri": "cla-au-m"
+          },
+          {
+            "name": "CLA-76 (s)",
+            "path": [
+              "AUv2",
+              "Waves"
+            ],
+            "source": "plugins",
+            "uri": "cla-au-s"
+          },
+          {
+            "name": "REDD17 Mono",
+            "path": [
+              "VST3",
+              "Waves"
+            ],
+            "source": "plugins",
+            "uri": "r17m"
+          },
+          {
+            "name": "REDD17 Stereo",
+            "path": [
+              "VST3",
+              "Waves"
+            ],
+            "source": "plugins",
+            "uri": "r17s"
+          },
+          {
+            "name": "Renaissance Axx Stereo",
+            "path": [
+              "VST3",
+              "Waves"
+            ],
+            "source": "plugins",
+            "uri": "axx"
+          },
+          {
+            "name": "UAD Teletronix LA-2",
+            "path": [
+              "VST3",
+              "Universal Audio"
+            ],
+            "source": "plugins",
+            "uri": "la2"
+          },
+          {
+            "name": "UAD Fairchild 670",
+            "path": [
+              "VST3",
+              "Universal Audio"
+            ],
+            "source": "plugins",
+            "uri": "fc670"
+          },
+          {
+            "name": "UAD Ampeg SVTVR",
+            "path": [
+              "VST3",
+              "Universal Audio"
+            ],
+            "source": "plugins",
+            "uri": "svt"
+          },
+          {
+            "name": "EchoBoy",
+            "path": [
+              "VST3",
+              "Soundtoys"
+            ],
+            "source": "plugins",
+            "uri": "echoboy"
+          },
+          {
+            "name": "Decapitator",
+            "path": [
+              "VST3",
+              "Soundtoys"
+            ],
+            "source": "plugins",
+            "uri": "decap"
+          },
+          {
+            "name": "Little AlterBoy",
+            "path": [
+              "VST3",
+              "Soundtoys"
+            ],
+            "source": "plugins",
+            "uri": "lab"
+          },
+          {
+            "name": "Ozone 12",
+            "path": [
+              "VST3",
+              "iZotope"
+            ],
+            "source": "plugins",
+            "uri": "oz12"
+          },
+          {
+            "name": "Ozone 12 Imager",
+            "path": [
+              "VST3",
+              "iZotope"
+            ],
+            "source": "plugins",
+            "uri": "ozim"
+          },
+          {
+            "name": "RX 10 De-click",
+            "path": [
+              "AUv2",
+              "iZotope"
+            ],
+            "source": "plugins",
+            "uri": "rx"
+          },
+          {
+            "name": "Kickstart 2",
+            "path": [
+              "VST3",
+              "Nicky Romero"
+            ],
+            "source": "plugins",
+            "uri": "kick"
+          },
+          {
+            "name": "soothe3",
+            "path": [
+              "VST3",
+              "oeksound"
+            ],
+            "source": "plugins",
+            "uri": "soothe"
+          },
+          {
+            "name": "INFLATOR",
+            "path": [
+              "VST3",
+              "Sonnox"
+            ],
+            "source": "plugins",
+            "uri": "inflator"
+          },
+          {
+            "name": "Squeezer 9",
+            "path": [
+              "VST3",
+              "Nobody"
+            ],
+            "source": "plugins",
+            "uri": "squeeze"
+          },
+          {
+            "name": "Über Comp",
+            "path": [
+              "VST3",
+              "Überwerk"
+            ],
+            "source": "plugins",
+            "uri": "uber-v3"
+          },
+          {
+            "name": "Über Comp",
+            "path": [
+              "AUv2",
+              "Überwerk"
+            ],
+            "source": "plugins",
+            "uri": "uber-au"
+          },
+          {
+            "name": "Utility",
+            "path": [
+              "VST3",
+              "Someone"
+            ],
+            "source": "plugins",
+            "uri": "util-plug"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq8"
+          },
+          {
+            "name": "Glue Compressor",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "glue"
+          },
+          {
+            "name": "Compressor",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "comp"
+          },
+          {
+            "name": "Reverb",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "reverb"
+          },
+          {
+            "name": "Hybrid Reverb",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "hreverb"
+          },
+          {
+            "name": "Saturator",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "sat"
+          },
+          {
+            "name": "Utility",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "util"
+          },
+          {
+            "name": "Drift",
+            "path": [],
+            "source": "instruments",
+            "uri": "drift"
+          },
+          {
+            "name": "Operator",
+            "path": [],
+            "source": "instruments",
+            "uri": "operator"
+          },
+          {
+            "name": "Simpler",
+            "path": [],
+            "source": "instruments",
+            "uri": "simpler"
+          },
+          {
+            "name": "Drum Rack",
+            "path": [],
+            "source": "instruments",
+            "uri": "drumrack"
+          },
+          {
+            "name": "Arpeggiator",
+            "path": [],
+            "source": "midi_effects",
+            "uri": "arp"
+          },
+          {
+            "name": "Chord",
+            "path": [],
+            "source": "midi_effects",
+            "uri": "chord"
+          },
+          {
+            "name": "LFO",
+            "path": [],
+            "source": "max_for_live",
+            "uri": "lfo"
+          },
+          {
+            "format": "adg",
+            "name": "Bus Glue",
+            "path": [
+              "Presets",
+              "Audio Effects",
+              "Audio Effect Rack"
+            ],
+            "source": "user_library",
+            "uri": "pre-bus"
+          },
+          {
+            "format": "adg",
+            "name": "808 Kit",
+            "path": [
+              "Presets",
+              "Instruments",
+              "Drum Rack"
+            ],
+            "source": "user_library",
+            "uri": "pre-808"
+          },
+          {
+            "format": "vstpreset",
+            "name": "Serum Lead",
+            "path": [
+              "My Sounds"
+            ],
+            "source": "user_folders",
+            "uri": "pre-lead"
+          },
+          {
+            "format": "adg",
+            "name": "Vox Chain",
+            "path": [
+              "My Sounds"
+            ],
+            "source": "user_folders",
+            "uri": "pre-vox"
+          },
+          {
+            "name": "Mixing Bus",
+            "path": [
+              "VST3",
+              "Someone"
+            ],
+            "source": "plugins",
+            "uri": "mixbus"
+          }
+        ],
+        "queries": [
+          "",
+          "comp",
+          "verb",
+          "pro",
+          "ser",
+          "seR",
+          "serm",
+          "mixing",
+          "uad",
+          "über",
+          "über",
+          "la 2",
+          "inflator",
+          "imager",
+          "zzz",
+          "kick",
+          "tempo",
+          "vocal",
+          "pro l",
+          "chain",
+          "  ",
+          "808",
+          "drum",
+          "eq",
+          "glue"
+        ],
+        "usage": [
+          [
+            "plugins|pro-c 2",
+            5
+          ],
+          [
+            "plugins|serum 2",
+            3
+          ],
+          [
+            "audio_effects|glue compressor",
+            2
+          ],
+          [
+            "plugins|ott",
+            1
+          ],
+          [
+            "plugins|über comp",
+            4
+          ],
+          [
+            "plugins|pro-q 4",
+            3
+          ],
+          [
+            "plugins|unknown",
+            9
+          ],
+          [
+            "preset|pre-808",
+            1
+          ],
+          [
+            "chain|vocal chain",
+            2
+          ],
+          [
+            "action|tempo 128",
+            1
+          ]
+        ]
+      },
+      "name": "library with usage and rules"
+    },
+    {
+      "expected": [
+        {
+          "query": "",
+          "results": [
+            {
+              "iconID": "eq",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "EQ Eight",
+              "path": [],
+              "place": "Favorites",
+              "title": "EQ Eight",
+              "uri": "eq8",
+              "usageKey": "audio_effects|eq eight"
+            },
+            {
+              "iconID": "generic",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-Q 4",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "place": "Favorites",
+              "title": "Pro-Q 4",
+              "uri": "pq",
+              "usageKey": "plugins|pro-q 4"
+            },
+            {
+              "iconID": "generic",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-L 2",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "place": "Favorites",
+              "title": "Pro-L 2",
+              "uri": "pl",
+              "usageKey": "plugins|pro-l 2"
+            },
+            {
+              "iconID": "generic",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "LA-2",
+              "path": [
+                "VST3",
+                "UA"
+              ],
+              "place": "Favorites",
+              "title": "LA-2",
+              "uri": "la2",
+              "usageKey": "plugins|la-2"
+            },
+            {
+              "iconID": "generic",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Serum 2",
+              "path": [
+                "VST3",
+                "Xfer Records"
+              ],
+              "place": "Favorites",
+              "title": "Serum 2",
+              "uri": "serum",
+              "usageKey": "plugins|serum 2"
+            },
+            {
+              "iconID": "generic",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-Q 4",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "place": "Favorites",
+              "title": "Pro-Q 4",
+              "uri": "pq",
+              "usageKey": "plugins|pro-q 4"
+            },
+            {
+              "iconID": "generic",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-L 2",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "place": "Favorites",
+              "title": "Pro-L 2",
+              "uri": "pl",
+              "usageKey": "plugins|pro-l 2"
+            },
+            {
+              "iconID": "generic",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "LA-2",
+              "path": [
+                "VST3",
+                "UA"
+              ],
+              "place": "Favorites",
+              "title": "LA-2",
+              "uri": "la2",
+              "usageKey": "plugins|la-2"
+            }
+          ]
+        },
+        {
+          "query": "pro",
+          "results": [
+            {
+              "iconID": "eq",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-Q 4",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "place": "Favorites / Folder",
+              "title": "Pro-Q 4",
+              "uri": "pq",
+              "usageKey": "plugins|pro-q 4"
+            },
+            {
+              "iconID": "generic",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Pro-L 2",
+              "path": [
+                "VST3",
+                "FabFilter"
+              ],
+              "place": "Favorites",
+              "title": "Pro-L 2",
+              "uri": "pl",
+              "usageKey": "plugins|pro-l 2"
+            }
+          ]
+        },
+        {
+          "query": "comp",
+          "results": [
+            {
+              "iconID": "compressor",
+              "isAvailable": true,
+              "isGlobal": true,
+              "isNew": false,
+              "name": "LA-2",
+              "path": [
+                "VST3",
+                "UA"
+              ],
+              "title": "LA-2",
+              "uri": "la2",
+              "usageKey": "plugins|la-2"
+            }
+          ]
+        },
+        {
+          "query": "e",
+          "results": [
+            {
+              "iconID": "eq",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "EQ Eight",
+              "path": [],
+              "place": "Favorites",
+              "title": "EQ Eight",
+              "uri": "eq8",
+              "usageKey": "audio_effects|eq eight"
+            },
+            {
+              "iconID": "generic",
+              "isAvailable": true,
+              "isGlobal": false,
+              "isNew": false,
+              "name": "Serum 2",
+              "path": [
+                "VST3",
+                "Xfer Records"
+              ],
+              "place": "Favorites",
+              "title": "Serum 2",
+              "uri": "serum",
+              "usageKey": "plugins|serum 2"
+            }
+          ]
+        }
+      ],
+      "input": {
+        "config": {
+          "categories": [
+            {
+              "entries": [
+                {
+                  "iconID": "eq",
+                  "id": "00000000-0000-0000-0000-00000000001F",
+                  "name": "EQ Eight",
+                  "path": [],
+                  "source": "audio_effects",
+                  "uri": "eq8"
+                },
+                {
+                  "children": [
+                    {
+                      "iconID": "eq",
+                      "id": "00000000-0000-0000-0000-000000000021",
+                      "name": "Pro-Q 4",
+                      "path": [
+                        "VST3",
+                        "FabFilter"
+                      ],
+                      "source": "plugins",
+                      "uri": "pq"
+                    }
+                  ],
+                  "iconID": "folder",
+                  "id": "00000000-0000-0000-0000-000000000020",
+                  "name": "Folder",
+                  "path": [],
+                  "source": "plugins",
+                  "uri": ""
+                },
+                {
+                  "iconID": "generic",
+                  "id": "00000000-0000-0000-0000-000000000028",
+                  "name": "Pro-Q 4",
+                  "path": [
+                    "VST3",
+                    "FabFilter"
+                  ],
+                  "source": "plugins",
+                  "uri": "pq"
+                },
+                {
+                  "iconID": "generic",
+                  "id": "00000000-0000-0000-0000-000000000029",
+                  "name": "Pro-L 2",
+                  "path": [
+                    "VST3",
+                    "FabFilter"
+                  ],
+                  "source": "plugins",
+                  "uri": "pl"
+                },
+                {
+                  "iconID": "generic",
+                  "id": "00000000-0000-0000-0000-00000000002A",
+                  "name": "LA-2",
+                  "path": [
+                    "VST3",
+                    "UA"
+                  ],
+                  "source": "plugins",
+                  "uri": "la2"
+                },
+                {
+                  "iconID": "generic",
+                  "id": "00000000-0000-0000-0000-00000000002B",
+                  "name": "Serum 2",
+                  "path": [
+                    "VST3",
+                    "Xfer Records"
+                  ],
+                  "source": "plugins",
+                  "uri": "serum"
+                },
+                {
+                  "iconID": "generic",
+                  "id": "00000000-0000-0000-0000-00000000002C",
+                  "name": "Pro-Q 4",
+                  "path": [
+                    "VST3",
+                    "FabFilter"
+                  ],
+                  "source": "plugins",
+                  "uri": "pq"
+                },
+                {
+                  "iconID": "generic",
+                  "id": "00000000-0000-0000-0000-00000000002D",
+                  "name": "Pro-L 2",
+                  "path": [
+                    "VST3",
+                    "FabFilter"
+                  ],
+                  "source": "plugins",
+                  "uri": "pl"
+                },
+                {
+                  "iconID": "generic",
+                  "id": "00000000-0000-0000-0000-00000000002E",
+                  "name": "LA-2",
+                  "path": [
+                    "VST3",
+                    "UA"
+                  ],
+                  "source": "plugins",
+                  "uri": "la2"
+                },
+                {
+                  "iconID": "generic",
+                  "id": "00000000-0000-0000-0000-00000000002F",
+                  "name": "Serum 2",
+                  "path": [
+                    "VST3",
+                    "Xfer Records"
+                  ],
+                  "source": "plugins",
+                  "uri": "serum"
+                },
+                {
+                  "iconID": "generic",
+                  "id": "00000000-0000-0000-0000-000000000030",
+                  "name": "Pro-Q 4",
+                  "path": [
+                    "VST3",
+                    "FabFilter"
+                  ],
+                  "source": "plugins",
+                  "uri": "pq"
+                }
+              ],
+              "id": "00000000-0000-0000-0000-0000000000D1",
+              "isFavorites": true,
+              "name": "Favorites"
+            },
+            {
+              "entries": [
+                {
+                  "iconID": "limiter",
+                  "id": "00000000-0000-0000-0000-000000000022",
+                  "name": "Pro-L 2",
+                  "path": [
+                    "VST3",
+                    "FabFilter"
+                  ],
+                  "source": "plugins",
+                  "uri": "pl"
+                }
+              ],
+              "id": "00000000-0000-0000-0000-0000000000D2",
+              "isFavorites": false,
+              "name": "Effects"
+            }
+          ],
+          "version": 4
+        },
+        "items": [
+          {
+            "name": "Pro-Q 4",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "pq"
+          },
+          {
+            "name": "Pro-L 2",
+            "path": [
+              "VST3",
+              "FabFilter"
+            ],
+            "source": "plugins",
+            "uri": "pl"
+          },
+          {
+            "name": "LA-2",
+            "path": [
+              "VST3",
+              "UA"
+            ],
+            "source": "plugins",
+            "uri": "la2"
+          },
+          {
+            "name": "Serum 2",
+            "path": [
+              "VST3",
+              "Xfer Records"
+            ],
+            "source": "plugins",
+            "uri": "serum"
+          },
+          {
+            "name": "EQ Eight",
+            "path": [],
+            "source": "audio_effects",
+            "uri": "eq8"
+          }
+        ],
+        "queries": [
+          "",
+          "pro",
+          "comp",
+          "e"
+        ],
+        "usage": []
+      },
+      "name": "no usage: favorites"
+    }
+  ]
+}
