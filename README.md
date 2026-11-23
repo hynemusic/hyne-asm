@@ -29,6 +29,7 @@ https://www.reddit.com/r/ableton/comments/1y0o0ar/i_built_an_opensource_ableton_
 |---|---|---|
 | **Mac** | **[⬇ HYNE-ASM-….dmg](https://github.com/hynemusic/hyne-asm/releases/latest)** | macOS 13 or later, Ableton Live 12 |
 | **Windows** | **[⬇ HYNE-ASM-Windows-….zip](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.0.0)** | Windows 10 or 11 (64-bit), Ableton Live 12 |
+(Virus Total for Windows: https://www.virustotal.com/gui/file/1770eb95ee8a4a55fdb1a2c6dadfe4a37de73aacd192af290051a2c6a7cbf2a9/detection)
 
 Menüs lassen sich zwischen Mac und Windows austauschen (Einstellungen → Profile → Exportieren / Importieren).
 Menus move between Mac and Windows (Settings → Profiles → Export / Import).
