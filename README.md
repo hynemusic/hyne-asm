@@ -1,10 +1,29 @@
 # HYNE Ableton Shortcuts Manager (HYNE ASM)
 
-Plugins, Presets und Live-Befehle in Sekunden einfügen: ein doppelter Rechtsklick in Ableton Live öffnet dein eigenes
-Menü, die Schnellsuche öffnet sich mit ⌃Leertaste (Mac) oder Strg+Leertaste (Windows). Kostenlos und Open Source.
+Insert plugins, presets and Live commands in seconds: a double right-click in Ableton Live opens your own menu,
+⌃Space (Mac) or Ctrl+Space (Windows) opens the quick search. Free and open source.
 
-Insert plugins, presets and Live commands in seconds: a double right-click in Ableton Live opens your own menu, the
-quick search opens with ⌃Space (Mac) or Ctrl+Space (Windows). Free and open source.
+## Right Click Panel
+
+<img width="2000" height="400" alt="Untitled-3" src="https://github.com/user-attachments/assets/be17d8a1-90be-4a65-bc95-2fe0d95668f9" />
+
+## CTRL + SPACE panel
+
+<img width="2000" height="400" alt="Untitled-4" src="https://github.com/user-attachments/assets/6a139f21-c309-42a2-b1af-ecd53e8674f6" />
+
+## Settings
+
+<img width="2000" height="500" alt="Untitled-5" src="https://github.com/user-attachments/assets/e9fa819a-34e4-44cc-87e1-5de22c9f9f05" />
+
+## Bridge Setup
+
+<img width="2000" height="400" alt="Untitled-6" src="https://github.com/user-attachments/assets/cc9a51f0-1898-481a-88d7-b1cc7ff7cd3c" />
+
+## Feedback
+Please leave feedback as a reddit comment here. I wanna shape the App further and implement new features / fix bugs <3
+https://www.reddit.com/r/ableton/comments/1y0o0ar/i_built_an_opensource_ableton_shortcut_manager/
+
+## Download
 
 | | Download | Voraussetzungen / Requirements |
 |---|---|---|
