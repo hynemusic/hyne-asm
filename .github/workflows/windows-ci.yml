@@ -2,8 +2,10 @@
 # downloadable test build (an Actions artifact). Never publishes a release.
 name: Windows
 
+# One run per commit: pull requests run here; pushes only for main (a PR branch would otherwise run twice).
 on:
   push:
+    branches: [main]
     paths: ['windows/**', 'spec/**', 'bridge/**', 'Sources/HMLauncherCore/**', 'Tests/**', '.github/workflows/windows-ci.yml']
   pull_request:
     paths: ['windows/**', 'spec/**', 'bridge/**', 'Sources/HMLauncherCore/**', 'Tests/**', '.github/workflows/windows-ci.yml']
