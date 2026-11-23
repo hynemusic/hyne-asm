@@ -41,7 +41,7 @@ Every user-facing feature of HYNE ASM with its status on both platforms. The Win
 | Install the Live script (ASMbridge) | ✅ | ✅ | User Library from Live's `Library.cfg` |
 | German / English | ✅ | ✅ | |
 | `hyneasm://` links, Stream Deck endpoint | ✅ | ✅ | |
-| Download and install | DMG | zip with `HYNE ASM.exe` | `win-vX.Y.Z` tags, never marked "latest" |
+| Download and install | DMG | setup (about 1 MB), adds the .NET Desktop Runtime when missing | `win-vX.Y.Z` tags, never marked "latest" |
 
 ## Platform-only behaviour and facts learned
 
