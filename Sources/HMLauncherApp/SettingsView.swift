@@ -125,6 +125,11 @@ struct SettingsView: View {
             }
             .frame(height: 28)
             SearchField(placeholder: Loc.t("Plugins und Presets suchen", "Search plugins and presets"), text: $search)
+            if model.isConnected, let v = model.scriptVersion, (Int(v) ?? 0) < 5 {
+                HintText(text: Loc.t("Neues Live-Script verfügbar: lädt große Plugin-Sammlungen viel schneller. Wähl im Menü „Live-Script installieren …“ und starte Live neu.",
+                                     "A newer Live script is available: it loads big plugin libraries much faster. Choose “Install Live Script …” in the menu, then restart Live."),
+                         icon: "exclamationmark.triangle")
+            }
             if catalog.items.isEmpty {
                 Text(model.isConnected ? Loc.t("Lade Plugin-Liste …", "Loading plugin list …") : Loc.t("Nicht mit Live verbunden. Öffne Live und wähl ASMbridge als Control Surface.", "Not connected to Live. Open Live and choose ASMbridge as a control surface."))
                     .font(DS.Font.body).foregroundColor(DS.textTertiary)

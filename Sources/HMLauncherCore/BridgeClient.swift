@@ -55,6 +55,8 @@ public actor BridgeClient {
     private let requestTimeout: TimeInterval
     /// load replies only after Live finished loading (heavy M4L/instruments take seconds).
     private let loadTimeout: TimeInterval
+    /// The plugin list: Live walks its whole browser first, which takes many seconds with big libraries.
+    private let listTimeout: TimeInterval
     private let reconnectInterval: TimeInterval
     private let queue = DispatchQueue(label: "hm.bridge.client")
 
@@ -66,11 +68,12 @@ public actor BridgeClient {
     private var handler: (@Sendable (Bool) -> Void)?
     public private(set) var isConnected = false
 
-    public init(host: String = "127.0.0.1", port: UInt16 = 47820, requestTimeout: TimeInterval = 3, loadTimeout: TimeInterval = 30, reconnectInterval: TimeInterval = 2) {
+    public init(host: String = "127.0.0.1", port: UInt16 = 47820, requestTimeout: TimeInterval = 3, loadTimeout: TimeInterval = 30, listTimeout: TimeInterval = 90, reconnectInterval: TimeInterval = 2) {
         self.host = host
         self.port = port
         self.requestTimeout = requestTimeout
         self.loadTimeout = loadTimeout
+        self.listTimeout = listTimeout
         self.reconnectInterval = reconnectInterval
     }
 
@@ -91,9 +94,10 @@ public actor BridgeClient {
         try decode(HelloResult.self, try await request(["cmd": "hello"]))
     }
 
-    /// `refresh`: make Live walk its browser again (blocks Live ~1 s). Otherwise the bridge answers from its last walk.
+    /// `refresh`: make Live walk its browser again (blocks Live ~1 s, longer with big libraries). Otherwise the bridge
+    /// answers from its last walk; the first list after Live starts always walks.
     public func listItems(refresh: Bool = false) async throws -> [PluginItem] {
-        try decode(ItemsResult.self, try await request(["cmd": "list", "refresh": refresh])).items
+        try decode(ItemsResult.self, try await request(["cmd": "list", "refresh": refresh], timeout: listTimeout)).items
     }
 
     /// One item or a chain, loaded in order where the options say.

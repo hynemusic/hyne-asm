@@ -135,6 +135,20 @@ public sealed class BridgeClientTests : IAsyncLifetime
         await slow.Load("query:M4L#Heavy");
     }
 
+    /// <summary>Big libraries: Live's first walk takes longer than an ordinary request may.</summary>
+    [Fact]
+    public async Task List_uses_90s_timeout()
+    {
+        Assert.Equal(TimeSpan.FromSeconds(90), new BridgeClient().ListTimeout);
+        using var slow = new BridgeClient(port: server.Port, requestTimeout: TimeSpan.FromSeconds(0.5), listTimeout: TimeSpan.FromSeconds(3));
+        slow.Start();
+        Assert.True(await FakeBridgeServer.WaitUntil(() => slow.IsConnected));
+        server.ReplyDelay = TimeSpan.FromSeconds(1.2);
+        server.Respond = r => FakeBridgeServer.Ok(r, new JsonObject { ["items"] = new JsonArray(Item("u:1", "Serum", "plugins")) });
+        var items = await slow.ListItems();
+        Assert.Equal(new[] { "Serum" }, items.Select(i => i.Name));
+    }
+
     /// <summary>A silent bridge fails the request after the request timeout (default 3 s; 1 s here).</summary>
     [Fact]
     public async Task Request_times_out_after_3s()

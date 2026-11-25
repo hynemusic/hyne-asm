@@ -25,7 +25,7 @@ class ProtocolV4Tests(unittest.TestCase):
 
     def test_hello_reports_capabilities(self):
         r = self.call({"id": 1, "cmd": "hello"})
-        self.assertEqual(r["result"]["script_version"], "4")
+        self.assertEqual(r["result"]["script_version"], "5")
         self.assertEqual(r["result"]["capabilities"], {"move_device": True, "multi_select": True})
 
     def test_load_several_uris_with_position(self):

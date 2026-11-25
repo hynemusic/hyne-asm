@@ -28,6 +28,9 @@ final class AppModel: ObservableObject {
     private var catalogWatch: AnyCancellable?
     private var usageWatch: AnyCancellable?
     private var cachedIndex: SearchIndex?
+    /// The last index built, used while a new one is being built: with big libraries a build takes seconds,
+    /// and building on the main thread would freeze the panel. Briefly stale is better than frozen.
+    private var lastIndex: SearchIndex?
     private var indexRebuild: Task<Void, Never>?
 
     /// Search data for the panel and the quick search, rebuilt only when the plugin list or the menu changed.
@@ -40,8 +43,10 @@ final class AppModel: ObservableObject {
 
     var searchIndex: SearchIndex {
         if let cachedIndex { return cachedIndex }
-        let index = SearchIndex(items: catalog.items, config: config, newURIs: newURIs)
+        if let lastIndex { return lastIndex } // the rebuild in the background takes over when done
+        let index = SearchIndex(items: catalog.items, config: config, newURIs: newURIs) // only before the very first build
         cachedIndex = index
+        lastIndex = index
         return index
     }
 
@@ -62,7 +67,7 @@ final class AppModel: ObservableObject {
             }.value
             guard !Task.isCancelled, let self else { return }
             if self.newURIs != fresh { self.newURIs = fresh }
-            if self.cachedIndex == nil { self.cachedIndex = index }
+            if self.cachedIndex == nil { self.cachedIndex = index; self.lastIndex = index }
         }
     }
     let versions = MenuVersionStore(directory: MenuVersionStore.defaultDirectory)

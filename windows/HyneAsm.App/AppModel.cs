@@ -106,7 +106,10 @@ sealed class AppModel
 
     // MARK: Search data, rebuilt only when the plugin list or the menu changed
 
-    public SearchIndex SearchIndex => cachedIndex ??= new SearchIndex(Catalog.Items, Config, NewUris);
+    /// <summary>While a rebuild runs, the last index is used: with big libraries a build takes seconds, and building on
+    /// the UI thread would freeze the panel. Built here only before the very first build.</summary>
+    public SearchIndex SearchIndex => cachedIndex ?? lastIndex ?? (cachedIndex = lastIndex = new SearchIndex(Catalog.Items, Config, NewUris));
+    SearchIndex? lastIndex;
 
     /// <summary>Drops the index and builds the new one shortly after (changes come in bursts), off the UI thread,
     /// so the next double right-click finds it ready.</summary>
@@ -126,7 +129,7 @@ sealed class AppModel
                 return (new SearchIndex(items, config, f), f);
             });
             NewUris = fresh;
-            cachedIndex ??= index;
+            if (cachedIndex == null) cachedIndex = lastIndex = index;
         }, ui);
         rebuild.Stop();
         rebuild.Start();

@@ -129,6 +129,13 @@ sealed class LibraryPage : Page
             UI.IconButton("", Model.RefreshCatalog, Loc.T("Live-Liste neu laden", "Reload Live's list"))));
         head.Children.Add(field);
         field.Margin = new Thickness(0, 0, 0, 12);
+        if (Model.Hello is { } hello && (int.TryParse(hello.ScriptVersion, out var scriptVersion) ? scriptVersion : 0) < 5)
+        {
+            var outdated = UI.Caption(Loc.T("Neues Live-Script verfügbar: lädt große Plugin-Sammlungen viel schneller. Tray-Menü → „Live-Script installieren …“, dann Live neu starten.",
+                                            "A newer Live script is available: it loads big plugin libraries much faster. Tray menu → “Install Live Script …”, then restart Live."));
+            outdated.Margin = new Thickness(0, -4, 0, 12);
+            head.Children.Add(outdated);
+        }
 
         RefreshBrowser();
         Detach(browserScroll);
@@ -567,16 +574,16 @@ sealed class LibraryPage : Page
             if (!selectedEntries.Contains(e.Id)) { selectedEntries.Clear(); selectedEntries.Add(e.Id); entryAnchor = e.Id; }
             EntryMenu(element, category, e, folder);
         };
-        // Onto a pad: the orange bar shows the gap the drop lands in (before or after it). Onto the middle of a
-        // folder: into the folder.
+        // Onto a pad: the orange bar shows the gap the drop lands in (before or after it). Onto a folder: into the
+        // folder, except its thin leading edge (left in the grid, top in a list), which drops in front of it — the Mac's rule.
+        // (It used to be only the middle half, so drops near a folder's sides often landed next to it.)
         var horizontal = Model.Config.PanelStyle == PanelStyle.Grid && padPreview;
         bool IntoFolder(DragEventArgs ev)
         {
             if (!e.IsFolder) return false;
             var b = element;
             var p = ev.GetPosition(b);
-            var f = horizontal ? p.X / Math.Max(1, b.ActualWidth) : p.Y / Math.Max(1, b.ActualHeight);
-            return f > 0.25 && f < 0.75;
+            return horizontal ? p.X >= 12 : p.Y >= 10;
         }
         element.DragOver += (_, ev) =>
         {
@@ -594,7 +601,8 @@ sealed class LibraryPage : Page
             ev.Handled = true;
             element.Opacity = 1;
             var into = IntoFolder(ev);
-            var insertAt = DropBar.After(element, ev, horizontal) ? index + 1 : index;
+            // A folder's leading edge always means "in front of it".
+            var insertAt = !e.IsFolder && DropBar.After(element, ev, horizontal) ? index + 1 : index;
             DropBar.Clear(element);
             if (ev.Data.GetData(ItemsFormat) is List<object> items)
             {

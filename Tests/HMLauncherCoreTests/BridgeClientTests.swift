@@ -94,6 +94,18 @@ final class BridgeClientTests: XCTestCase {
         await slow.stop()
     }
 
+    func testSlowListUsesListTimeoutNotRequestTimeout() async throws {
+        // Big libraries: Live's first walk takes longer than an ordinary request may.
+        let slow = BridgeClient(port: server.port, requestTimeout: 0.5, listTimeout: 3)
+        await slow.start()
+        _ = await waitUntil { await slow.isConnected }
+        server.replyDelay = 1.2
+        server.respond = { ok($0, ["items": [["uri": "u:1", "name": "Serum", "source": "plugins", "path": []]]]) }
+        let items = try await slow.listItems()
+        XCTAssertEqual(items.map(\.name), ["Serum"])
+        await slow.stop()
+    }
+
     func testTimeoutWhenServerSilent() async {
         server.respond = { _ in nil }
         do { _ = try await client.hello(); XCTFail("expected error") }

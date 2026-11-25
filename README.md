@@ -3,27 +3,15 @@
 Insert plugins, presets and Live commands in seconds: a double right-click in Ableton Live opens your own menu,
 ⌃Space (Mac) or Ctrl+Space (Windows) opens the quick search. Free and open source.
 
-## New in 1.2.1
+## New in 1.2.2
 
-- **Where your plugins come from:** the wrench next to the Plugins & Presets count (Settings → Library) lists the
-  folders Live reads: plugin folders, the User Library and your Places, each with a button to open it in Finder or
-  Explorer. If your plugin library lives somewhere else, it shows how to add that folder in Live, then reload the list.
+- Big plugin libraries load reliably and much faster. Update the Live script once: menu → **Install Live Script …**,
+  then restart Live.
+- Folder side lists open away from neighbouring folders.
+- Windows: dropping plugins onto a folder puts them inside it.
 
-*Neu in 1.2.1: Der Schraubenschlüssel neben der Anzahl unter Plugins & Presets zeigt, aus welchen Ordnern Live liest,
-und wie du einen eigenen Ordner in Live hinzufügst.*
-
-## New in 1.2
-
-- **Click to open plugins:** no more hunting for the tiny wrench. Click anywhere in the big X-Y field on the right of a
-  plugin and its window opens (click again to close it). The X-Y dot stays where it is. Hold ⌥ (Mac) or Alt (Windows)
-  to use the field as usual. On by default, switch it off under **Settings → Behavior → Plugin Windows**.
-- **Open several at once:** select plugins with ⇧-click (Shift-click) on their title bars, then click one X-Y field:
-  all of them open.
-- **Open all plugin windows of the track:** a shortcut you choose under **Settings → Shortcuts → Plugin Windows**.
-  Pressing it again closes them.
-
-*Neu in 1.2: Ein Klick ins X-Y-Feld eines Plugins öffnet sein Fenster (mit ⇧ ausgewählte Plugins öffnen sich alle
-zusammen), und ein eigenes Kürzel öffnet alle Plugin-Fenster der Spur. Auf Mac und Windows.*
+*Neu in 1.2.2: Große Plugin-Sammlungen laden zuverlässig und schneller (Live-Script einmal neu installieren),
+Ordner-Listen verdecken keine Nachbarordner mehr, Windows: Plugins landen beim Ziehen im Ordner.*
 
 ## Right Click Panel
 
@@ -54,11 +42,31 @@ https://www.reddit.com/r/ableton/comments/1y0o0ar/i_built_an_opensource_ableton_
 | | Download | Requirements / Voraussetzungen |
 |---|---|---|
 | **Mac** | **[⬇ HYNE-ASM-….dmg](https://github.com/hynemusic/hyne-asm/releases/latest)** | macOS 13 or later, Ableton Live 12 |
-| **Windows** | **[⬇ HYNE-ASM-Windows-Setup-….exe](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.2.0)** | Windows 10 or 11 (64-bit), Ableton Live 12 |
+| **Windows** | **[⬇ HYNE-ASM-Windows-Setup-….exe](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.2.2)** | Windows 10 or 11 (64-bit), Ableton Live 12 |
 
 
 (Virus Total for Windows: https://www.virustotal.com/gui/file/1770eb95ee8a4a55fdb1a2c6dadfe4a37de73aacd192af290051a2c6a7cbf2a9/detection)
 Menus move between Mac and Windows (Settings → Profiles → Export / Import).
+
+<details>
+<summary><b>Changelog</b></summary>
+
+**1.2.1**
+- A wrench next to the Plugins & Presets count (Settings → Library) lists the folders Live reads plugins and presets
+  from, with how to add your own folder in Live.
+
+**1.2**
+- Click anywhere in a plugin's X-Y field to open or close its window (hold ⌥ / Alt to use the field as usual).
+  Shift-selected plugins open together. Switch under **Settings → Behavior → Plugin Windows**.
+- A shortcut opens or closes all plugin windows of the track (**Settings → Shortcuts → Plugin Windows**).
+
+**1.1** (Windows)
+- One small setup (about 1 MB) instead of the 66 MB zip; it fetches Microsoft's .NET Desktop Runtime if needed.
+
+**1.0**
+- First release.
+
+</details>
 
 ---
 
@@ -81,7 +89,7 @@ To update, download the new DMG and replace the app; your settings stay.
 ### Windows
 
 1. Download **HYNE-ASM-Windows-Setup-….exe** from the
-   [Windows release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.2.0) (about 1 MB).
+   [Windows release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.2.2) (about 1 MB).
 2. Start it. The first time, Windows may show "Windows protected your PC" because the app isn't signed with a paid
    certificate: click **More info → Run anyway**.
 3. Click **Install**. If your PC doesn't have Microsoft's free **.NET Desktop Runtime** yet, the setup downloads it from
@@ -117,7 +125,7 @@ Für ein Update lädst du einfach die neue DMG und ersetzt die App; deine Einste
 ### Windows
 
 1. Lade **HYNE-ASM-Windows-Setup-….exe** unter
-   [Windows-Release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.2.0) herunter (etwa 1 MB).
+   [Windows-Release](https://github.com/hynemusic/hyne-asm/releases/tag/win-v1.2.2) herunter (etwa 1 MB).
 2. Starte sie. Beim ersten Mal zeigt Windows eventuell „Der Computer wurde durch Windows geschützt“, weil die App
    nicht mit einem kostenpflichtigen Zertifikat signiert ist: auf **Weitere Informationen → Trotzdem ausführen** klicken.
 3. Auf **Installieren** klicken. Fehlt auf deinem PC Microsofts kostenlose **.NET Desktop Runtime**, lädt das Setup sie

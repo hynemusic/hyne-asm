@@ -108,7 +108,8 @@ public enum IconGuesser {
         if let exact = exactNames[SearchMatcher.compact(name)] { return exact }
         // Words split at spaces/punctuation and at camelCase ("AUGraphicEQ" → augraphic, eq).
         let words = Set(name.split { !$0.isLetter && !$0.isNumber }.map(String.init) + SearchMatcher.words(plain))
-        for rule in rules where rule.keywords.contains(where: { matches($0, name: name, words: words) }) {
+        let bytes = Array(name.utf8)
+        for rule in compiledRules where rule.matches(name: name, bytes: bytes, words: words) {
             return rule.icon
         }
         if item.source.isPreset { return PresetFormat.fallbackIcon(item) }
@@ -119,8 +120,41 @@ public enum IconGuesser {
         }
     }
 
-    private static func matches(_ keyword: String, name: String, words: Set<String>) -> Bool {
-        if keyword.count <= 3, !keyword.contains(" "), !keyword.contains("-") { return words.contains(keyword) }
-        return name.contains(keyword)
+    /// The rules with each keyword sorted once: short single words ("eq", "rx") must match a whole word,
+    /// longer ones may sit anywhere in the name. Checked per plugin, so worked out once, not per plugin.
+    private struct CompiledRule {
+        let icon: String
+        let wholeWords: Set<String>
+        /// With their UTF-8 bytes: a byte search is many times faster than String.contains (big libraries), and the
+        /// keywords are ASCII, so every real match is also a byte match. A byte hit is then confirmed with
+        /// String.contains, which also respects combining marks ("Gate" + accent is no gate).
+        let substrings: [(text: String, bytes: [UInt8])]
+
+        func matches(name: String, bytes: [UInt8], words: Set<String>) -> Bool {
+            !wholeWords.isDisjoint(with: words)
+                || substrings.contains { IconGuesser.contains(bytes, $0.bytes) && name.contains($0.text) }
+        }
+    }
+
+    static func contains(_ haystack: [UInt8], _ needle: [UInt8]) -> Bool {
+        guard let first = needle.first, needle.count <= haystack.count else { return needle.isEmpty }
+        var i = 0
+        let last = haystack.count - needle.count
+        while i <= last {
+            if haystack[i] == first {
+                var j = 1
+                while j < needle.count && haystack[i + j] == needle[j] { j += 1 }
+                if j == needle.count { return true }
+            }
+            i += 1
+        }
+        return false
+    }
+
+    private static let compiledRules: [CompiledRule] = rules.map { rule in
+        assert(rule.keywords.allSatisfy { $0.allSatisfy(\.isASCII) }, "the byte search needs ASCII keywords")
+        let isWord: (String) -> Bool = { $0.count <= 3 && !$0.contains(" ") && !$0.contains("-") }
+        return CompiledRule(icon: rule.icon, wholeWords: Set(rule.keywords.filter(isWord)),
+                            substrings: rule.keywords.filter { !isWord($0) }.map { ($0, Array($0.utf8)) })
     }
 }

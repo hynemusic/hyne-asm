@@ -294,20 +294,18 @@ final class PanelWindowController {
         }
     }
 
-    /// Opens the folder's plugins right beside the folder row, on top of whatever is there (the right column,
-    /// or next to the panel), its first row level with the folder row.
+    /// Opens the folder's plugins right beside the folder pad, its first row level with the pad: to the left for a
+    /// folder in the left column, to the right otherwise (`FlyoutPlacement`), so neighbouring folders stay free.
     private func showFlyout(_ folder: UUID) {
         guard flyoutFolder != folder || !flyout.isVisible else { return }
         flyoutFolder = folder
         let index = viewModel.state.rows.firstIndex { $0.folderID == folder } ?? 0
-        // Right beside the folder pad, its first row level with the pad's top: the list covers the pads to the
-        // folder's right, so no other folder sits between the pointer and the list.
         let item = viewModel.metrics.frame(ofSlot: index)
         let padX = panel.frame.minX + PanelView.gridMinX(viewModel.placement) + item.minX
         let padTop = panel.frame.maxY - PanelView.gridTopInset(viewModel.placement) - item.minY
         let padFrame = NSRect(x: padX, y: padTop - item.height, width: item.width, height: item.height)
         flyout.show(rows: viewModel.state.folderRows(folder),
-                    besides: padFrame, top: padTop + PanelView.padding,
+                    besides: padFrame, in: panel.frame, top: padTop + PanelView.padding,
                     onInsert: { [weak self] in self?.insert($0) })
     }
 
@@ -409,7 +407,7 @@ final class HUD {
     }
 }
 
-/// The folder's plugins in a small list to the right of the panel (left if there is no room).
+/// The folder's plugins in a small list beside the folder pad (side chosen by `FlyoutPlacement`).
 @MainActor
 final class FolderFlyout {
     private let panel: NSPanel
@@ -431,15 +429,15 @@ final class FolderFlyout {
 
     func contains(_ point: CGPoint) -> Bool { panel.isVisible && panel.frame.contains(point) }
 
-    func show(rows: [PanelRow], besides main: NSRect, top: CGFloat, onInsert: @escaping (PanelRow) -> Void) {
+    func show(rows: [PanelRow], besides main: NSRect, in panelFrame: NSRect, top: CGFloat, onInsert: @escaping (PanelRow) -> Void) {
         model.rows = rows
         model.hovered = nil
         model.onInsert = onInsert
         let visible = CGFloat(min(max(rows.count, 1), PanelView.maxVisibleRows))
         let size = NSSize(width: 280, height: visible * PanelView.rowHeight + PanelView.padding * 2)
         let screen = NSScreen.screens.first { $0.frame.intersects(main) }?.visibleFrame ?? NSScreen.main?.visibleFrame ?? main
-        var x = main.maxX + 2
-        if x + size.width > screen.maxX { x = main.minX - 2 - size.width }
+        let x = FlyoutPlacement.x(padMinX: main.minX, padMaxX: main.maxX, panelMinX: panelFrame.minX, panelMaxX: panelFrame.maxX,
+                                  width: size.width, screenMinX: screen.minX, screenMaxX: screen.maxX)
         let y = min(max(top - size.height, screen.minY), screen.maxY - size.height)
         panel.setFrame(NSRect(x: x, y: y, width: size.width, height: size.height), display: true)
         panel.orderFrontRegardless()

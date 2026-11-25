@@ -170,9 +170,14 @@ sealed class PanelWindow : Overlay
         flyoutAnchor = anchor;
         if (flyoutFolder == folder && flyout.IsVisible) return;
         flyoutFolder = folder;
-        // Right beside the folder pad, its first row level with the pad's top, over whatever is there.
-        var corner = anchor.PointToScreen(new Point(anchor.ActualWidth + 4, 0));
-        flyout.Show(state.FolderRows(folder), new Native.POINT { X = (int)corner.X, Y = (int)corner.Y }, IsGrid, ItemWidth, ItemHeight);
+        // Beside the folder pad, its first row level with the pad's top: to the left for a folder in the left column,
+        // to the right otherwise, so the list never covers the neighbouring folders.
+        var padTopLeft = anchor.PointToScreen(new Point(0, 0));
+        var padRight = anchor.PointToScreen(new Point(anchor.ActualWidth, 0)).X;
+        var panelLeft = PointToScreen(new Point(0, 0)).X;
+        var panelRight = PointToScreen(new Point(ActualWidth, 0)).X;
+        flyout.Show(state.FolderRows(folder), (int)padTopLeft.X, (int)padRight, (int)panelLeft, (int)panelRight, (int)padTopLeft.Y,
+                    IsGrid, ItemWidth, ItemHeight);
     }
 
     /// <summary>Leaving starts the grace period at once (the poll closes it unless the pointer comes back).</summary>

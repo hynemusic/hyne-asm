@@ -1,6 +1,7 @@
 from .actions import ActionError, run_action
 
-SCRIPT_VERSION = "4"
+# 5: the plugin list skips the presets under plugins and devices (fast with big libraries).
+SCRIPT_VERSION = "5"
 
 
 def _reply(req_id, ok, result=None, error=None):

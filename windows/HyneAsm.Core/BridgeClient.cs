@@ -50,12 +50,15 @@ public sealed class BridgeClient : IDisposable
     public static readonly TimeSpan DefaultRequestTimeout = TimeSpan.FromSeconds(3);
     /// <summary>load replies only after Live finished loading (heavy M4L/instruments take seconds).</summary>
     public static readonly TimeSpan DefaultLoadTimeout = TimeSpan.FromSeconds(30);
+    /// <summary>The plugin list: Live walks its whole browser first, which takes many seconds with big libraries.</summary>
+    public static readonly TimeSpan DefaultListTimeout = TimeSpan.FromSeconds(90);
     public static readonly TimeSpan DefaultReconnectInterval = TimeSpan.FromSeconds(2);
 
     public string Host { get; }
     public ushort Port { get; }
     public TimeSpan RequestTimeout { get; }
     public TimeSpan LoadTimeout { get; }
+    public TimeSpan ListTimeout { get; }
     public TimeSpan ReconnectInterval { get; }
 
     readonly object gate = new();
@@ -68,12 +71,13 @@ public sealed class BridgeClient : IDisposable
     Action<bool>? handler;
 
     public BridgeClient(string host = "127.0.0.1", ushort port = 47820, TimeSpan? requestTimeout = null, TimeSpan? loadTimeout = null,
-                        TimeSpan? reconnectInterval = null)
+                        TimeSpan? reconnectInterval = null, TimeSpan? listTimeout = null)
     {
         Host = host;
         Port = port;
         RequestTimeout = requestTimeout ?? DefaultRequestTimeout;
         LoadTimeout = loadTimeout ?? DefaultLoadTimeout;
+        ListTimeout = listTimeout ?? DefaultListTimeout;
         ReconnectInterval = reconnectInterval ?? DefaultReconnectInterval;
     }
 
@@ -103,11 +107,12 @@ public sealed class BridgeClient : IDisposable
     public async Task<HelloResult> Hello() =>
         BridgeProtocol.Decode(await Request(w => w.WriteString("cmd", "hello")).ConfigureAwait(false), HelloResult.Decode);
 
-    /// <summary><paramref name="refresh"/>: make Live walk its browser again (blocks Live ~1 s). Otherwise the bridge answers
-    /// from its last walk. Items this app can't read (e.g. a source a newer bridge adds) are skipped.</summary>
+    /// <summary><paramref name="refresh"/>: make Live walk its browser again (blocks Live ~1 s, longer with big libraries).
+    /// Otherwise the bridge answers from its last walk; the first list after Live starts always walks.
+    /// Items this app can't read (e.g. a source a newer bridge adds) are skipped.</summary>
     public async Task<List<PluginItem>> ListItems(bool refresh = false)
     {
-        var line = await Request(w => { w.WriteString("cmd", "list"); w.WriteBoolean("refresh", refresh); }).ConfigureAwait(false);
+        var line = await Request(w => { w.WriteString("cmd", "list"); w.WriteBoolean("refresh", refresh); }, ListTimeout).ConfigureAwait(false);
         return BridgeProtocol.Decode(line, BridgeProtocol.Items);
     }
 

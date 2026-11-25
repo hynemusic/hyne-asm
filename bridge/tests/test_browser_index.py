@@ -44,6 +44,29 @@ class BrowserIndexTests(unittest.TestCase):
         items = BrowserIndex(FakeBrowser(audio_effects=[FakeItem("Utility", "u:util")])).build()
         self.assertEqual([i["name"] for i in items], ["Utility"])
 
+    def test_presets_under_plugins_and_devices_are_not_opened(self):
+        class Untouchable(FakeItem):
+            @property
+            def children(self):
+                raise AssertionError("opened the presets of " + self.name)
+
+            @children.setter
+            def children(self, value):
+                pass
+
+        serum = Untouchable("Serum", "query:Plugins#VST3:Xfer:Serum", is_loadable=True, is_folder=True)
+        operator = Untouchable("Operator", "query:Synths#Operator", is_loadable=True, is_folder=True)
+        browser = FakeBrowser(plugins=[folder("VST3", "u:vst3", [folder("Xfer", "u:xfer", [serum])])],
+                              instruments=[operator])
+        names = [i["name"] for i in BrowserIndex(browser).build()]
+        self.assertEqual(sorted(names), ["Operator", "Serum"])
+
+    def test_max_for_live_devices_inside_loadable_folders_are_kept(self):
+        device = FakeItem("Max Audio Effect", "query:M4L#Max%20Audio%20Effect", is_loadable=True, is_folder=True,
+                          children=[FakeItem("Carver 1.2", "query:M4L#Max%20Audio%20Effect:FileId_1")])
+        names = {i["name"] for i in BrowserIndex(FakeBrowser(max_for_live=[device])).build()}
+        self.assertEqual(names, {"Max Audio Effect", "Carver 1.2"})
+
     def test_list_with_3000_items(self):
         many = [FakeItem("P%d" % n, "u:%d" % n) for n in range(3000)]
         items = BrowserIndex(FakeBrowser(plugins=many)).build()

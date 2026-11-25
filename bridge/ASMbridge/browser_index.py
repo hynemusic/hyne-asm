@@ -86,8 +86,15 @@ class BrowserIndex(object):
             if child.is_loadable and self._keep(root, child.uri):
                 out.append({"uri": child.uri, "name": child.name, "source": root, "path": list(path)})
                 self._by_uri[child.uri] = child
-            if child.is_folder:
+            if child.is_folder and self._descend(root, child):
                 self._walk(child, root, path + [child.name], out)
+
+    @staticmethod
+    def _descend(root, node):
+        """A loadable plugin or device that is also a folder only holds its presets, which are skipped anyway.
+        Not opening them keeps big libraries fast: each node costs a call into Live, and the presets under
+        plugins and Live's devices can outnumber the plugins a hundred to one. Max for Live keeps its presets."""
+        return root == "max_for_live" or not node.is_loadable
 
     def _walk_presets(self, out):
         library = getattr(self._browser, "user_library", None)

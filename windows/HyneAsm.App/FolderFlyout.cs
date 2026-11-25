@@ -21,7 +21,10 @@ sealed class FolderFlyout : Overlay
 
     public FolderFlyout(PanelWindow panel) { this.panel = panel; }
 
-    public void Show(IReadOnlyList<PanelRow> rows, Native.POINT topLeft, bool grid, double itemWidth, double itemHeight)
+    /// <summary>Beside the folder pad (<paramref name="padLeft"/>…<paramref name="padRight"/>, screen pixels), its top level
+    /// with <paramref name="top"/>; the side comes from <see cref="FlyoutPlacement"/>, so neighbouring folders stay free.</summary>
+    public void Show(IReadOnlyList<PanelRow> rows, int padLeft, int padRight, int panelLeft, int panelRight, int top,
+                     bool grid, double itemWidth, double itemHeight)
     {
         this.rows = rows;
         this.grid = grid;
@@ -29,7 +32,13 @@ sealed class FolderFlyout : Overlay
         this.itemHeight = itemHeight;
         hovered = null;
         Render();
-        ShowAt(topLeft);
+        // Measure first: the side depends on the list's width.
+        if (!IsVisible) { Left = -32000; Top = -32000; base.Show(); }
+        UpdateLayout();
+        Native.GetWindowRect(Hwnd, out var r);
+        var area = System.Windows.Forms.Screen.FromPoint(new System.Drawing.Point((padLeft + padRight) / 2, top)).WorkingArea;
+        var x = FlyoutPlacement.X(padLeft, padRight, panelLeft, panelRight, r.Right - r.Left, area.Left, area.Right, gap: 4);
+        ShowAt(new Native.POINT { X = (int)Math.Round(x), Y = top });
     }
 
     void Render()
