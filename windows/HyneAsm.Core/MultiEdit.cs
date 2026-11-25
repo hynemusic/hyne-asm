@@ -1,4 +1,10 @@
+using HyneAsm.Core.Json;
+
 namespace HyneAsm.Core;
+
+/// <summary>Entries copied (Ctrl+C) or cut (Ctrl+X) in the settings, put back with Ctrl+V. Holds its own copies,
+/// so later edits don't change what was copied. Same as EntryClipboard in Sources/HMLauncherCore/MultiEdit.swift.</summary>
+public sealed record EntryClipboard(List<Entry> Entries, Guid SourceCategory, bool IsCut);
 
 /// <summary>Editing several entries at once: move them together, to another category, or group them into a folder.</summary>
 public sealed partial record LauncherConfig
@@ -80,5 +86,54 @@ public sealed partial record LauncherConfig
         else list = Categories[c].Entries;
         var at = anchor is { } a ? list.FindIndex(e => e.Id == a) : -1;
         list.InsertRange(at < 0 ? list.Count : at, entries);
+    }
+
+    // MARK: Copy, cut, paste
+
+    /// <summary>The selected entries for Ctrl+C / Ctrl+X, in list order. A selected folder carries its plugins, so they
+    /// aren't taken twice.</summary>
+    public EntryClipboard? Clipboard(ISet<Guid> ids, Guid categoryID, bool cut)
+    {
+        if (Categories.FirstOrDefault(c => c.Id == categoryID) is not { } category) return null;
+        var output = new List<Entry>();
+        foreach (var e in category.Entries)
+        {
+            if (ids.Contains(e.Id)) { output.Add(e); continue; }
+            output.AddRange((e.Children ?? new()).Where(k => ids.Contains(k.Id)));
+        }
+        return output.Count == 0 ? null : new EntryClipboard(output.Select(SwiftJson.Clone).ToList(), categoryID, cut);
+    }
+
+    /// <summary>Ctrl+V: the clipboard's entries go into the category's top level or into a folder, in front of
+    /// <paramref name="anchor"/> (an entry of that container; at its end when null or gone). Cut entries move (ids kept);
+    /// copied ones are added as new entries. Into a folder, a folder gives its plugins (folders don't nest). A plugin
+    /// the container already holds is skipped. Returns the ids of the pasted entries.</summary>
+    public List<Guid> Paste(EntryClipboard clip, Guid categoryID, Guid? folder, Guid? anchor)
+    {
+        if (IndexOf(categoryID) is null) return new();
+        if (folder is { } f)
+        {
+            if (FindEntry(f, categoryID)?.IsFolder != true) return new();
+            if (clip.IsCut && clip.Entries.Any(e => e.Id == f)) return new(); // a folder into itself
+        }
+        var items = clip.Entries.Select(SwiftJson.Clone).ToList();
+        if (folder != null) items = items.SelectMany(e => e.IsFolder ? e.Children! : new List<Entry> { e }).ToList();
+        if (clip.IsCut) foreach (var e in clip.Entries) RemoveEntry(e.Id, clip.SourceCategory);
+        else items = items.Select(FreshCopy).ToList();
+        var container = folder is { } id ? FindEntry(id, categoryID)?.Children ?? new() : Categories[IndexOf(categoryID)!.Value].Entries;
+        var taken = new HashSet<string>(container.Where(IsPlainPlugin).Select(e => e.Uri));
+        items = items.Where(e => !IsPlainPlugin(e) || taken.Add(e.Uri)).ToList();
+        InsertEntries(items, folder, anchor, categoryID);
+        return items.Select(e => e.Id).ToList();
+    }
+
+    static bool IsPlainPlugin(Entry e) => !e.IsFolder && e.Chain == null && e.Action == null && e.Uri.Length > 0;
+
+    /// <summary>The same entry (and a folder's plugins) with new ids.</summary>
+    static Entry FreshCopy(Entry e)
+    {
+        e.Id = Guid.NewGuid();
+        foreach (var k in e.Children ?? new()) k.Id = Guid.NewGuid();
+        return e;
     }
 }

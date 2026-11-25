@@ -1,5 +1,17 @@
 import Foundation
 
+/// Entries copied (⌘C) or cut (⌘X) in the settings, put back with ⌘V.
+public struct EntryClipboard: Equatable, Sendable {
+    public var entries: [Entry]
+    public var sourceCategory: UUID
+    /// Cut entries move on the next paste (then the clipboard turns into a copy, so pasting again duplicates).
+    public var isCut: Bool
+
+    public init(entries: [Entry], sourceCategory: UUID, isCut: Bool) {
+        self.entries = entries; self.sourceCategory = sourceCategory; self.isCut = isCut
+    }
+}
+
 public extension LauncherConfig {
     /// Every entry id of the category in list order: top level, each folder followed by its plugins.
     func orderedEntryIDs(in categoryID: UUID) -> [UUID] {
@@ -68,5 +80,56 @@ public extension LauncherConfig {
             let list = categories[c].entries
             categories[c].entries.insert(contentsOf: entries, at: anchor.flatMap { a in list.firstIndex { $0.id == a } } ?? list.count)
         }
+    }
+
+    // MARK: Copy, cut, paste
+
+    /// The selected entries for ⌘C / ⌘X, in list order. A selected folder carries its plugins, so they aren't taken twice.
+    func clipboard(_ ids: Set<UUID>, in categoryID: UUID, cut: Bool) -> EntryClipboard? {
+        guard let category = categories.first(where: { $0.id == categoryID }) else { return nil }
+        var out: [Entry] = []
+        for e in category.entries {
+            if ids.contains(e.id) { out.append(e); continue }
+            out += (e.children ?? []).filter { ids.contains($0.id) }
+        }
+        return out.isEmpty ? nil : EntryClipboard(entries: out, sourceCategory: categoryID, isCut: cut)
+    }
+
+    /// ⌘V: the clipboard's entries go into the category's top level or into a folder, in front of `anchor`
+    /// (an entry of that container; at its end when nil or gone). Cut entries move (ids kept); copied ones are
+    /// added as new entries. Into a folder, a folder gives its plugins (folders don't nest). A plugin the
+    /// container already holds is skipped. Returns the ids of the pasted entries.
+    @discardableResult
+    mutating func paste(_ clip: EntryClipboard, into categoryID: UUID, folder: UUID?, before anchor: UUID?) -> [UUID] {
+        guard categories.contains(where: { $0.id == categoryID }) else { return [] }
+        if let folder {
+            guard findEntry(folder, in: categoryID)?.isFolder == true else { return [] }
+            if clip.isCut, clip.entries.contains(where: { $0.id == folder }) { return [] } // a folder into itself
+        }
+        var items = clip.entries
+        if folder != nil { items = items.flatMap { $0.isFolder ? ($0.children ?? []) : [$0] } }
+        if clip.isCut {
+            for e in clip.entries { removeEntry(e.id, from: clip.sourceCategory) }
+        } else {
+            items = items.map(Self.freshCopy)
+        }
+        let container = folder.flatMap { findEntry($0, in: categoryID)?.children }
+            ?? categories.first { $0.id == categoryID }?.entries ?? []
+        var taken = Set(container.filter(Self.isPlainPlugin).map(\.uri))
+        items = items.filter { !Self.isPlainPlugin($0) || taken.insert($0.uri).inserted }
+        insert(items, into: folder, before: anchor, in: categoryID)
+        return items.map(\.id)
+    }
+
+    private static func isPlainPlugin(_ e: Entry) -> Bool {
+        !e.isFolder && e.chain == nil && e.action == nil && !e.uri.isEmpty
+    }
+
+    /// The same entry (and a folder's plugins) with new ids.
+    private static func freshCopy(_ e: Entry) -> Entry {
+        var copy = e
+        copy.id = UUID()
+        copy.children = e.children?.map { child in var c = child; c.id = UUID(); return c }
+        return copy
     }
 }

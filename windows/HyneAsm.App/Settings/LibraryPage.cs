@@ -410,7 +410,7 @@ sealed class LibraryPage : Page
         var head = new StackPanel();
         head.Children.Add(Head(folder?.Title ?? category.Name, entries.Count.ToString(), toggle, chain, live, folderButton));
         var hints = new WrapPanel { Margin = new Thickness(0, -4, 0, 14) };
-        foreach (var (key, text) in new[] { (Loc.T("Umschalt", "Shift"), Loc.T("Bereich", "range")), (Loc.T("Strg", "Ctrl"), Loc.T("einzeln", "single")), (Loc.T("Strg/Win+G", "Ctrl/Win+G"), Loc.T("Ordner", "group")), (Loc.T("Entf", "Del"), Loc.T("entfernen", "remove")) })
+        foreach (var (key, text) in new[] { (Loc.T("Umschalt", "Shift"), Loc.T("Bereich", "range")), (Loc.T("Strg", "Ctrl"), Loc.T("einzeln", "single")), (Loc.T("Strg/Win+G", "Ctrl/Win+G"), Loc.T("Ordner", "group")), (Loc.T("Strg+X Strg+V", "Ctrl+X Ctrl+V"), Loc.T("verschieben", "move")), (Loc.T("Entf", "Del"), Loc.T("entfernen", "remove")) })
         {
             var h = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 14, 4) };
             h.Children.Add(KeyChip(key));
@@ -972,6 +972,60 @@ sealed class LibraryPage : Page
             return true;
         }
         if (e.Key == System.Windows.Input.Key.Escape && selectedEntries.Count > 0) { selectedEntries.Clear(); Window.Redraw(); return true; }
+        // Ctrl+C / Ctrl+X / Ctrl+V on the pads (a text field being edited keeps them for its text).
+        if (Keyboard.Modifiers == ModifierKeys.Control && Keyboard.FocusedElement is not TextBox)
+        {
+            if (e.Key == System.Windows.Input.Key.C) { CopySelected(category, cut: false); return true; }
+            if (e.Key == System.Windows.Input.Key.X) { CopySelected(category, cut: true); return true; }
+            if (e.Key == System.Windows.Input.Key.V) { Paste(category); return true; }
+        }
         return false;
+    }
+
+    // MARK: Copy, cut, paste
+
+    /// <summary>Copied (Ctrl+C) or cut (Ctrl+X) pads, put back with Ctrl+V.</summary>
+    EntryClipboard? entryClipboard;
+
+    void CopySelected(Category category, bool cut)
+    {
+        if (Model.Config.Clipboard(selectedEntries, category.Id, cut) is not { } clip) return;
+        entryClipboard = clip;
+        var n = clip.Entries.Count;
+        Model.Hud.Show(cut ? Loc.T($"{n} ausgeschnitten – mit Strg+V woanders einsetzen", $"{n} cut. Press Ctrl+V where they should go.")
+                           : Loc.T($"{n} kopiert", $"{n} copied"));
+    }
+
+    /// <summary>Into the open folder pop-over; else into a selected folder; else right after the selected pad (in its
+    /// folder, if it sits in one); else at the end of the category. Same as the Mac.</summary>
+    void Paste(Category category)
+    {
+        if (entryClipboard is not { } clip) return;
+        Guid? folder = null, anchor = null;
+        if (openPopover is { IsOpen: true } && popoverFolder is { } open && category.Entries.Any(x => x.Id == open)) folder = open;
+        else if ((entryAnchor is { } a && selectedEntries.Contains(a) ? a : selectedEntries.Count == 1 ? selectedEntries.First() : (Guid?)null) is { } target)
+        {
+            var top = category.Entries.FirstOrDefault(x => x.Id == target);
+            if (top is { IsFolder: true }) folder = top.Id;
+            else
+            {
+                var parent = top == null ? category.Entries.FirstOrDefault(x => x.Children?.Any(k => k.Id == target) == true) : null;
+                folder = parent?.Id;
+                var list = parent?.Children ?? category.Entries;
+                var moving = clip.IsCut ? clip.Entries.Select(x => x.Id).ToHashSet() : new HashSet<Guid>();
+                var i = list.FindIndex(x => x.Id == target);
+                anchor = i < 0 ? null : list.Skip(i + 1).FirstOrDefault(x => !moving.Contains(x.Id))?.Id;
+            }
+        }
+        var pasted = Model.Config.Paste(clip, category.Id, folder, anchor);
+        if (clip.IsCut) entryClipboard = clip with { IsCut = false }; // pasting again makes copies
+        if (pasted.Count > 0)
+        {
+            selectedEntries.Clear();
+            foreach (var id in pasted) selectedEntries.Add(id);
+            entryAnchor = pasted[^1];
+        }
+        if (openPopover != null) openPopover.IsOpen = false;
+        Changed();
     }
 }

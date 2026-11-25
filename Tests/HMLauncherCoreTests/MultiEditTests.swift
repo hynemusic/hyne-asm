@@ -115,3 +115,63 @@ final class MoveToCategoryTests: XCTestCase {
         XCTAssertEqual(c.categories[2].entries.map(\.title), ["A"])
     }
 }
+
+extension MultiEditTests {
+    // MARK: Copy, cut, paste
+
+    func testCopyPasteAddsNewEntriesAfterAnchor() throws {
+        let other = c.categories[1].id
+        let clip = try XCTUnwrap(c.clipboard([ids["B"]!, ids["D"]!], in: fx, cut: false))
+        let pasted = c.paste(clip, into: other, folder: nil, before: nil)
+        XCTAssertEqual(c.categories[1].entries.map(\.title), ["B", "D"])
+        XCTAssertEqual(top, ["A", "B", "C", "D", "E"]) // the originals stay
+        XCTAssertFalse(pasted.contains(ids["B"]!)) // new ids
+    }
+
+    func testCopyIntoSameContainerSkipsPluginsItHolds() throws {
+        let clip = try XCTUnwrap(c.clipboard([ids["A"]!], in: fx, cut: false))
+        XCTAssertEqual(c.paste(clip, into: fx, folder: nil, before: nil), [])
+        XCTAssertEqual(top, ["A", "B", "C", "D", "E"])
+    }
+
+    func testCutPasteMovesInFrontOfAnchor() throws {
+        let clip = try XCTUnwrap(c.clipboard([ids["D"]!, ids["E"]!], in: fx, cut: true))
+        let pasted = c.paste(clip, into: fx, folder: nil, before: ids["B"]!)
+        XCTAssertEqual(top, ["A", "D", "E", "B", "C"])
+        XCTAssertEqual(pasted, [ids["D"]!, ids["E"]!]) // ids kept
+    }
+
+    func testCutPasteIntoFolderAndAcrossCategories() throws {
+        let folder = c.addFolder(named: "F", to: fx)
+        let clip = try XCTUnwrap(c.clipboard([ids["A"]!, ids["C"]!], in: fx, cut: true))
+        c.paste(clip, into: fx, folder: folder, before: nil)
+        XCTAssertEqual(top, ["B", "D", "E", "F"])
+        XCTAssertEqual(c.findEntry(folder, in: fx)?.children?.map(\.title), ["A", "C"])
+        // The whole folder, cut, to another category: it moves with its plugins.
+        let other = c.categories[1].id
+        c.paste(try XCTUnwrap(c.clipboard([folder], in: fx, cut: true)), into: other, folder: nil, before: nil)
+        XCTAssertEqual(top, ["B", "D", "E"])
+        XCTAssertEqual(c.categories[1].entries.first?.children?.map(\.title), ["A", "C"])
+    }
+
+    func testFolderPastedIntoFolderGivesItsPluginsAndNeverIntoItself() throws {
+        let f = c.addFolder(named: "F", to: fx)
+        let g = c.addFolder(named: "G", to: fx)
+        c.moveEntries([ids["A"]!], toFolder: f, before: nil, in: fx)
+        let copy = try XCTUnwrap(c.clipboard([f], in: fx, cut: false))
+        c.paste(copy, into: fx, folder: g, before: nil)
+        XCTAssertEqual(c.findEntry(g, in: fx)?.children?.map(\.title), ["A"])
+        let cut = try XCTUnwrap(c.clipboard([f], in: fx, cut: true))
+        XCTAssertEqual(c.paste(cut, into: fx, folder: f, before: nil), [])
+        XCTAssertEqual(c.findEntry(f, in: fx)?.children?.map(\.title), ["A"])
+    }
+
+    func testSelectedFolderCarriesItsPluginsOnce() throws {
+        let f = c.addFolder(named: "F", to: fx)
+        c.moveEntries([ids["A"]!], toFolder: f, before: nil, in: fx)
+        let a: UUID = ids["A"]!
+        let picked: Set<UUID> = [f, a]
+        let clip = try XCTUnwrap(c.clipboard(picked, in: fx, cut: false))
+        XCTAssertEqual(clip.entries.map(\.title), ["F"])
+    }
+}

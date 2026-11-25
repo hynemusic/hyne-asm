@@ -34,6 +34,9 @@ struct SettingsView: View {
     @State private var hoveredFolderPad: UUID?
     @State private var overFolderPopover = false
     @State private var folderPopoverTask: Task<Void, Never>?
+    /// ⌘C / ⌘X on pads, put back with ⌘V (into the open folder pop-over, a selected folder, after the selected pad).
+    @State private var entryClipboard: EntryClipboard?
+    @State private var clipboardMonitor: Any?
     @State private var selection: Set<UUID> = []
     @State private var selectionAnchor: UUID?
     @State private var bulkIcons = false
@@ -95,6 +98,81 @@ struct SettingsView: View {
     private var pluginsPage: some View {
         libraryColumns
             .sheet(item: $chainEditor) { target in chainSheet(target) }
+            .onAppear {
+                guard clipboardMonitor == nil else { return }
+                clipboardMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { handleClipboardKey($0) }
+            }
+            .onDisappear {
+                if let clipboardMonitor { NSEvent.removeMonitor(clipboardMonitor) }
+                clipboardMonitor = nil
+            }
+    }
+
+    // MARK: Copy, cut, paste
+
+    /// Developer aid: a ⌘<key> press posted to the app, as if typed.
+    static func postCommandKey(_ key: String) {
+        guard let window = NSApp.keyWindow ?? NSApp.windows.first(where: \.isVisible),
+              let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: .command, timestamp: 0,
+                                           windowNumber: window.windowNumber, context: nil, characters: key,
+                                           charactersIgnoringModifiers: key, isARepeat: false, keyCode: key == "x" ? 7 : 9) else { return }
+        NSApp.postEvent(event, atStart: false)
+    }
+
+    /// ⌘C, ⌘X, ⌘V. The app has no Edit menu, so in a text field (search, renaming) the keys are sent to the text
+    /// here; everywhere else they copy, cut and paste the selected pads.
+    private func handleClipboardKey(_ event: NSEvent) -> NSEvent? {
+        guard page == 0, event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command,
+              let key = event.charactersIgnoringModifiers?.lowercased(), ["c", "x", "v"].contains(key) else { return event }
+        if let text = event.window?.firstResponder as? NSTextView {
+            let action = key == "c" ? #selector(NSText.copy(_:)) : key == "x" ? #selector(NSText.cut(_:)) : #selector(NSText.paste(_:))
+            NSApp.sendAction(action, to: text, from: nil)
+            return nil
+        }
+        // Other windows (the panel, sheets): leave the keys alone.
+        guard event.window?.isKind(of: NSPanel.self) != true || folderPopover != nil else { return event }
+        switch key {
+        case "c": copySelection(cut: false)
+        case "x": copySelection(cut: true)
+        default: pasteClipboard()
+        }
+        return nil
+    }
+
+    private func copySelection(cut: Bool) {
+        guard let clip = model.config.clipboard(selection, in: categoryID, cut: cut) else { return }
+        entryClipboard = clip
+        let n = clip.entries.count
+        model.showMessage(cut ? Loc.t("\(n) ausgeschnitten – mit ⌘V woanders einsetzen", "\(n) cut. Press ⌘V where they should go.")
+                              : Loc.t("\(n) kopiert", "\(n) copied"))
+    }
+
+    /// Into the open folder pop-over; else into a selected folder; else right after the selected pad (in its folder,
+    /// if it sits in one); else at the end of the category.
+    private func pasteClipboard() {
+        guard let clip = entryClipboard, let category else { return }
+        var folder: UUID?
+        var anchorID: UUID?
+        if let open = folderPopover, category.entries.contains(where: { $0.id == open }) {
+            folder = open
+        } else if let target = selectionAnchor.flatMap({ id in selection.contains(id) ? id : nil }) ?? (selection.count == 1 ? selection.first : nil),
+                  let row = flatRow(target, in: category) {
+            if row.entry.isFolder { folder = row.entry.id } else {
+                folder = row.folderID
+                anchorID = anchor(for: row, .after, excluding: clip.isCut ? Set(clip.entries.map(\.id)) : [], in: category.id)
+            }
+        }
+        let pasted = model.config.paste(clip, into: category.id, folder: folder, before: anchorID)
+        if clip.isCut { entryClipboard?.isCut = false } // pasting again makes copies
+        if !pasted.isEmpty { selection = Set(pasted); selectionAnchor = pasted.last }
+    }
+
+    private func flatRow(_ id: UUID, in category: HMLauncherCore.Category) -> FlatRow? {
+        for (i, e) in category.entries.enumerated() {
+            if e.id == id { return FlatRow(entry: e, index: i, folderID: nil) }
+            if let k = e.children?.firstIndex(where: { $0.id == id }) { return FlatRow(entry: e.children![k], index: k, folderID: e.id) }
+        }
+        return nil
     }
 
     private func chainSheet(_ target: ChainEditTarget) -> some View {
@@ -183,6 +261,21 @@ struct SettingsView: View {
             }
             .onAppear {
                 regroup(catalog.items)
+                // Developer aid: HM_TEST_CLIPBOARD=1 selects the first two plugins, presses ⌘X, selects the first
+                // folder, presses ⌘V (real key events through the key handler), so a snapshot shows the result.
+                if Dev.env("HM_TEST_CLIPBOARD") != nil, let category {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        NSApp.activate(ignoringOtherApps: true)
+                        selection = Set(category.entries.filter { !$0.isFolder }.prefix(2).map(\.id))
+                        Self.postCommandKey("x")
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                            if let folder = model.config.categories.first(where: { $0.id == category.id })?.entries.first(where: \.isFolder) {
+                                selection = [folder.id]; selectionAnchor = folder.id
+                                Self.postCommandKey("v")
+                            }
+                        }
+                    }
+                }
                 // Developer aid: HM_SETTINGS_FOLDER=<name> opens that folder's pop-over (screenshots).
                 if let name = Dev.env("HM_SETTINGS_FOLDER"),
                    let id = category?.entries.first(where: { $0.isFolder && $0.title == name })?.id {
@@ -979,6 +1072,7 @@ struct SettingsView: View {
                 keyHint("⇧", Loc.t("Bereich", "range"))
                 keyHint("⌘", Loc.t("einzeln", "single"))
                 keyHint("⌘G", Loc.t("gruppieren", "group"))
+                keyHint("⌘X ⌘V", Loc.t("verschieben", "move"))
                 keyHint("⌫", Loc.t("entfernen", "remove"))
                 Spacer()
             }
@@ -1005,7 +1099,9 @@ struct SettingsView: View {
 
     private func activeSelectionBar(_ category: HMLauncherCore.Category) -> some View {
         let folders = category.entries.filter { $0.isFolder && !selection.contains($0.id) }
-        return HStack(spacing: 10) {
+        // Scrolls sideways when the column is narrow: wider than the column, the bar pushed the whole column
+        // (pads and heading) out of the window.
+        return ScrollView(.horizontal, showsIndicators: false) { HStack(spacing: 10) {
             Text(Loc.t("\(selection.count) ausgewählt", "\(selection.count) selected")).font(DS.Font.secondaryStrong)
             Button { groupSelection() } label: { Label(Loc.t("Gruppieren", "Group"), systemImage: "folder.badge.plus") }
                 .keyboardShortcut("g", modifiers: .command)
@@ -1031,10 +1127,11 @@ struct SettingsView: View {
             Button(Loc.t("Auswahl aufheben", "Deselect")) { selection = [] }
                 .keyboardShortcut(.cancelAction)
         }
+        .padding(.horizontal, DS.Space.m)
+        .frame(height: 34) }
         .buttonStyle(.borderless)
         .foregroundColor(DS.textPrimary)
-        .padding(.horizontal, DS.Space.m)
-        .frame(height: 34)
+        .frame(maxWidth: .infinity, minHeight: 34, maxHeight: 34)
         .plate(lit: true, radius: DS.Radius.m)
         .overlay(RoundedRectangle(cornerRadius: DS.Radius.m).stroke(Color.brandBlue.opacity(0.5)))
     }
