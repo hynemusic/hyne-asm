@@ -26,7 +26,14 @@ struct SettingsView: View {
     @State private var browserSel: Set<String> = Set((Dev.env("HM_BROWSER_SELECT") ?? "") // developer aid
         .split(separator: ",").map(String.init))
     @State private var browserAnchor: String?
-    @State private var collapsed: Set<UUID> = []
+    /// Folders whose contents are also shown as a block below the pads (the chevron). Closed by default: with many
+    /// pads that block sits below the visible area; the pop-over (hover or click a folder) is the main way in.
+    @State private var openFolders: Set<UUID> = []
+    /// The folder whose contents show in a pop-over beside its pad (hover or click, like the panel's side list).
+    @State private var folderPopover: UUID?
+    @State private var hoveredFolderPad: UUID?
+    @State private var overFolderPopover = false
+    @State private var folderPopoverTask: Task<Void, Never>?
     @State private var selection: Set<UUID> = []
     @State private var selectionAnchor: UUID?
     @State private var bulkIcons = false
@@ -40,7 +47,11 @@ struct SettingsView: View {
     /// Held without observing it: drag updates redraw only the rows (which observe it), not the whole window.
     @State private var dropState = DropState()
 
-    private var categoryID: UUID { selectedCategory ?? model.config.favoritesID }
+    private var categoryID: UUID {
+        selectedCategory
+            ?? Dev.env("HM_SETTINGS_CATEGORY").flatMap { name in model.config.categories.first { $0.name == name }?.id } // developer aid
+            ?? model.config.favoritesID
+    }
     private var category: HMLauncherCore.Category? { model.config.categories.first { $0.id == categoryID } }
 
     @State private var page = Int(Dev.env("HM_SETTINGS_PAGE") ?? "") ?? 0
@@ -170,7 +181,14 @@ struct SettingsView: View {
                     }
                 }
             }
-            .onAppear { regroup(catalog.items) }
+            .onAppear {
+                regroup(catalog.items)
+                // Developer aid: HM_SETTINGS_FOLDER=<name> opens that folder's pop-over (screenshots).
+                if let name = Dev.env("HM_SETTINGS_FOLDER"),
+                   let id = category?.entries.first(where: { $0.isFolder && $0.title == name })?.id {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) { NSApp.activate(ignoringOtherApps: true); openFolderPopover(id) }
+                }
+            }
             .onChange(of: search) { _ in regroup(catalog.items) }
             .onReceive(catalog.$items.dropFirst()) { regroup($0) }
             if browserSel.isEmpty {
@@ -586,7 +604,7 @@ struct SettingsView: View {
             ScrollView(.vertical) {
                 VStack(alignment: .leading, spacing: DS.Space.l) {
                     padBlocks(rows.filter { $0.folderID == nil }, layout, in: category)
-                    ForEach(category.entries.filter { $0.isFolder && !collapsed.contains($0.id) }) { folder in
+                    ForEach(category.entries.filter { $0.isFolder && openFolders.contains($0.id) }) { folder in
                         openFolder(folder, rows: rows.filter { $0.folderID == folder.id }, layout, in: category)
                     }
                 }
@@ -650,7 +668,10 @@ struct SettingsView: View {
                     ForEach(0..<usedColumns, id: \.self) { c in
                         let slot = page.slot(row: r, column: c)
                         if slot < n {
-                            padCell(rows[entries[slot]], layout, in: category)
+                            // Left half of the page: a folder's pop-over opens to the left, so it never covers
+                            // the pads (often other folders) to its right.
+                            padCell(rows[entries[slot]], layout, in: category,
+                                    popoverEdge: page.columns > 1 && c < page.columns / 2 ? .leading : .trailing)
                         } else {
                             Color.clear.frame(width: layout.itemWidth, height: layout.metrics.itemHeight)
                         }
@@ -662,7 +683,8 @@ struct SettingsView: View {
 
     private var pageLine: some View { Rectangle().fill(Palette.current.padStripe) }
 
-    private func padCell(_ row: FlatRow, _ layout: PadLayout, in category: HMLauncherCore.Category) -> some View {
+    private func padCell(_ row: FlatRow, _ layout: PadLayout, in category: HMLauncherCore.Category,
+                         popoverEdge: Edge = .trailing) -> some View {
         entryRow(row, in: category, padWidth: layout.itemWidth, padHeight: layout.metrics.itemHeight, listStyle: layout.isList)
             // Own drag & drop: the payload works for pads and for categories alike.
             .onDrag { dragPayload(for: row.id) } preview: {
@@ -673,6 +695,90 @@ struct SettingsView: View {
                 row: SettingsViewRow(id: row.id, isFolder: row.entry.isFolder), drop: dropState,
                 perform: { spot, providers in dropOnRow(row, spot, providers, in: category) },
                 padWidth: layout.isList ? nil : layout.itemWidth))
+            .modifier(FolderPopoverHost(isFolder: row.entry.isFolder && row.folderID == nil,
+                                        isPresented: Binding(get: { folderPopover == row.id },
+                                                             set: { if !$0, folderPopover == row.id { folderPopover = nil } }),
+                                        edge: popoverEdge,
+                                        onHover: { folderPadHover(row.id, $0) }) {
+                // AnyView: the pop-over draws pads itself, which would make this view's type recursive.
+                AnyView(folderPopoverContent(row.entry, layout, in: category))
+            })
+    }
+
+    // MARK: Folder pop-over
+
+    private func openFolderPopover(_ id: UUID) {
+        folderPopoverTask?.cancel()
+        overFolderPopover = false
+        folderPopover = id
+    }
+
+    /// Hovering a folder pad opens its pop-over after a moment (not while a mouse button is held, e.g. dragging);
+    /// leaving both the pad and the pop-over closes it after a short grace period, so the pointer can cross over.
+    private func folderPadHover(_ id: UUID, _ inside: Bool) {
+        folderPopoverTask?.cancel()
+        if inside {
+            hoveredFolderPad = id
+            guard folderPopover != id else { return }
+            folderPopoverTask = Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 300_000_000)
+                guard !Task.isCancelled, hoveredFolderPad == id, NSEvent.pressedMouseButtons == 0 else { return }
+                openFolderPopover(id)
+            }
+        } else {
+            if hoveredFolderPad == id { hoveredFolderPad = nil }
+            scheduleFolderPopoverClose()
+        }
+    }
+
+    private func scheduleFolderPopoverClose() {
+        folderPopoverTask?.cancel()
+        guard folderPopover != nil else { return }
+        folderPopoverTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 350_000_000)
+            guard !Task.isCancelled, !overFolderPopover, hoveredFolderPad != folderPopover,
+                  NSEvent.pressedMouseButtons == 0 else { return }
+            folderPopover = nil
+        }
+    }
+
+    /// A folder's contents as pads, like the panel's side list: drag them out to take them out, drop plugins in,
+    /// right-click for icon, name and color.
+    private func folderPopoverContent(_ folder: Entry, _ layout: PadLayout, in category: HMLauncherCore.Category) -> AnyView {
+        let current = category.entries.first { $0.id == folder.id } ?? folder
+        let rows = (current.children ?? []).enumerated().map { FlatRow(entry: $1, index: $0, folderID: current.id) }
+        let popLayout = PadLayout(metrics: layout.metrics, itemWidth: layout.itemWidth, pagesPerRow: 1)
+        return AnyView(VStack(alignment: .leading, spacing: DS.Space.m) {
+            HStack(spacing: 6) {
+                Image(systemName: "folder.fill").foregroundColor(.accent)
+                Text(current.title).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary).lineLimit(1)
+                Text("\(rows.count)").font(DS.Font.caption.monospacedDigit()).foregroundColor(DS.textTertiary)
+                Spacer(minLength: DS.Space.s)
+            }
+            if rows.isEmpty {
+                Text(Loc.t("Leer – Plugins hierher ziehen", "Empty. Drag plugins here."))
+                    .font(DS.Font.caption).foregroundColor(DS.textTertiary)
+                    .frame(width: max(layout.itemWidth * 1.5, 220), height: 60)
+                    .background(RoundedRectangle(cornerRadius: DS.Radius.m).strokeBorder(DS.hairline, style: StrokeStyle(lineWidth: 1, dash: [4])))
+                    .onDrop(of: [browserDragType, entriesDragType, .fileURL, .text], isTargeted: nil) { providers in
+                        dropIntoFolder(current, providers, in: category)
+                    }
+            } else {
+                ScrollView(.vertical) { padBlocks(rows, popLayout, in: category).padding(4) }
+                    .frame(maxHeight: 520)
+                    .fixedSize(horizontal: true, vertical: rows.count <= 9)
+            }
+            HintText(text: Loc.t("Zum Herausnehmen auf die Pads ziehen.", "Drag onto the pads to take entries out."))
+        }
+        .padding(DS.Space.l)
+        .background(DS.surface)
+        .themedColorScheme()
+        .foregroundColor(DS.textPrimary)
+        .environment(\.locale, Loc.locale)
+        .onHover { inside in
+            overFolderPopover = inside
+            if !inside { scheduleFolderPopoverClose() } else { folderPopoverTask?.cancel() }
+        })
     }
 
     /// An open folder below the category's pads: its name, then its contents as pads (keys 1–9 as in the panel).
@@ -683,7 +789,7 @@ struct SettingsView: View {
                 Text(folder.title).font(DS.Font.bodyStrong).foregroundColor(DS.textPrimary)
                 Text("\(rows.count)").font(DS.Font.caption.monospacedDigit()).foregroundColor(DS.textTertiary)
                 Rectangle().fill(DS.hairline).frame(height: 1)
-                Button { collapsed.insert(folder.id) } label: {
+                Button { openFolders.remove(folder.id) } label: {
                     Image(systemName: "chevron.up").font(.system(size: 11, weight: .semibold))
                 }
                 .buttonStyle(.borderless).foregroundColor(.dimText)
@@ -736,7 +842,7 @@ struct SettingsView: View {
     /// Top-level entries first, then the contents of each open folder — the order the pads are drawn in.
     private func flatRows(_ category: HMLauncherCore.Category) -> [FlatRow] {
         let top = category.entries.enumerated().map { FlatRow(entry: $1, index: $0, folderID: nil) }
-        let inside = category.entries.filter { $0.isFolder && !collapsed.contains($0.id) }.flatMap { folder in
+        let inside = category.entries.filter { $0.isFolder && openFolders.contains($0.id) }.flatMap { folder in
             (folder.children ?? []).enumerated().map { FlatRow(entry: $1, index: $0, folderID: folder.id) }
         }
         return top + inside
@@ -845,7 +951,6 @@ struct SettingsView: View {
     private func groupSelection() {
         guard let folder = model.config.groupEntries(Array(selection), in: categoryID, named: Loc.t("Neue Gruppe", "New Group")) else { return }
         selection = [folder]
-        collapsed.remove(folder)
         renamingEntry = folder
     }
 
@@ -937,7 +1042,6 @@ struct SettingsView: View {
     private func newFolder(in categoryID: UUID? = nil) {
         let id = categoryID ?? self.categoryID
         let folder = model.config.addFolder(named: Loc.t("Neuer Ordner", "New Folder"), to: id)
-        collapsed.remove(folder)
         renamingEntry = folder
     }
 
@@ -952,15 +1056,19 @@ struct SettingsView: View {
             index: row.index, entry: entry,
             isSelected: selection.contains(entry.id),
             selectionCount: multi ? selection.count : 1,
-            onSelect: { select(entry.id, rows: flatRows(category)); entriesFocused = true },
+            onSelect: {
+                select(entry.id, rows: flatRows(category)); entriesFocused = true
+                // A plain click on a folder opens its contents beside it.
+                if entry.isFolder, row.folderID == nil, NSEvent.modifierFlags.intersection([.shift, .command]).isEmpty { openFolderPopover(entry.id) }
+            },
             onGroup: groupSelection,
             available: entry.isFolder || entry.action != nil || catalog.items.isEmpty
                 || (entry.chain.map { $0.allSatisfy { catalog.index.resolve(Entry(item: $0)) != nil } } ?? (catalog.index.resolve(entry) != nil)),
-            isExpanded: !collapsed.contains(entry.id),
+            isExpanded: openFolders.contains(entry.id),
             folders: folders.map { ($0.id, $0.title) },
             inFolder: row.folderID != nil,
             startRenaming: Binding(get: { renamingEntry == entry.id }, set: { if !$0 { renamingEntry = nil } }),
-            onToggle: { if collapsed.contains(entry.id) { collapsed.remove(entry.id) } else { collapsed.insert(entry.id) } },
+            onToggle: { if openFolders.contains(entry.id) { openFolders.remove(entry.id) } else { openFolders.insert(entry.id) } },
             onIcon: { icon in multi ? setIconForSelection(icon) : model.config.setIcon(icon, entry: entry.id, in: category.id) },
             onName: { name in
                 if entry.isFolder { if let name { model.config.renameFolder(entry.id, in: category.id, to: name) } }

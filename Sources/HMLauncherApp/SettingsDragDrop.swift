@@ -176,3 +176,22 @@ struct CategoryDropDelegate: DropDelegate {
 }
 
 /// Which part of the settings browser a group belongs to; the browser draws a label where the part changes.
+
+/// Hover tracking and the contents pop-over for a folder pad in the settings (nothing for other pads).
+struct FolderPopoverHost<PopoverContent: View>: ViewModifier {
+    let isFolder: Bool
+    @Binding var isPresented: Bool
+    let edge: Edge
+    let onHover: (Bool) -> Void
+    @ViewBuilder let popoverContent: () -> PopoverContent
+
+    func body(content: Content) -> some View {
+        if isFolder {
+            content
+                .onHover(perform: onHover)
+                .popover(isPresented: $isPresented, arrowEdge: edge, content: popoverContent)
+        } else {
+            content
+        }
+    }
+}

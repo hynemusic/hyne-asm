@@ -7,11 +7,12 @@ Insert plugins, presets and Live commands in seconds: a double right-click in Ab
 
 - Big plugin libraries load reliably and much faster. Update the Live script once: menu → **Install Live Script …**,
   then restart Live.
-- Folder side lists open away from neighbouring folders.
+- Folder side lists open away from neighbouring folders. Mac: folders in Settings open on hover or click.
 - Windows: dropping plugins onto a folder puts them inside it.
 
 *Neu in 1.2.2: Große Plugin-Sammlungen laden zuverlässig und schneller (Live-Script einmal neu installieren),
-Ordner-Listen verdecken keine Nachbarordner mehr, Windows: Plugins landen beim Ziehen im Ordner.*
+Ordner-Listen verdecken keine Nachbarordner mehr, Mac: Ordner in den Einstellungen öffnen sich per Hover oder Klick,
+Windows: Plugins landen beim Ziehen im Ordner.*
 
 ## Right Click Panel
 
