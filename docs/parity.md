@@ -36,6 +36,7 @@ Every user-facing feature of HYNE ASM with its status on both platforms. The Win
 | Settings: Stats | ✅ | ✅ | |
 | Undo in the settings | ✅ | ✅ | Ctrl+Z / Win+Z |
 | Own presets: drop files, copy unknown ones into a preset folder | ✅ | ✅ | Windows: several folders (Behavior) |
+| Library locations: wrench next to the Plugins & Presets count lists the folders Live reads (plugin folders, User Library, Places from `Library.cfg`) and how to add more in Live | ✅ | ✅ | read-only: folders are managed in Live; Windows reads `%APPDATA%\Ableton\Live x\Preferences\Library.cfg` (not yet confirmed on a real PC) |
 | Five themes | ✅ | ✅ | |
 | Welcome window | ✅ | ✅ | no Accessibility step on Windows |
 | Menu bar / tray menu | ✅ | ✅ | tray icon on Windows |

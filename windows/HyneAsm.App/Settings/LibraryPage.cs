@@ -70,7 +70,10 @@ sealed class LibraryPage : Page
         return new Border { Child = dock, BorderBrush = Theme.Stroke, BorderThickness = new Thickness(0, 0, divider ? 1 : 0, 0) };
     }
 
-    static FrameworkElement Head(string title, string? count, params UIElement[] tools)
+    static FrameworkElement Head(string title, string? count, params UIElement[] tools) => HeadWithAccessory(title, count, null, tools);
+
+    /// <summary><paramref name="afterCount"/> sits right after the count (the Library's wrench), the tools on the right.</summary>
+    static FrameworkElement HeadWithAccessory(string title, string? count, UIElement? afterCount, params UIElement[] tools)
     {
         var line = new DockPanel { LastChildFill = true, Margin = new Thickness(0, 0, 0, 14), Height = 30 };
         var right = new StackPanel { Orientation = Orientation.Horizontal };
@@ -80,6 +83,7 @@ sealed class LibraryPage : Page
         var left = new StackPanel { Orientation = Orientation.Horizontal };
         left.Children.Add(UI.Text(title, 16, weight: FontWeights.Bold));
         if (count != null) { var c = UI.Text(count, 13, Theme.TextTertiary, FontWeights.SemiBold); c.Margin = new Thickness(10, 0, 0, 0); left.Children.Add(c); }
+        if (afterCount is FrameworkElement extra) { extra.Margin = new Thickness(4, 0, 0, 0); left.Children.Add(extra); }
         line.Children.Add(left);
         return line;
     }
@@ -119,7 +123,8 @@ sealed class LibraryPage : Page
         var field = searchField;
         if (field.Parent is Panel old) old.Children.Remove(field);
         var head = new StackPanel();
-        head.Children.Add(Head(Loc.T("Plugins & Presets", "Plugins & Presets"), Loc.Number(Model.Catalog.Items.Count),
+        head.Children.Add(HeadWithAccessory(Loc.T("Plugins & Presets", "Plugins & Presets"), Loc.Number(Model.Catalog.Items.Count),
+            LibraryLocationsPopup.Button(() => Model.Hello?.LiveVersion, Model.RefreshCatalog),
             UI.IconButton("\uE713", () => Window.Select(4), Loc.T("Ordner für eigene Presets (Verhalten)", "Folder for your presets (Behavior)")),
             UI.IconButton("", Model.RefreshCatalog, Loc.T("Live-Liste neu laden", "Reload Live's list"))));
         head.Children.Add(field);

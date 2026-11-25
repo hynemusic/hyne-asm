@@ -116,9 +116,14 @@ struct SettingsView: View {
 
     private var pluginBrowser: some View {
         VStack(alignment: .leading, spacing: DS.Space.m) {
-            ColumnHeader(title: Loc.t("Plugins & Presets", "Plugins & Presets"), count: catalog.items.isEmpty ? nil : groups.reduce(0) { $0 + $1.items.count }) {
+            HStack(spacing: DS.Space.s) {
+                Text(Loc.t("Plugins & Presets", "Plugins & Presets")).font(DS.Font.columnTitle).foregroundColor(DS.textPrimary).lineLimit(1)
+                if !catalog.items.isEmpty { CountChip(count: groups.reduce(0) { $0 + $1.items.count }) }
+                LibraryLocationsButton(liveVersion: model.liveVersion) { model.refreshCatalog() }
+                Spacer(minLength: DS.Space.s)
                 IconButton(symbol: "arrow.clockwise", help: Loc.t("Liste aus Live neu laden", "Reload list from Live")) { model.refreshCatalog() }
             }
+            .frame(height: 28)
             SearchField(placeholder: Loc.t("Plugins und Presets suchen", "Search plugins and presets"), text: $search)
             if catalog.items.isEmpty {
                 Text(model.isConnected ? Loc.t("Lade Plugin-Liste …", "Loading plugin list …") : Loc.t("Nicht mit Live verbunden. Öffne Live und wähl ASMbridge als Control Surface.", "Not connected to Live. Open Live and choose ASMbridge as a control surface."))

@@ -34,6 +34,23 @@ extension AppDelegate {
                 NSApp.terminate(nil)
             }
         }
+        // Developer aid: HM_SNAPSHOT_LOCATIONS=<file.png> saves the library-locations popover, then quits.
+        if let path = Dev.env("HM_SNAPSHOT_LOCATIONS") {
+            let host = NSHostingView(rootView: LibraryLocationsPopover(liveVersion: nil, onReload: {})
+                .background(DS.surface).themedColorScheme().foregroundColor(DS.textPrimary))
+            host.frame.size = host.fittingSize
+            let w = NSWindow(contentRect: host.frame, styleMask: [.borderless], backing: .buffered, defer: false)
+            w.contentView = host
+            w.center()
+            w.orderFrontRegardless()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                if let rep = host.bitmapImageRepForCachingDisplay(in: host.bounds) {
+                    host.cacheDisplay(in: host.bounds, to: rep)
+                    try? rep.representation(using: .png, properties: [:])?.write(to: URL(fileURLWithPath: path))
+                }
+                NSApp.terminate(nil)
+            }
+        }
         // Developer aid: HM_SNAPSHOT_KNOWN=<dir> saves the shortcut overview (plain and with a hovered shortcut), then quits.
         if let dir = Dev.env("HM_SNAPSHOT_KNOWN") {
             let out = URL(fileURLWithPath: dir)

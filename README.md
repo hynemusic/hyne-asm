@@ -3,6 +3,15 @@
 Insert plugins, presets and Live commands in seconds: a double right-click in Ableton Live opens your own menu,
 ⌃Space (Mac) or Ctrl+Space (Windows) opens the quick search. Free and open source.
 
+## New in 1.2.1
+
+- **Where your plugins come from:** the wrench next to the Plugins & Presets count (Settings → Library) lists the
+  folders Live reads: plugin folders, the User Library and your Places, each with a button to open it in Finder or
+  Explorer. If your plugin library lives somewhere else, it shows how to add that folder in Live, then reload the list.
+
+*Neu in 1.2.1: Der Schraubenschlüssel neben der Anzahl unter Plugins & Presets zeigt, aus welchen Ordnern Live liest,
+und wie du einen eigenen Ordner in Live hinzufügst.*
+
 ## New in 1.2
 
 - **Click to open plugins:** no more hunting for the tiny wrench. Click anywhere in the big X-Y field on the right of a
